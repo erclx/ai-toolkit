@@ -5,9 +5,9 @@ description: The stages that gate a push on a measure, covering the sandbox cove
 
 # Gating stages
 
-Five stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
+Six stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
 
-A sixth reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the five above rather than a gotcha about a stage.
+A seventh reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the six above rather than a gotcha about a stage.
 
 ## Sandbox coverage
 
@@ -76,6 +76,12 @@ Discovery runs through `collect_seed_roots` in `scripts/lib/tooling.sh`, shared 
 Three outcomes separate a clean walk from one that measured nothing, matching `check-plugin-boundary.sh` on the last two. A missing `tooling/` exits 1, since the walk covers nothing. Roots that resolve and carry no markdown between them exits 1 for the same reason, because a pass there says the seeds cite no CLI on the strength of having read no prose. No seed root carrying `.claude/` exits 0 and says so, because the Seed standards stage already reads that one condition as a skip.
 
 `internal/rules/claude/596-claude-md.md` carries the matching authoring rule, so a session editing the seed meets it at the edit rather than at the push. Its glob stays on the two `CLAUDE.md` paths rather than widening to every seed markdown, since the three bullets beside it govern the root-and-seed pair and mean nothing over `.claude/REQUIREMENTS.md`. The stage is what covers the rest of the seed tree.
+
+## Standard success criteria
+
+The Standard success criteria stage runs `bun src/cli.ts standards audit --arrivals-only`, which fails a push when a standard new to the branch carries no `## Success criterion` section. It is scoped to arrival rather than to the corpus, since `standards/standard.md` forbids writing the section into an existing standard outside the change that exercises it, and a gate over the corpus would fail every push until someone closed all 26 known gaps at once, which is the sweep that rule exists to prevent.
+
+`--arrivals-only` prints nothing when every arriving standard carries the section, matching the Skill requirements stage's own silent-pass shape one domain over. The bare `aitk standards audit` a session runs by hand instead reports the whole corpus, so the same verb serves the gate and the reader without a second command to keep in sync.
 
 ## Audit set
 
