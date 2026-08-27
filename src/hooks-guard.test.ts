@@ -125,6 +125,7 @@ beforeAll(() => {
     join(project, '.claude/context/development'),
     join(project, '.claude/memory'),
     join(project, '.claude/tasks'),
+    join(project, '.claude/worktrees/demo'),
     join(project, 'indexed'),
     join(project, 'src'),
     join(fixture, 'bin'),
@@ -210,6 +211,7 @@ beforeAll(() => {
   )
   writeFileSync(join(project, '.claude/tasks/sample.md'), 'no frontmatter\n')
   writeFileSync(join(project, '.claude/memory/sample.md'), 'no frontmatter\n')
+  writeFileSync(join(project, '.claude/worktrees/demo/note.md'), 'note\n')
 
   // One payload per hook that reaches the branch doing the work, paired with a
   // string only that branch emits. A payload the read mangled produces the
@@ -239,6 +241,16 @@ beforeAll(() => {
       payload: () =>
         payloadFor({
           tool_input: { file_path: join(project, '.claude/memory/sample.md') },
+          tool_name: 'Write',
+        }),
+    },
+    'path-form.sh': {
+      expect: 'This write is from a linked worktree',
+      payload: () =>
+        payloadFor({
+          tool_input: {
+            file_path: join(project, '.claude/worktrees/demo/note.md'),
+          },
           tool_name: 'Write',
         }),
     },

@@ -13,7 +13,7 @@ description: Report file paths correctly for the reading surface and group them 
 - Both forms govern a path emitted in a response. A path written into a markdown file follows the markdown standard instead, which your toolkit resolves by name, and which backticks a file reference and never repeats it as a link label.
 - Use the path the user's editor can resolve. The editor is rooted at the main project root.
 - In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
-- In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
+- In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root. A `PostToolUse` hook computes this form after each write and hands it back as additional context where it is installed. Prefer that form when it arrives, and fall back to computing the absolute path yourself when it does not.
 
 ## Grouping multiple files
 
