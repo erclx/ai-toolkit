@@ -103,6 +103,10 @@ Two seed sources can write one destination, and nothing reports the collision. A
 
 The citation gate resolves every context-entry path string against this repository's root, including lines instructing a target project about its own tree, so those pass only while the toolkit's layout matches the layout it seeds. Splitting the development entry into a folder put ten of its fifteen citation sites into that state in one commit, across `claude/skills/project-commands/SKILL.md`, the four `tooling/*/reference.md` files, `tooling/claude/seeds/CLAUDE.md`, and `docs/target-projects.md`, and retargeting them would have shipped a path resolving nowhere into every scaffolded project, since `tooling/base/seeds/` seeds a flat file. Classify every citation site by whose tree it names rather than by its path before splitting a seeded domain. Keep the flat spelling on a target-facing line and suppress it with `<!-- audit-ignore-citations -->`, or reword to drop the path where a marker would ship into a file a target reads daily. The CI entry is the next one sitting in this position.
 
+### Seed independence
+
+- `tooling/*/seeds/**/*.md` prose may not name the toolkit CLI token literally, not even in a line explaining what an installed rule's own command citation refers to. `scripts/core/check-seed-independence.sh` greps every seed markdown file for the string and fails the push on a hit, since a scaffolded project may not have the CLI installed. A line explaining a cited command names the capability instead, a toolkit CLI with its own commands, present only where installed.
+
 ## Manifest authoring
 
 Each stack has a `manifest.toml` that controls what sync does. `[stack]` is the only required block.
