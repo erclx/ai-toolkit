@@ -45,8 +45,8 @@ Two steps, in order:
 The chain is:
 
 - `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
-- `aitk tooling sync <stack> --write` adds stack-specific deps, scripts, gitignore entries, and drops `.claude/tooling/<stack>.md` (plus parents) as the agent's audit context
-- The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections <!-- audit-ignore-citations -->
+- `aitk tooling sync <stack> --write` adds stack-specific deps, scripts, and gitignore entries
+- The agent reads `aitk tooling reference <stack>` (plus parents) as its audit context, follows it to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections <!-- audit-ignore-citations -->
 - `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
 The chain serves a fresh scaffold and names a destination for the three states it does not. An existing project goes to `aitk:toolkit-operator`, which reads what the project already carries before naming a per-domain command. An install wanting the Claude layer without the tooling chain runs `aitk claude init` for the seed docs and then `aitk:setup-indexes` for the index system. A language the toolkit ships no stack for is the one of the three the chain still runs for, on `base`, with the fallback marked in the preview so it can be declined there.
@@ -175,7 +175,7 @@ Reconcile the configs with `aitk tooling sync <stack> <path> --check` to read wh
 
 `aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence.
 
-It never touches user-owned seed files. Governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
+It never touches user-owned seed files. Governance rules in `.claude/rules/` and tooling configs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
 Standards take no part in that run. Nothing installed them, so there is no copy to reconcile and no `aitk standards sync` to reach for.
 
@@ -184,7 +184,7 @@ Standards take no part in that run. Nothing installed them, so there is no copy 
 - Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `aitk:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
 - Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules. A rule your recorded stack lists reports as `missing` instead.
 - Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
-- Reference docs for a stack: `aitk tooling ref <stack> <path>`
+- Reference docs for a stack: `aitk tooling reference <stack>` reads and never writes, so there is nothing to sync
 - Index regeneration after markdown edits: `aitk indexes regen`
 
 Use a targeted entry point when only one surface moved upstream. Use the catch-all when the toolkit lands a bundled release.
@@ -233,7 +233,7 @@ aitk tooling sync vite-react ./frontend --skip base --write
 aitk tooling sync python ./backend --skip base --write
 ```
 
-`--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite) and its own `.claude/tooling/<stack>.md` audit docs.
+`--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite), and its own stack reference reads through `aitk tooling reference <stack>`.
 
 ## Running sync from an agent session
 

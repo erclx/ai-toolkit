@@ -103,7 +103,6 @@ export interface ToolingCounts {
   readonly scripts: number
   readonly deps: number
   readonly gitignore: number
-  readonly references: number
 }
 
 /**
@@ -134,7 +133,6 @@ const UNMEASURED_TOOLING: ToolingReport = {
     scripts: 0,
     deps: 0,
     gitignore: 0,
-    references: 0,
   },
   changes: 0,
 }
@@ -219,7 +217,7 @@ export function buildToolingReport(
 
   if (manifests.length === 0) return { ...UNMEASURED_TOOLING, chain }
 
-  const result = scan(manifests, target, { includeReferences: true })
+  const result = scan(manifests, target)
   const record = stamp?.domains.tooling
 
   return {
@@ -235,8 +233,6 @@ export function buildToolingReport(
         .length,
       deps: result.deps.filter((entry) => entry.state === 'missing').length,
       gitignore: result.gitignore.filter((entry) => entry.state === 'missing')
-        .length,
-      references: result.references.filter((entry) => entry.state === 'pending')
         .length,
     },
     changes: result.totalChanges,

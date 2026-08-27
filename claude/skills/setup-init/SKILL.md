@@ -107,13 +107,13 @@ AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react ./frontend --skip base --wri
 AITK_NON_INTERACTIVE=1 aitk tooling sync python ./backend --skip base --write
 ```
 
-Without `--skip base`, each subtree re-drops husky, and git honors only one `core.hooksPath`, so the extra hook dirs silently break. Each subtree keeps its own framework configs and its own `.claude/tooling/<stack>.md` audit docs.
+Without `--skip base`, each subtree re-drops husky, and git honors only one `core.hooksPath`, so the extra hook dirs silently break. Each subtree keeps its own framework configs, and its own stack reference reads through `aitk tooling reference <stack>`.
 
 Step 3: post-sync fixups. Golden configs arrive from sync, so no config generation is required. But a few items may need a one-time touch:
 
 - **ESLint version pin.** If `bun create vite` installed `eslint@^10` and the manifest pins `eslint@^9`, sync does not override a present dep. Run `bun add -d eslint@^9` if `bun run lint:fix` fails with `Class extends value undefined`.
 - **File naming.** `bun create vite`'s `App.tsx` violates the `KEBAB_CASE` rule. Rename to `app.tsx` and update the import in `main.tsx`.
-- **Docs.** Open `<target>/.claude/tooling/<tooling-stack>.md` and `<target>/.claude/tooling/web.md` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
+- **Docs.** Run `aitk tooling reference <tooling-stack>` and `aitk tooling reference web` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
 
 Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files. Generating from prose duplicates what sync already installed.
 

@@ -26,24 +26,14 @@ export interface EntryState {
   readonly state: 'missing' | 'present'
 }
 
-export interface ReferenceState {
-  readonly stack: string
-  readonly state: 'pending' | 'matching'
-}
-
 export interface ScanResult {
   readonly configs: readonly ConfigState[]
   readonly seeds: readonly SeedState[]
   readonly scripts: readonly ScriptState[]
   readonly deps: readonly DepState[]
   readonly gitignore: readonly EntryState[]
-  readonly references: readonly ReferenceState[]
   readonly hasPackageJson: boolean
   readonly totalChanges: number
-}
-
-export interface ScanOptions {
-  readonly includeReferences: boolean
 }
 
 function isIdentical(a: string, b: string): boolean {
@@ -55,14 +45,10 @@ function isIdentical(a: string, b: string): boolean {
  * Compares every stack in the chain against the target and reports what would
  * change. Nothing is written. Which stack wins a duplicate differs per
  * category and mirrors the bash: configs, seeds, and scripts resolve nearest
- * stack first, while dependencies, gitignore entries, and references resolve
- * from the furthest ancestor inward.
+ * stack first, while dependencies and gitignore entries resolve from the
+ * furthest ancestor inward.
  */
-export function scan(
-  chain: readonly Manifest[],
-  target: string,
-  options: ScanOptions,
-): ScanResult {
+export function scan(chain: readonly Manifest[], target: string): ScanResult {
   const configs: ConfigState[] = []
   const seenConfigs = new Set<string>()
 
@@ -109,17 +95,12 @@ export function scan(
     : ''
   const gitignore = scanGitignore(chain, gitignoreContent)
 
-  const references = options.includeReferences
-    ? scanReferences(chain, target)
-    : []
-
   const totalChanges =
     configs.filter((entry) => entry.state !== 'matching').length +
     seeds.filter((entry) => entry.state === 'missing').length +
     scripts.filter((entry) => entry.state !== 'matching').length +
     deps.filter((entry) => entry.state === 'missing').length +
-    gitignore.filter((entry) => entry.state === 'missing').length +
-    references.filter((entry) => entry.state === 'pending').length
+    gitignore.filter((entry) => entry.state === 'missing').length
 
   return {
     configs,
@@ -127,7 +108,6 @@ export function scan(
     scripts,
     deps,
     gitignore,
-    references,
     hasPackageJson: pkg !== undefined,
     totalChanges,
   }
@@ -161,25 +141,6 @@ function scanGitignore(
         projected = result.content
       }
     }
-  }
-
-  return states
-}
-
-function scanReferences(
-  chain: readonly Manifest[],
-  target: string,
-): ReferenceState[] {
-  const states: ReferenceState[] = []
-
-  for (const manifest of ancestorsFirst(chain)) {
-    if (!existsSync(manifest.referenceFile)) continue
-
-    const dest = join(target, '.claude', 'tooling', `${manifest.name}.md`)
-    states.push({
-      stack: manifest.name,
-      state: isIdentical(manifest.referenceFile, dest) ? 'matching' : 'pending',
-    })
   }
 
   return states

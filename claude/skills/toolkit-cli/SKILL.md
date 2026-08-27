@@ -9,17 +9,17 @@ What each `aitk` sync or install command does to existing files in a target proj
 
 ## Overwrite contract
 
-| Surface                                                  | Command             | Effect on existing files                                          |
-| -------------------------------------------------------- | ------------------- | ----------------------------------------------------------------- |
-| Golden configs, listed in full below                     | `aitk tooling sync` | Overwritten once `--write` is passed. Local edits are lost.       |
-| Dictionary seeds (`.cspell/*.txt`)                       | `aitk tooling sync` | Merged and sorted. Existing terms preserved.                      |
-| Other seeds (`cspell.json`, `.lintstagedrc`, state docs) | `aitk tooling sync` | Copy-once. Dropped on first install, untouched after.             |
-| Standards                                                | none                | Nothing installs. `aitk standards <name>` reads and never writes. |
-| Seed docs and `CLAUDE.md`                                | `aitk claude init`  | Skipped when present. Never overwritten.                          |
-| Seed docs                                                | `aitk claude sync`  | Never touched. Only `.gitignore` is written.                      |
-| References (`.claude/tooling/<stack>.md`)                | `aitk tooling ref`  | Overwritten.                                                      |
-| `.gitignore`, deps, scripts                              | any sync            | Additive. Existing entries preserved. Deps re-pin on major skew.  |
-| Generated `index.md`                                     | any sync or regen   | Rewritten from target state. Hand edits are lost.                 |
+| Surface                                                  | Command             | Effect on existing files                                                   |
+| -------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------- |
+| Golden configs, listed in full below                     | `aitk tooling sync` | Overwritten once `--write` is passed. Local edits are lost.                |
+| Dictionary seeds (`.cspell/*.txt`)                       | `aitk tooling sync` | Merged and sorted. Existing terms preserved.                               |
+| Other seeds (`cspell.json`, `.lintstagedrc`, state docs) | `aitk tooling sync` | Copy-once. Dropped on first install, untouched after.                      |
+| Standards                                                | none                | Nothing installs. `aitk standards <name>` reads and never writes.          |
+| Seed docs and `CLAUDE.md`                                | `aitk claude init`  | Skipped when present. Never overwritten.                                   |
+| Seed docs                                                | `aitk claude sync`  | Never touched. Only `.gitignore` is written.                               |
+| Stack references                                         | none                | Nothing installs. `aitk tooling reference <stack>` reads and never writes. |
+| `.gitignore`, deps, scripts                              | any sync            | Additive. Existing entries preserved. Deps re-pin on major skew.           |
+| Generated `index.md`                                     | any sync or regen   | Rewritten from target state. Hand edits are lost.                          |
 
 ## What a tooling sync can overwrite
 

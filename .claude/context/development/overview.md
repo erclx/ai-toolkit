@@ -53,7 +53,7 @@ The citation surface is what made this split harder than the one `standards/` to
 
 Those sites keep the flat spelling, and the citation gate is what that costs. It resolves every `.claude/context/*.md` string in the repository against this root, and it passed on all fifteen only because the toolkit's layout matched the layout it seeds. The split ends that coincidence.
 
-Two repairs follow, and which one applies turns on whether the surface installs. A line in a file that reaches a target drops the path, since a marker there is toolkit bookkeeping landing in someone else's tree. That covers the seeded `CLAUDE.md`, the `project-commands` guard and the row describing it, and the four stack references `applyReferences` copies into a target's `.claude/tooling/`. A line that stays in this repository carries `<!-- audit-ignore-citations -->` instead, which is `docs/target-projects.md` alone.
+Two repairs follow, and which one applies turns on whether the surface installs. A line in a file that reaches a target drops the path, since a marker there is toolkit bookkeeping landing in someone else's tree. That covers the seeded `CLAUDE.md` and the `project-commands` guard and the row describing it. A line that stays in this repository carries `<!-- audit-ignore-citations -->` instead, which is `docs/target-projects.md` alone.
 
 Widening the gate by location was the alternative, and it silences a real stale reference in the same trees. Where a stop message has to spell the flat path, a fenced block carries it rather than a marker, since the gate skips fences in markdown.
 

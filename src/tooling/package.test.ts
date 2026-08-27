@@ -16,7 +16,6 @@ function makeManifest(
     dir: `/tooling/${name}`,
     configsDir: `/tooling/${name}/configs`,
     seedsDir: `/tooling/${name}/seeds`,
-    referenceFile: `/tooling/${name}/reference.md`,
     scripts: {},
     scriptOverrides: {},
     gitignore: [],

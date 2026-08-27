@@ -15,8 +15,8 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - `tooling/<stack>/configs/` owns golden files that always overwrite on sync
 - `tooling/<stack>/seeds/` owns user-owned files that sync preserves
 - `tooling/claude/` owns storage for `aitk claude`, excluded from stack discovery
-- `src/tooling/` owns the manifest walk, scan, and injection engine in TypeScript
-- `scripts/tooling/` owns the ref, create, and verify subcommands, still bash
+- `src/tooling/` owns the manifest walk, scan, injection engine, and the reference resolver, in TypeScript
+- `scripts/tooling/` owns the create and verify subcommands, still bash
 
 | Stack        | Extends | Ships                                                                   |
 | ------------ | ------- | ----------------------------------------------------------------------- |
@@ -32,7 +32,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - An overwrite needs authority a caller states. `runSync` resolves a write mode through `resolveWriteMode` in `src/commands/tooling.ts`, where `--check` reports, `--write` applies, a TTY prompts, and a headless caller with neither flag reports and exits 1. The install stamp follows the same authority, so a run with none leaves `.claude/aitk/config.json` alone rather than recording a sync it never performed. A confirm prompt carrying `nonInteractiveDefault` reads silence as consent, which is what made `AITK_NON_INTERACTIVE=1` mean apply-all and cost a real target its deploy job and a shipped harness.
 - The overwrite contract names every config path rather than the category. `scripts/core/regen-tooling-paths.sh` writes the block in `claude/skills/toolkit-cli/SKILL.md` from `aitk tooling list --json` crossed with each stack's `configs/`, and `bun run check` asserts it against the tree. Reading the list from the verb rather than from a directory walk keeps an excluded stack out of a contract about what that verb does.
 - Stack-specific configs override the extends chain. `scan` in `src/tooling/scan.ts` walks the current stack first, and a file seen there blocks the same relative path from every parent layer.
-- Which stack wins a duplicate differs by category, and the split is inherited rather than designed. Configs, seeds, and scripts resolve nearest stack first. Dependencies, gitignore entries, and references resolve from the furthest ancestor inward. The TypeScript port preserved both directions rather than unifying them, because unifying would silently change what a target receives.
+- Which stack wins a duplicate differs by category, and the split is inherited rather than designed. Configs, seeds, and scripts resolve nearest stack first. Dependencies and gitignore entries resolve from the furthest ancestor inward. The TypeScript port preserved both directions rather than unifying them, because unifying would silently change what a target receives.
 - `sync` dropped the `Review diffs` prompt branch. It was the only path that shelled out to `code --diff`, which is the behavior an earlier fix removed for headless callers, so rebuilding it would reintroduce the defect the migration exists to remove. Compare with git after syncing instead.
 - Injection is reachable as `aitk tooling inject <stack>` so `aitk claude` and the sandbox can apply one stack without the scan and prompt. The excluded-stack guard sits on `sync` rather than in the shared path, which is what lets `aitk claude` drive the `claude` stack through it.
 - `python` extends `base` directly rather than going through `web`. It runs on `uv` instead of `bun`, so the web layer's assumptions do not apply.
@@ -139,22 +139,24 @@ prepare = "command to run after scaffold, before sync"
 
 ## CLI
 
-| Command               | What it does                                                    |
-| --------------------- | --------------------------------------------------------------- |
-| `aitk init`           | Bootstrap a project with base tooling and toolkit domains       |
-| `aitk tooling`        | Full sync: configs, seeds, deps, gitignore, and reference docs  |
-| `aitk tooling ref`    | Sync reference docs only                                        |
-| `aitk tooling create` | Create a new stack folder with stub manifest and reference      |
-| `aitk tooling list`   | Emit catalog of stacks with extends chain and dep summary       |
-| `aitk tooling verify` | Scaffold into a temp dir, sync, then run the full project check |
+| Command                  | What it does                                                    |
+| ------------------------ | --------------------------------------------------------------- |
+| `aitk init`              | Bootstrap a project with base tooling and toolkit domains       |
+| `aitk tooling`           | Full sync: configs, seeds, deps, and gitignore entries          |
+| `aitk tooling reference` | Print a stack's reference doc. Reads, never writes.             |
+| `aitk tooling create`    | Create a new stack folder with stub manifest and reference      |
+| `aitk tooling list`      | Emit catalog of stacks with extends chain and dep summary       |
+| `aitk tooling verify`    | Scaffold into a temp dir, sync, then run the full project check |
 
 Flags and arguments live in `docs/agents/index.md`.
+
+Every stack-name lookup in `src/commands/tooling.ts` (`prepare`, `promptForStack`, `printReference`) resolves against `PROJECT_ROOT`, never the caller's working directory, because a stack is toolkit-authored and a target project never carries its own `tooling/` folder. `listStacks` called against a non-`PROJECT_ROOT` root returns an empty list from any real target rather than falling back.
 
 ## Common workflows
 
 Bootstrap a new project with `aitk init`, which installs base configs, Claude workflow, governance, standards, and snippets in one command, and scaffolds an empty `.claude/wiki/`. Governance installs the `base` stack when `--stack` is absent, and `--skip governance` is the way to decline it. Snippets installs only when `--snippets <category>` names one, and `--skip snippets` is the explicit way to decline it. The `setup-init` skill resolves the flags from project detection and runs the chain in one shot.
 
-Sync tooling with `aitk tooling` and pick stack and path. Pass `--no-ref` to skip the reference drop, or `--skip <stack>` to drop a layer from the resolved chain.
+Sync tooling with `aitk tooling` and pick stack and path. Pass `--skip <stack>` to drop a layer from the resolved chain. A stack's reference doc reads through `aitk tooling reference <stack>` and takes no part in sync.
 
 Set up a multi-language monorepo by letting the repo root own the `base` layer and giving each language its own subfolder:
 
@@ -164,7 +166,7 @@ aitk tooling sync vite-react ./frontend --skip base --write
 aitk tooling sync python ./backend --skip base --write
 ```
 
-`--skip <stack>` removes the named layer and its parents across configs, seeds, deps, scripts, gitignore, and refs. Each subtree still gets its own language configs and its own `.claude/tooling/<stack>.md` audit doc.
+`--skip <stack>` removes the named layer and its parents across configs, seeds, deps, scripts, and gitignore. Each subtree still gets its own language configs, and its own stack reference reads through `aitk tooling reference <stack>`.
 
 ## Testing
 
@@ -174,7 +176,7 @@ Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync l
 
 The stack it names has to be one that scaffolds. `aitk tooling verify web` refuses with `Stack 'web' has no scaffold command in manifest.`, because the web layer is a shared parent rather than a stack that scaffolds, so a change to `tooling/web/configs/` is validated through its two consumers, `vite-react` and `astro`, rather than through the layer that owns the edited file. The instruction above names the folder edited and not the stack that can run, which is the gap a session editing a parent layer falls into. Measured 2026-08-14.
 
-The validator cannot reach its `test:e2e` and `screenshot` phases while the scaffolded project's dictionary fails. Measured 2026-08-13 on `vite-react`: `check` exits on unknown words in `.claude/tooling/base.md`, `.husky/post-merge`, `.lintstagedrc`, and `README.md`, all seeded rather than authored by the stack under test, so a config change reaches no end-to-end run until those words land in a dictionary.
+The validator cannot reach its `test:e2e` and `screenshot` phases while the scaffolded project's dictionary fails. Measured 2026-08-13 on `vite-react`: `check` exits on unknown words in `.husky/post-merge`, `.lintstagedrc`, and `README.md`, all seeded rather than authored by the stack under test, so a config change reaches no end-to-end run until those words land in a dictionary. `.claude/tooling/base.md` no longer joins that list, since sync stopped dropping it.
 
 Unit tests cover the manifest walk, the gitignore transforms, the package.json comparisons, and the scan. Equivalence against the bash this replaced was established by syncing every stack into paired fixtures and diffing contents and file modes, which is the check to repeat when changing injection order or copy semantics.
 
