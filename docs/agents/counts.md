@@ -35,15 +35,19 @@ The set is closed rather than derived, so widening it is a deliberate change to 
 
 ## How a match is decided
 
-A sentence has to carry an assertion verb (`loads`, `ships`, `carries`, `holds`, `counts`, `totals`, `documents`, `declares`, `installs`, `lists`, `contains`, `comprises`) immediately ahead of the number, which is immediately ahead of the catalog noun, with one optional qualifying word between the number and the noun (`sixty-one shipped skills`). The number reads either as digits or as a spelled-out cardinal through ninety-nine, since this corpus states a catalog size in words as often as in digits.
+A sentence has to carry an assertion verb (`loads`, `ships`, `carries`, `holds`, `counts`, `totals`, `documents`, `declares`, `installs`, `lists`, `contains`, `comprises`) or an article (`the`, `a`, `an`) immediately ahead of the number, which is immediately ahead of the catalog noun, with one optional qualifying word between the number and the noun (`sixty-one shipped skills`). The number reads either as digits or as a spelled-out cardinal through ninety-nine, since this corpus states a catalog size in words as often as in digits.
 
 The verb gate is not the first design tried. A bare number next to a catalog noun anywhere in the tracked corpus returned 290 findings against a repository whose actionable instance count was one. Reading that run showed why: `18 rules citing a standard`, `21 skill bodies`, and `eight internal skills` all pair a number with a catalog noun while naming a subset, an example, or a different catalog than the one matched, and that shape dominates ordinary prose. Every instance this sweep was written against reads the number as the direct object of a verb asserting the catalog's own total, and gating on that verb is what took the false-positive count from 290 to five on the same tree.
+
+The article half was added after a first review of the shipped design found a live miss: `.claude/context/development/gates.md` stated a stale audit total while the tree held 20, and the verb gate never reached it, since that sentence puts its verb after the noun rather than ahead of the number. Widening the trigger set to admit an article ahead of the number closed that gap.
 
 ## The plausibility filter
 
 The verb gate alone still left four false positives standing: `carries two rules about a standard's own lifecycle`, `holds one rule or one fact` (twice, once per mirrored copy), and `documents two similar commands`. Each pairs an assertion verb with a catalog noun used for something the `rules` or `commands` catalog does not mean, and what tells those apart from the one live finding is magnitude: a catalog this sweep tracks drifts by a few members between the day a sentence was written and the day it is read, so a genuine staleness claim sits near the true count. `2` beside a true count of `59` is not a catalog that shrank, it is a different `rules` entirely.
 
 A stated figure is read only when it sits within a factor of two of the true count, in either direction. That bound is tuned against the run this sweep was written against rather than reasoned to from first principles, the way `restated.ts` tunes its own document-frequency ceiling, and it is a property of the scale every catalog here sits at (the tens) rather than a universal rule.
+
+The article gate is looser than the verb list and carries its own accepted cost. Re-running against the tree once it widened caught the live miss above and also misread a passage in `.claude/context/standards/destinations.md` naming a real subset, a standard outside the retired `standards/bundled/` fan-out, as a claim about the whole standards catalog. The qualifying adjective there fills the same optional-word slot `sixty-one shipped skills` needs to match at all, and no syntactic rule tells a qualifier that narrows a catalog from one that only restates it. That reading stands as a documented false positive rather than a fixed one.
 
 ## What it does not measure
 

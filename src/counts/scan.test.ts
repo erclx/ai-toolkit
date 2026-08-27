@@ -83,6 +83,28 @@ describe('scanCounts', () => {
     ])
   })
 
+  it('should name a stale count reached through an article rather than a verb', async () => {
+    // The shape a first review found live in the tree: the assertion verb
+    // sits after the noun rather than ahead of the number, which the
+    // verb-only gate could not reach.
+    seedSkills(20)
+    write(
+      'docs/history.md',
+      'Six of the twelve skills read gitignored folders.\n',
+    )
+
+    const report = measured(await scanCounts(ROOT))
+
+    expect(report.findings).toEqual([
+      expect.objectContaining({
+        file: 'docs/history.md',
+        catalog: 'skills',
+        stated: 12,
+        actual: 20,
+      }),
+    ])
+  })
+
   it('should name a stale spelled-out count reached through one qualifying word', async () => {
     seedSkills(63)
     write(
@@ -203,6 +225,30 @@ describe('scanCounts', () => {
     const report = measured(await scanCounts(ROOT))
 
     expect(report.findings).toEqual([])
+  })
+
+  it('should still match a subset qualified by an adjective, an accepted cost of the article gate', async () => {
+    // The trade the article gate carries: `flat` fills the same
+    // optional-word slot `sixty-one shipped skills` needs to match at all,
+    // so a named subset (skills outside some other group) reads the same as
+    // a restated whole. No syntactic rule tells the two apart, and this
+    // pins the accepted behavior rather than a desired one.
+    seedSkills(27)
+    write(
+      'docs/history.md',
+      'The fallback already reached the 21 flat skills.\n',
+    )
+
+    const report = measured(await scanCounts(ROOT))
+
+    expect(report.findings).toEqual([
+      expect.objectContaining({
+        file: 'docs/history.md',
+        catalog: 'skills',
+        stated: 21,
+        actual: 27,
+      }),
+    ])
   })
 
   it('should read past a commands claim when the tree carries no CLI entry point', async () => {

@@ -20,13 +20,15 @@ export interface Catalog {
   readonly count: (root: string) => number | undefined
 }
 
-/** One line per registered top-level command, the same reading `regen-hero.sh` already takes. */
+/** One line per registered top-level command. */
 const REGISTER_IMPORT = /^import \{ register as /gm
 
 /**
  * Every top-level `aitk` command, read off the CLI entry point rather than a
  * catalog verb, because a command carries no `--json` listing of its own
- * siblings. `regen-hero.sh` is the precedent for this exact line.
+ * siblings. `regen-hero.sh` reads its own `COMMAND_COUNT` through `gov counts`
+ * rather than a second regex on `src/cli.ts`, so this is the one place that
+ * pattern is written.
  *
  * This is the one catalog with no meaning outside this repository, the way
  * `regen-hero.sh` documents itself as clone-only for the same reason.

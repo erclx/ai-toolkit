@@ -89,7 +89,7 @@ It reads a flat `summary` object of scalars rather than parsing the nested recor
 
 ### An absent corpus is not a stage failure
 
-Six of the twelve audits read gitignored folders. No fresh clone and no CI run carries one, so a shape counting those as unmeasured printed the same warning on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore reports as absent, which the stage states and never warns on.
+Six of the twenty audits read gitignored folders. No fresh clone and no CI run carries one, so a shape counting those as unmeasured printed the same warning on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore reports as absent, which the stage states and never warns on.
 
 The stage still warns when an audit genuinely did not report, and the aggregate exits 3 there. A tracked tree that cannot be found is a broken checkout rather than an ordinary absence, so the allowance does not reach it.
 

@@ -21,7 +21,6 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 TEMPLATE="$PROJECT_ROOT/assets/hero.html.tmpl"
 OUTPUT="$PROJECT_ROOT/assets/hero.html"
-CLI_ENTRY="$PROJECT_ROOT/src/cli.ts"
 LISTED=10
 
 # `bun src/cli.ts` rather than `aitk`, since a globally linked binary resolves to
@@ -35,27 +34,23 @@ if [ ! -f "$TEMPLATE" ]; then
   exit 1
 fi
 
-# The commands have no `--json` catalog to read, so the count comes from the
-# registration block in the CLI entry point, which is the one place a command is
-# added. `--help` is hand-authored ASCII and would drift from what is registered.
-if [ ! -f "$CLI_ENTRY" ]; then
-  echo "regen-hero: missing CLI entry point at $CLI_ENTRY" >&2
-  exit 1
-fi
-
-COMMAND_COUNT="$(grep -c '^import { register as ' "$CLI_ENTRY" || true)"
-if [ "${COMMAND_COUNT:-0}" -eq 0 ]; then
-  echo "regen-hero: no command registrations found in $CLI_ENTRY, refusing to write a zeroed hero" >&2
-  exit 1
-fi
-
+# The commands have no `--json` catalog of their own, so the count comes from
+# `aitk gov counts`, which already reads the registration block in the CLI
+# entry point to judge a document stating its own command count. Reading that
+# figure here rather than re-deriving it with a second regex is what keeps the
+# two readings of `src/cli.ts` from drifting apart unwatched, which is the
+# defect `aitk gov counts` itself exists to catch.
+# `gov counts` exits non-zero on an ordinary finding, unlike every `list` verb
+# below, so its output is read past that under `set -e` rather than aborting
+# a hero rebuild for a stale count somewhere unrelated in the tree.
+COUNTS_JSON="$(catalog gov counts || true)"
 SKILLS_JSON="$(catalog claude skills list)"
 GOV_JSON="$(catalog gov list)"
 STANDARDS_JSON="$(catalog standards list)"
 SNIPPETS_JSON="$(catalog snippets list)"
 TOOLING_JSON="$(catalog tooling list)"
 
-for payload in "$SKILLS_JSON" "$GOV_JSON" "$STANDARDS_JSON" "$SNIPPETS_JSON" "$TOOLING_JSON"; do
+for payload in "$COUNTS_JSON" "$SKILLS_JSON" "$GOV_JSON" "$STANDARDS_JSON" "$SNIPPETS_JSON" "$TOOLING_JSON"; do
   if [ -z "$payload" ]; then
     echo "regen-hero: a catalog returned nothing, refusing to write a zeroed hero" >&2
     exit 1
@@ -69,6 +64,7 @@ done
 PAYLOAD_DIR="$(mktemp -d)"
 trap 'rm -rf "$PAYLOAD_DIR"' EXIT
 
+printf '%s' "$COUNTS_JSON" >"$PAYLOAD_DIR/counts.json"
 printf '%s' "$SKILLS_JSON" >"$PAYLOAD_DIR/skills.json"
 printf '%s' "$GOV_JSON" >"$PAYLOAD_DIR/gov.json"
 printf '%s' "$STANDARDS_JSON" >"$PAYLOAD_DIR/standards.json"
@@ -76,15 +72,16 @@ printf '%s' "$SNIPPETS_JSON" >"$PAYLOAD_DIR/snippets.json"
 printf '%s' "$TOOLING_JSON" >"$PAYLOAD_DIR/tooling.json"
 
 export PAYLOAD_DIR
-export TEMPLATE OUTPUT LISTED PROJECT_ROOT COMMAND_COUNT
+export TEMPLATE OUTPUT LISTED PROJECT_ROOT
 
 bun --eval '
 const { readFileSync } = require("node:fs")
 
-const { PAYLOAD_DIR, TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT, COMMAND_COUNT } = process.env
+const { PAYLOAD_DIR, TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT } = process.env
 
 const payload = (name) => readFileSync(PAYLOAD_DIR + "/" + name + ".json", "utf8")
 
+const COUNTS_JSON = payload("counts")
 const SKILLS_JSON = payload("skills")
 const GOV_JSON = payload("gov")
 const STANDARDS_JSON = payload("standards")
@@ -108,6 +105,11 @@ const snippets = new Set(
   JSON.parse(SNIPPETS_JSON).categories.flatMap((category) => category.entries),
 )
 const toolingStacks = JSON.parse(TOOLING_JSON).stacks
+const commandCount = JSON.parse(COUNTS_JSON).catalogs.commands
+if (!commandCount) {
+  console.error("regen-hero: gov counts read no commands catalog, refusing to write a zeroed hero")
+  process.exit(1)
+}
 
 const escape = (value) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -191,7 +193,7 @@ const values = {
   SNIPPET_COUNT: String(snippets.size),
   GOV_STACK_COUNT: String(gov.stacks.length),
   TOOLING_STACK_COUNT: String(toolingStacks.length),
-  COMMAND_COUNT: String(Number(COMMAND_COUNT)),
+  COMMAND_COUNT: String(commandCount),
   SKILL_ENTRIES: markup(featured(skills, FEATURED_SKILLS)),
   RULE_ENTRIES: entries(deliveredRules),
   STANDARD_ENTRIES: entries(standards),
