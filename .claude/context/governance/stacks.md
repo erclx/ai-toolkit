@@ -53,13 +53,13 @@ Extras are deduped against the stack's resolved rules, so a rule already in the 
 
 ### A rule in an unnamed folder installs for nobody
 
-A rule authored under `governance/rules/` in a folder no stack names reaches no target. Folder entries close that for `core` and `claude` alone, since the other four folders are still enumerated per stack.
+A rule authored under `governance/rules/` in a folder no stack names reaches no target. Folder entries close that for `core`, `claude`, and `snippets`, since the other four folders are still enumerated per stack.
 
 ### Why the unreferenced stage stays advisory
 
-The `Unreferenced rules` stage in `scripts/core/verify.sh` reports rules no stack reaches and never fails. `260-shadcn` and `320-tanstack-query` are opt-in libraries this repository ships on purpose, and `505-at-references` reaches no stack by design: a rule under `governance/rules/claude/` would ship to every `base` consumer through that folder's whole-folder entry, so the `@`-reference convention sits in its own `governance/rules/snippets/` instead. Its own install channel, `aitk snippets install`, retired alongside the domain's copy path, so the rule now reaches no target that did not already hold it from before. A gate here would fail every push over three deliberate cases.
+The `Unreferenced rules` stage in `scripts/core/verify.sh` reports rules no stack reaches and never fails. `260-shadcn` and `320-tanstack-query` are opt-in libraries this repository ships on purpose. `505-at-references` used to reach no stack by design: a rule under `governance/rules/claude/` would ship to every `base` consumer through that folder's whole-folder entry, so the `@`-reference convention sat in its own `governance/rules/snippets/` instead, reachable only through `aitk snippets install`. That install channel retired, leaving the rule no delivery path at all, so `base` now carries `snippets` as a folder-whole entry too and the rule ships the same way `core` and `claude` do. A gate here would fail every push over the two deliberate cases that remain.
 
-`GOV_EXPECTED_UNREFERENCED` in that script holds all three, and a fourth rule arriving reads as new against it. Reconsider failing if the set keeps growing and the pattern turns out to be an accident rather than a design.
+`GOV_EXPECTED_UNREFERENCED` in that script holds both, and a third rule arriving reads as new against it. Reconsider failing if the set keeps growing and the pattern turns out to be an accident rather than a design.
 
 ## Adding a stack
 

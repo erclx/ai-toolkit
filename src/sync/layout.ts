@@ -16,8 +16,9 @@ const CLAUDE_DIR = '.claude'
  *
  * A tuple array rather than a partial record, so the domain key stays typed
  * without asserting an `Object.entries` result back into the union. Empty
- * until a domain retires its install channel back onto the root layout this
- * reports against.
+ * now that both former entries retired their install channels. A future
+ * domain installing at a target's root, the way an older toolkit installed
+ * standards and snippets there, would be the next entry to add.
  */
 const ROOT_LAYOUTS: readonly (readonly [
   StampDomain,

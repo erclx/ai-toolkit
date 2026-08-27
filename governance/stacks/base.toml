@@ -1,4 +1,6 @@
 extends = ""
-# Both folders whole. Every rule authored under them ships to a base consumer,
-# so adding one is a single edit rather than a file and a name here.
-rules = ["core", "claude", "120-bash"]
+# All three folders whole. Every rule authored under them ships to a base
+# consumer, so adding one is a single edit rather than a file and a name here.
+# `snippets` carries the `@`-reference convention rule, which lost its only
+# other delivery path when `aitk snippets install` retired.
+rules = ["core", "claude", "snippets", "120-bash"]
