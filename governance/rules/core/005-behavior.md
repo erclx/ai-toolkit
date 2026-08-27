@@ -22,11 +22,6 @@ description: Handle judgment calls, scope discipline, and file-editing mechanics
 - Do not add features the user did not ask for
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them
 
-## CLAUDE.md editing
-
-- When planning an edit to `CLAUDE.md`, show the proposed change as a fenced `diff` block in chat first, then wait for approval before calling `Edit`
-- Keep a rule in `CLAUDE.md` when it applies every session regardless of what is being edited. Move one that fires only on a specific path being edited and ships silently when violated into `.claude/rules/`.
-
 ## Editing mechanics
 
 - Edit an existing file with the file-editing tool, never a shell stream editor. An unescaped `&` in a `sed` replacement expands to the whole match, and `sed -i` exits zero when its pattern matches nothing, so both fail silently while reporting success. This governs edits you make, not stream editors written into a project's own scripts.
