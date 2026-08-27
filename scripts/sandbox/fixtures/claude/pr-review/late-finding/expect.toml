@@ -9,8 +9,11 @@
 # `answered-head` from the other side: a body file lands rather than staying
 # absent, off the same equality test widened to the whole reply family.
 
-# No max_turns yet. The arm is new and has not run against a live PR, so no
-# sample exists to set a ceiling from.
+# Three clean runs on 2026-08-27 came in at 22, 18, and 20. The pass opens the
+# file the reply names, confirms the defect, and composes a full review post,
+# which costs more and varies more than a refusal-only arm, so the ceiling
+# sits well above the highest sample rather than tight against it.
+max_turns = 32
 
 # The short-sha segment is derived from the PR's head commit, and the third
 # segment is the id of the reply Step 2 resolved, which is a real GitHub
