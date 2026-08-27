@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.33.0](https://github.com/erclx/aitk/compare/v3.32.0...v3.33.0) (2026-08-27)
+
+
+### Features
+
+* **hooks:** ask for the session handoff before a manual compaction ([#1194](https://github.com/erclx/aitk/issues/1194)) ([dd0acf5](https://github.com/erclx/aitk/commit/dd0acf506fcc2dd4ff3f98a14dcf50efa088b0a5))
+
+
+### Bug Fixes
+
+* **claude:** refuse an autoship argument shaped like a task, not a plan ([#1195](https://github.com/erclx/aitk/issues/1195)) ([4bfac67](https://github.com/erclx/aitk/commit/4bfac672c7153fadc352441fee3c36b3557e5398))
+
 ## [3.32.0](https://github.com/erclx/aitk/compare/v3.31.0...v3.32.0) (2026-08-27)
 
 
