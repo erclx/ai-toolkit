@@ -49,6 +49,12 @@ The fixture path splits by who reads it. A fixture this session provisions and r
 
 The built-in delegates to a project skill when it finds one, so the two compose rather than compete. The split is the stop condition. `run` continues past a passing health check by design, because its job is confirming a change. That is the wrong shape for "start the server so I can use it", which is the request `project-commands` answers.
 
+## Background session isolation
+
+Claude Code isolates a `claude --bg` session into its own `.claude/worktrees/` entry automatically, but only lazily: the move happens right before the session's first file edit rather than at dispatch. `claude-autoship` Step 0 calls `EnterWorktree` through `claude-worktree` ahead of any edit tool, so a worker dispatched through the ship chain never observes the built-in trigger firing at all. Its own explicit move always lands first.
+
+A session read taken in the first seconds after dispatch, before either mechanism has moved it, reports the main worktree as `cwd` and `main` as the branch regardless of which one would have isolated it. That reading settles nothing about whether the built-in default is active, only that neither mechanism has run yet.
+
 ## Only one variable expands in a skill body
 
 `${CLAUDE_SKILL_DIR}` is substituted into a skill body before the model sees it, while `${CLAUDE_PLUGIN_ROOT}` arrives as a literal string and a bare `../../` arrives unresolved, so only the first names a path without inference. Three probe skills in a project with no `.claude/` all reported the standard's sentinel, which reads as three working forms until the resolved paths separate them: the `${CLAUDE_SKILL_DIR}` arm quoted an absolute path and the other two quoted the literal text and guessed a base correctly. A form that works by inference fails wherever the inference goes to the session cwd. Ask a probe for the path it resolved rather than the content it read, since content alone cannot distinguish expansion from a lucky guess.

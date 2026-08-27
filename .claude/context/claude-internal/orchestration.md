@@ -193,3 +193,7 @@ A task's plan pointer decides whether the sweep can see it at all. A plan carrie
 ### Archiving a plan strands the priority link
 
 Archiving a plan at ship time leaves `.claude/tasks/priority.md` pointing at a path the file has left. `claude-docs` Step 8 retargets the closing task's `Plan:` line and reads `priority.md` not at all, and `aitk tasks archive` drops the row only when the hook calls it on merge, so every task sits with a dead plan link between its ship run and its merge. One board carried two at once and only one was that session's. Resolve the task file's own `Plan:` line, which the archive keeps current, and read a dead link in `priority.md` as the ordinary post-ship state.
+
+### A task argument resolves an ambiguous plan the worktree entry cannot
+
+`claude-worktree` Step 2 asks the user when more than one `feature-*.md` plan exists and the current branch matches none of them. A `claude-autoship <task-file>` invocation carries information that step does not: the plan's own Constraints section already cites the task file it was written for. Matching the autoship argument against each candidate plan's citation resolves the ambiguity without asking, which is what a worktree entry made in isolation from that argument cannot do.
