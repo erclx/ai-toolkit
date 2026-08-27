@@ -5,7 +5,7 @@ description: Reading per CLAUDE.md section how many bullets name a path, what co
 
 # Routing report
 
-`aitk claude routing` reports, per `CLAUDE.md` section, how many top-level bullets name a path and how many of those a path-scoped rule already covers. It answers the tier test in `.claude/rules/claude/592-claude-md.md`, which asks whether a fact applies every session or fires on one path, and which until this verb existed was a judgment nothing counted.
+`aitk claude routing` reports, per `CLAUDE.md` section, how many top-level bullets name a path and how many of those a path-scoped rule already covers. It answers the firing axis of the tier test in `.claude/rules/claude/592-claude-md.md`, whether a fact applies every session or fires on one path, and which until this verb existed was a judgment nothing counted. `.claude/ARCHITECTURE.md` names two further axes, conditional presence and updatability, that this verb does not check.
 
 ```bash
 aitk claude routing
