@@ -167,7 +167,7 @@ EOF
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request"
+  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request" "late-finding"
 
   case "$SELECTED_OPTION" in
   "first-pass")
@@ -316,6 +316,41 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
     log_info "         posts a **For the reviewer** block carrying the answer"
     log_info "         posts under ## Review closed, since the bullet is answered and nothing else is owed"
     log_info "         writes the body to .claude/.tmp/pr-review/body-<number>-<short-sha>.md, does NOT merge"
+    ;;
+
+  "late-finding")
+    log_step "Configuring pr-review late-finding environment ($ANCHOR_REPO)"
+    seed_reviewable_pr
+
+    gh pr review "$PR_URL" --comment --body "## Review
+
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and the board.
+
+**\`src/tasks.ts\`**
+
+- **minor**: \`handleCreate\` returns the created task without a status field. Nothing consumes one yet.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the first pass. Post one manually before testing."
+
+    # A finding a worker produces after the close-out rather than in answer to
+    # one already on the thread, with no commit behind it. The head stays put,
+    # so this is what the widened reply-family query has to reach instead of
+    # refusing ahead of it.
+    gh pr comment "$PR_URL" --body "## Post-review findings
+
+\`handleCreate\` also accepts a title of unbounded length, so nothing caps what reaches storage.
+
+🤖 Addressed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the late finding. Post one manually before testing."
+
+    log_step "Scenario ready: a late finding under a reply heading outside ## Review response"
+    log_info "Context: open PR with a posted ## Review and a ## Post-review findings reply, no commit since"
+    log_info "Action:  /claude-pr-review"
+    log_info "Expect:  finds the prior review's commit and sees it equal to headRefOid"
+    log_info "         reads the ## Post-review findings comment rather than refusing in Step 2"
+    log_info "         names the body body-<number>-<short-sha>-r<comment-id>.md, id off the comment url"
+    log_info "         posts a review addressing the late finding rather than stopping with nothing to add"
     ;;
 
   *)
