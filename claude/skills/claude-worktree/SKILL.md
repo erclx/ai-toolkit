@@ -34,6 +34,7 @@ The directory test separates the defect from a genuinely bare repository, which 
 
 Try each source in order. Stop at the first match.
 
+0. **Caller-supplied.** The invocation carried an argument. Take it as the name and infer nothing further. Accept `<name>` or `<type>/<name>`, where a leading segment matching a type in `${CLAUDE_SKILL_DIR}/../../standards/branch.md` sets `<type>` and the rest is `<name>`. A bare `<name>` falls to the default type below.
 1. **Plan matched to current branch.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. An empty result falls through to the next source here rather than becoming `latest`, since the slug is one candidate among several. If `<main-root>/.claude/plans/feature-<slug>.md` exists, use `<slug>`.
 2. **Single plan file.** List `<main-root>/.claude/plans/feature-*.md`. If exactly one match, derive `<slug>` from the filename.
 3. **Multiple plan files, no branch match.** Ask the user which plan. Show the candidate slugs as a numbered list. Do not pick.
@@ -41,9 +42,13 @@ Try each source in order. Stop at the first match.
    4b. **Session context.** When on `main` or `master` with no matching plan, read the current conversation to infer a kebab slug from the topic being discussed. Propose it: `Infer: <slug>. Confirm or rename?` Do not enter the worktree until the user confirms or provides a corrected name.
 5. **Ask.** None of the above applies. Ask the user for a name. Do not invent one.
 
+Tier 0 sits ahead of the inference because every tier below it answers from state the caller cannot set, and a caller that already knows the name has no way to say so. That gap is what a dispatched worker meets. It starts on `main`, so tier 1 cannot match, and a board carrying more than one plan puts tier 2 out of reach too, which lands the run on tier 3 and its instruction to ask somebody who is not there. A prompt naming the branch does not reach any of them, since no tier reads the prompt.
+
 Validate the result: letters, digits, dots, underscores, dashes only, max 64 chars (`/` separators are also allowed). If the derived name violates the rule, sanitize by replacing invalid chars with `-` and truncating. Show the sanitized name in the preview before invoking.
 
-Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it. A name from a plan takes the type that plan's own work carries, read off its `## Summary` and `**Files to touch:**` lines. Every other case takes `feat`, which covers a name from a branch, a name from the user, and a plan whose lines settle nothing. Draw the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`.
+Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it, drawing the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`. A type the caller spelled in tier 0 wins outright and no reading overrides it. A name from a plan takes the type that plan's own work carries, read off its `## Summary` and `**Files to touch:**` lines. Every other case takes `feat`, which covers a name from a branch, a bare name from the user, and a plan whose lines settle nothing.
+
+The caller's type wins because reading it off a plan is the half that has already disagreed in production. One dispatch checked `fix/path-form-hook` and the worker took `feat/path-form-hook`, both sides reading the same plan and grading it differently.
 
 A wrong type is cheap. `git-branch` renames to conventional format later in the same chain and runs ahead of `git-pr`, so a `feat/` written over a fix is corrected before any pull request opens.
 

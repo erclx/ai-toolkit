@@ -46,12 +46,14 @@ Name `<model>` on the launch, and pick it against the task rather than copying w
 ## Dispatch
 
 ```bash
-claude --bg --model <model> -n "orchestrator-<slug>" "Work on branch <type>/<slug>. Run /aitk:claude-autoship .claude/tasks/<task-file>.md"
+claude --bg --model <model> -n "orchestrator-<slug>" "Run /aitk:claude-worktree <type>/<slug>, then /aitk:claude-autoship .claude/tasks/<task-file>.md"
 ```
 
-`claude-autoship`'s own Step 0 enters the worktree, so this session never does. `--bg, --background` starts the session as a background agent and returns immediately, `-n, --name` sets the display name `aitk sessions list` reads back for the worker cap, and `--model` overrides the inheritance the section above measured.
+`--bg, --background` starts the session as a background agent and returns immediately, `-n, --name` sets the display name `aitk sessions list` reads back for the worker cap, and `--model` overrides the inheritance the section above measured.
 
-Naming the branch in the prompt is what makes the checked branch and the taken branch one string. The worker stops deriving `<type>` from the plan by judgment, which is where the second live disagreement came from, and `claude-autoship` still finds its plan, since the slug inside a dispatcher-named `<type>/<slug>` is the slug the dispatcher read off that plan.
+The worktree call comes first and carries the branch as its argument, which is tier 0 of `claude-worktree` Step 2 and the only tier a caller can reach. `claude-autoship` Step 0 then finds the session already in a linked worktree and continues, which is a path it already documents. Autoship still resolves its plan, since the slug inside a dispatcher-named `<type>/<slug>` is the slug the dispatcher read off that plan.
+
+Naming the branch in prose instead was tried and closes nothing, because no tier of that ladder reads the prompt. A worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there. Four workers took the right branch that way, by inference rather than by contract, which is the same judgment both live disagreements came from.
 
 Report the dispatch as loudly as the human-launch line it replaces: name the branch, the model, the task, and the session name, so a person reading the transcript can follow what fired without watching it happen.
 
