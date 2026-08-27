@@ -2,6 +2,12 @@ import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, resolve } from 'node:path'
 import type { Command } from 'commander'
+import {
+  type CountFinding,
+  type CountsRefusal,
+  type CountsReport,
+  scanCounts,
+} from '@/counts/scan'
 import { PROJECT_ROOT } from '@/project-root'
 import { createGovAdapter } from '@/gov/adapter'
 import { regenConsumedRules } from '@/gov/consumed'
@@ -83,10 +89,21 @@ interface RestatedOptions {
   readonly json?: boolean
 }
 
+interface CountsOptions {
+  readonly root?: string
+  readonly json?: boolean
+}
+
 /** What a reader does about each way the sweep produced no reading. */
 const RESTATED_REFUSALS: Record<RestatedRefusal, string> = {
   'no-instructions': `No ${INSTRUCTIONS_REL} here, or it carries no bullet, so there is no instruction corpus to sweep.`,
   'no-surfaces': `Neither ${SEED_REL} nor ${SHIPPED_SKILLS_REL}/ is here, so no second surface exists to match against.`,
+}
+
+const COUNTS_REFUSALS: Record<CountsRefusal, string> = {
+  'no-git':
+    'This tree is not a git checkout, so there is no tracked markdown corpus to read.',
+  'no-markdown': 'No markdown file in this tree, so there is nothing to scan.',
 }
 
 export function register(program: Command): void {
@@ -211,6 +228,56 @@ export function register(program: Command): void {
     )
     .action((opts: TestOrderOptions) => {
       process.exitCode = runTestOrder(opts)
+    })
+
+  gov
+    .command('counts')
+    .description(
+      'Report a self-stated catalog count that disagrees with what the tree holds',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Tree to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Reads every tracked markdown file for a sentence stating how many',
+        'members a closed catalog holds, then compares the stated figure',
+        'against what the tree actually counts.',
+        '',
+        'Catalogs read: skills, governance rules, standards, snippets, CLI',
+        'commands, and audit ids. Closed rather than derived, so widening the',
+        'set is a deliberate change rather than a side effect of a new list',
+        'command shipping elsewhere.',
+        '',
+        'A sentence carrying a calendar date or a backticked commit reference',
+        'is read past, since that is how this corpus already marks a figure as',
+        'a historical record rather than a live claim.',
+        '',
+        'What it does not measure:',
+        '  a delta phrased as a transition (from fourteen to fifteen) and a',
+        '  fraction (thirteen of sixteen) are both catalog-size claims this',
+        '  corpus carries, and neither matches the number-then-noun shape read here',
+        '',
+        'Exit codes:',
+        '  0  no stated figure disagrees with the tree',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  at least one stated figure disagrees with the tree',
+        '',
+        'It reports and never gates. The false-positive rate is read off the',
+        'first run rather than assumed, and a push failing on a stated figure',
+        'that reads correctly to a person would teach a contributor to route',
+        'around the stage.',
+        '',
+        'Examples:',
+        '  aitk gov counts',
+        '  aitk gov counts --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: CountsOptions) => {
+      process.exitCode = await runCounts(opts)
     })
 
   gov
@@ -571,6 +638,73 @@ function reportTestOrder(
   logInfo(
     `${report.ignored.length} path(s) outside ${report.scope.extensions.join(', ')}`,
   )
+
+  outro()
+}
+
+/**
+ * Reports and never gates, matching the two sweeps above. The false-positive
+ * rate here is unmeasured before a first run against a real corpus, and
+ * gating a measure with an unknown false-positive rate is what teaches a
+ * contributor to route around the stage.
+ */
+async function runCounts(opts: CountsOptions): Promise<number> {
+  const root = resolve(opts.root ?? process.cwd())
+  const report = await scanCounts(root)
+  const emitJson = opts.json ?? false
+
+  if (report.kind === 'unreadable') {
+    intro('aitk gov counts')
+    logStep('Refused')
+    logWarn(COUNTS_REFUSALS[report.reason])
+    outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({
+          root,
+          reason: report.reason,
+          message: COUNTS_REFUSALS[report.reason],
+        })}\n`,
+      )
+    }
+
+    return 1
+  }
+
+  reportCounts(report, root)
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ root, ...report })}\n`)
+  }
+
+  return report.findings.length > 0 ? 2 : 0
+}
+
+function describeFinding(finding: CountFinding): string {
+  return `${finding.file}:${finding.line} states ${finding.stated} but the tree holds ${finding.actual} ${finding.catalog}`
+}
+
+function reportCounts(
+  report: Extract<CountsReport, { kind: 'measured' }>,
+  root: string,
+): void {
+  intro('aitk gov counts')
+
+  logStep('Corpus')
+  logInfo(`${report.filesScanned} tracked markdown file(s) in ${root}`)
+  logInfo(
+    Object.entries(report.catalogs)
+      .map(([id, count]) => `${id}: ${count ?? 'n/a'}`)
+      .join(', '),
+  )
+
+  logStep(report.findings.length === 0 ? 'Clean' : 'Findings')
+  if (report.findings.length === 0) {
+    logInfo('no self-stated catalog count disagrees with the tree')
+  } else {
+    for (const finding of report.findings) logWarn(describeFinding(finding))
+  }
 
   outro()
 }
