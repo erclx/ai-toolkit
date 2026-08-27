@@ -42,8 +42,11 @@ Each rule below duplicated bullets the cited standard already states. The rule-a
 
 - `governance/rules/core/045-memory.md` names `claude-memory-capture` and `claude-docs` bare, with no fallback. Repaired to the `aitk:` prefix plus a report-if-missing line, and tightened its vague "which your toolkit resolves by name" standard pointer to `aitk standards memory`.
 - `governance/rules/lang/120-bash.md` names `bash-script` and `cli-script` bare, with no fallback. Repaired the same way.
+- `governance/rules/claude/561-teach.md` and `standards/teach.md` both name `claude-teach` bare. Each already carried the report-if-missing line (the rule's own, the standard's "say so and stop"), so the only gap was the missing prefix. Repaired to `aitk:claude-teach` in both.
+- `governance/rules/claude/570-skill.md` names `create-skill` bare, twice, with the report-if-missing line already present. Repaired to `aitk:create-skill` in both places.
+- `standards/markdown.md` names `write-human` bare in the sentence explaining why cadence and rhythm are excluded from this file's scope. Unlike the "Does not govern:" bullets the Gotchas section exempts, this sentence sits in ordinary prose describing where a markdown edit routes, so it reads as a citation rather than a boundary statement. Repaired to `aitk:write-human`.
 
-Three prior instances of this defect, named in this task's own findings, are already fixed on `main` and needed no further repair here: `claude/592-claude-md.md` no longer cites `.claude/ARCHITECTURE.md`, `claude/575-hooks.md` no longer cites a context entry, and `standards/teach.md` plus `claude/561-teach.md` already carry the fallback line for the `claude-teach` glossary reference.
+Three prior instances of this defect, named in this task's own findings, are already fixed on `main` and needed no further repair here: `claude/592-claude-md.md` no longer cites `.claude/ARCHITECTURE.md`, and `claude/575-hooks.md` no longer cites a context entry. The third, `standards/teach.md` plus `claude/561-teach.md` already carrying the fallback line for the `claude-teach` glossary reference, turned out to be half-fixed rather than fixed: the fallback line was there, the `aitk:` prefix was not, which is the repair two rows above closes.
 
 ### Moot: the target cannot reach the governed surface
 
@@ -63,6 +66,12 @@ Each of the four whole-rule entries above also restated its standard, which only
 - `governance/rules/claude/501-markdown.md` → `aitk standards markdown`.
 - `standards/skill.md` → several sibling standards by path, all within the flat `standards/` corpus every delivery route carries whole.
 - `standards/tasks.md` → `standards/versioning.md` and `standards/plan.md`, same reasoning.
+
+### Standards corpus, examined and excluded
+
+`grep -rl "write-human\|claude-teach\|claude-groundwork\|claude-intake\|claude-docs\|claude-memory-capture\|standards/[a-z-]*\.md\|aitk standards\|aitk:" standards --include="*.md"` names 18 files carrying a candidate citation. Two, `skill.md` and `tasks.md`, carry a genuine citation and sit in the clean-pointer list above. `markdown.md` and `teach.md` sit in the repaired list above. The other 14, `diagrams.md`, `glossary.md`, `groundwork.md`, `intake.md`, `issue.md`, `memory.md`, `plan.md`, `pr.md`, `publish.md`, `readme.md`, `snippets.md`, `standard.md`, `versioning.md`, and `wireframes.md`, name `write-human` or `markdown.md` only inside a `## Scope` "Does not govern:" bullet, which the Gotchas exclusion below covers, and carry no citation this entry verdicts.
+
+`diagrams.md` and `wireframes.md` each carry one further mention outside that bullet, in a sentence naming a "voice yield" a sibling standard grants the surface. `diagrams.md` says a section "claims the yield the `write-human` skill grants." `wireframes.md` says its Behavior and Copy prose "follows `markdown.md` and the `write-human` skill." Read as describing a cross-standard relationship rather than instructing the reader to load anything, the same reasoning the Gotchas exclusion applies to a "Does not govern:" bullet. `markdown.md`'s repaired sentence reads differently: it states where a markdown edit routes, which is closer to a directive than a boundary description, and that difference is why one got a verdict and the other two did not.
 
 ## Gotchas
 
