@@ -80,8 +80,20 @@ describe('collectCitations', () => {
     ])
   })
 
-  it('should skip a line carrying the ignore marker', () => {
+  it('should skip a line carrying the bare ignore marker', () => {
     const text = `One \`.claude/context/web.md\` per domain. <!-- ${IGNORE_MARKER} -->`
+
+    expect(paths(text)).toEqual([])
+  })
+
+  it('should skip only the path a named ignore marker lists', () => {
+    const text = `Placeholder \`.claude/context/X.md\` beside real \`.claude/context/cli.md\`. <!-- ${IGNORE_MARKER}: .claude/context/X.md -->`
+
+    expect(paths(text)).toEqual(['.claude/context/cli.md'])
+  })
+
+  it('should skip every path a named ignore marker lists', () => {
+    const text = `Both \`.claude/context/web.md\` and \`.claude/context/api.md\` are placeholders. <!-- ${IGNORE_MARKER}: .claude/context/web.md, .claude/context/api.md -->`
 
     expect(paths(text)).toEqual([])
   })
@@ -157,6 +169,20 @@ describe('auditCitations against a real tree', () => {
     const report = await auditCitations(root, ['context'])
 
     expect(report).toMatchObject({ kind: 'scanned', unresolved: [] })
+  })
+
+  it('should still report a real broken path beside a named placeholder', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      `Placeholder \`.claude/context/X.md\` beside broken \`.claude/context/missing.md\`. <!-- ${IGNORE_MARKER}: .claude/context/X.md -->\n`,
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({
+      kind: 'scanned',
+      unresolved: [{ file: 'README.md', path: '.claude/context/missing.md' }],
+    })
   })
 })
 

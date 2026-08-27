@@ -21,7 +21,7 @@ Validation proves the manifest parses and nothing about whether it works. `claud
 
 ### Reaching a standard
 
-Delivering a standard and reaching it are separate problems. The shipped skills once cited `.claude/standards/X.md`, which resolves against the target project, so in a project with no standards installed a skill resolved the citation to the project root, found nothing, and never looked in its own plugin root. <!-- audit-ignore-citations --> The cache copies were inert until a skill was told to look at them.
+Delivering a standard and reaching it are separate problems. The shipped skills once cited `.claude/standards/X.md`, which resolves against the target project, so in a project with no standards installed a skill resolved the citation to the project root, found nothing, and never looked in its own plugin root. <!-- audit-ignore-citations: .claude/standards/X.md --> The cache copies were inert until a skill was told to look at them.
 
 Each citing body now names `${CLAUDE_SKILL_DIR}/../../standards/X.md` alone, which lands on the dereferenced symlink beside `skills/`. One path rather than two, because no corpus installs into a project and there is no project copy for a first branch to try.
 

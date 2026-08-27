@@ -19,7 +19,7 @@ paths:
 ## Which copy to edit and cite
 
 - Edit the authoring root, never the consumed copy under `.claude/`. Regenerate that copy with `bun run check`.
-- Cite `.claude/standards/X.md` from a rule, skill, or seed. Cite `aitk standards <name>` from anything a target reads. <!-- audit-ignore-citations -->
+- Cite `.claude/standards/X.md` from a rule, skill, or seed. Cite `aitk standards <name>` from anything a target reads. <!-- audit-ignore-citations: .claude/standards/X.md -->
 
 ## Before shipping
 
