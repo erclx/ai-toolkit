@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.19.0](https://github.com/erclx/aitk/compare/v3.18.0...v3.19.0) (2026-08-27)
+
+
+### Features
+
+* **gov:** add a self-stated catalog count sweep ([#1150](https://github.com/erclx/aitk/issues/1150)) ([8233ae5](https://github.com/erclx/aitk/commit/8233ae527f1d3448413b62c64548d09cac177057))
+
 ## [3.18.0](https://github.com/erclx/aitk/compare/v3.17.1...v3.18.0) (2026-08-27)
 
 
