@@ -36,13 +36,15 @@ The match can return more than one session. Read the count rather than the first
 
 ## Whether a branch is already claimed
 
-With `--branch`, the JSON record also carries `worktree` (the path of any worktree already checked out to it, or `null`) and `claimed` (`true` when either a worktree or a live session already holds the branch).
+With `--branch`, the JSON record also carries `worktree` (the path of any worktree already checked out to it, or `null`), `refs` (the refs that already name the branch, the local head and the `origin` remote-tracking ref alike), and `claimed` (`true` when any of the three holds it).
 
-Read `claimed` rather than composing the two fields by hand. A worktree can outlive the session that made it, and a session can hold a branch before a worktree exists for it, so either field alone can miss a real claim. A dispatcher deciding whether it is safe to start a build against a branch reads this one field instead of re-deriving the OR itself.
+Read `claimed` rather than composing the three fields by hand. A worktree can outlive the session that made it, and a session can hold a branch before any worktree exists for it. A branch sitting behind a merged pull request has neither and is taken all the same, which is the reading that was missing when a dispatcher cleared a merged branch and told a worker to build on it.
 
-`worktree` and `claimed` are `null` on a bare run with no `--branch`, since neither question has a branch to answer about. A refusal (`no-registry` or `no-repository`) carries neither key at all, which a caller should read as unverified rather than as clear.
+The ref read covers the local head and the remote-tracking ref, which means it sees the remote at whatever the last fetch left behind. A branch pushed from another machine since then reads absent. Closing that gap needs `git ls-remote`, and it is left open deliberately: the remote read costs 0.438s against 0.001s for the local one, on a check that runs before every dispatch.
 
-`sessionsReadable` is `false` when the session roster could not be read, which leaves `claimed` covering the worktree half alone. A `false` here is a report that ran short of evidence, not a report that the branch is clear, so a caller reads it as unverified alongside `claimed` rather than trusting `claimed` on its own.
+`worktree`, `refs`, and `claimed` are `null` on a bare run with no `--branch`, since none of the three questions has a branch to answer about. A refusal (`no-registry` or `no-repository`) carries none of the keys at all, which a caller should read as unverified rather than as clear.
+
+Two flags say which reading came up short. `sessionsReadable` is `false` when the session roster could not be read, and `refsReadable` is `false` when the ref read failed. Either one leaves `claimed` covering the readings around it alone, so a `false` there is a report that ran short of evidence rather than a report that the branch is clear. They stay separate fields because a caller told the roster failed goes and looks at the roster, and folding both into one flag would send it to the wrong place.
 
 ## Why the verb exists
 
