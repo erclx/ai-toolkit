@@ -24,11 +24,12 @@ EOF
   log_info "sync-drift  : sync with a pre-drifted markdown seed in place; seed must stay unchanged"
   log_info "sync-headless: headless run refuses to write without --write, then applies with it"
   log_info "reference   : prints a stack's reference doc, nothing written"
+  log_info "reference-stale: an old installed copy sits in .claude/tooling/; the verb ignores it and sync leaves it alone"
   log_info "monorepo    : base at root, subtree synced with --skip base; only one .husky expected"
   log_info "create      : creates a new stack stub"
   log_info "list        : read-only catalog dump, no target needed"
 
-  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "sync-headless" "reference" "monorepo" "create" "list"
+  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "sync-headless" "reference" "reference-stale" "monorepo" "create" "list"
 
   case "$SELECTED_OPTION" in
   "sync")
@@ -76,6 +77,27 @@ EOF
     log_step "Running: aitk tooling reference base"
     log_info "Expected: the reference doc prints to stdout. Nothing is written."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling reference base
+    ;;
+  "reference-stale")
+    log_step "Staging a stale installed reference copy"
+    mkdir -p .claude/tooling
+    cat <<'EOF' >.claude/tooling/base.md
+# Base reference (stale copy from before the read route shipped)
+
+This file predates aitk tooling reference and no command still writes it.
+EOF
+    git add .claude/tooling/base.md
+    git commit -m "chore(sandbox): seed a stale installed reference copy" --no-verify -q
+
+    log_step "Running: aitk tooling reference base"
+    log_info "Expected: prints the current tooling/base/reference.md doc, not the stale file above."
+    bun "$PROJECT_ROOT/src/cli.ts" tooling reference base
+
+    log_step "Running: AITK_NON_INTERACTIVE=1 aitk tooling sync base . --write"
+    log_info "Expected: the stale .claude/tooling/base.md is left untouched. diff HEAD -- .claude/tooling/base.md should be empty."
+    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
+    log_step "Diffing the stale copy against HEAD"
+    exec git diff HEAD -- .claude/tooling/base.md
     ;;
   "monorepo")
     log_step "Staging base tooling at repo root"
