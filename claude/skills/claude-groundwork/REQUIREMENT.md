@@ -20,8 +20,8 @@ A track that closes with several separable findings writes only one task, and th
 - Apply the qualifying test in open mode alone, so a track already measured is not refused by the test that admitted it
 - Measure the current state now rather than carrying a figure from a previous session
 - Carry a lean and the finding that would overturn it on every open question, or admit that a measurement is missing
-- Confine writes to the track folder, with the close-time task file and the experiment fixture as the only exceptions
-- Route a closing-track finding the required task does not cover through `claude-intake`, rather than leaving it to be asked about
+- Confine writes to the track folder, with the close-time task file, the experiment fixture, and the intake routing below as the only exceptions
+- Route a closing-track finding the required task does not cover through `claude-intake`, rather than leaving it to be asked about. The route runs in the same session, so it is a write outside the folder rather than a handoff to a later one.
 - Link every claim about a source outside the project, and list an unread source as a lead rather than citing it
 - Put a fixture a headless run is pointed at outside the repository
 - Write the next-session file self-contained, since the folder is unbacked and dies with the machine
