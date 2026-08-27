@@ -180,7 +180,7 @@ async function runAudit(
   if (folders.length === 0) {
     return refuse(
       'no-folders',
-      `No audited folder found ${named ? 'under .claude/ or the project root' : 'under .claude/'}. Looked for: ${names.join(', ')}.`,
+      `No audited folder found ${named ? 'under .claude/ or the project root' : 'under .claude/'}, since resolving one needs its own index.md file. Looked for: ${names.join(', ')}.`,
       gateOnly,
       root,
       opts.json ?? false,
@@ -392,7 +392,7 @@ function reportScope(
   if (unresolved.length === 0) return
 
   logWarn(
-    `Under neither .claude/ nor the project root: ${unresolved.join(', ')}`,
+    `Not audited, since resolving needs its own index.md: ${unresolved.join(', ')}`,
   )
 }
 
