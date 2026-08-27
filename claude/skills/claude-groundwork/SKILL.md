@@ -91,8 +91,9 @@ The standard sets the open question format and requires it inside a topic file a
 1. Write `06-decision.md`. It states the problem once, names the goal, lists what to do, and lists what was considered and dropped.
 2. Write `07-next-session.md` self-contained, so it survives a compaction that loses the conversation.
 3. Update the file map in `README.md`.
-4. Write one task file in `.claude/tasks/` recording what the track concluded, even when the conclusion is to do nothing. Follow `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` for the filename and frontmatter. Aside from an experiment fixture, this is the only write permitted outside the folder.
-5. Report uncited external claims. Closing already reads every file in the folder, so list any statement about a source outside the project that carries neither a link nor a lead entry. Report and do not block, because judging whether a sentence makes an external claim is the call a checker gets wrong.
+4. Write one task file in `.claude/tasks/` recording what the track concluded, even when the conclusion is to do nothing. Follow `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` for the filename and frontmatter. Aside from an experiment fixture, this and the routing in Step 5 are the only ways close mode reaches outside the folder.
+5. When the task written in Step 4 does not cover every finding the track surfaced, route what it leaves out through `claude-intake`. Skip this step when it does.
+6. Report uncited external claims. Closing already reads every file in the folder, so list any statement about a source outside the project that carries neither a link nor a lead entry. Report and do not block, because judging whether a sentence makes an external claim is the call a checker gets wrong.
 
 Do not close while an open question quietly fails an outcome. Resolve it, or record it in `06-decision.md` as knowingly accepted.
 

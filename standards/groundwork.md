@@ -156,7 +156,7 @@ A lean is weaker than the suggestion a plan file carries. It records the current
 ## Conventions
 
 - State a number with what it settles. The strongest sections are the ones where a measurement answers a named question and says so.
-- Send a finding that would change an existing standard or rule to a backlog. Only a demonstrated failure changes one.
+- Route a finding that would change an existing standard or rule through `claude-intake`. Only a demonstrated failure changes one.
 - Let the file count follow the number of genuinely separable questions, not the importance of the topic. A large topic with one question is a small folder.
 
 ## Anti-patterns
