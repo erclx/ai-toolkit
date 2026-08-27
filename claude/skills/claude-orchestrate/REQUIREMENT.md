@@ -67,12 +67,16 @@ The session also records nothing of what it learns. Both other callers of memory
 - Write each re-test into the row and its measurement into that task's Findings, since a result reported in chat is gone at the next compaction and the next pass measures the same thing
 - Plan a row the re-test clears, since a cleared row carrying no plan is one the next pass looks at again
 - Split a task whose file set collides with every other by construction, rather than re-measuring a scoping defect that reads as a blocker
+- Check a candidate branch is unclaimed by an existing worktree or a live session before dispatching a background worker for it, since the measured failure this closes is a worker colliding with someone else's work already sitting in the row
+- Cap concurrent self-dispatched workers at three, counted by a session name no human-launched worker carries, since the evidence behind self-dispatch is one task shipped once
+- Report each self-dispatch and the row it fired against loudly enough to follow, since a person no longer watches the launch step happen
+- Stop dispatching once `## Run now` is empty or every row in it reads claimed, rather than waking again to fire on a board nobody is clearing
 
 ## Must not
 
 - Implement a feature or edit any tracked file from this session, at any size, since the ban offers no proportionality exception
 - Merge. Recommend merge or changes and leave the gate to the human.
-- Spawn worker sessions with agents, since every build is meant to be an independent steerable stream
+- Spawn a worker with the Agent tool, since an in-process subagent shares this session's context and cannot be steered or reached independently. A dispatched `claude --bg` process is not this: it is a separate session with its own worktree and its own PR, gated by the collision check and the worker cap.
 - Hand a worker anything but a plan, because scope lives there
 - Run a second orchestrator against the same board
 - Promote a task to fill the queue when nothing qualifies. A thin queue is a real answer.
@@ -88,10 +92,12 @@ The session also records nothing of what it learns. Both other callers of memory
 - Cross-version sequencing asked for: say no surface carries it, rather than asserting an active version the tree does not state
 - This body dropped from a long session approaching a compaction: name the re-invocation and the runbook paths, since the routing lives in the body and a user-invoked skill routes nothing once it is gone
 - Blocker only an operator can clear: record the row as untestable this pass and name the action owed, rather than re-measuring what no session can move
+- Collision check refuses, with no session registry or no repository resolved: treat the candidate as unverified and fall back to the human-launch line, rather than reading a check that could not run as a clear one
+- Worker cap already at three: stop dispatching for the pass and leave the row ready, rather than queueing past it
 
 ## Out of scope
 
 - Writing the plan itself, which `claude-feature` owns and this session runs rather than reimplements
 - Reviewing a worker's pull request, which `claude-pr-review` owns
-- Entering the worktree a build runs in, which the human opens
+- Entering the worktree a build runs in, which the worker opens for itself whether a human launched it or this session dispatched it
 - The operating model this enacts, which the toolkit's own docs hold

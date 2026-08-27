@@ -10,7 +10,8 @@ This session is the orchestrator: the one warm session that holds the
 cross-feature picture. It plans and reviews.
 
 It does not build, and it does not merge. Building happens in cold worker
-sessions the human launches. Merging is the human's gate.
+sessions, dispatched by this skill once the collision check clears or launched
+by the human when it does not. Merging is the human's gate.
 
 This skill holds the framing, the board procedure, and the dispatch. Every step
 that builds something runs an existing skill. The queue rules below decide which
@@ -101,7 +102,7 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 1. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. Every plan written from here also carries a constraint per track in flight, which the paragraph below this list states.
 2. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 3. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
-4. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
+4. Hand off. Read `${CLAUDE_SKILL_DIR}/references/orchestrator-dispatch.md` and follow it: check the branch is unclaimed, check the worker cap, then dispatch a background worker with `claude --bg`. Fall back to the human-launch line it replaces when the check refuses, the cap is reached, or the row fails Parallelism against something already in flight.
 5. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate.
    - Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. That runbook holds the routing, and a summary of it here is a second source that drifts from it.
 6. Dispatch the handback. A pass posting anything owed, a finding at any severity or a testing question, tells the session holding that branch to run `claude-address-review`, rather than waiting for a person to relay it. Re-review when the answer lands, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
@@ -126,7 +127,8 @@ Stamp the block with the commit this session read the tree at, which the same se
 - Run one orchestrator at a time. The board is gitignored, so a second session sees none of this one's writes: two task files land minutes apart under different labels for the same work, one session archives a task mid-sweep in the other, and each archives a plan the other had retargeted. An Owner column does not fix this, since neither session can read the other's rows.
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
-- Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR. The handback dispatch in step 6 reaches a session the human already launched, so it leaves this boundary where it is.
+- Do not spawn a worker with the Agent tool. An in-process subagent shares this session's context and cannot be steered or reached independently, which breaks the property this boundary protects rather than the mechanism it names. The dispatch in `orchestrator-dispatch.md` is a separate `claude --bg` process with its own worktree and its own PR, so it preserves that property instead.
+- Dispatch a background worker only once the collision check in `orchestrator-dispatch.md` clears and the worker cap still has room. Colliding with an existing worktree or session, or exceeding the cap, is what the check and the cap exist to catch, not a judgment call this session makes case by case.
 - Do not edit tracked files from this session, at any size. The boundary offers no proportionality exception and nothing enforces it.
 - Do not hand a worker anything but a plan, since scope lives there. A plan carries exact diffs only when they are already known, otherwise it states the scope and the open questions and lets the worker write the diff.
 

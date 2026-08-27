@@ -76,7 +76,7 @@ The mapping check counts a task file against both surfaces, since it was the mec
 
 ## Orchestrator runbooks
 
-Five runbooks under `claude/skills/claude-orchestrate/references/` cover the moments the model cannot detect on its own. `orchestrator-sweep.md` triggers the queue refill after a batch of merges, and `orchestrator-parked.md` re-tests a row already parked, on the opposite trigger, per the paragraph below. `orchestrator-poll.md` holds the review trigger and is covered under The review trigger below.
+Six runbooks under `claude/skills/claude-orchestrate/references/` cover the moments the model cannot detect on its own. `orchestrator-sweep.md` triggers the queue refill after a batch of merges, and `orchestrator-parked.md` re-tests a row already parked, on the opposite trigger, per the paragraph below. `orchestrator-poll.md` holds the review trigger and is covered under The review trigger below. `orchestrator-dispatch.md` holds the self-dispatch step and is covered under The self-dispatch below.
 
 `orchestrator-handoff.md` covers the write side of a compaction and `orchestrator-resume.md` the read side, both over the session map `.claude/standards/session.md` governs. The standard holds what any session can fill, which is the three core sections, the per-session filename, the capture and drift steps that open the write, and the citation rule, and the `session-map` skill is the invocable route onto it that the runbook now calls rather than restating. The runbook holds what the role adds over that call: the section for decisions taken under delegated authority, the closing block that restarts the review poll, and the caveat that this session never commits, which the door takes and passes to capture so no fact routes into a tracked file. All three are settled before the door writes, since the door reports the map as written and knows nothing of the role.
 
@@ -149,6 +149,18 @@ The other class stays off the thread by decision. A correction to what the revie
 One branch ships untested. Every dispatch in the trial found a live session, so the fallback that reports the invocation for a person rests on reasoning alone.
 
 The runbook holds the routing and the skill body points at it, after a rewrite in a scheduler dropped a case the shipped block covered. Correcting a running loop is a cancel and a re-create rather than an edit, so the runbook now states both directions of the divergence instead of only the one already written down.
+
+## The self-dispatch
+
+Step 4 of the loop can now launch a background `claude --bg` worker itself for a `## Run now` row, rather than only naming the invocation for a human to run. `orchestrator-dispatch.md` holds the procedure: derive the candidate branch, check it against `aitk sessions list --branch <branch> --json`, check a cap of three concurrent self-dispatched workers, then dispatch.
+
+The check reads `claimed` off that record rather than composing a worktree read and a session read itself. The field already answers across both surfaces, since a worktree can outlive the session that made it and a session can hold a branch before a worktree exists for it, and reading a pre-composed field is what keeps the check a verb rather than a rule the model can talk itself out of. `src/sessions/claim.ts` is the composition, joining the session roster against `listWorktrees()` in `src/worktree.ts`.
+
+An unreadable session roster carries its own field, `sessionsReadable`, rather than folding into `claimed` as a silent `false`. An absent registry once left `claimed` covering the worktree half alone with nothing distinguishing that from a genuinely clear branch, and a dispatcher reading one boolean could not tell the two apart. The check now reads both fields, treating `sessionsReadable: false` the same as a refusal: unverified rather than clear.
+
+The worker cap counts live sessions named `orchestrator-<slug>`, a prefix only a self-dispatch writes, filtered to the current repository. A worker the operator launches by hand carries no such name and is never counted against it, so the cap binds the one path nobody is watching rather than the whole loop.
+
+Spawning a worker with the Agent tool stays forbidden, since an in-process subagent cannot be steered or reached independently. The `claude --bg` dispatch is a separate process with its own worktree and its own pull request, which is the property the boundary protects rather than the mechanism it happens to name.
 
 ## Phase label containment
 
