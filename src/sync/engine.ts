@@ -492,11 +492,21 @@ function isProjectAuthored(adapter: SyncAdapter, file: InstalledFile): boolean {
 }
 
 /**
- * An orphan the name inference caught rather than the location test, which is
- * a project-authored file sitting in a folder the toolkit also ships into.
+ * An orphan the name inference caught rather than the location test. No source
+ * name matched, which is what a project-authored file looks like and also what
+ * a file the toolkit shipped and later renamed looks like, so the line offers
+ * the destination on a condition rather than asserting who wrote the file.
+ * Moving a toolkit leftover into the project subfolder would mark it the
+ * project's permanently, and only the operator can tell the two apart.
+ *
+ * The stamp cannot tell them apart either. `recordStamp` skips a file whose
+ * source is gone and `writeStamp` replaces the domain's whole `files` map, so
+ * a renamed rule's entry survives exactly one sync past the rename, and a
+ * target installed before stamping shipped has no entry to read at all.
+ *
  * Naming the destination is all this does. Moving the file rewrites a path the
- * project's own rules, skills, and docs may cite, so the report says where it
- * belongs and the sync leaves it where it is.
+ * project's own rules, skills, and docs may cite, so the sync leaves it where
+ * it is.
  */
 function misplacedOrphan(
   adapter: SyncAdapter,
@@ -514,7 +524,7 @@ function misplacedOrphan(
   return {
     state: 'orphaned',
     rel: file.rel,
-    notice: `${file.rel} (not in toolkit source, skipping. A project-authored file belongs at ${belongs}.)`,
+    notice: `${file.rel} (not in toolkit source, skipping. Move it to ${belongs} if the project authored it.)`,
   }
 }
 

@@ -16,15 +16,20 @@ is left alone regardless of its name, since that subfolder is project-authored
 by location. It also removes a stale `.claude/GOV.md`
 from the retired build. Use `aitk gov install` to add rules.
 
-A rule the toolkit does not ship, sitting in a shared subdirectory rather than
-under `.claude/rules/project/`, is reported with the path it belongs at. The
-report writes nothing, because a rule's installed path is one the project's own
+A rule the toolkit finds no source for, sitting in a shared subdirectory rather
+than under `.claude/rules/project/`, is reported with the path under that
+subfolder it would take. The offer is conditional on the project having written
+the rule, since a rule the toolkit shipped and later renamed reaches the same
+line, and moving one there would mark it the project's for good. Nothing is
+moved either way, because a rule's installed path is one the project's own
 rules, skills, and docs may cite. `aitk standards rule` carries the reserved
 number bands behind that placement, where `900-999` is the range a
 project-authored rule takes and everything below it belongs to the toolkit.
 
 `aitk snippets sync` reports the same way for a snippet outside
 `.claude/snippets/project/`, since both adapters declare the subfolder.
+`aitk sync --check` does not. It skips every orphaned entry, so the destination
+reaches the two domain sync verbs alone.
 
 When the target's install recorded a stack, `aitk gov sync` also reports a
 rule that stack lists and `.claude/rules/` does not hold, as a `missing` entry

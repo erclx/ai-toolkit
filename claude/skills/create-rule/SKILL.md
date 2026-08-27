@@ -5,7 +5,7 @@ description: Scaffolds a project-specific governance rule into `.claude/rules/pr
 
 # Create rule
 
-Author a project-local governance rule. The rule lives in the target project, not the toolkit, so `aitk gov sync` never overwrites it: the sync engine orphans anything under `.claude/rules/project/` by location, before it ever checks the rule's name against the toolkit catalog. A rule written anywhere else under `.claude/rules/` survives the sync too, and the report names it as one that belongs in the project subfolder.
+Author a project-local governance rule. The rule lives in the target project, not the toolkit, so `aitk gov sync` never overwrites it: the sync engine orphans anything under `.claude/rules/project/` by location, before it ever checks the rule's name against the toolkit catalog. A rule written anywhere else under `.claude/rules/` survives the sync too, and the report offers it the path under the project subfolder it would take.
 
 ## Guards
 

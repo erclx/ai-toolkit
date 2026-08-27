@@ -232,7 +232,7 @@ describe('planSync', () => {
     const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
 
     expect(plan.entries[0].notice).toBe(
-      `${join('.claude', 'rules', 'claude', '561-self-check.md')} (not in toolkit source, skipping. A project-authored file belongs at ${join('.claude', 'rules', 'project', 'claude', '561-self-check.md')}.)`,
+      `${join('.claude', 'rules', 'claude', '561-self-check.md')} (not in toolkit source, skipping. Move it to ${join('.claude', 'rules', 'project', 'claude', '561-self-check.md')} if the project authored it.)`,
     )
   })
 
@@ -885,6 +885,21 @@ describe('runDomainSync', () => {
     expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
       [STAMPED_RULE]: hashContent('same\n'),
     })
+  })
+
+  it('should drop a file the toolkit stopped shipping from the stamp', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+    const adapter = createAdapter({
+      stamp: { domain: 'governance', toolkitRoot: ROOT },
+      projectSubdir: 'project',
+    })
+
+    await runDomainSync(adapter, TARGET, options)
+    rmSync(join(SOURCE, 'core/000-const.md'))
+    await runDomainSync(adapter, TARGET, options)
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({})
   })
 
   it('should keep project-authored files out of the stamp', async () => {
