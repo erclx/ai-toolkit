@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.25.2](https://github.com/erclx/aitk/compare/v3.25.1...v3.25.2) (2026-08-27)
+
+
+### Bug Fixes
+
+* **claude:** correct routing case for install-rules phrase ([#1171](https://github.com/erclx/aitk/issues/1171)) ([7e5bb5a](https://github.com/erclx/aitk/commit/7e5bb5aaeae8a3e67717d72c0c28dcb824249b53))
+
 ## [3.25.1](https://github.com/erclx/aitk/compare/v3.25.0...v3.25.1) (2026-08-27)
 
 
