@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { chromium } from 'playwright-core'
 import type { Browser, BrowserContext, Page } from 'playwright-core'
+import { isBrowserMissing } from '@/browser/engine'
 import { deriveSteps } from '@/demo/compile'
 import type { DemoPlan, DemoStep } from '@/demo/compile'
 import type { CursorSet } from '@/demo/pointer'
@@ -181,20 +182,17 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
 }
 
 /**
- * Separates a browser binary that was never installed from every other launch
- * failure, because the first is a setup step the operator has to run and the
- * second is a defect. A target inherits that setup step, which is the stated
- * cost of shipping this command outside the toolkit.
+ * Reads the launch through `@/browser/engine`, which is where the separation
+ * between a binary that was never installed and every other launch failure now
+ * lives. It moved out of this file when `aitk inventory` became the second
+ * command needing it, rather than being copied.
  */
 async function launch(): Promise<Launch> {
   try {
     return { status: 'launched', value: await chromium.launch() }
   } catch (error) {
-    const text = error instanceof Error ? error.message : String(error)
     return failed(
-      /executable doesn't exist|playwright install/i.test(text)
-        ? 'browser-missing'
-        : 'drive-failed',
+      isBrowserMissing(error) ? 'browser-missing' : 'drive-failed',
       error,
     )
   }
