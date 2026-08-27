@@ -113,6 +113,7 @@ streamable
 stylesheet
 subgraph
 subshell
+superproject
 syscall
 tabindex
 tanstack
