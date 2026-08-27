@@ -24,12 +24,12 @@ Agent view sorts rows with the most urgent state at the top:
 | Pinned           | Explicitly pinned. The process keeps running while idle.   |
 | Needs input      | Blocked on an approval, an answer, or a permission prompt. |
 | Working          | Actively running tools or generating.                      |
-| Ready for review | Idle and awaiting interaction. The process has exited.     |
+| Ready for review | Idle and awaiting interaction.                             |
 | Completed        | Finished successfully.                                     |
 | Failed           | Ended with an error.                                       |
 | Stopped          | Stopped by `Ctrl+X`, `/stop`, or `claude stop`.            |
 
-A `∙` marker on a row means its process has exited and the session resumes on next interaction rather than responding immediately. `✢` marks a `/loop` session sleeping between runs, showing its run count and the countdown to the next one.
+Idle is a state, not a process signal. Measured 2026-08-27: five idle sessions each still held a live process, confirmed by `kill -0` on the registered pid, so a row can sit in Ready for review with nothing exited yet. A `∙` marker on a row is the signal that its process has exited, whether from the idle timeout under Operational limits or otherwise, and the session resumes on next interaction rather than responding immediately. `✢` marks a `/loop` session sleeping between runs, showing its run count and the countdown to the next one.
 
 ## Opening, replying to, and leaving a row
 
