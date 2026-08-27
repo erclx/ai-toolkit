@@ -142,4 +142,33 @@ describe('checkClaim', () => {
     expect(report.claimed).toBe(true)
     expect(report.sessionsReadable).toBe(false)
   })
+
+  // A git hook exports GIT_DIR into every process it runs, and it takes
+  // precedence over `-C`, so a claim read from inside one answered about the
+  // hook's own repository rather than the directory it was handed.
+  it('should read the directory it was given when the environment names another repository', async () => {
+    const other = mkdtempSync(join(tmpdir(), 'aitk-claim-other-'))
+    execaSync(
+      'git',
+      ['-C', other, 'init', '--quiet', '--initial-branch=main'],
+      {
+        env: gitEnv(),
+        extendEnv: false,
+      },
+    )
+    git('worktree', 'add', '--quiet', '-b', 'feat/parser', 'wt-linked')
+
+    process.env.GIT_DIR = join(other, '.git')
+    try {
+      const report = await checkClaim('feat/parser', {
+        cwd: ROOT,
+        resolve: async () => ({ kind: 'absent', dir: '/registry' }),
+      })
+
+      expect(report.claimed).toBe(true)
+    } finally {
+      delete process.env.GIT_DIR
+      rmSync(other, { recursive: true, force: true })
+    }
+  })
 })

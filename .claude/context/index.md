@@ -17,6 +17,7 @@ Per-domain narrative loaded on demand
 - [Development](development/index.md): Local dev loop and the run command table, how bun run check scopes its work, what each stage regenerates and gates on, the hook families, and session scratch. Start with overview.
 - [Governance](governance/index.md): Path-scoped Claude rules with their numbering and frontmatter contract, the stacks that group them, and the install and sync path with its CLI. Start with overview.
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
+- [Inventory](inventory.md): The route walk behind aitk inventory, why it reports a listing rather than a verdict, and the focus reader's dependence on keyboard modality
 - [Sandbox](sandbox/index.md): Scenarios that provision isolated project states, the run and coverage surfaces, and the authoring contract. Start with overview.
 - [Scripts](scripts/index.md): Bash entry points and the migration boundary, repo maintenance, UI framing across the exec boundary, the shared lib surface, and the eval harness. Start with overview.
 - [Slides](slides.md): SLIDES.md source shape, layout catalog, render command, draft skill

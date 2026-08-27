@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, dirname, extname, join, relative, resolve } from 'node:path'
 import type { Command } from 'commander'
+import { INSTALL_BROWSER, isEngineMissing } from '@/browser/engine'
 import { parseDraft } from '@/demo/beats'
 import { compilePlan, parsePlan, unresolved } from '@/demo/compile'
 import { convertToMp4, INSTALL_CONVERTER } from '@/demo/container'
@@ -9,7 +10,6 @@ import { loadCursorTheme } from '@/demo/theme'
 import { intro, logError, logInfo, logStep, logWarn, outro, plural } from '@/ui'
 
 const DEFAULT_OUT = 'demos'
-const INSTALL_BROWSER = 'bunx playwright install chromium'
 
 /**
  * Holds wiring only. Every browser reference sits behind `loadDriver`, because
@@ -359,18 +359,9 @@ async function loadDriver(): Promise<Driver | undefined> {
   try {
     return await import('@/demo/drive')
   } catch (error) {
-    if (isModuleNotFound(error)) return undefined
+    if (isEngineMissing(error)) return undefined
     throw error
   }
-}
-
-function isModuleNotFound(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    error.code === 'ERR_MODULE_NOT_FOUND'
-  )
 }
 
 /**
