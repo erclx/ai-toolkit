@@ -50,6 +50,8 @@ Always-on rules such as the core persona, testing, and error handling emit with 
 
 `.claude/rules/*.md` discovers recursively at session start. Rules without a `paths:` field always apply, with the same priority as `CLAUDE.md`. Rules with `paths:` apply when Claude reads files matching the glob. See `wiki/claude/claude-memory.md` for the loading-time details.
 
+An always-loaded rule sitting in `core/` reads as an odd fit next to the folder's path-scoped members, since nothing about `paths:` requires the band. The reason is whether a target can update it rather than glob scope: `governance/stacks/base.toml` takes `core` whole, so a bullet moved there from the seeded root file reaches a target through `aitk gov sync` instead of through a one-time copy nothing ever refreshes. A `CLAUDE.md` bullet carries the same session-start priority either way, so the band is the only thing the move changes.
+
 ## Gotchas
 
 - A widened source rule fails `bun run check` until the copy is committed. The regen propagates the change and the drift assertion turns the resulting diff into a failure. A rule matching nothing still does not error, so the gate catches the stale copy rather than the dead glob.

@@ -527,6 +527,7 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - Both refusals read as absences, which makes this the third tracked corpus taking that allowance beside the secret scan and the reach check. A target holds neither the seed nor a shipped skills tree, so without it every project installing this CLI reports the verb unmeasured forever.
 - Measured against `5da3214d` on 2026-08-25, the run reads 85 instructions against 2412 statements from the seed and 61 shipped bodies, and reports no contradiction, 53 repetitions outside a declared mirror, 43 on one, and 18 instructions reaching three surfaces or more. That last figure is the count the task asked for and nothing had.
 - Zero is the correct reading of this corpus rather than a class that cannot fire. Every contradiction the first run produced was one of the three false positives above, and the unit cases hold the directive shape the class exists for, so the count is what the corpus says instead of what the measure can reach.
+- The floor `.claude/audits/baseline.json` records for `repetitions` inherits the corpus scope above. `#1149` moved 35 of the 80 root-file instructions into `governance/rules/core/`, which neither read surface covers, so the fall from 51 to 20 marks bullets leaving `CLAUDE.md` and the seed rather than confirms they stopped restating anywhere. Widening the corpus to read `governance/rules/` is a separate row, filed rather than assumed.
 
 ## The label coverage report
 

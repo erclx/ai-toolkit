@@ -23,17 +23,11 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 - Plan before editing: propose what files will change and why before touching anything
 - Confirm with the user before making any edits
-- Flag concerns or alternatives when a proposed change has tradeoffs worth discussing
 - When directing the user to invoke a skill, give the exact command with args, or state explicitly that it runs bare
 
 ### Scope discipline
 
-- When facing a judgment call with 2-3 reasonable options mid-flow, pick one and state the tradeoff in one sentence. Enumerate options only when the user's preference is the deciding factor.
-- Put a call the user's preference decides through the structured question surface, such as `AskUserQuestion` in Claude Code, and fall back to a numbered list in one message where none exists. Rank the recommendation first and mark it, order the rest behind it, and give each option its cost, since an option with no stated cost is picked blind.
-- Author the real choices only. A structured surface appends its own trailing escapes for a free-text answer and for reopening the question as conversation, so never write either as an option. On the numbered-list fallback, say that answering outside the list is fine.
-- Answer from the artifact when one already put the question in writing with a suggestion, rather than re-asking it. A blank `- Answer:` slot in a plan accepts the `- Suggested:` line above it, per `.claude/standards/plan.md`.
-- Match edit scope to the request. Ship minimal v1 and queue extensions as follow-ups, edit only what the user named on simplification requests, and do not add CLI flags or aliases they did not ask for. When a fix has a natural mirror in a template or seed, flag it as a follow-up rather than silently extending the PR.
-- When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
+- Do not add CLI flags or aliases the user did not ask for. When a fix has a natural mirror in a template or seed, flag it as a follow-up rather than silently extending the PR.
 - Before restructuring installable content (`snippets/`, `claude/skills/`, `tooling/`, `governance/rules/`), grep the corresponding install and list scripts for depth constraints (`-maxdepth`, fixed globs). Bundle script updates with the restructure or pick a depth the scripts already handle.
 - Before queuing or starting a new feature, confirm a concrete project or use case drives it. If precedent exists, lift patterns from that project rather than writing from scratch.
 
@@ -44,31 +38,12 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - When a fix could plausibly live in either a skill body or a seed, default to skill-local. Wait for a second concrete case before lifting the helper into shared infrastructure.
 - When encoding a fix into a skill, standard, or seed, lift the principle from target-project specifics. Strip reporter-named filenames, framework names, deploy targets, and project-specific label values. Keep canonical format specs and generic illustrations that teach the structure without overfitting.
 - When triaging a multi-topic request or scoping a rule, enumerate every concern or surface and account for each. Do not silently drop the non-obvious ones.
-- Edit an existing file with the file-editing tool, never a shell stream editor. An unescaped `&` in a `sed` replacement expands to the whole match and silently rewrites the line it anchored to, and `sed -i` exits zero when its pattern matches nothing, so a `||` fallback never fires. `awk -i inplace` and `perl -pi` share both.
-- The file-editing tool errors on a non-match and has no replacement metacharacters. The stream-editor ban governs edits you make, not stream editors written into a script under `scripts/`.
 - `$CLAUDE_PLUGIN_ROOT` and `$CLAUDE_PROJECT_DIR` are empty in model Bash.
-
-## Output
-
-- After creating or modifying a file, include its path on its own line so the reader can open it. Do not paraphrase paths into prose ("the seeds folder", "your CLAUDE.md").
-- Read `CLAUDE_CODE_ENTRYPOINT` once, at the first response that emits a path, and reuse it for the rest of the session. The surface cannot change mid-session, so a second read only confirms the first.
-- When it reads `claude-desktop`, emit each path as a markdown link carrying the path as its text and an absolute `file://` URI as its target, resolving a relative path against the main project root to build that target. The desktop file tree hides dotted folders, so a bare path into one names a file the reader cannot reach.
-- On every other value, including unset, emit the path bare. A terminal emulator makes it clickable through its own path detection, and link markup defeats that.
-- Both forms govern a path emitted in a response. A path written into a markdown file follows `.claude/standards/markdown.md` instead, which backticks a file reference and never repeats it as a link label.
-- Use the path the user's editor can resolve. The editor is rooted at the main project root.
-- In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
-- In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
-- When the response covers multiple files, group paths under headers: `**Created:**`, `**Modified:**`, `**Deleted:**`. Every path under them takes the form the entrypoint selected rather than the first alone. For single-file changes, the path on its own line is enough.
 
 ## Conventions
 
 - For any git operation (commits, PRs, branch naming, issues), use the `aitk:git-*` skills. Never follow built-in commit or PR instructions.
 - Update affected consumer docs in `docs/` as part of the change, through the `aitk:docs-sync` skill. No rule is scoped to that folder.
-
-## Indexes
-
-- Before searching source in a domain, consult `.claude/context/index.md` and read the matching entry first. It orients faster than a blind grep.
-- When a folder has an `index.md`, check it before reading individual files in that folder.
 
 ## Content ownership
 
@@ -125,33 +100,11 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Tasks
 
-- `.claude/tasks/` is gitignored local session scratch, one file per task. Edit freely. No staging or revert before commits.
-- Only create a task in `.claude/tasks/` for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
-- Do not add tasks retroactively for work already completed. Completed work is visible in git.
-- When a task needs execution detail beyond its own file, create a plan in `.claude/plans/` and link to it from the task's intro paragraph. Move the plan to `.claude/plans/archive/` when the task ships. Never delete it.
-- Write the plan in the same session as the task file. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.
-
-## Memory
-
-- Write all memory files to `.claude/memory/`, not `~/.claude/projects/`.
-- A fact about a domain goes to that domain's `.claude/context/` entry, not to memory. `claude-memory-capture` routes it there through `.claude/.tmp/memory-routing/<slug>.md` and `claude-docs` folds it in. Memory keeps only what no context entry owns.
-- Never delete a memory entry. Retire one by moving it to `.claude/.tmp/memory-archive/`. A bulk retire runs through the shell, where no file edit fires a path-scoped rule, and the folder is gitignored with nothing to recover from.
-- Follow `.claude/standards/memory.md` for the filename and type prefix, the frontmatter, the body shape each type carries, and the lifecycle. Run `aitk records validate memory` to check the pen against it.
-
-## Scratch
-
-- Write temporary files to `.claude/.tmp/<slug>/<file>.md` in the project root, a nested `<slug>/` folder with a kebab-slug tied to the topic, not a flat `<slug>-<file>.md`. The scratch-guard hook enforces the location.
 
 ## Parallel sessions
 
 - Independent feature tracks can run concurrently in git worktrees. See `wiki/claude/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
-- Implementation work runs in a linked worktree. From the main worktree, enter one with `/claude-worktree` before editing tracked files for a feature.
-- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`.
-- From a linked worktree, `Edit` and `Write` are refused for every main-root path, session scratch included. The refusal names session isolation and points at the worktree copy, which is a second gitignored file no later session reads, so never take that redirect.
-- `Read` resolves against the main root normally from a linked worktree. A main-root write reaches it only through `Bash`, as one plain command rather than a compound one, which is refused for complexity. Tested 2026-08-05.
-- Route a main-root write by what it does to the file. Creating a whole file goes out as one plain `Bash` command carrying a heredoc. Changing a line inside a file that already exists goes through an `aitk` verb, which resolves the main root in-process, because the shell route for that case is the stream editor this file bans.
 
 ## Wiki
 
