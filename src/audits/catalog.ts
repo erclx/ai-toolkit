@@ -670,6 +670,18 @@ export const AUDITS: readonly AuditSpec[] = [
     counts: restatedCounts,
   },
   {
+    id: 'counts',
+    label: 'Self-stated catalog counts',
+    argv: ['gov', 'counts', '--json'],
+    // Reports rather than gates, on the split this file already draws. The
+    // false-positive rate is read off the first real run rather than assumed
+    // ahead of it, and gating a measure with an unmeasured rate is what teaches
+    // a contributor to route around the stage.
+    gatingExits: [],
+    corpus: 'tracked',
+    counts: findingsOnly,
+  },
+  {
     id: 'census',
     label: 'Codebase census',
     argv: ['census', '--json'],
