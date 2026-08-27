@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupByTreatment, SAMPLE_LIMIT } from '@/inventory/group'
+import { abbreviate, groupByTreatment, SAMPLE_LIMIT } from '@/inventory/group'
 
 const reading = (route: string, selector: string, treatment: string) => ({
   route,
@@ -71,5 +71,27 @@ describe('groupByTreatment', () => {
 
   it('should report no rows for a walk that read no element', () => {
     expect(groupByTreatment([])).toEqual([])
+  })
+})
+
+describe('abbreviate', () => {
+  it('should name every entry when none is left out', () => {
+    expect(abbreviate(['/', '/pricing'], 2)).toBe('/, /pricing')
+  })
+
+  it('should cap a long list and count what it left out', () => {
+    const routes = Array.from({ length: 50 }, (_unused, index) => `/r${index}`)
+
+    expect(abbreviate(routes, routes.length)).toBe('/r0, /r1, /r2 and 47 more')
+  })
+
+  it('should count against the total when the list arrives already capped', () => {
+    expect(abbreviate(['button', 'a', 'input'], 12)).toBe(
+      'button, a, input and 9 more',
+    )
+  })
+
+  it('should name nothing for an empty list', () => {
+    expect(abbreviate([], 0)).toBe('')
   })
 })

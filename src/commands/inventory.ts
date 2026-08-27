@@ -6,7 +6,7 @@ import {
   type ConfigRefusal,
   readInventoryConfig,
 } from '@/inventory/config'
-import { groupByTreatment } from '@/inventory/group'
+import { abbreviate, groupByTreatment } from '@/inventory/group'
 import { findSubject, SUBJECTS } from '@/inventory/subjects'
 import type { WalkRefusal } from '@/inventory/walk'
 import { intro, logError, logInfo, logStep, logWarn, outro, plural } from '@/ui'
@@ -206,7 +206,9 @@ async function runInventory(
   )
   for (const group of groups) {
     logInfo(`  ${group.count}x  ${group.treatment}`)
-    logInfo(`      ${group.samples.join(', ')} on ${group.routes.join(', ')}`)
+    logInfo(
+      `      ${abbreviate(group.samples, group.count)} on ${abbreviate(group.routes, group.routes.length)}`,
+    )
   }
   outro()
 

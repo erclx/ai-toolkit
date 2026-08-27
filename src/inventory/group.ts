@@ -5,6 +5,20 @@
  */
 export const SAMPLE_LIMIT = 3
 
+/**
+ * Names a bounded head of a list and says how many it left out, so a treatment
+ * carried by fifty routes reads as fifty rather than as the three named.
+ *
+ * `total` arrives separately because the two lists reach here differently. A
+ * row's samples are already capped when they are collected, so their own length
+ * cannot say how many elements the row covers, while its routes arrive whole.
+ */
+export function abbreviate(entries: readonly string[], total: number): string {
+  const head = entries.slice(0, SAMPLE_LIMIT)
+  const elided = total - head.length
+  return elided > 0 ? `${head.join(', ')} and ${elided} more` : head.join(', ')
+}
+
 /** One element as the walk read it, on the route it was read from. */
 export interface Reading {
   readonly route: string
