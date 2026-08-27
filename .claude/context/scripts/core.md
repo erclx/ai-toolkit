@@ -20,7 +20,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
   - The failure is `execve` returning E2BIG, which reports `Argument list too long` and names no catalog, so it reads as a broken interpreter rather than as a payload that outgrew its channel. A file path is bounded whatever the catalogs grow to.
 - `check-skill-paths.sh`: fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
-- `check-seed-independence.sh`: walks the `.md` under every root `collect_seed_roots` discovers and fails on the literal token `aitk`, so seed prose a target reads as instruction about itself never names a binary that target may not have
+- `check-seed-independence.sh`: walks the `.md` under every root `collect_seed_roots` discovers and fails on the literal token `aitk`, so seed prose a target reads as instruction about itself never names a binary that target may not have. The walk is scoped to `tooling/*/seeds/` alone, so a citation landing in `governance/rules/` passes CI unflagged even when the rule carries content moved out of the seed and ships to every target the same way, and a moved bullet's independence has to be checked by hand against the same standard.
 - `check-color-source.sh`: walks `scripts/` and fails when any `.sh` other than `scripts/lib/ui.sh` spells an SGR escape, so one answer sits behind every bash writer
 
 ## What the hero frame chooses and what it samples
