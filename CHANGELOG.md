@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.18.0](https://github.com/erclx/aitk/compare/v3.17.1...v3.18.0) (2026-08-27)
+
+
+### Features
+
+* **governance:** move universal seed behavior into core rules ([#1149](https://github.com/erclx/aitk/issues/1149)) ([40c89c8](https://github.com/erclx/aitk/commit/40c89c8addc920cc4115fc8c8e9c620940018db3))
+
 ## [3.17.1](https://github.com/erclx/aitk/compare/v3.17.0...v3.17.1) (2026-08-27)
 
 
