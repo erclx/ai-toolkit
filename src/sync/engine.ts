@@ -81,9 +81,10 @@ export interface ScanEntry {
   /** Toolkit revision this file's content came from, when history proved it. */
   readonly since?: string
   /**
-   * Overrides `report`'s generic text for this entry's state. `collectMissing`
-   * is the one producer: a stack name is only known to the adapter that
-   * resolved it, and the generic `missing` line cannot carry one.
+   * Overrides `report`'s generic text for this entry's state. Two producers
+   * write one: `collectMissing`, since a stack name is only known to the
+   * adapter that resolved it, and an orphan sitting outside the declared
+   * project subfolder, since the generic line names no destination.
    */
   readonly notice?: string
 }
@@ -143,6 +144,9 @@ export interface SyncAdapter {
    * location rather than by the name inference `locateSource` runs.
    * Checked before `locateSource`, so a file here is orphaned even when its
    * name also matches a toolkit source, and never enters the stamp.
+   *
+   * Declaring it also gives the report a destination to name when the name
+   * inference orphans a file sitting anywhere else.
    */
   readonly projectSubdir?: string
   /** Defaults to applying. */
@@ -200,7 +204,7 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
     const source = adapter.locateSource(file)
 
     if (source === undefined || !existsSync(source)) {
-      entries.push({ state: 'orphaned', rel: file.rel })
+      entries.push(misplacedOrphan(adapter, target, file))
       continue
     }
 
@@ -419,7 +423,8 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
       logWarn(
         entry.notice ?? `${entry.rel} (listed by the stack, not installed)`,
       )
-    else logWarn(`${entry.rel} (not in toolkit source, skipping)`)
+    else
+      logWarn(entry.notice ?? `${entry.rel} (not in toolkit source, skipping)`)
   }
 
   for (const surface of plan.retired) {
@@ -484,6 +489,33 @@ function strandedByRelocation(
 function isProjectAuthored(adapter: SyncAdapter, file: InstalledFile): boolean {
   if (adapter.projectSubdir === undefined) return false
   return file.relToRoot.split('/')[0] === adapter.projectSubdir
+}
+
+/**
+ * An orphan the name inference caught rather than the location test, which is
+ * a project-authored file sitting in a folder the toolkit also ships into.
+ * Naming the destination is all this does. Moving the file rewrites a path the
+ * project's own rules, skills, and docs may cite, so the report says where it
+ * belongs and the sync leaves it where it is.
+ */
+function misplacedOrphan(
+  adapter: SyncAdapter,
+  target: string,
+  file: InstalledFile,
+): ScanEntry {
+  const subdir = adapter.projectSubdir
+  if (subdir === undefined) return { state: 'orphaned', rel: file.rel }
+
+  const belongs = relative(
+    target,
+    resolve(adapter.installedRoot(target), subdir, file.relToRoot),
+  )
+
+  return {
+    state: 'orphaned',
+    rel: file.rel,
+    notice: `${file.rel} (not in toolkit source, skipping. A project-authored file belongs at ${belongs}.)`,
+  }
 }
 
 function isInside(target: string, path: string): boolean {

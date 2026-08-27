@@ -33,17 +33,27 @@ Write both when both apply. A rule stating the directive and a skill stating how
 
 - Rules live at `.claude/rules/<subdirectory>/<n>-<slug>.md`
 - Subdirectories group by domain: `core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`
-- `<n>` is a number in the subdirectory's band and `<slug>` is a one-to-three-word kebab topic
-- Scaffold a rule with a number that collides with neither the project's rules nor any installed shared rule set
+- `<n>` is a number from the band reserved for the rule's source and `<slug>` is a one-to-three-word kebab topic
+- A rule the project authored itself lives at `.claude/rules/project/<subdirectory>/<n>-<slug>.md`, keeping the same subdirectory names
 - Give every rule a numeric prefix. A bare-word filename reads as a folder name where a stack names its rules, so a rule without one is unreachable from a stack entry.
+
+## Reserved numbers
+
+`000-899` is reserved for a rule set that ships to targets. `000-599` is what the six subdirectories above already divide, at 100 per subdirectory, and `600-899` is held for subdirectories a shipped set has not added yet.
+
+A project-authored rule takes `900-999`, one sequence across every subdirectory under `.claude/rules/project/`. Scanning for a free number instead is what fails, because a shipped set fills its own band release by release, so what reads as free today is what a later release lands on. One target authored `claude/561-self-check.md` on a day nothing shipped at 561, met `claude/561-teach.md` on its next install, and now reads two numbers differently from everywhere else.
+
+The cost is that a project-authored rule's leading digit stops naming its domain. Its subdirectory names it instead, and install preserves that either way. What a shared band costs is worse: a session that loads two rules reading as one number, with nothing in the folder to say which is which.
+
+`aitk gov sync` reports a project-authored rule sitting outside `.claude/rules/project/` and names where it belongs. It moves nothing, since a rule's installed path is one the project's own rules, skills, and docs may cite.
 
 ## Two sources numbering into one folder
 
-A shared rule set and a project's own rules land in the same installed folder and draw from the same band, so the two need a division or they collide. Divide the band by source rather than by topic: one source takes the top of each band and the other takes the gaps between the tens. A rule set that ships to targets should take the tens, since it is the source a project cannot renumber.
+The reservation above divides one pair, being a shipped set against the rules a project wrote for itself. A third source numbering into the same folder needs its own division, which is the case for a rule set held back from targets and installed only where it was authored. Divide by source rather than by topic: one source takes the top of each subdirectory's band and the other takes the gaps between the tens.
 
-The collision this prevents is silent. Two rules that resolve to the same `<n>-<slug>` path leave one file in the installed folder, and neither the install nor the session that reads it reports which source lost. Nothing checks the division, so it holds only while both sources follow it.
+The collision this prevents is silent. Two rules that resolve to the same `<n>-<slug>` path leave one file in the installed folder, and neither the install nor the session that reads it reports which source lost. Nothing checks a division outside the reserved bands, so it holds only while both sources follow it.
 
-State the division where the rule sources are described, not in the rules themselves. A rule states its own topic, and a numbering convention spanning two sources belongs to whatever documents the pair.
+State that division where the rule sources are described, not inside the rules it divides. A rule states its own topic, and a numbering convention spanning two sources belongs to whatever documents the pair.
 
 ## Frontmatter
 
