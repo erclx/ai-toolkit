@@ -44,6 +44,10 @@ Resolve `<plan>` in this order, stopping at the first match:
 1. **Caller-supplied.** The invocation carried an argument. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.claude/plans/feature-<slug>.md`, and a path is taken as given, relative to the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
 2. **Derived.** `.claude/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
 
+Test the shape of whatever `<plan>` resolved to before reading it as one. A file resolving under either tier can still be the wrong document, a task file most often, so the test runs after both rather than guarding the supplied tier alone.
+
+Check for a `**Files to touch:**` or `## Files to touch` marker per `${CLAUDE_SKILL_DIR}/../../standards/plan.md`, the one section every plan carries structurally and a task never does, where `## Outcomes` and `## Findings` are the task's own. If neither form is present, stop: `❌ <path> carries no plan sections. A plan lives at .claude/plans/feature-<slug>.md; a task lives at .claude/tasks/. Point autoship at the plan and re-run.`
+
 Read `<plan>` at the main worktree root. This file is the scope for this run.
 
 Its sections and its answer contract are fixed by `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. A blank `- Answer:` accepts the `- Suggested:` line above it, so an unanswered question is a decision this run executes rather than a reason to stop.
@@ -155,15 +159,16 @@ Omit the second line if there were no minor findings, and the third if nothing r
 
 Every stop point leaves recoverable state. The user resumes manually from the appropriate step.
 
-| Stop point                         | Recovery                                                                                                                                       |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| No plan (derived)                  | Run `/claude-feature` to create one                                                                                                            |
-| No plan (caller-supplied)          | Check the path or slug passed to autoship, then re-run                                                                                         |
-| No diff baseline                   | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
-| Empty changed-file list            | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
-| Branch collision on worktree entry | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
-| Verify fails                       | Read logs, fix manually, run `/git-ship`                                                                                                       |
-| UI checklist                       | Verify visually, run `/git-ship`                                                                                                               |
-| Inherited review findings          | Fix findings, run `/git-ship`                                                                                                                  |
-| Self-introduced finding survived   | Read the receipt for what the one repair pass left open, fix it, run `/git-ship`                                                               |
-| git-ship fails                     | Inspect hook or remote error, run again                                                                                                        |
+| Stop point                          | Recovery                                                                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| No plan (derived)                   | Run `/claude-feature` to create one                                                                                                            |
+| No plan (caller-supplied)           | Check the path or slug passed to autoship, then re-run                                                                                         |
+| Resolved file carries no plan shape | Point autoship at a real plan under `.claude/plans/feature-<slug>.md`, not a task file, then re-run                                            |
+| No diff baseline                    | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
+| Empty changed-file list             | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
+| Branch collision on worktree entry  | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
+| Verify fails                        | Read logs, fix manually, run `/git-ship`                                                                                                       |
+| UI checklist                        | Verify visually, run `/git-ship`                                                                                                               |
+| Inherited review findings           | Fix findings, run `/git-ship`                                                                                                                  |
+| Self-introduced finding survived    | Read the receipt for what the one repair pass left open, fix it, run `/git-ship`                                                               |
+| git-ship fails                      | Inspect hook or remote error, run again                                                                                                        |
