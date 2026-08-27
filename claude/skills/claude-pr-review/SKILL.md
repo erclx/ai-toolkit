@@ -76,16 +76,18 @@ On exit zero, review `<prior-oid>..<headRefOid>` and nothing else. `git diff` an
 A commit is its own ancestor, so an unchanged head passes that test too, with an empty range. When `<prior-oid>` equals `<headRefOid>`, decide whether this pass has anything to add before reading anything else, since the empty range itself cannot answer that:
 
 ```bash
-gh pr view <number> --json reviews,comments --jq '([.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .submittedAt) as $prior | [.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response") | select(.createdAt > $prior)] | last | .url // empty | split("-") | last'
+gh pr view <number> --json reviews,comments --jq '([.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .submittedAt) as $prior | [.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response" or . == "## Rebase" or . == "## Post-review findings") | select(.createdAt > $prior)] | last | .url // empty | split("-") | last'
 ```
 
-Scope the responses to those newer than the prior pass, never to every response the thread carries. A pass answering the newest response and a pass answering an older one derive the same third segment (Step 4), so an unscoped read hands a re-run after a close-out the name its own prior pass already wrote. That is the collision this case exists to prevent, reached without a rebase or an error.
+Scope the replies to those newer than the prior pass, never to every reply the thread carries. A pass answering the newest reply and a pass answering an older one derive the same third segment (Step 4), so an unscoped read hands a re-run after a close-out the name its own prior pass already wrote. That is the collision this case exists to prevent, reached without a rebase or an error.
 
 Read the number off `.url`. The `id` field carries a GraphQL node id, which the thread never displays. Keep the `// empty` guard, since `split` aborts jq on the null an empty selection returns, and an aborted command reaches the session as an error rather than as the empty result the stop below reads.
 
-An empty result means no response arrived since the prior pass, so the head is unchanged and this pass has nothing new to add. Stop here, before Step 3 or Step 4 run: `❌ The head is unchanged since the prior pass on <short-sha>. Nothing new to review.` This is the earliest point every path crosses, which is why the check sits here rather than inside Step 4's filename derivation. A path that decides there is nothing to add never reaches a step reached only when composing a body, so a stop written there is a stop a shortcut path can route around.
+An empty result means no reply arrived since the prior pass, so the head is unchanged and this pass has nothing new to add. Stop here, before Step 3 or Step 4 run: `❌ The head is unchanged since the prior pass on <short-sha>. Nothing new to review.` This is the earliest point every path crosses, which is why the check sits here rather than inside Step 4's filename derivation. A path that decides there is nothing to add never reaches a step reached only when composing a body, so a stop written there is a stop a shortcut path can route around.
 
-A non-empty result carries the comment id Step 4 needs for the third filename segment. Read that comment for what the worker changed or accepted, and treat an accepted finding as closed rather than restating it. This is the entire read on a repeated head, since the empty range above has nothing in it to say whether a prior finding landed. Skip the diff and file reads below.
+A non-empty result carries the comment id Step 4 needs for the third filename segment. A `## Review response` or a `## Rebase` reply answers a finding already argued or reports a stale branch resolved without one, so read it for what the worker changed or accepted, treat an accepted finding as closed rather than restating it, and skip the diff and file reads below. This is the entire read on a repeated head for either heading, since the empty range above has nothing in it to say whether a prior finding landed and neither reply needs anything more to answer that.
+
+A `## Post-review findings` reply carries no argued finding behind it, since it asserts a new defect rather than answering one, and this pass is its first independent reader. Restating it as a finding without opening anything is repeating the worker's claim rather than checking it. Read the file the comment names at `<headRefOid>`, the same `git show <headRefOid>:<path>` read Step 3 already runs to confirm a ticked box, and confirm the defect before it becomes a finding of this pass's own.
 
 Read each changed file in scope. Skip deleted files. Run reads in parallel.
 
@@ -123,7 +125,7 @@ Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`. The 
 
 Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
 
-When `<prior-oid>` from Step 2 equals `headRefOid`, the head repeats and the folder already holds `body-<number>-<short-sha>.md`. Add a third segment taking the id of the `## Review response` comment Step 2 resolved, giving `body-<number>-<short-sha>-r<comment-id>.md`. That satisfies both prohibitions above rather than carving an exception into either. Step 2 already stopped the pass when that resolution came back empty, so reaching this line means the comment id is in hand.
+When `<prior-oid>` from Step 2 equals `headRefOid`, the head repeats and the folder already holds `body-<number>-<short-sha>.md`. Add a third segment taking the id of the reply Step 2 resolved, giving `body-<number>-<short-sha>-r<comment-id>.md`. That satisfies both prohibitions above rather than carving an exception into either. Step 2 already stopped the pass when that resolution came back empty, so reaching this line means the comment id is in hand.
 
 The comment is a rendered-for-human GitHub surface, so load the `write-human` skill for voice and follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for the banned words: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
 

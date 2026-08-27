@@ -1,0 +1,31 @@
+# What a correct `/aitk:claude-pr-review` run leaves behind on the
+# late-finding arm. Read by `aitk sandbox check`. Patterns use TOML literal
+# strings so a regex needs no backslash escaping.
+#
+# The seed carries a first review with no commit since, and the newest reply
+# sits under `## Post-review findings` rather than `## Review response`. The
+# prior commit still equals headRefOid, so the Step 2 guard is what decides
+# whether this pass has anything to add. Proving it reads the reply mirrors
+# `answered-head` from the other side: a body file lands rather than staying
+# absent, off the same equality test widened to the whole reply family.
+
+# Three clean runs on 2026-08-27 came in at 22, 18, and 20. The pass opens the
+# file the reply names, confirms the defect, and composes a full review post,
+# which costs more and varies more than a refusal-only arm, so the ceiling
+# sits well above the highest sample rather than tight against it.
+max_turns = 32
+
+# The short-sha segment is derived from the PR's head commit, and the third
+# segment is the id of the reply Step 2 resolved, which is a real GitHub
+# comment id rather than a value this fixture can predict.
+paths = [".claude/.tmp/pr-review/body-*-r*.md"]
+
+# The only file this arm's diff has any business touching.
+write_scope = [".claude/.tmp/pr-review/**"]
+
+# Fixed by Step 5's own output template, not chosen by the run.
+reply = ["Posted to PR #"]
+
+manual = [
+  "The posted body reads the length-cap finding correctly rather than treating it as an answer to a question nobody asked. Semantic: whether the pass's own analysis is correct is a judgment no substring can carry, though the file's presence and its collision-avoiding name are asserted above",
+]
