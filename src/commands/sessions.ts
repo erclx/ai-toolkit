@@ -1,4 +1,5 @@
 import type { Command } from 'commander'
+import { checkClaim, type ClaimReport } from '@/sessions/claim'
 import {
   repositoryOf,
   type ResolvedSession,
@@ -57,6 +58,14 @@ export function register(program: Command): void {
         'a branch name identifies a branch there and nothing across a machine.',
         'A bare run reports every repository and carries the repository field,',
         'so a caller filtering by hand has something that identifies one.',
+        '',
+        'With --branch, the JSON also carries "worktree" (the path of any',
+        'worktree already checked out to it, or null) and "claimed" (true when',
+        'either a worktree or a live session already holds it). A dispatcher',
+        'reads "claimed" rather than composing the two fields itself, since',
+        'either one alone can miss a real claim: a worktree can outlive the',
+        'session that made it, and a session can hold a branch before a',
+        'worktree exists for it.',
         '',
         'The match can return more than one session. Read the count rather than',
         'the first row, since two sessions can hold one branch.',
@@ -132,9 +141,17 @@ async function runList(opts: ListCommandOptions): Promise<number> {
       )
     : report.sessions
 
+  const claim = opts.branch
+    ? await checkClaim(opts.branch, {
+        cwd: process.cwd(),
+        resolve: async () => report,
+      })
+    : null
+
   intro('aitk sessions list')
   reportConfidence(report)
   reportSessions(shown, opts.branch, repository)
+  if (claim) reportClaim(claim)
   outro()
 
   if (opts.json) {
@@ -144,6 +161,8 @@ async function runList(opts: ListCommandOptions): Promise<number> {
         confidence: report.confidence,
         branch: opts.branch ?? null,
         repository,
+        worktree: claim?.worktree ?? null,
+        claimed: claim?.claimed ?? null,
         sessions: shown,
       })}\n`,
     )
@@ -228,4 +247,14 @@ function reportSessions(
       })
       .join('\n'),
   )
+}
+
+function reportClaim(claim: ClaimReport): void {
+  logStep('Claim')
+
+  if (claim.worktree) {
+    logInfo(`Worktree: ${claim.worktree}`)
+  }
+
+  logInfo(claim.claimed ? 'Claimed.' : 'Unclaimed.')
 }

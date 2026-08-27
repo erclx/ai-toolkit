@@ -34,6 +34,14 @@ A bare run reports every repository and carries a `repository` field on each row
 
 The match can return more than one session. Read the count rather than the first row, since nothing stops two sessions holding one branch, and a caller that treats the result as singular picks among candidates without knowing it.
 
+## Whether a branch is already claimed
+
+With `--branch`, the JSON record also carries `worktree` (the path of any worktree already checked out to it, or `null`) and `claimed` (`true` when either a worktree or a live session already holds the branch).
+
+Read `claimed` rather than composing the two fields by hand. A worktree can outlive the session that made it, and a session can hold a branch before a worktree exists for it, so either field alone can miss a real claim. A dispatcher deciding whether it is safe to start a build against a branch reads this one field instead of re-deriving the OR itself.
+
+`worktree` and `claimed` are `null` on a bare run with no `--branch`, since neither question has a branch to answer about. A refusal (`no-registry` or `no-repository`) carries neither key at all, which a caller should read as unverified rather than as clear.
+
 ## Why the verb exists
 
 A session listing reports a name, a kind, a status, and how long each session has been running. None of those names a branch. Resolving a branch to a session therefore meant ordering the roster by start time and matching it against the order the worktrees were created, which is an inference that fails whenever two sessions start inside the same minute.

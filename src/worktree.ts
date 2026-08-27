@@ -37,3 +37,46 @@ export async function mainWorktreeRoot(): Promise<string> {
 
   return line ? line.slice('worktree '.length).trim() : process.cwd()
 }
+
+export interface WorktreeEntry {
+  readonly path: string
+  readonly branch: string | null
+}
+
+/**
+ * Parses `git worktree list --porcelain`, which emits one block per worktree
+ * separated by a blank line. A detached worktree carries no `branch` line,
+ * reported here as `null` rather than a guessed name.
+ */
+export async function listWorktrees(
+  cwd: string = process.cwd(),
+): Promise<readonly WorktreeEntry[]> {
+  const result = await $`git -C ${cwd} worktree list --porcelain`
+    .quiet()
+    .nothrow()
+  if (result.exitCode !== 0) return []
+
+  const entries: WorktreeEntry[] = []
+  let path: string | undefined
+  let branch: string | null = null
+
+  for (const line of result.stdout.toString().split('\n')) {
+    if (line.startsWith('worktree ')) {
+      if (path !== undefined) entries.push({ path, branch })
+      path = line.slice('worktree '.length).trim()
+      branch = null
+      continue
+    }
+
+    if (line.startsWith('branch ')) {
+      const ref = line.slice('branch '.length).trim()
+      branch = ref.startsWith('refs/heads/')
+        ? ref.slice('refs/heads/'.length)
+        : ref
+    }
+  }
+
+  if (path !== undefined) entries.push({ path, branch })
+
+  return entries
+}

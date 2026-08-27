@@ -23,7 +23,8 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/tasks/` owns the task-board archive, the one domain whose primary caller is a git hook rather than a person, and the two record verbs a skill reaches for when worktree isolation refuses its own write
 - `src/worktree.ts` owns `mainWorktreeRoot()`, which every shared-scratch verb resolves its root through. It sat duplicated in the tasks and records command files until a third caller was due
 - `src/worktree.ts` also owns `currentWorktreeRoot()`, the same read against `git rev-parse --show-toplevel`, for a verb over a tracked tree. The two answer different questions: shared scratch lives at one root every session reads, and a tracked tree is per worktree, so a verb reading one from the main root reports on files the session never edited
-- `src/sessions/` owns the live-session roster, splitting the registry read, the liveness decision, and the git join across three modules so the platform-specific half is the only one a stub has to replace
+- `src/worktree.ts` also owns `listWorktrees()`, the branch each worktree in the repository holds, parsed off `git worktree list --porcelain`
+- `src/sessions/` owns the live-session roster, splitting the registry read, the liveness decision, and the git join across three modules so the platform-specific half is the only one a stub has to replace, plus `claim.ts`, which composes that roster with `listWorktrees()` so a caller can ask whether a branch is already claimed by either surface without re-deriving the join itself
 - `src/comments/` owns the comment census, reasoned about in `.claude/context/cli/audits.md`
 - `src/context/` owns the context-folder audit, reasoned about alongside it
 - `src/markdown/` owns the attribute-standard audit, reasoned about alongside both, and the fence walker every other markdown reader now shares
