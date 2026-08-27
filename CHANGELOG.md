@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.21.0](https://github.com/erclx/aitk/compare/v3.20.0...v3.21.0) (2026-08-27)
+
+
+### Features
+
+* **tooling:** read stack references instead of installing copies ([#1153](https://github.com/erclx/aitk/issues/1153)) ([9f580b2](https://github.com/erclx/aitk/commit/9f580b24ed7a3df620f07781df4abaa5daa3320a))
+
 ## [3.20.0](https://github.com/erclx/aitk/compare/v3.19.0...v3.20.0) (2026-08-27)
 
 
