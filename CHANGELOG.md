@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.29.1](https://github.com/erclx/aitk/compare/v3.29.0...v3.29.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **sessions:** close every way the claim check clears a taken branch ([#1182](https://github.com/erclx/aitk/issues/1182)) ([f248d96](https://github.com/erclx/aitk/commit/f248d96f0b5a0b1416e7b86a5fbf52a1228af9f8))
+
 ## [3.29.0](https://github.com/erclx/aitk/compare/v3.28.0...v3.29.0) (2026-08-27)
 
 
