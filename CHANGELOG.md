@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.20.0](https://github.com/erclx/aitk/compare/v3.19.0...v3.20.0) (2026-08-27)
+
+
+### Features
+
+* **governance:** reserve a number band for project-authored rules ([#1151](https://github.com/erclx/aitk/issues/1151)) ([35d00bf](https://github.com/erclx/aitk/commit/35d00bf036f79f4cb408945c607f04eed3141383))
+
 ## [3.19.0](https://github.com/erclx/aitk/compare/v3.18.0...v3.19.0) (2026-08-27)
 
 
