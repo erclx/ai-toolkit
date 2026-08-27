@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.27.0](https://github.com/erclx/aitk/compare/v3.26.1...v3.27.0) (2026-08-27)
+
+
+### Features
+
+* **claude:** give the orchestrator a gated worker dispatch ([#1174](https://github.com/erclx/aitk/issues/1174)) ([74a17d1](https://github.com/erclx/aitk/commit/74a17d1d12d13d92f14a6316db9469ab2d8d9897))
+
 ## [3.26.1](https://github.com/erclx/aitk/compare/v3.26.0...v3.26.1) (2026-08-27)
 
 
