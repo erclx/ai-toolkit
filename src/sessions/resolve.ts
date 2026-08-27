@@ -1,4 +1,5 @@
 import { $ } from 'bun'
+import { gitEnv } from '@/git-env'
 import {
   type Confidence,
   liveness,
@@ -67,7 +68,10 @@ export interface Located {
  * that has a worktree and no branch and the second has neither.
  */
 async function locate(cwd: string): Promise<Located> {
-  const top = await $`git -C ${cwd} rev-parse --show-toplevel`.quiet().nothrow()
+  const top = await $`git -C ${cwd} rev-parse --show-toplevel`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
 
   if (top.exitCode !== 0) {
     // git absent and git refusing the directory are both non-zero here. The
@@ -85,7 +89,10 @@ async function locate(cwd: string): Promise<Located> {
 
   const worktree = top.stdout.toString().trim()
   const repository = await repositoryOf(cwd)
-  const head = await $`git -C ${cwd} branch --show-current`.quiet().nothrow()
+  const head = await $`git -C ${cwd} branch --show-current`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
   const branch = head.stdout.toString().trim()
 
   if (head.exitCode !== 0 || branch.length === 0) {
@@ -105,6 +112,7 @@ async function locate(cwd: string): Promise<Located> {
 export async function repositoryOf(cwd: string): Promise<string | null> {
   const dir =
     await $`git -C ${cwd} rev-parse --path-format=absolute --git-common-dir`
+      .env(gitEnv())
       .quiet()
       .nothrow()
 

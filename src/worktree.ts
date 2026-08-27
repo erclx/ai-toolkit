@@ -1,4 +1,5 @@
 import { $ } from 'bun'
+import { gitEnv } from '@/git-env'
 
 /**
  * Resolves the root of the checkout the caller is standing in, which is the
@@ -10,7 +11,10 @@ import { $ } from 'bun'
  * subdirectory would resolve a root holding none of the trees a verb reads.
  */
 export async function currentWorktreeRoot(): Promise<string> {
-  const result = await $`git rev-parse --show-toplevel`.quiet().nothrow()
+  const result = await $`git rev-parse --show-toplevel`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
   if (result.exitCode !== 0) return process.cwd()
 
   return result.stdout.toString().trim() || process.cwd()
@@ -27,7 +31,10 @@ export async function currentWorktreeRoot(): Promise<string> {
  * root in-process is the route a skill body has.
  */
 export async function mainWorktreeRoot(): Promise<string> {
-  const result = await $`git worktree list --porcelain`.quiet().nothrow()
+  const result = await $`git worktree list --porcelain`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
   if (result.exitCode !== 0) return process.cwd()
 
   const line = result.stdout
@@ -52,6 +59,7 @@ export async function listWorktrees(
   cwd: string = process.cwd(),
 ): Promise<readonly WorktreeEntry[]> {
   const result = await $`git -C ${cwd} worktree list --porcelain`
+    .env(gitEnv())
     .quiet()
     .nothrow()
   if (result.exitCode !== 0) return []
