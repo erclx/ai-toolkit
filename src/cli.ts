@@ -27,6 +27,7 @@ import { register as context } from '@/commands/context'
 import { register as markdown } from '@/commands/markdown'
 import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
+import { register as worktrees } from '@/commands/worktrees'
 import { register as audits } from '@/commands/audits'
 import { register as secrets } from '@/commands/secrets'
 import { register as deps } from '@/commands/deps'
@@ -71,6 +72,7 @@ function showHelp(): void {
     `${GREY}│${NC}    markdown [cmd]     ${GREY}# Report markdown against the attribute standards (audit)${NC}`,
     `${GREY}│${NC}    records [cmd]      ${GREY}# Session records under .claude/ (validate, size, push, pull)${NC}`,
     `${GREY}│${NC}    sessions [cmd]     ${GREY}# Resolve live sessions to worktree and branch (list)${NC}`,
+    `${GREY}│${NC}    worktrees [cmd]    ${GREY}# Report which worktrees are reclaimable (list)${NC}`,
     `${GREY}│${NC}    secrets [cmd]      ${GREY}# Read the shipped tree for credential-shaped values (scan)${NC}`,
     `${GREY}│${NC}    deps [cmd]         ${GREY}# Read the resolved dependency set for advisories (audit)${NC}`,
     `${GREY}│${NC}    labels [cmd]       ${GREY}# Read a changed set against the pull request label map (audit)${NC}`,
@@ -117,6 +119,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk records size --json`,
     `${GREY}│${NC}    aitk records push --json`,
     `${GREY}│${NC}    aitk sessions list --json`,
+    `${GREY}│${NC}    aitk worktrees list --json`,
     `${GREY}│${NC}    aitk secrets scan --json`,
     `${GREY}│${NC}    aitk deps audit --json`,
     `${GREY}│${NC}    aitk labels audit --json`,
@@ -167,6 +170,7 @@ context(program)
 markdown(program)
 records(program)
 sessions(program)
+worktrees(program)
 secrets(program)
 deps(program)
 labels(program)
