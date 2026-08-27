@@ -87,6 +87,10 @@ The tokenizer strips a fixed stopword list and every word three characters or un
 
 That fallback is a defect in the instrument rather than only in the one description it happened to catch. A tie-break over an all-zero score set hands the win to whichever skill sorts first alphabetically, so a case whose expected skill happens to be that one reports a false rank-one rather than the unmeasured result it actually is. `buildModel.rank` returns an empty ranking for a prompt whose token vector is empty, and `measureCases` sorts that case into `unmeasurable` rather than crediting it toward `rank1`, `top3`, or `misses`. `aitk claude skills rank --json` carries the count separately from `misses`, since it names a gap in what the run could measure rather than a routing collision the catalog itself carries.
 
+A phrase two skills can each plausibly claim is settled by the operation it names rather than by whichever skill's description happens to quote it first. `toolkit-operator` calls itself the toolkit's front door and quotes `install rules` among its own triggers, and `setup-gov` is the skill that runs that install, so a phrase naming the install wins for `setup-gov` even though the front door's own words match it too. The corpus now asserts that pairing directly, closing the miss v61.3 left open rather than reworking either skill's description.
+
+Rank-one moved to 60 of 70 on the one case that pairing added, up from 59 of 69. Read the move as the corpus correcting a wrong assertion rather than as the catalog routing any better, since no skill description in the diff changed to produce it.
+
 ## The context audit
 
 ### What gates and what reports
