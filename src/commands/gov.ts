@@ -26,6 +26,7 @@ import {
   type RestatedRefusal,
   type RestatedReport,
   readRestated,
+  RULES_REL as RESTATED_RULES_REL,
   SEED_REL,
   SHIPPED_SKILLS_REL,
 } from '@/gov/restated'
@@ -97,7 +98,7 @@ interface CountsOptions {
 /** What a reader does about each way the sweep produced no reading. */
 const RESTATED_REFUSALS: Record<RestatedRefusal, string> = {
   'no-instructions': `No ${INSTRUCTIONS_REL} here, or it carries no bullet, so there is no instruction corpus to sweep.`,
-  'no-surfaces': `Neither ${SEED_REL} nor ${SHIPPED_SKILLS_REL}/ is here, so no second surface exists to match against.`,
+  'no-surfaces': `None of ${SEED_REL}, ${SHIPPED_SKILLS_REL}/, or ${RESTATED_RULES_REL}/ is here, so no further surface exists to match against.`,
 }
 
 const COUNTS_REFUSALS: Record<CountsRefusal, string> = {
@@ -346,11 +347,12 @@ export function register(program: Command): void {
       'after',
       [
         '',
-        `Matches every bullet in ${INSTRUCTIONS_REL} against ${SEED_REL}`,
-        `and every ${SHIPPED_SKILLS_REL}/*/SKILL.md body. Matching is recall-first,`,
-        'keyed on distinctive tokens two statements share rather than on a phrase',
-        'they spell the same way, because the case this exists for was one rule',
-        'written three different ways.',
+        `Matches every bullet in ${INSTRUCTIONS_REL} and every rule under`,
+        `${RESTATED_RULES_REL}/ against ${SEED_REL}, every`,
+        `${SHIPPED_SKILLS_REL}/*/SKILL.md body, and every other rule. Matching is`,
+        'recall-first, keyed on distinctive tokens two statements share rather',
+        'than on a phrase they spell the same way, because the case this exists',
+        'for was one rule written three different ways.',
         '',
         'What it separates:',
         '  mirror         a declared authoring-to-consumed pair, where repeating is the design',
@@ -361,8 +363,8 @@ export function register(program: Command): void {
         'about meaning, so weigh each against the surfaces it names.',
         '',
         'What it does not measure:',
-        '  a rule stated in two skill bodies and never in the always-loaded file,',
-        '  since the bullets there are the subjects and the bodies are searched',
+        '  a rule stated in two skill bodies and never in the always-loaded file',
+        '  or a path-scoped rule, since a body is searched but never read as a subject',
         '',
         'Exit codes:',
         '  0  no instruction is restated outside a declared mirror',
@@ -441,7 +443,7 @@ function reportRestated(
   // also says how wide the corpus behind it was.
   logStep('Corpus')
   logInfo(
-    `${report.corpus.instructions} instruction(s) against ${report.corpus.candidates} statement(s) from the seed and ${report.corpus.bodies} shipped body/bodies in ${root}`,
+    `${report.corpus.instructions} always-loaded instruction(s) and ${report.corpus.rules} rule file(s) against ${report.corpus.candidates} statement(s) from the seed, ${report.corpus.bodies} shipped body/bodies, and every rule again, in ${root}`,
   )
   logInfo(
     `matched on ${report.matcher.anchors} weighted anchor(s), dropping any token in more than ${report.matcher.common} statements`,

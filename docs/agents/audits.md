@@ -26,7 +26,7 @@ Nineteen verbs, listed by `aitk audits list`. Each runs once in its fullest form
 
 The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `aitk deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
 
-Sixteen of the nineteen read a tree on this disk, the one added by `restated.md` and the one added by `census.md` among them, since the first reads three such trees against each other and the second counts every file in one. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction, and the one added by `label-coverage.md` reads a branch range against a map the project declares.
+Sixteen of the nineteen read a tree on this disk, the one added by `restated.md` and the one added by `census.md` among them, since the first reads four such trees against each other and the second counts every file in one. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction, and the one added by `label-coverage.md` reads a branch range against a map the project declares.
 
 Each is invoked as the CLI the caller is running rather than as a global `aitk`. A globally installed binary resolves to the main checkout no matter which worktree is executing, so the aggregate would measure a tree the branch never touched and report a pass over it.
 

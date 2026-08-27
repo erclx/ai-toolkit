@@ -26,7 +26,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Output shape](output-shape.md): Two framed shapes every command renders into, how JSON and --names modes keep stdout clean, and the exit discipline that lets piped output drain
 - [Overview](overview.md): What this folder covers, the invocation rules every command inherits, and where domain behavior is documented instead
 - [Records](records.md): Validating the session records under .claude/ and the standards corpus, the per-kind checks, the refusal reasons, migrating a record a frontmatter change orphaned, reading each folder's size and growth, backing the folders to a private remote, and which root each kind defaults to
-- [Restated instructions](restated.md): Counting the instructions the always-loaded file shares with the seed and the shipped skill bodies, how a match is decided, the three classes, which surface a later edit starts from, and why the sweep reports rather than gates
+- [Restated instructions](restated.md): Counting the instructions the always-loaded file and every path-scoped rule share with the seed, the shipped skill bodies, and each other, how a match is decided, the three classes, which surface a later edit starts from, and why the sweep reports rather than gates
 - [Routing report](routing.md): Reading per CLAUDE.md section how many bullets name a path, what counts as naming one, when a rule counts as covering it, the two refusals, and why the verb reports rather than gates
 - [Sandbox](sandbox.md): Scenario routing, the expectation scoring surface, and the coverage census over scenarios and skills
 - [Scripting](scripting.md): The runtime catalogs that replace hardcoded names, what each carries, and a headless invocation per domain

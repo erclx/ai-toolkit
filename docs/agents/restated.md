@@ -1,11 +1,11 @@
 ---
 title: Restated instructions
-description: Counting the instructions the always-loaded file shares with the seed and the shipped skill bodies, how a match is decided, the three classes, which surface a later edit starts from, and why the sweep reports rather than gates
+description: Counting the instructions the always-loaded file and every path-scoped rule share with the seed, the shipped skill bodies, and each other, how a match is decided, the three classes, which surface a later edit starts from, and why the sweep reports rather than gates
 ---
 
 # Restated instructions
 
-`aitk gov restated` reports every instruction the always-loaded file states that a second surface states too. It answers a question nothing else here could: one rule was found written in three places, and it was found by accident when a shipped skill deleted a file the rule said to keep.
+`aitk gov restated` reports every instruction the always-loaded file or a path-scoped rule states that a further surface states too. It answers a question nothing else here could: one rule was found written in three places, and it was found by accident when a shipped skill deleted a file the rule said to keep.
 
 ```bash
 aitk gov restated
@@ -22,14 +22,17 @@ Under `--json` the record holds stdout alone and the frame still renders on stde
 
 ## The corpus it reads
 
-Three surfaces, and they are not read symmetrically. Every top-level bullet in `CLAUDE.md` is a subject, and the other two are searched:
+Four surfaces, and they are not read symmetrically. Every top-level bullet in `CLAUDE.md` and in every path-scoped rule is a subject, and every surface below is searched, rules included a second time:
 
 - `tooling/claude/seeds/CLAUDE.md`, read as bullets, since the seed carries the same shape as the file it is authored from
 - `claude/skills/*/SKILL.md`, read as every prose line and bullet, since the motivating case was stated in a body as a paragraph rather than a list item
+- `governance/rules/**/*.md`, the authoring root rather than the consumed copy under `.claude/rules/`, read as bullets the same way the seed is
+
+A rule reads as both a subject and a candidate, unlike the seed and the shipped bodies. A stack ships a whole rule folder, so a bullet duplicated between two rules reaches a target exactly as a bullet duplicated between the always-loaded file and a rule does, and neither shape is visible from one side alone. A candidate sharing its subject's file is skipped, since two bullets inside one rule sharing anchors are adjacent instructions on one topic rather than the same rule shipped twice, and a pair found from one direction is not reported again from the other.
 
 Frontmatter, headings, tables, and fenced blocks are read past. A heading names a section instead of stating a rule, a fenced block is an example whose words belong to the prose around it, and a body's `description` restates that skill's own purpose, so sweeping it would match every subject naming its domain.
 
-A rule stated in two skill bodies and never in `CLAUDE.md` is outside this reading. The bullets there are the subjects, and a subject is what the search runs from.
+A rule stated in two skill bodies and never in `CLAUDE.md` or another rule is outside this reading. A body is searched but never read as a subject, and a subject is what the search runs from.
 
 ## How a match is decided
 
@@ -63,7 +66,7 @@ Each restatement names where a later edit starts.
 
 - `claude-md` for a seed match, since the always-loaded file is authored first and the seed carries it to a target
 - `skill-body` where the subject names that skill, which is the content-ownership rule that behavior triggered only when editing one domain belongs to that domain's skill
-- `unknown` everywhere else, which is a first-class answer rather than a gap
+- `unknown` everywhere else, a rule match included, which is a first-class answer rather than a gap
 
 The ownership table assigns a cross-domain rule and a domain-triggered one, and reaches nothing stated in a skill body the always-loaded file never names. Guessing there would put a reader on a surface nobody decided.
 
@@ -73,6 +76,6 @@ Exit codes are `0` when no instruction is restated outside a declared mirror, `1
 
 Nothing wires this into `bun run check` or into a hook. A restatement is legitimate more often than not, and gating a measure whose ordinary result is a finding is what teaches contributors to route around the stage. `aitk gov test-order` and `aitk labels audit` are the siblings.
 
-Both refusals are absences rather than breaks. A target holds neither the seed nor a shipped skills tree, so `aitk audits run` reads `no-instructions` and `no-surfaces` as a corpus that is not there rather than a verb that failed.
+Both refusals are absences rather than breaks. A target holds none of the seed, a shipped skills tree, or a rules tree, so `aitk audits run` reads `no-instructions` and `no-surfaces` as a corpus that is not there rather than a verb that failed.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `counts` rather than the exit when a skill consumes this.

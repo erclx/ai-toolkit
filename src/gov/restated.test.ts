@@ -83,12 +83,17 @@ describe('readRestated', () => {
     )
     write('tooling/claude/seeds/CLAUDE.md', '- Only seed bullet.')
     write('claude/skills/alpha/SKILL.md', '# Alpha\n\nSome prose.')
+    write(
+      'governance/rules/core/010-example.md',
+      '# Example\n\n## Section\n\n- One rule bullet here.',
+    )
 
     const report = measured(readRestated(ROOT))
 
     expect(report.corpus.instructions).toBe(2)
     expect(report.corpus.seed).toBe(1)
     expect(report.corpus.bodies).toBe(1)
+    expect(report.corpus.rules).toBe(1)
   })
 
   it('classes an agreeing seed restatement as a declared mirror', () => {
@@ -255,6 +260,73 @@ describe('readRestated', () => {
 
     expect(entry.surfaces).toHaveLength(2)
     expect(report.counts.threeSurface).toBe(1)
+  })
+
+  it('counts a rule-only cluster once even after it fragments across several subject entries', () => {
+    write('CLAUDE.md', '- Unrelated top-level guidance.')
+    write(
+      'governance/rules/core/900-example-a.md',
+      '# A\n\n## Section\n\n- Never commit a `.env.production` file into the tracked deploy pipeline.',
+    )
+    write(
+      'governance/rules/lib/900-example-b.md',
+      '# B\n\n## Section\n\n- Do not commit a `.env.production` file into the tracked deploy pipeline, ever.',
+    )
+    write(
+      'governance/rules/framework/900-example-c.md',
+      '# C\n\n## Section\n\n- A `.env.production` file must never reach the tracked deploy pipeline.',
+    )
+    write(
+      'governance/rules/ui/900-example-d.md',
+      '# D\n\n## Section\n\n- Keep every `.env.production` file out of the tracked deploy pipeline entirely.',
+    )
+
+    const report = measured(readRestated(ROOT))
+
+    expect(report.counts.threeSurface).toBe(1)
+  })
+
+  it('reports one instruction stated in two shipping rules as a single pair, with no counterpart in the always-loaded file', () => {
+    write('CLAUDE.md', '- Unrelated top-level guidance.')
+    write(
+      'governance/rules/core/010-secrets.md',
+      '# Secrets\n\n## Files\n\n- Never commit a `.env` file into the tracked tree.',
+    )
+    write(
+      'governance/rules/lib/300-secrets.md',
+      '# Secrets\n\n## Files\n\n- Do not commit a `.env` file into the tracked tree, ever.',
+    )
+
+    const report = measured(readRestated(ROOT))
+
+    expect(report.restatements).toHaveLength(1)
+    const [entry] = report.restatements
+    expect(entry.subject.file).toBe('governance/rules/core/010-secrets.md')
+    expect(entry.surfaces).toHaveLength(1)
+    expect(entry.surfaces[0].file).toBe('governance/rules/lib/300-secrets.md')
+    expect(entry.surfaces[0].kind).toBe('rule')
+    expect(entry.surfaces[0].restatement).toBe('repetition')
+    expect(report.counts.repetitions).toBe(1)
+  })
+
+  it('classes a skill body quoting a rule as the restatement it already found from the always-loaded file', () => {
+    write('CLAUDE.md', '- Unrelated top-level guidance.')
+    write(
+      'governance/rules/core/055-scratch.md',
+      '# Scratch\n\n## Temporary files\n\n- Write temporary files to `.claude/.tmp/<slug>/<file>.md` in the project root.',
+    )
+    write(
+      'claude/skills/alpha/SKILL.md',
+      '# Alpha\n\nWrite scratch output to `.claude/.tmp/<slug>/<file>.md` under the project root.',
+    )
+
+    const report = measured(readRestated(ROOT))
+    const entry = entryFor(report, 'Write temporary files')
+
+    expect(entry.surfaces).toHaveLength(1)
+    expect(entry.surfaces[0].restatement).toBe('repetition')
+    expect(entry.surfaces[0].file).toBe('claude/skills/alpha/SKILL.md')
+    expect(report.counts.repetitions).toBe(1)
   })
 
   it('reads past a fenced block, so an example is not swept as an instruction', () => {
