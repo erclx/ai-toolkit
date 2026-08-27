@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.24.0](https://github.com/erclx/aitk/compare/v3.23.0...v3.24.0) (2026-08-27)
+
+
+### Features
+
+* **groundwork:** route leftover findings to claude-intake at close ([#1164](https://github.com/erclx/aitk/issues/1164)) ([05eee9e](https://github.com/erclx/aitk/commit/05eee9e38cf4b339b32317e9ddd99bd915ea2cc8))
+
 ## [3.23.0](https://github.com/erclx/aitk/compare/v3.22.0...v3.23.0) (2026-08-27)
 
 
