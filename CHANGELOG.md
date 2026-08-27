@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.32.0](https://github.com/erclx/aitk/compare/v3.31.0...v3.32.0) (2026-08-27)
+
+
+### Features
+
+* **claude:** let a caller name the plan instead of deriving it ([#1192](https://github.com/erclx/aitk/issues/1192)) ([fe5fe34](https://github.com/erclx/aitk/commit/fe5fe347770f29d4ecd5c58b66424b7e81b74328))
+
 ## [3.31.0](https://github.com/erclx/aitk/compare/v3.30.0...v3.31.0) (2026-08-27)
 
 
