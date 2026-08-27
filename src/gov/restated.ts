@@ -220,7 +220,7 @@ export interface RestatedCounts {
   readonly contradictions: number
   readonly repetitions: number
   readonly mirrors: number
-  /** Subjects carried by two further surfaces, which is the title's count. */
+  /** Duplicate clusters reaching three statements or more, the title's count. */
   readonly threeSurface: number
 }
 
@@ -379,6 +379,53 @@ function isMirrorPair(subject: string, surface: string): boolean {
       (subject === left && surface === right) ||
       (subject === right && surface === left),
   )
+}
+
+function find(parent: Map<string, string>, node: string): string {
+  const above = parent.get(node)
+  if (above === undefined || above === node) return node
+  const root = find(parent, above)
+  parent.set(node, root)
+  return root
+}
+
+function union(parent: Map<string, string>, a: string, b: string): void {
+  if (!parent.has(a)) parent.set(a, a)
+  if (!parent.has(b)) parent.set(b, b)
+  const rootA = find(parent, a)
+  const rootB = find(parent, b)
+  if (rootA !== rootB) parent.set(rootA, rootB)
+}
+
+/**
+ * How many duplicate clusters reach three member statements or more.
+ *
+ * A rule sitting on both sides lets a cluster of mutually restating
+ * statements fragment across several `RestatedEntry` records, one per member
+ * that happens to lead the subject loop, so counting an entry whose own
+ * `surfaces.length >= 2` counts the same cluster more than once. Union over
+ * every reported pair instead: two statements in one component are one
+ * duplicated instruction wherever it was found from, and the entries a
+ * reader sees are one view into that same union, never a second source for
+ * its total.
+ */
+function countThreeSurfaceClusters(pairs: ReadonlySet<string>): number {
+  const parent = new Map<string, string>()
+
+  for (const key of pairs) {
+    const [left, right] = key.split('|')
+    union(parent, left, right)
+  }
+
+  const sizes = new Map<string, number>()
+  for (const node of parent.keys()) {
+    const root = find(parent, node)
+    sizes.set(root, (sizes.get(root) ?? 0) + 1)
+  }
+
+  let clusters = 0
+  for (const size of sizes.values()) if (size >= 3) clusters += 1
+  return clusters
 }
 
 /**
@@ -662,14 +709,16 @@ export function readRestated(root: string): RestatedReport {
   let contradictions = 0
   let repetitions = 0
   let mirrors = 0
-  let threeSurface = 0
 
   // A rule bullet sits on both sides now, so the pair it forms with another
   // rule bullet would otherwise surface twice: once with each end read as the
   // subject. Recording the pair the first time it is found and skipping it
   // the second keeps one entry per duplicate regardless of which side a
   // reader lands on, the way a seed-versus-body pair never could collide,
-  // since only a rule occupies both roles.
+  // since only a rule occupies both roles. The same skip is what fragments a
+  // cluster of mutually restating rules across several entries, which is why
+  // `countThreeSurfaceClusters` reads this set again below rather than the
+  // per-entry `surfaces.length` the loop produces.
   const reportedPairs = new Set<string>()
   const pairKey = (a: Statement, b: Statement): string => {
     const left = `${a.file}:${a.line}`
@@ -740,15 +789,10 @@ export function readRestated(root: string): RestatedReport {
       else repetitions += 1
     }
 
-    // Every surface counts here, a declared mirror included. The motivating
-    // case was the always-loaded file, the seed, and a body, so dropping the
-    // mirror would read that exact shape as a rule stated twice. The mirror
-    // exclusion is a rule about which class is a finding, not about how far an
-    // instruction reached.
-    if (surfaces.length >= 2) threeSurface += 1
-
     restatements.push({ subject: subject.statement, surfaces })
   }
+
+  const threeSurface = countThreeSurfaceClusters(reportedPairs)
 
   return {
     kind: 'measured',

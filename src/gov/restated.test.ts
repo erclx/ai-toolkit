@@ -262,6 +262,30 @@ describe('readRestated', () => {
     expect(report.counts.threeSurface).toBe(1)
   })
 
+  it('counts a rule-only cluster once even after it fragments across several subject entries', () => {
+    write('CLAUDE.md', '- Unrelated top-level guidance.')
+    write(
+      'governance/rules/core/900-example-a.md',
+      '# A\n\n## Section\n\n- Never commit a `.env.production` file into the tracked deploy pipeline.',
+    )
+    write(
+      'governance/rules/lib/900-example-b.md',
+      '# B\n\n## Section\n\n- Do not commit a `.env.production` file into the tracked deploy pipeline, ever.',
+    )
+    write(
+      'governance/rules/framework/900-example-c.md',
+      '# C\n\n## Section\n\n- A `.env.production` file must never reach the tracked deploy pipeline.',
+    )
+    write(
+      'governance/rules/ui/900-example-d.md',
+      '# D\n\n## Section\n\n- Keep every `.env.production` file out of the tracked deploy pipeline entirely.',
+    )
+
+    const report = measured(readRestated(ROOT))
+
+    expect(report.counts.threeSurface).toBe(1)
+  })
+
   it('reports one instruction stated in two shipping rules as a single pair, with no counterpart in the always-loaded file', () => {
     write('CLAUDE.md', '- Unrelated top-level guidance.')
     write(
