@@ -34,7 +34,6 @@ import {
 import { describeSkew } from '@/version/skew'
 
 const SYNC_ARGS: Record<SyncDomain, readonly string[]> = {
-  snippets: ['snippets', 'sync'],
   governance: ['gov', 'sync'],
   claude: ['claude', 'sync'],
 }
@@ -157,7 +156,7 @@ function renderCheck(report: CheckReport): void {
     logWarn(
       `${entry.files} files at ${entry.rootPath}/, nothing at ${entry.installPath}/`,
     )
-    logInfo('Run /aitk:migration-standards to relocate them.')
+    logInfo('Move the content yourself. No sync command touches these.')
   }
 
   renderSeeds(report)
@@ -338,9 +337,7 @@ function describeUnclaimed(entry: UnclaimedFolder): string {
 }
 
 /**
- * The two proposal-only skills no other field reaches. `migration-standards`
- * gets the same treatment from the unmigrated section above, which is the
- * precedent this follows rather than a second spelling of it.
+ * The proposal-only skills no other field reaches.
  */
 function renderMigrations(report: CheckReport): void {
   const { migrations } = report.reverse

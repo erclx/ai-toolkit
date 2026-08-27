@@ -27,11 +27,6 @@ export const INIT_OPTIONS: readonly InitOptionSpec[] = [
     description: 'Comma-separated governance rules to layer on',
   },
   {
-    key: 'snippets',
-    flags: '--snippets <category>',
-    description: "Snippets preset, category, 'none', or 'all'. Omit to skip",
-  },
-  {
     key: 'skip',
     flags: '--skip <list>',
     description: `Skip core domains: ${SKIPPABLE_DOMAINS.join(', ')}`,
@@ -54,9 +49,9 @@ export function applyInitOptions(command: Command): Command {
 
 /**
  * Whether the operator passed any flag, which is what makes the command
- * scriptable by suppressing the confirmation prompt. `--stack` and `--snippets`
- * both carry defaults, so presence has to be read from where the value came
- * from rather than from the value itself.
+ * scriptable by suppressing the confirmation prompt. `--stack` carries a
+ * default, so presence has to be read from where the value came from rather
+ * than from the value itself.
  */
 export function flagsProvided(cmd: Command): boolean {
   return INIT_OPTIONS.some(

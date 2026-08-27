@@ -42,11 +42,6 @@ export const SETUP_CASES: readonly SkillCase[] = [
   },
   {
     prompt:
-      'The snippets folder needs to move under .claude to match the current layout.',
-    expect: 'migration-standards',
-  },
-  {
-    prompt:
       'This file was replaced by a folder, help me split its content into it.',
     expect: 'migration-superseded',
   },

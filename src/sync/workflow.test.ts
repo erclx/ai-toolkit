@@ -66,13 +66,13 @@ async function makeRepo(): Promise<string> {
   return dir
 }
 
-const DRIFTED_STANDARDS = {
-  '.claude/snippets/': ' M .claude/snippets/diff.md\n',
+const DRIFTED_GOVERNANCE = {
+  '.claude/rules/,.claude/GOV.md': ' M .claude/rules/core/010-testing.md\n',
 }
 
 const DRIFTED_TWO_DOMAINS = {
-  '.claude/snippets/':
-    ' M .claude/snippets/diff.md\n M .claude/snippets/review.md\n',
+  '.claude/rules/,.claude/GOV.md':
+    ' M .claude/rules/core/010-testing.md\n M .claude/rules/core/020-concurrency.md\n',
   '.gitignore': ' M .gitignore\n',
 }
 
@@ -90,7 +90,8 @@ describe('collectChanges', () => {
   it('should report one entry per domain with pending changes', async () => {
     const git = makeGit({
       status: {
-        '.claude/snippets/': ' M .claude/snippets/diff.md\n',
+        '.claude/rules/,.claude/GOV.md':
+          ' M .claude/rules/core/010-testing.md\n',
         '.gitignore': '?? .gitignore\n',
       },
     })
@@ -99,10 +100,10 @@ describe('collectChanges', () => {
 
     expect(changes).toEqual([
       {
-        domain: 'snippets',
+        domain: 'governance',
         verb: 'Update',
-        names: ['diff.md'],
-        paths: ['.claude/snippets/diff.md'],
+        names: ['010-testing.md'],
+        paths: ['.claude/rules/core/010-testing.md'],
       },
       {
         domain: 'claude',
@@ -122,7 +123,7 @@ describe('runGitWorkflow', () => {
   it('should do nothing when the target is not a git root', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'aitk-sync-workflow-'))
     dirs.push(dir)
-    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE })
 
     const code = await runGitWorkflow(dir, {
       git,
@@ -152,7 +153,7 @@ describe('runGitWorkflow', () => {
 
   it('should refuse to commit when the branch already exists locally', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS, localTaken: true })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE, localTaken: true })
 
     const code = await runGitWorkflow(target, {
       git,
@@ -167,7 +168,7 @@ describe('runGitWorkflow', () => {
 
   it('should refuse to commit when the branch already exists on the remote', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS, remoteTaken: true })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE, remoteTaken: true })
 
     const code = await runGitWorkflow(target, {
       git,
@@ -182,7 +183,7 @@ describe('runGitWorkflow', () => {
 
   it('should refuse the git workflow entirely under AITK_NON_INTERACTIVE', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE })
     const prCalls: string[] = []
 
     const code = await runGitWorkflow(target, {
@@ -199,7 +200,7 @@ describe('runGitWorkflow', () => {
 
   it('should not open a pull request headlessly even on a feature branch', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'feat/x' })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE, branch: 'feat/x' })
     const prCalls: string[] = []
 
     await runGitWorkflow(target, {
@@ -214,7 +215,7 @@ describe('runGitWorkflow', () => {
 
   it('should make no git call when the operator cancels', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE })
 
     const code = await runGitWorkflow(target, {
       git,
@@ -243,13 +244,13 @@ describe('runGitWorkflow staging', () => {
     })
 
     expect(git.calls).toContain(
-      'stage .claude/snippets/diff.md .claude/snippets/review.md .gitignore',
+      'stage .claude/rules/core/010-testing.md .claude/rules/core/020-concurrency.md .gitignore',
     )
   })
 
   it('should not stage the whole working tree', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE })
 
     await runGitWorkflow(target, {
       git,
@@ -259,7 +260,7 @@ describe('runGitWorkflow staging', () => {
       choose: choosing('commit'),
     })
 
-    expect(git.calls).toContain('stage .claude/snippets/diff.md')
+    expect(git.calls).toContain('stage .claude/rules/core/010-testing.md')
     expect(git.calls).not.toContain('stage -A')
   })
 
@@ -285,7 +286,7 @@ describe('runGitWorkflow staging', () => {
 
   it('should branch before committing when on a protected branch', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'main' })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE, branch: 'main' })
 
     await runGitWorkflow(target, {
       git,
@@ -297,14 +298,14 @@ describe('runGitWorkflow staging', () => {
 
     expect(git.calls).toEqual([
       'createBranch chore/aitk-sync-20260729-1242',
-      'stage .claude/snippets/diff.md',
-      'commit chore(sync): update snippets from toolkit',
+      'stage .claude/rules/core/010-testing.md',
+      'commit chore(sync): update governance from toolkit',
     ])
   })
 
   it('should commit onto the current branch without branching on a feature branch', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'feat/x' })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE, branch: 'feat/x' })
 
     await runGitWorkflow(target, {
       git,
@@ -315,14 +316,14 @@ describe('runGitWorkflow staging', () => {
     })
 
     expect(git.calls).toEqual([
-      'stage .claude/snippets/diff.md',
-      'commit chore(sync): update snippets from toolkit',
+      'stage .claude/rules/core/010-testing.md',
+      'commit chore(sync): update governance from toolkit',
     ])
   })
 
   it('should not push on the commit-only path', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE })
     const prCalls: string[] = []
 
     await runGitWorkflow(target, {
@@ -339,7 +340,7 @@ describe('runGitWorkflow staging', () => {
 
   it('should branch, stage, commit, push, then open the pull request', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'feat/x' })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE, branch: 'feat/x' })
     const prCalls: string[] = []
 
     const code = await runGitWorkflow(target, {
@@ -353,16 +354,16 @@ describe('runGitWorkflow staging', () => {
     expect(code).toBe(0)
     expect(git.calls).toEqual([
       'createBranch chore/aitk-sync-20260729-1242',
-      'stage .claude/snippets/diff.md',
-      'commit chore(sync): update snippets from toolkit',
+      'stage .claude/rules/core/010-testing.md',
+      'commit chore(sync): update governance from toolkit',
       'push chore/aitk-sync-20260729-1242',
     ])
-    expect(prCalls).toEqual(['pr chore(sync): update snippets from toolkit'])
+    expect(prCalls).toEqual(['pr chore(sync): update governance from toolkit'])
   })
 
   it('should report a failed git mutation rather than a completed sync', async () => {
     const target = await makeRepo()
-    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const git = makeGit({ status: DRIFTED_GOVERNANCE })
     const failing: GitRunner = {
       ...git,
       commit: async () => {

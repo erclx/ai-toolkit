@@ -4,7 +4,6 @@ import { execa } from 'execa'
 import { gitEnv } from '@/git-env'
 import { createGovAdapter, rulesSourceDir } from '@/gov/adapter'
 import { loadGovStack, resolveMissingRules, resolveRules } from '@/gov/stacks'
-import { createSnippetsAdapter } from '@/snippets/adapter'
 import { planSync, type ScanEntry, type SyncAdapter } from '@/sync/engine'
 import {
   collectSuperseded,
@@ -34,12 +33,11 @@ import { readSkew, type SkewReport } from '@/version/skew'
 /**
  * Domains the sync engine walks file by file. Tooling is a stamp domain without
  * being one of these, because `src/tooling/` never calls `planSync`, so the
- * three lookups below have no entry to offer it. Standards left the list with
- * the install channel: nothing writes the corpus into a target, so there is no
- * installed copy to attribute.
+ * three lookups below have no entry to offer it. Standards and snippets left
+ * the list with their install channels: nothing writes either corpus into a
+ * target, so there is no installed copy to attribute.
  */
 export const SCANNED_DOMAINS = [
-  'snippets',
   'governance',
 ] as const satisfies readonly StampDomain[]
 
@@ -51,17 +49,14 @@ export type ScannedDomain = (typeof SCANNED_DOMAINS)[number]
  * never go stale and belong in the read-only section instead.
  */
 const SYNCED_SOURCES: Record<ScannedDomain, string> = {
-  snippets: 'snippets/',
   governance: 'governance/rules/',
 }
 
 const ADAPTERS: Record<ScannedDomain, (root: string) => SyncAdapter> = {
-  snippets: createSnippetsAdapter,
   governance: createGovAdapter,
 }
 
 const INSTALL_MARKERS: Record<ScannedDomain, readonly string[]> = {
-  snippets: ['.claude', 'snippets'],
   governance: ['.claude', 'rules'],
 }
 
@@ -547,9 +542,9 @@ export function baseBands(root: string): Set<string> {
  * The diff-and-bands path stays as the fallback for a target stamped before
  * governance recorded a chain. Rules are domain-scoped there too, so it
  * measures from governance's own anchor rather than from the oldest anchor
- * across domains the way `readNewSkills` does. A shared anchor would let a
- * snippets sync move the revision rules are measured from and drop a rule out
- * of the read.
+ * across domains the way `readNewSkills` does. A shared anchor would let
+ * another domain's sync move the revision rules are measured from and drop a
+ * rule out of the read.
  *
  * A target carrying no chain and no governance anchor reports nothing. It has
  * no date to measure against, and diffing from the beginning of history would

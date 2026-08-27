@@ -1,32 +1,9 @@
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
 import { PROJECT_ROOT } from '@/project-root'
-import { createSnippetsAdapter } from '@/snippets/adapter'
 import { BASE_CATEGORY } from '@/snippets/categories'
-import {
-  ALL_CATEGORY,
-  installSnippets,
-  installSnippetsRule,
-  installableCategories,
-  resolveSnippets,
-} from '@/snippets/install'
 import { buildSnippetsCatalog } from '@/snippets/list'
-import { recordStamp, runDomainSync } from '@/sync/engine'
-import { resolveTarget } from '@/target'
-import {
-  intro,
-  isNonInteractive,
-  logAdd,
-  logError,
-  logInfo,
-  logStep,
-  logWarn,
-  outro,
-  palette,
-  select,
-} from '@/ui'
-
-const SNIPPETS_REL = '.claude/snippets'
+import { intro, logInfo, logStep, outro } from '@/ui'
 
 const PASS_THROUGH_VERBS = ['create'] as const
 
@@ -39,42 +16,8 @@ interface ListOptions {
 export function register(program: Command): void {
   const snippets = program
     .command('snippets')
-    .description('Snippets commands (install, sync, create, list)')
+    .description('Snippets commands (create, list)')
     .helpOption('-h, --help', 'Show this help message')
-
-  snippets
-    .command('install')
-    .description('Install snippets into .claude/snippets/')
-    .argument('[category]', "Preset, folder, or 'all'")
-    .argument('[target]', 'Target directory', '.')
-    .helpOption('-h, --help', 'Show this help message')
-    .addHelpText(
-      'after',
-      [
-        '',
-        'Examples:',
-        '  aitk snippets install essentials',
-        '  aitk snippets install all',
-        '  aitk snippets install claude ../my-app',
-        '',
-      ].join('\n'),
-    )
-    .action(async (category: string | undefined, target: string) => {
-      process.exitCode = await runInstall(category, target)
-    })
-
-  snippets
-    .command('sync')
-    .description('Update snippets already installed under .claude/snippets/')
-    .argument('[target]', 'Target directory', '.')
-    .helpOption('-h, --help', 'Show this help message')
-    .action(async (target: string) => {
-      process.exitCode = await runDomainSync(
-        createSnippetsAdapter(PROJECT_ROOT),
-        target,
-        { protectedRoot: PROJECT_ROOT },
-      )
-    })
 
   snippets
     .command('list')
@@ -88,104 +31,6 @@ export function register(program: Command): void {
     })
 
   registerPassThroughVerbs(snippets, 'snippets', PASS_THROUGH_VERBS)
-}
-
-/**
- * Refuses rather than picking, the same judgment `aitk gov install` applies to
- * its stack picker. Headless, `select_option` returned the first option, which
- * here was `all`, so an agent omitting the argument installed every category.
- */
-async function chooseCategory(root: string): Promise<string | number> {
-  const categories = installableCategories(root)
-
-  if (categories.length === 0) {
-    logError('No categories found in snippets source.')
-    outro()
-    return 1
-  }
-
-  if (isNonInteractive()) {
-    logError(
-      `Category argument is required in non-interactive mode. One of: ${[ALL_CATEGORY, ...categories].join(', ')}.`,
-    )
-    outro()
-    return 1
-  }
-
-  return select({
-    message: 'Select category to install:',
-    options: [ALL_CATEGORY, ...categories].map((name) => ({
-      value: name,
-      label: name,
-    })),
-  })
-}
-
-async function runInstall(
-  category: string | undefined,
-  target: string,
-): Promise<number> {
-  intro('aitk snippets install')
-
-  const resolved = resolveTarget(target, PROJECT_ROOT)
-  if (typeof resolved === 'number') return resolved
-
-  let selected = category
-  if (selected === undefined) {
-    const choice = await chooseCategory(PROJECT_ROOT)
-    if (typeof choice === 'number') return choice
-    selected = choice
-  }
-
-  const resolution = resolveSnippets(PROJECT_ROOT, selected)
-  if (!resolution.ok) {
-    logError(`Category not found: ${resolution.unknownCategory}`)
-    outro()
-    return 1
-  }
-
-  logStep(resolution.step)
-  for (const slug of resolution.missing) {
-    logWarn(`${slug} (source not found, skipping)`)
-  }
-
-  if (resolution.files.length === 0) {
-    logWarn(`No snippets found for category: ${selected}`)
-    outro()
-    return 0
-  }
-
-  for (const file of resolution.files) logInfo(file.relPath)
-
-  const display = target.replace(/\/$/, '')
-  const shouldInstall = await select({
-    message: `Install ${resolution.files.length} snippets to ${display}/${SNIPPETS_REL}?`,
-    options: [
-      { value: true, label: 'Yes' },
-      { value: false, label: 'No' },
-    ],
-    nonInteractiveDefault: true,
-  })
-
-  if (!shouldInstall) {
-    logWarn('Cancelled')
-    outro()
-    return 0
-  }
-
-  logStep('Installing snippets')
-  for (const rel of await installSnippets(resolution.files, resolved)) {
-    logAdd(rel)
-  }
-  for (const rel of await installSnippetsRule(PROJECT_ROOT, resolved)) {
-    logAdd(rel)
-  }
-  await recordStamp(createSnippetsAdapter(PROJECT_ROOT), resolved, new Date())
-
-  const { GREEN, NC } = palette(process.stderr)
-  outro()
-  process.stderr.write(`${GREEN}✓ Snippets installed${NC}\n`)
-  return 0
 }
 
 /**

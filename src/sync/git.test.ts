@@ -118,8 +118,8 @@ describe('syncBranchName', () => {
 
 describe('commitMessage', () => {
   it('should list every changed domain', () => {
-    expect(commitMessage(['snippets', 'claude'])).toBe(
-      'chore(sync): update snippets, claude from toolkit',
+    expect(commitMessage(['governance', 'claude'])).toBe(
+      'chore(sync): update governance, claude from toolkit',
     )
   })
 })
@@ -128,10 +128,10 @@ describe('pullRequestBody', () => {
   it('should render one bullet per domain under the headings', () => {
     const changes: DomainChange[] = [
       {
-        domain: 'snippets',
+        domain: 'claude',
         verb: 'Update',
-        names: ['decision-help.md'],
-        paths: ['.claude/snippets/decision-help.md'],
+        names: ['.gitignore'],
+        paths: ['.gitignore'],
       },
       {
         domain: 'governance',
@@ -145,11 +145,11 @@ describe('pullRequestBody', () => {
       [
         '## Summary',
         '',
-        'Sync snippets, governance from toolkit.',
+        'Sync claude, governance from toolkit.',
         '',
         '## Key Changes',
         '',
-        '- Update `snippets/` decision-help.md.',
+        '- Update `claude/` .gitignore.',
         '- Add `governance/` 010-testing.md.',
       ].join('\n'),
     )
@@ -158,7 +158,7 @@ describe('pullRequestBody', () => {
   it('should truncate a long file list inside the bullet', () => {
     const changes: DomainChange[] = [
       {
-        domain: 'snippets',
+        domain: 'claude',
         verb: 'Update',
         names: ['a.md', 'b.md', 'c.md', 'd.md'],
         paths: [],
@@ -166,7 +166,7 @@ describe('pullRequestBody', () => {
     ]
 
     expect(pullRequestBody(changes)).toContain(
-      '- Update `snippets/` a.md, b.md, c.md, and 1 more.',
+      '- Update `claude/` a.md, b.md, c.md, and 1 more.',
     )
   })
 })

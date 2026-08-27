@@ -150,7 +150,6 @@ describe('buildSteps', () => {
       'Base tooling',
       'Claude workflow',
       'Governance',
-      'Snippets',
       'Wiki',
     ])
   })
@@ -160,7 +159,6 @@ describe('buildSteps', () => {
       'Base tooling',
       'Claude workflow',
       'Governance',
-      'Snippets',
     ])
   })
 
@@ -171,54 +169,10 @@ describe('buildSteps', () => {
     expect(recorded.calls.map(([verb]) => verb)).not.toContain('standards')
   })
 
-  it('should skip snippets by default rather than spawning an install', () => {
-    const snippets = steps().find((step) => step.label === 'Snippets')
+  it('should spawn no snippets install, since the corpus reaches no target', () => {
+    const recorded = recorder()
+    buildSteps('../app', '/abs/app', flags(), recorded.child)
 
-    expect(snippets).toMatchObject({
-      kind: 'skip',
-      notice:
-        "Skipped: no --snippets given. Run 'aitk snippets install essentials ../app' to install snippets.",
-    })
-  })
-
-  it('should not spawn a snippets install when no category was given', () => {
-    const { calls, child } = recorder()
-
-    buildSteps('../app', '/abs/app', flags(), child)
-
-    expect(calls.map(([command]) => command)).not.toContain('snippets')
-  })
-
-  it('should announce snippets as a skip when explicitly declined', () => {
-    const snippets = steps({ skip: parseSkip('snippets') }).find(
-      (step) => step.label === 'Snippets',
-    )
-
-    expect(snippets).toMatchObject({
-      kind: 'skip',
-      notice:
-        "Skipped: --skip snippets. Run 'aitk snippets install essentials ../app' to install snippets.",
-    })
-  })
-
-  it('should run snippets install when a category was named', () => {
-    const { calls, child } = recorder()
-
-    buildSteps('../app', '/abs/app', flags({ snippets: 'essentials' }), child)
-
-    expect(calls).toContainEqual([
-      'snippets',
-      'install',
-      'essentials',
-      '/abs/app',
-    ])
-  })
-
-  it('should run snippets install with the none category rather than skipping', () => {
-    const { calls, child } = recorder()
-
-    buildSteps('../app', '/abs/app', flags({ snippets: 'none' }), child)
-
-    expect(calls).toContainEqual(['snippets', 'install', 'none', '/abs/app'])
+    expect(recorded.calls.map(([verb]) => verb)).not.toContain('snippets')
   })
 })
