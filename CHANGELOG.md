@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.17.1](https://github.com/erclx/aitk/compare/v3.17.0...v3.17.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **review:** match the whole reply family in the unchanged-head guard ([#1148](https://github.com/erclx/aitk/issues/1148)) ([63dcd25](https://github.com/erclx/aitk/commit/63dcd25eed9a57a354fa03b193ecc9fb304bc1a5))
+
 ## [3.17.0](https://github.com/erclx/aitk/compare/v3.16.0...v3.17.0) (2026-08-26)
 
 
