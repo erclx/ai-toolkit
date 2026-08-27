@@ -7,11 +7,11 @@ description: Shape and content rules for tooling stack reference docs, and the m
 
 ## Overview
 
-A stack reference records the explicit decisions a tooling stack makes, so a reader knows what the stack chose without opening every config. It lives at `tooling/<stack>/reference.md` and installs into a target as `.claude/tooling/<stack>.md` via `aitk tooling ref`. Nothing generates it, so it is written by hand and kept current by hand.
+A stack reference records the explicit decisions a tooling stack makes, so a reader knows what the stack chose without opening every config. It lives at `tooling/<stack>/reference.md` and reads through `aitk tooling reference <stack>`, resolving the working root first and the packaged corpus after. Nothing installs it into a target and nothing generates it, so it is written by hand and kept current by hand.
 
 ## The manifest pair
 
-The reference and `tooling/<stack>/manifest.toml` are one decision recorded twice, and nothing compares them. `src/tooling/manifest.ts` holds `referenceFile` as a path and never reads what is behind it, so a manifest edited alone leaves the reference stating the old set and an agent following the reference gets the stale answer.
+The reference and `tooling/<stack>/manifest.toml` are one decision recorded twice, and nothing compares them. A manifest edited alone leaves the reference stating the old set and an agent following the reference gets the stale answer.
 
 The symmetry runs in both directions, and the direction that breaks is the manifest moving first. A reader arrives here because they touched one of the two files, not because they set out to keep the pair aligned.
 
