@@ -54,14 +54,16 @@ A wrong type is cheap. `git-branch` renames to conventional format later in the 
 
 Then test both names the entry is about to claim. Neither read needs a worktree, and a stop after Step 4 leaves one built with the session sitting inside it, so both belong here rather than beside the rename:
 
-- Branch. `git show-ref --verify --quiet refs/heads/<type>/<name>` succeeding means the ref exists. Stop: `❌ Branch <type>/<name> already exists. Resolve manually before continuing.`
+- Branch. `git for-each-ref --format='%(refname)' refs/heads/<type>/<name> refs/remotes/origin/<type>/<name>` printing any ref means the name is taken. Stop: `❌ Branch <type>/<name> already exists. Resolve manually before continuing.` A non-zero exit is a read that failed rather than a free name, so stop on that too and say the read failed.
 - Directory. `<main-root>/.claude/worktrees/<name>/` existing means an earlier entry claimed the name. Stop: `❌ Worktree .claude/worktrees/<name>/ already exists. Resolve manually before continuing.`
 
 Leave both in place. Resolving either automatically risks the wrong one.
 
 The two tests catch different collisions. The branch test misses the one `${CLAUDE_SKILL_DIR}/../../standards/slug.md` records, where two branches differing only in type collapse onto one name: `feat/foo` and `fix/foo` are distinct refs and reach one directory. The directory test is the only read that sees it.
 
-The branch test fires on the tier 1 and tier 4 sources whenever the branch the session started on is already conventional, since a name derived from that branch resolves back onto it. Stopping is the answer there. The concern already has a branch, git refuses a second under the same name, and the bare-name rename this replaces only carried the collision forward to the `git-branch` step.
+The branch test fires on the tier 1 and tier 4 sources whenever the branch the session started on is already conventional, since a name derived from that branch resolves back onto it. Stopping is the answer there. The concern already has a branch, git refuses a second under the same name, and the bare-name rename this replaces only carried the collision forward to the `git-branch` step. It fires on tier 0 as well, where a caller handed a name something already holds.
+
+It reads both ref spaces rather than the local head alone, and it reads them the way `checkClaim` does, so a name this skill clears and a branch a dispatcher cleared are one answer. `git show-ref --verify` is what that replaces. It sees no remote-tracking ref, so a branch pushed from elsewhere passed the test and collided at the first push, and its exit code cannot separate an absent ref from a tree it could not read, which reports a failed read as a free name.
 
 ## Step 3: preview
 
