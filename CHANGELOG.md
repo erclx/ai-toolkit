@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.25.0](https://github.com/erclx/aitk/compare/v3.24.0...v3.25.0) (2026-08-27)
+
+
+### Features
+
+* **governance:** add hook stdin-guard and silencing rule ([#1165](https://github.com/erclx/aitk/issues/1165)) ([5ace495](https://github.com/erclx/aitk/commit/5ace49502d3ed9c39d7b59496f08c25ed36a15d7))
+
 ## [3.24.0](https://github.com/erclx/aitk/compare/v3.23.0...v3.24.0) (2026-08-27)
 
 
