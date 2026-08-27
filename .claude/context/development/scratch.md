@@ -59,7 +59,9 @@ A binary predating the convention does more than write the old path. `resolveLiv
 
 The task archive verb itself takes the opposite path on the same skew. A stale binary still finds `.claude/tasks/`, still writes the file, and lands it in `.claude/task-archive/` beside the live folder rather than `.claude/tasks/archive/` inside it, with neither the board count nor the exit code reporting anything wrong.
 
-That reached this repository on 2026-08-27, not only a target. A worker archiving a shipped task wrote it into the flat sibling, which was untracked and unignored where the nested folder is gitignored, one `git add` away from committing session scratch into history. Recovered by hand the same day, found because the untracked folder showed in a status read rather than because anything looked for it. `.gitignore` now names both flat spellings, `.claude/plans-archive/` and `.claude/task-archive/`, as a backstop against the same recovery running out of luck.
+That reached this repository on 2026-08-27, not only a target. A worker archiving a shipped task wrote it into the flat sibling, which was untracked and unignored where the nested folder is gitignored, one `git add` away from committing session scratch into history. Recovered by hand the same day, found because the untracked folder showed in a status read rather than because anything looked for it.
+
+Ignoring the two flat spellings was tried and dropped. It would have removed the one signal that caught this instance, since an ignored folder never shows in a status read, and `RETIRED_FOLDERS` in `src/records/backup.ts` already names both spellings as paths that moved rather than paths still live, which a live ignore entry would contradict. The folders stay untracked and unignored on purpose, so the next stray write is visible the same way this one was.
 
 `standards/tasks.md` and `standards/plan.md` state the nested position as a convention a project receives rather than this repository's own habit, so both failure modes above are what an old binary produces against either layout, not a defect in either standard.
 
