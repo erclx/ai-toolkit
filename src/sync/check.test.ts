@@ -70,7 +70,6 @@ function unmeasuredTooling(): ToolingReport {
       scripts: 0,
       deps: 0,
       gitignore: 0,
-      references: 0,
     },
     changes: 0,
   }

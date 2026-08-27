@@ -3,7 +3,6 @@ import type { Command } from 'commander'
 import { execScript } from '@/exec'
 import { PROJECT_ROOT } from '@/project-root'
 import {
-  applyReferences,
   injectConfigs,
   injectGitignore,
   injectManifest,
@@ -18,12 +17,14 @@ import {
   resolveChain,
   stackExists,
 } from '@/tooling/manifest'
+import { readReference, resolveReference } from '@/tooling/read'
 import { scan, type ScanResult } from '@/tooling/scan'
 import { recordToolingChain } from '@/tooling/stamp'
 import {
   intro,
   isNonInteractive,
   logAdd,
+  logError,
   logInfo,
   logStep,
   logWarn,
@@ -32,10 +33,9 @@ import {
   select,
 } from '@/ui'
 
-const PASS_THROUGH_VERBS = ['ref', 'create', 'verify'] as const
+const PASS_THROUGH_VERBS = ['create', 'verify'] as const
 
 interface SyncOptions {
-  readonly ref?: boolean
   readonly skip?: string
   readonly check?: boolean
   readonly write?: boolean
@@ -64,7 +64,7 @@ type Prepared =
 export function register(program: Command): void {
   const tooling = program
     .command('tooling')
-    .description('Manage tooling stacks (sync, ref, create)')
+    .description('Manage tooling stacks (sync, reference, create)')
     .helpOption('-h, --help', 'Show this help message')
 
   tooling
@@ -73,7 +73,6 @@ export function register(program: Command): void {
     .argument('[stack]', 'Tooling stack name (e.g. base, vite-react)')
     .argument('[target]', 'Target directory', '.')
     .helpOption('-h, --help', 'Show this help message')
-    .option('--no-ref', 'Skip dropping reference docs')
     .option('--skip <stack>', 'Drop a layer from the extends chain')
     .option('--check', 'Report what would change and write nothing')
     .option('--write', 'Apply every change without prompting')
@@ -134,6 +133,29 @@ export function register(program: Command): void {
       process.exitCode = runList(opts)
     })
 
+  tooling
+    .command('reference')
+    .description("Print a stack's reference doc")
+    .argument('<stack>', 'Tooling stack name (e.g. base, vite-react)')
+    .helpOption('-h, --help', 'Show this help message')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'A stack resolves under tooling/ at the working root, then the corpus',
+        'inside the aitk package. No reference installs into a project, so the',
+        'package corpus is what answers there. The frame names the copy it read.',
+        '',
+        'Examples:',
+        '  aitk tooling reference base',
+        '  aitk tooling reference vite-react',
+        '',
+      ].join('\n'),
+    )
+    .action((stack: string) => {
+      process.exitCode = printReference(stack)
+    })
+
   for (const verb of PASS_THROUGH_VERBS) {
     tooling
       .command(verb)
@@ -168,6 +190,32 @@ function runList(opts: ListOptions): number {
   intro('aitk tooling list')
   logStep('Stacks')
   for (const summary of stacks) logInfo(describeStack(summary))
+  outro()
+  return 0
+}
+
+/**
+ * Writes the reference to stdout and every frame line to stderr, so a caller
+ * capturing the output with `$(...)` receives the document alone. Mirrors
+ * `print` in `src/commands/standards.ts`.
+ */
+function printReference(stack: string): number {
+  intro('aitk tooling reference')
+
+  const root = process.cwd()
+  const resolved = resolveReference(root, stack)
+
+  if (!resolved) {
+    logWarn(`Unknown stack: ${stack}`)
+    logStep('Available stacks')
+    for (const each of listStacks(PROJECT_ROOT)) logInfo(each)
+    logError("Run 'aitk tooling list' for descriptions.")
+    outro()
+    return 1
+  }
+
+  logStep(resolved.source)
+  process.stdout.write(readReference(resolved))
   outro()
   return 0
 }
@@ -248,10 +296,9 @@ async function runSync(
     return 1
   }
 
-  const includeReferences = opts.ref !== false
-  const result = scan(prepared.chain, prepared.target, { includeReferences })
+  const result = scan(prepared.chain, prepared.target)
 
-  report(result, includeReferences)
+  report(result)
 
   const mode = resolveWriteMode(opts)
   const { GREEN, NC } = palette(process.stderr)
@@ -289,15 +336,6 @@ async function runSync(
 
   await injectSeeds(prepared.chain, prepared.target)
   await injectManifest(prepared.chain, prepared.target)
-
-  const pending = result.references
-    .filter((entry) => entry.state === 'pending')
-    .map((entry) => entry.stack)
-
-  if (pending.length > 0) {
-    logStep('Applying references')
-    await applyReferences(prepared.chain, prepared.target, pending)
-  }
 
   await stampChain(prepared.chain, prepared.target)
 
@@ -448,7 +486,7 @@ async function promptForStack(): Promise<string | undefined> {
   })
 }
 
-function report(result: ScanResult, includeReferences: boolean): void {
+function report(result: ScanResult): void {
   logStep('Scanning configs')
   for (const entry of result.configs) {
     if (entry.state === 'matching') logInfo(entry.rel)
@@ -482,16 +520,6 @@ function report(result: ScanResult, includeReferences: boolean): void {
   }
   for (const entry of result.gitignore) {
     if (entry.state === 'missing') logAdd(entry.entry)
-  }
-
-  if (!includeReferences) return
-
-  logStep('Scanning references')
-  for (const entry of result.references) {
-    if (entry.state === 'matching') logInfo(`.claude/tooling/${entry.stack}.md`)
-  }
-  for (const entry of result.references) {
-    if (entry.state === 'pending') logAdd(`.claude/tooling/${entry.stack}.md`)
   }
 }
 
@@ -539,10 +567,6 @@ function summarize(result: ScanResult): string {
   add(
     result.gitignore.filter((entry) => entry.state === 'missing').length,
     'gitignore',
-  )
-  add(
-    result.references.filter((entry) => entry.state === 'pending').length,
-    'refs',
   )
 
   return parts.join(', ')

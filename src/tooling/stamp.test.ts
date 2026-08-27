@@ -17,7 +17,6 @@ function manifest(name: string): Manifest {
     dir: `/nowhere/${name}`,
     configsDir: `/nowhere/${name}/configs`,
     seedsDir: `/nowhere/${name}/seeds`,
-    referenceFile: `/nowhere/${name}/reference.md`,
     scripts: {},
     scriptOverrides: {},
     gitignore: [],

@@ -17,7 +17,6 @@ function makeManifest(
     dir,
     configsDir: join(dir, 'configs'),
     seedsDir: join(dir, 'seeds'),
-    referenceFile: join(dir, 'reference.md'),
     scripts: {},
     scriptOverrides: {},
     gitignore: [],
@@ -50,7 +49,7 @@ describe('scan', () => {
     const manifest = makeManifest('base')
     seedFile(join(manifest.configsDir, '.editorconfig'), 'root = true\n')
 
-    const result = scan([manifest], target(), { includeReferences: false })
+    const result = scan([manifest], target())
 
     expect(result.configs).toEqual([
       { rel: '.editorconfig', stack: 'base', state: 'new' },
@@ -63,7 +62,7 @@ describe('scan', () => {
     seedFile(join(manifest.configsDir, '.editorconfig'), 'root = true\n')
     seedFile(join(dir, '.editorconfig'), 'root = true\n')
 
-    const result = scan([manifest], dir, { includeReferences: false })
+    const result = scan([manifest], dir)
 
     expect(result.configs[0].state).toBe('matching')
   })
@@ -74,7 +73,7 @@ describe('scan', () => {
     seedFile(join(manifest.configsDir, '.editorconfig'), 'root = true\n')
     seedFile(join(dir, '.editorconfig'), 'root = false\n')
 
-    const result = scan([manifest], dir, { includeReferences: false })
+    const result = scan([manifest], dir)
 
     expect(result.configs[0].state).toBe('drifted')
   })
@@ -83,7 +82,7 @@ describe('scan', () => {
     const manifest = makeManifest('base')
     seedFile(join(manifest.configsDir, '.husky', 'pre-commit'), 'echo hi\n')
 
-    const result = scan([manifest], target(), { includeReferences: false })
+    const result = scan([manifest], target())
 
     expect(result.configs.map((entry) => entry.rel)).toEqual([
       '.husky/pre-commit',
@@ -96,7 +95,7 @@ describe('scan', () => {
     seedFile(join(child.configsDir, 'shared.json'), '{}\n')
     seedFile(join(parent.configsDir, 'shared.json'), '{"a":1}\n')
 
-    const result = scan([child, parent], target(), { includeReferences: false })
+    const result = scan([child, parent], target())
 
     expect(result.configs).toEqual([
       { rel: 'shared.json', stack: 'web', state: 'new' },
@@ -111,7 +110,7 @@ describe('scan', () => {
       gitignore: [{ header: '# Build', entries: ['dist/'] }],
     })
 
-    const result = scan([child, parent], target(), { includeReferences: false })
+    const result = scan([child, parent], target())
 
     expect(result.gitignore).toEqual([{ entry: 'dist/', state: 'missing' }])
   })
@@ -123,7 +122,7 @@ describe('scan', () => {
       gitignore: [{ header: '# Build', entries: ['dist/'] }],
     })
 
-    const result = scan([manifest], dir, { includeReferences: false })
+    const result = scan([manifest], dir)
 
     expect(result.gitignore).toEqual([{ entry: 'dist/', state: 'present' }])
   })
@@ -134,29 +133,11 @@ describe('scan', () => {
       devPackages: ['prettier'],
     })
 
-    const result = scan([manifest], target(), { includeReferences: false })
+    const result = scan([manifest], target())
 
     expect(result.hasPackageJson).toBe(false)
     expect(result.scripts).toEqual([])
     expect(result.deps).toEqual([])
-  })
-
-  it('should omit references when they are not requested', () => {
-    const manifest = makeManifest('base')
-    seedFile(manifest.referenceFile, '# Base\n')
-
-    const result = scan([manifest], target(), { includeReferences: false })
-
-    expect(result.references).toEqual([])
-  })
-
-  it('should report a missing reference as pending', () => {
-    const manifest = makeManifest('base')
-    seedFile(manifest.referenceFile, '# Base\n')
-
-    const result = scan([manifest], target(), { includeReferences: true })
-
-    expect(result.references).toEqual([{ stack: 'base', state: 'pending' }])
   })
 
   it('should count every pending change once in the total', () => {
@@ -170,7 +151,7 @@ describe('scan', () => {
     seedFile(join(manifest.configsDir, '.editorconfig'), 'root = true\n')
     seedFile(join(manifest.seedsDir, 'cspell.json'), '{}\n')
 
-    const result = scan([manifest], dir, { includeReferences: false })
+    const result = scan([manifest], dir)
 
     expect(result.totalChanges).toBe(5)
   })
@@ -181,7 +162,7 @@ describe('scan', () => {
     seedFile(join(manifest.configsDir, '.editorconfig'), 'root = true\n')
     seedFile(join(dir, '.editorconfig'), 'root = true\n')
 
-    const result = scan([manifest], dir, { includeReferences: false })
+    const result = scan([manifest], dir)
 
     expect(result.totalChanges).toBe(0)
   })

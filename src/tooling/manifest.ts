@@ -14,7 +14,6 @@ export interface Manifest {
   readonly dir: string
   readonly configsDir: string
   readonly seedsDir: string
-  readonly referenceFile: string
   readonly scripts: Readonly<Record<string, string>>
   readonly scriptOverrides: Readonly<Record<string, string>>
   readonly gitignore: readonly GitignoreSection[]
@@ -100,7 +99,6 @@ export function loadManifest(
     dir,
     configsDir: join(dir, 'configs'),
     seedsDir: join(dir, 'seeds'),
-    referenceFile: join(dir, 'reference.md'),
     scripts: pickStrings(scriptsTable),
     scriptOverrides: pickStrings(asTable(scriptsTable.override)),
     gitignore: readGitignoreSections(asTable(parsed.gitignore)),

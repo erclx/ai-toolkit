@@ -1,12 +1,5 @@
 import { existsSync } from 'node:fs'
-import {
-  copyFile,
-  mkdir,
-  readFile,
-  rm,
-  rmdir,
-  writeFile,
-} from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { $ } from 'bun'
 import { copyPreservingMode } from '@/copy'
@@ -197,34 +190,4 @@ export async function injectManifest(
   }
 
   await injectGitignore(chain, target)
-}
-
-/**
- * Drops reference docs into `.claude/tooling/`, clearing the legacy
- * `tooling/` location the earlier layout used.
- */
-export async function applyReferences(
-  chain: readonly Manifest[],
-  target: string,
-  stacks: readonly string[],
-): Promise<string[]> {
-  const destDir = join(target, '.claude', 'tooling')
-  await mkdir(destDir, { recursive: true })
-
-  const applied: string[] = []
-  const byName = new Map(chain.map((manifest) => [manifest.name, manifest]))
-
-  for (const stack of stacks) {
-    const manifest = byName.get(stack)
-    if (!manifest) continue
-
-    await copyFile(manifest.referenceFile, join(destDir, `${stack}.md`))
-    logAdd(`.claude/tooling/${stack}.md`)
-    applied.push(stack)
-    await rm(join(target, 'tooling', `${stack}.md`), { force: true })
-  }
-
-  await rmdir(join(target, 'tooling')).catch(() => {})
-
-  return applied
 }

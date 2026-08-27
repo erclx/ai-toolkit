@@ -20,15 +20,15 @@ EOF
   git commit -m "chore(sandbox): scaffold tooling infra test directory" --no-verify -q
 
   log_step "Tooling sandbox"
-  log_info "sync        : syncs configs, seeds, deps, gitignore, and reference docs for a stack"
+  log_info "sync        : syncs configs, seeds, deps, and gitignore entries for a stack"
   log_info "sync-drift  : sync with a pre-drifted markdown seed in place; seed must stay unchanged"
   log_info "sync-headless: headless run refuses to write without --write, then applies with it"
-  log_info "ref         : drops reference docs only"
+  log_info "reference   : prints a stack's reference doc, nothing written"
   log_info "monorepo    : base at root, subtree synced with --skip base; only one .husky expected"
   log_info "create      : creates a new stack stub"
   log_info "list        : read-only catalog dump, no target needed"
 
-  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "sync-headless" "ref" "monorepo" "create" "list"
+  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "sync-headless" "reference" "monorepo" "create" "list"
 
   case "$SELECTED_OPTION" in
   "sync")
@@ -72,9 +72,10 @@ EOF
     log_info "Expected: every reported path lands and the exit is 0."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
     ;;
-  "ref")
-    log_step "Running: aitk tooling ref"
-    exec "$PROJECT_ROOT/scripts/tooling/ref.sh" base .
+  "reference")
+    log_step "Running: aitk tooling reference base"
+    log_info "Expected: the reference doc prints to stdout. Nothing is written."
+    exec bun "$PROJECT_ROOT/src/cli.ts" tooling reference base
     ;;
   "monorepo")
     log_step "Staging base tooling at repo root"
