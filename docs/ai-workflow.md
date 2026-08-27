@@ -262,7 +262,6 @@ This section is the corpus the coverage claim is measured against: every name `a
 | `aitk:claude-seed-sync`     | After a toolkit update, to reconcile installed seeds without losing customizations |
 | `aitk:migration-claude-md`  | When `CLAUDE.md` grew past what always-load context should carry                   |
 | `aitk:migration-context`    | When `docs/` holds agent-flavored files belonging in `.claude/context/`            |
-| `aitk:migration-standards`  | When standards sit at the root while rules point into `.claude/`                   |
 | `aitk:migration-superseded` | When a drift report names a `.claude/` file a folder has replaced                  |
 | `aitk:toolkit-feedback`     | When something in the toolkit is broken, missing, or off                           |
 | `aitk:toolkit-triage`       | In the toolkit repo, to work through the open feedback issues                      |

@@ -25,7 +25,7 @@ A router is reviewable only through what it says. Almost every `toolkit-operator
 
 The `reply` expectation is what closes it. It reads `result` off the envelope `max_turns` already reads, so scoring a route costs nothing beyond the run, and the token worth pinning is the name of the skill or command the route hands to. Five arms were using it before the router shipped, `claude/setup-init/fresh` among them, so the mechanism was in place and the arms written for the report asserted only the file it produced.
 
-Pinning phrasing is the cost, and it is why every route pin is paired. A reply naming `migration-standards` in a sentence declining to route still passes, so each arm carries a `manual` entry stating the negative a substring cannot express, and the arms whose skills may execute nothing assert the tree as well: the root layout is still at the root and nothing appeared under `.claude/`.
+Pinning phrasing is the cost, and it is why every route pin is paired. A reply naming a skill in a sentence declining to route still passes a substring check, so each arm carries a `manual` entry stating the negative a substring cannot express, and the arms whose skills may execute nothing assert the tree as well: the root layout is still at the root and nothing appeared under `.claude/`.
 
 Where a handoff may legitimately continue into the skill it names, as a fresh target's does into `setup-init`, no tree assertion is declared at all, since none separates the router doing the work from the router routing to something that does it. The arms themselves are catalogued in `.claude/context/sandbox/coverage.md`.
 

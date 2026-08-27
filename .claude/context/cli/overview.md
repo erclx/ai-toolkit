@@ -16,7 +16,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/design/`, `src/slides/`, `src/transcripts/` own the domains built TS-first, documented as feature entries in `.claude/context/design.md`, `.claude/context/slides.md`, and `.claude/context/transcripts.md`
 - `src/indexes/` owns the index engine, documented in `.claude/context/indexes.md`
 - `src/tooling/` owns the tooling inject and scan engine, documented in `.claude/context/tooling.md`
-- `src/sync/` owns the sync engine, the `aitk sync` git workflow, the install stamp, and the drift report, with the per-domain adapters in `src/gov/` and `src/snippets/`. `src/standards/` carries no adapter, since nothing installs a standard into a project and there is no copy to reconcile
+- `src/sync/` owns the sync engine, the `aitk sync` git workflow, the install stamp, and the drift report, with governance's per-domain adapter in `src/gov/`. Neither `src/standards/` nor `src/snippets/` carries one, since nothing installs either corpus into a project and there is no copy to reconcile
 - `src/init/` owns the `aitk init` option surface, the preview and count, the domain step list, and the partial-failure runner
 - `src/docs/` and `src/wiki/` own the two read-only domains, which reach for no shared engine because neither syncs into a target
 - `src/claude/` owns seed planning, the gitignore preview, and the user settings merge

@@ -57,7 +57,7 @@ A rule authored under `governance/rules/` in a folder no stack names reaches no 
 
 ### Why the unreferenced stage stays advisory
 
-The `Unreferenced rules` stage in `scripts/core/verify.sh` reports rules no stack reaches and never fails. `260-shadcn` and `320-tanstack-query` are opt-in libraries this repository ships on purpose, and `505-at-references` reaches no stack by design: a rule under `governance/rules/claude/` would ship to every `base` consumer through that folder's whole-folder entry, so the `@`-reference convention sits in its own `governance/rules/snippets/` instead and only `aitk snippets install` writes it, alongside the snippets a caller took. A gate here would fail every push over three deliberate cases.
+The `Unreferenced rules` stage in `scripts/core/verify.sh` reports rules no stack reaches and never fails. `260-shadcn` and `320-tanstack-query` are opt-in libraries this repository ships on purpose, and `505-at-references` reaches no stack by design: a rule under `governance/rules/claude/` would ship to every `base` consumer through that folder's whole-folder entry, so the `@`-reference convention sits in its own `governance/rules/snippets/` instead. Its own install channel, `aitk snippets install`, retired alongside the domain's copy path, so the rule now reaches no target that did not already hold it from before. A gate here would fail every push over three deliberate cases.
 
 `GOV_EXPECTED_UNREFERENCED` in that script holds all three, and a fourth rule arriving reads as new against it. Reconsider failing if the set keeps growing and the pattern turns out to be an accident rather than a design.
 
