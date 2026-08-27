@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.26.0](https://github.com/erclx/aitk/compare/v3.25.2...v3.26.0) (2026-08-27)
+
+
+### Features
+
+* **seeds:** explain what a cited command belongs to ([#1170](https://github.com/erclx/aitk/issues/1170)) ([0bd95a5](https://github.com/erclx/aitk/commit/0bd95a581f5701ec0735c25ef9a98f26bc47d072))
+
 ## [3.25.2](https://github.com/erclx/aitk/compare/v3.25.1...v3.25.2) (2026-08-27)
 
 
