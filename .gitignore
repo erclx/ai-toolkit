@@ -24,6 +24,9 @@ node_modules/
 .claude/review/
 .claude/worktrees/
 .claude/tasks/
+# Flat siblings a stale binary still writes archives to. Backstop, not current.
+.claude/plans-archive/
+.claude/task-archive/
 
 # Teaching workspace
 .claude/teach/
