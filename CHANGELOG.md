@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.31.0](https://github.com/erclx/aitk/compare/v3.30.0...v3.31.0) (2026-08-27)
+
+
+### Features
+
+* **worktrees:** report which worktrees a merge has reclaimed ([#1188](https://github.com/erclx/aitk/issues/1188)) ([d59c190](https://github.com/erclx/aitk/commit/d59c19048f7b4ac8f3adcd57ca11723b7b8948d0))
+
 ## [3.30.0](https://github.com/erclx/aitk/compare/v3.29.1...v3.30.0) (2026-08-27)
 
 
