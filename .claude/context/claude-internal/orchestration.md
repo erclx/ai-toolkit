@@ -172,6 +172,24 @@ The worker cap counts live sessions named `orchestrator-<slug>`, a prefix only a
 
 Spawning a worker with the Agent tool stays forbidden, since an in-process subagent cannot be steered or reached independently. The `claude --bg` dispatch is a separate process with its own worktree and its own pull request, which is the property the boundary protects rather than the mechanism it happens to name.
 
+## The reclaim reading
+
+Nothing removed a worktree once its work shipped. Nine stood against three live workers on 2026-08-27, six left by work already merged and the oldest from a pull request that landed days earlier, and the sweep that runs after every merge did not look. `aitk worktrees list` is that reading, composed in `src/worktrees/reclaim.ts` out of the worktree listing, the merged pull requests, a status read per directory, and the session roster.
+
+Git ancestry is the reading anyone reaches for and it is wrong in both directions here, which is why this is a verb rather than a line in the sweep runbook. This repository squash merges, so a merged branch is never an ancestor of `main`, and `git merge-base --is-ancestor` called five of the six lingering branches unmerged, each with a merged pull request, reporting them 2 to 6 commits ahead. The one branch it did call merged is the one that must not be touched: `docs/skill-verdicts-decide` had no pull request at all, sat at a release commit, and its worktree held finished work outside any commit. So the cheap test kept every directory safe to remove and offered the only one that was not.
+
+Reclaimable takes all three of a merged pull request, a clean working tree, and no live session holding the directory, and `refusals` names every failing condition rather than the first. Each alone has a case where removal loses something, and removal is the unrecoverable direction, since a worktree is gitignored scratch with no history behind it. Untracked files count as uncommitted for that reason.
+
+The pull request read is one `gh pr list --state merged` for the repository rather than one call per worktree, which is a network round trip inside a loop at nine directories. It covers the most recent 200 merges, so an older worktree reads as having none and is refused, which fails in the keeping direction.
+
+An unreadable input refuses the whole reading rather than producing verdicts around it. This is the `refsReadable` argument from the self-dispatch check one reading over: an absent merge state and a branch with no merged pull request produce the same empty answer, as do an absent roster and a worktree nobody holds, and reporting the second when it was the first is a false clean that ends in a removal rather than in a duplicate dispatch. Two flags beside the verdicts was the alternative and it puts the same false clean behind a boolean a caller has to remember to read.
+
+## Reclaiming without removing
+
+`route` reports which removal shape applies rather than choosing one. `claude rm <name>` removes a background session and its worktree together and is correct while a session exists, measured working on 2026-08-27, and a worktree whose session has ended needs `git worktree remove` and a branch delete instead. Deleting a directory underneath a live session is the case that has to refuse, so a held worktree is refused and its route is reported for whoever decides to act on it.
+
+The verb reports and removes nothing at all in this first shipping. The measurement behind it is a single afternoon and the failure mode is unrecoverable, so a `--remove` flag waits until the reading has run against a real board more than once. A local hook cannot carry any of this either: merging happens on GitHub, so the husky `post-merge` hook fires only when the operator later pulls, runs in the main worktree, and knows nothing about which pull request landed.
+
 ## Phase label containment
 
 Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles or bodies, review comments, issues, commit messages, or git tags. What catches a leak on the way out is the scan in `.claude/standards/publish.md`, which reads the label rule from `.claude/standards/versioning.md` beside it. See that file for the rules and the why.
