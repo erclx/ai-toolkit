@@ -1,5 +1,6 @@
 import { basename } from 'node:path'
 import { execa } from 'execa'
+import { gitEnv } from '@/git-env'
 import type { SyncDomain } from '@/sync/target'
 import { pipeOutput } from '@/ui'
 
@@ -186,13 +187,27 @@ export async function hasGh(): Promise<boolean> {
   return result.exitCode === 0
 }
 
+/**
+ * Both seams strip git's repository-resolution variables, since a hook exports
+ * `GIT_DIR` into every process it runs and it beats `-C`. A sync driven from
+ * inside one would otherwise read the hook's repository and, through `mutate`,
+ * commit and push into it.
+ */
 async function read(target: string, args: readonly string[]): Promise<string> {
-  const result = await execa('git', ['-C', target, ...args], { reject: false })
+  const result = await execa('git', ['-C', target, ...args], {
+    reject: false,
+    env: gitEnv(),
+    extendEnv: false,
+  })
   return result.exitCode === 0 ? result.stdout : ''
 }
 
 async function mutate(target: string, args: readonly string[]): Promise<void> {
-  const result = await execa('git', ['-C', target, ...args], { reject: false })
+  const result = await execa('git', ['-C', target, ...args], {
+    reject: false,
+    env: gitEnv(),
+    extendEnv: false,
+  })
 
   if (result.exitCode !== 0) {
     throw new GitCommandError(
