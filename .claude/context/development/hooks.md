@@ -11,7 +11,7 @@ All `.sh` files live under `scripts/`, except Claude Code hooks, which live in `
 
 ## Claude hooks
 
-`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Five carry the same names as the hooks `aitk claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `.claude/context/claude-plugin/cli.md`, and three of those are byte-identical to their seeded copies. `scratch-guard.sh` and `standards-audit.sh` are the two that diverge, so a fix to either is owed to its counterpart by hand.
+`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Six carry the same names as the hooks `aitk claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `.claude/context/claude-plugin/cli.md`, and four of those are byte-identical to their seeded copies. `scratch-guard.sh` and `standards-audit.sh` are the two that diverge, so a fix to either is owed to its counterpart by hand.
 
 ### The stdin guard
 
@@ -40,6 +40,14 @@ The seed differs from the toolkit copy in what it can resolve rather than in wha
 The filter, the match, and the session id come out of one `jq` pass, so the hot path costs a single process and the second `jq` runs only when the hook actually fires. Splitting the fields through `@tsv` instead looks equivalent and is not: `@tsv` escapes a newline to a literal `\n`, which puts a backslash where the matcher expects whitespace or end of string, and every multi-line command stops matching. A run with no `session_id` exits rather than sharing one marker file, since per-session dedupe needs a real id.
 
 The `entry` the hook names is guarded on existing, so a path this repository does not carry disables the reminder in silence rather than failing it. That target is `.claude/context/development/index.md`, the catalog naming every sibling, because the gotchas the reminder exists to surface sit in several of them and no one file holds the set.
+
+### The path form hook
+
+`path-form.sh` shares the `Edit|Write|MultiEdit` matcher and hands back the absolute form of a path written from a linked worktree, replacing a branch `governance/rules/core/015-output.md` used to ask a session to compute on every response. It reads the worktree branch off `file_path` itself, a `*/.claude/worktrees/*` segment, rather than shelling out to `git rev-parse`, since that call would answer for whatever directory the hook's own process happens to run in rather than the worktree the write came from. `tasks-index.sh` and `memory-index.sh` already derive their main root the same way, off a path suffix rather than the session. It exits quietly on a path with no such segment and resolves `realpath` on one that has it.
+
+The entrypoint branch of the same rule, bare against a `file://` link, stayed prose rather than moving into this hook. Claude Code's own hook documentation lists `CLAUDE_PROJECT_DIR`, `CLAUDE_PLUGIN_ROOT`, and `CLAUDE_PLUGIN_DATA` among the environment a hook subprocess inherits and does not list `CLAUDE_CODE_ENTRYPOINT`, and it documents `OTEL_*` variables as deliberately stripped from every spawned subprocess, so the same curation could apply to a variable it never names as passed through. A live spike inside a running session could not confirm either way, since `.claude/settings.json` loads once at session start and a hook added mid-session never fires until the next one begins.
+
+The companion outcome, reporting a turn that wrote files and named none of them, needs a `Stop` hook. Claude Code documents `Stop` as firing once per turn with no per-tool detail, so it works from `last_assistant_message` or `transcript_path`, and the latter is documented as written asynchronously and may lag the turn it reports on. Nothing in this project has registered a `Stop` hook before, so that gap stayed a `Stop`-only follow-up task rather than shipping here.
 
 ### The bare flag repair
 

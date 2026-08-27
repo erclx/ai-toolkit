@@ -30,7 +30,7 @@ The `.claude/context/` folder ships only its `index.md` discovery anchor. The en
 
 ### PostToolUse hooks
 
-The seed `settings.json` ships five hook scripts across three blocks. All five open with the bounded stdin read covered in `development.md`, so a hook run by hand refuses instead of blocking, and three stay byte-identical to their counterparts under `.claude/hooks/`.
+The seed `settings.json` ships six hook scripts across three blocks. All six open with the bounded stdin read covered in `development.md`, so a hook run by hand refuses instead of blocking, and four stay byte-identical to their counterparts under `.claude/hooks/`.
 
 A PostToolUse hook pairs with `.claude/hooks/standards-audit.sh`, which calls `aitk markdown audit` against the edited file, reads the hits out of the `--json` record, and emits `additionalContext` so the agent self-corrects on the next turn. A checkout's own `src/cli.ts` wins over an installed binary, so the hook and the push stage read one build. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
@@ -43,6 +43,8 @@ The same PostToolUse block also carries `.claude/hooks/tasks-index.sh`, which re
 The hook derives the walk-up boundary from the file path rather than the session, since the board resolves at the main worktree root and a linked worktree would otherwise reject the path, passes `--no-stage` so a hook never touches the git index, and reports both a frontmatter failure and a missing `aitk` as `additionalContext`, because no gate stage can fail on a stale index in an ignored folder. Reporting is the point of the hook, so neither failure exits quietly, and the path guard keeps both messages scoped to a task-file edit.
 
 `.claude/hooks/memory-index.sh` sits beside it and does the same job for `.claude/memory/index.md`, which is gitignored for the same reason and reached the same way. The memory folder's index was hand-appended by `claude-memory-capture` until this hook took it, and it had drifted to more rows than files, which is what a hand-maintained catalog does at that size. The two hooks differ only in the path they guard on, so a change to one is owed to the other.
+
+`.claude/hooks/path-form.sh` closes the same block, handing back the absolute form of a path written from a linked worktree, covered in full in `.claude/context/development/hooks.md`. It reads a `*/.claude/worktrees/*` segment off the write's own path rather than shelling out to git, the same derive-from-the-path precedent as the two index hooks above it.
 
 ### PreToolUse hooks
 
