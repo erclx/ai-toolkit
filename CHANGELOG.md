@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.29.0](https://github.com/erclx/aitk/compare/v3.28.0...v3.29.0) (2026-08-27)
+
+
+### Features
+
+* **hooks:** resolve worktree paths via a new hook ([#1183](https://github.com/erclx/aitk/issues/1183)) ([b78e664](https://github.com/erclx/aitk/commit/b78e664a0b224a5cbe128ff8f525fa2679292c91))
+
 ## [3.28.0](https://github.com/erclx/aitk/compare/v3.27.0...v3.28.0) (2026-08-27)
 
 
