@@ -11,6 +11,12 @@ Any session writes one. Do not assert a role on invocation, and do not add a rol
 
 Run every step rather than judging in advance that one has nothing to act on. The capture skill and the drift verb each answer for themselves, refusal included, and a refusal recorded is a result where a prediction of one is not. A project carrying none of the scaffolding either step reads is the case this fires on, and it is the case where skipping looks most defensible.
 
+## What fires this
+
+Being asked is one route. The other is a `PreCompact` hook registered against the `manual` matcher, which a project may install and which blocks the first `/compact` of a session with a message naming this skill. The block fires once, so the next `/compact` proceeds whether or not a map was written, and an automatic compaction is never blocked. A project that registered no such hook reaches this skill by being asked alone.
+
+Decline where the session holds no reasoning a reader could not get faster from git. Say so in one line and write nothing. The standard already names a `## State` filled from the tree as non-conforming, and the file that carries three such sections is worse than an absent one, because a reader who finds a map trusts it. Declining is a result the caller can act on, where a padded map is a result that misleads.
+
 ## Guards
 
 - If `git rev-parse --git-dir` does not resolve, stop: `❌ Not a git repository. A session map takes its filename from the branch.`
@@ -51,6 +57,13 @@ The file sits at the main worktree root, which the file-editing tools refuse fro
 
 ```plaintext
 ✅ Session map written: .claude/tasks/session-<slug>.md
+<what the drift verb named, or the boundary it refused at>
+```
+
+A decline reports itself rather than falling silent, so a caller can tell it from a run that failed:
+
+```plaintext
+✅ No session map. <what the session holds that git does not, and why it is nothing>
 <what the drift verb named, or the boundary it refused at>
 ```
 
