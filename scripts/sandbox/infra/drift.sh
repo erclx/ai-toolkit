@@ -9,9 +9,8 @@ REPORT="drift-report.json"
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"
-  # Governance is the scanned domain the arms stage against. Standards installs
-  # into no target, so it leaves no copy to make stale and no root layout to
-  # find unmigrated.
+  # Governance is the scanned domain the arms stage against. Standards and
+  # snippets install into no target, so neither leaves a copy to make stale.
   export SANDBOX_INJECT_GOV="true"
 }
 
@@ -25,7 +24,7 @@ write_report() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which arm?" "stale" "retired" "unmigrated" "tooling" "unclaimed"
+  select_or_route_scenario "Which arm?" "stale" "retired" "tooling" "unclaimed"
 
   case "$SELECTED_OPTION" in
   "stale")
@@ -72,40 +71,6 @@ stage_setup() {
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/retired/expect.toml"
     log_info "         Check it with: aitk sandbox check infra:drift retired"
-    ;;
-
-  "unmigrated")
-    # Snippets is the one domain left that an older toolkit installed at the
-    # root, so it is what `detectUnmigrated` still walks. The files are copied
-    # flat, which is the layout the root install wrote and the layout
-    # `countToolkitOwned` matches by basename.
-    mkdir -p snippets
-    find "$PROJECT_ROOT/snippets" -type f -name '*.md' ! -name 'index.md' \
-      -exec cp {} snippets/ \;
-    rm -rf .claude/snippets
-
-    # The arm asserts that an unmigrated domain is reported. A copy that staged
-    # nothing would produce a report correctly finding none, and the failure
-    # would read as a defect in the detection rather than in the fixture.
-    local staged
-    staged=$(find snippets -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')
-    if [ "$staged" -eq 0 ]; then
-      log_error "Fixture staged no snippets. The arm would assert against an empty root."
-      return 1
-    fi
-
-    write_report
-
-    log_step "Scenario ready: root layout, never migrated"
-    log_info "Context: a project scaffolded before snippets moved under .claude/"
-    log_info "  snippets/ holds $staged files"
-    log_info "  .claude/snippets/ does not exist"
-    log_info ""
-    log_info "Before this arm existed the report called this target clean, because"
-    log_info "the domain scan lists only domains it finds installed."
-    log_info ""
-    log_info "Expect:  declared in fixtures/infra/drift/unmigrated/expect.toml"
-    log_info "         Check it with: aitk sandbox check infra:drift unmigrated"
     ;;
 
   "tooling")

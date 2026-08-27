@@ -67,7 +67,7 @@ mkdir -p "$TARGET_DIR"
 log_info "Initialized git in $TARGET_DIR"
 
 log_step "Run aitk init"
-(cd "$TARGET_DIR" && AITK_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base --snippets essentials 2>&1 | pipe_output) || log_error "aitk init failed"
+(cd "$TARGET_DIR" && AITK_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "aitk init failed"
 log_info "aitk init completed"
 
 log_step "Assert scaffold"
@@ -76,16 +76,11 @@ log_step "Assert scaffold"
 # catches a failed domain, and the gate stays green while the target is
 # missing everything that domain provides.
 #
-# Standards name no path because the corpus installs into no target. A scaffold
-# reads a standard through `aitk standards <name>`, which resolves against the
-# copy inside the package.
-#
-# Snippets carries no default, so the run above passes `--snippets essentials`
-# explicitly. The snippets path has to name a slug that preset still carries;
-# editing the preset without editing this line fails the gate on a correct
-# install. The rule path confirms the domain's own convention rule installs
-# alongside it, since a target that declined snippets never receives it.
-for path in "CLAUDE.md" ".claude/snippets/decision-help.md" ".claude/rules/snippets/505-at-references.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".claude/diagrams/index.md" \
+# Standards and snippets name no path because neither corpus installs into a
+# target. A scaffold reads a standard through `aitk standards <name>` and a
+# snippet through the plugin's live `claude/snippets` symlink, both resolving
+# against the toolkit rather than a copy this gate could assert on.
+for path in "CLAUDE.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".claude/diagrams/index.md" \
   ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
   ".claude/rules/core/000-constitution.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then

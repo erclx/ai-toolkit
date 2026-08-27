@@ -23,10 +23,12 @@ SANDBOX_UNDECLARED_CEILING=47
 # emits them. `260-shadcn` and `320-tanstack-query` are opt-in libraries a
 # project may not want; `505-at-references` ships with no stack on purpose,
 # since a rule under `claude/` would reach every base consumer through the
-# folder-whole entry, and only `aitk snippets install` writes it, alongside
-# the snippets a caller took. All three are recorded here rather than in a
-# config file: the list is what a reader compares a new arrival against, and a
-# config file would absorb the arrival silently.
+# folder-whole entry. Its own install channel retired alongside
+# `aitk snippets install`, so nothing writes it into a target now and it
+# reaches only a project that already holds it from before. All three are
+# recorded here rather than in a config file: the list is what a reader
+# compares a new arrival against, and a config file would absorb the arrival
+# silently.
 GOV_EXPECTED_UNREFERENCED="260-shadcn 320-tanstack-query 505-at-references"
 
 # The retained counts the audit stage compares each run against. Spelled here
