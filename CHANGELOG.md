@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.22.0](https://github.com/erclx/aitk/compare/v3.21.0...v3.22.0) (2026-08-27)
+
+
+### Features
+
+* **standards:** declare the nested archive layout a convention ([#1159](https://github.com/erclx/aitk/issues/1159)) ([23d42a3](https://github.com/erclx/aitk/commit/23d42a35b7066985ef315e7184f5766603c93d7f))
+
 ## [3.21.0](https://github.com/erclx/aitk/compare/v3.20.0...v3.21.0) (2026-08-27)
 
 
