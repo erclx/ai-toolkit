@@ -15,6 +15,43 @@ import { listRepositoryFiles } from '@/git-files'
 export const IGNORE_MARKER = 'audit-ignore-citations'
 
 /**
+ * Matches the marker plus an optional comma-separated path list.
+ *
+ * `<!-- audit-ignore-citations: .claude/standards/X.md -->` narrows the skip
+ * to the paths named. The bare form with no colon skips every citation the
+ * line carries, which is the only shape a line with nothing else worth
+ * checking needs and the shape every marker predating this pattern still
+ * carries.
+ */
+const IGNORE_MARKER_LINE =
+  /<!--\s*audit-ignore-citations(?::\s*([^>]+?))?\s*-->/
+
+interface IgnoredCitations {
+  readonly all: boolean
+  readonly paths: ReadonlySet<string>
+}
+
+/**
+ * Reads which citations on a line the marker excuses.
+ *
+ * A bare marker excuses every citation the line carries, matching the
+ * pre-named-path behavior. A named marker excuses only the paths listed,
+ * so a line carrying both a placeholder and a real reference keeps the real
+ * one checked rather than losing it to the placeholder beside it.
+ */
+function ignoredCitations(line: string): IgnoredCitations | undefined {
+  const match = line.match(IGNORE_MARKER_LINE)
+  if (!match) return undefined
+  if (match[1] === undefined) return { all: true, paths: new Set() }
+
+  const paths = match[1]
+    .split(',')
+    .map((path) => path.trim())
+    .filter(Boolean)
+  return { all: false, paths: new Set(paths) }
+}
+
+/**
  * Trees holding content authored to be parsed rather than followed.
  *
  * Sandbox scenarios describe paths inside their own scratch fixtures and the
@@ -87,9 +124,12 @@ export function collectCitations(
       fenced = !fenced
       continue
     }
-    if (fenced || line.includes(IGNORE_MARKER)) continue
+    if (fenced) continue
+
+    const ignored = ignoredCitations(line)
 
     for (const match of line.matchAll(pattern)) {
+      if (ignored && (ignored.all || ignored.paths.has(match[0]))) continue
       found.push({ file: rel, line: index + 1, path: match[0] })
     }
   }

@@ -9,7 +9,7 @@ A standard answers two questions before it answers anything about its own shape:
 
 ## Which tree a standard lives in
 
-The root is the authoring source and `.claude/standards/` is a generated consumed copy, so rules, skills, and seeds cite `.claude/standards/X.md` and the path resolves identically here and in every target. That mirrors the `governance/rules/` to `.claude/rules/` split. Standards are uniform across every project, with no stack variation and no extends chain, so nothing resolves at install time.
+The root is the authoring source and `.claude/standards/` is a generated consumed copy, so rules, skills, and seeds cite `.claude/standards/X.md` and the path resolves identically here and in every target. <!-- audit-ignore-citations: .claude/standards/X.md --> That mirrors the `governance/rules/` to `.claude/rules/` split. Standards are uniform across every project, with no stack variation and no extends chain, so nothing resolves at install time.
 
 A convention governing a surface only the toolkit has lives in `internal/standards/`, a tree no CLI entry point and no plugin symlink reads. A filter at each entry point was the alternative, and it cannot see a symlink an installer dereferences. Location is what enforces the boundary, so nothing has to remember to exclude it.
 

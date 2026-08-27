@@ -76,7 +76,7 @@ Three exclusions keep it from firing on prose about paths. Fenced blocks are ski
 
 Two cases remain, and no syntax separates either from a real reference. One is a sentence naming a hypothetical entry to show the shape of a name. The other is a line instructing a target project about its own tree, which resolves against the target rather than against this repository and passes here only while the two layouts agree. Splitting a seeded domain into a folder ends that agreement and turns every such line red at once.
 
-Append `<!-- audit-ignore-citations -->` to the source line in either case. The marker suppresses citation checking for its own line only, and the reference-form check reads it too, since both ask whether a line points at a file and the marker is how a line says it displays a name instead.
+Append `<!-- audit-ignore-citations: <path> -->` to the source line in either case, naming the exact path the sentence displays. The marker excuses only the paths it names, so a line carrying a real reference beside the displayed one keeps that reference checked. A bare `<!-- audit-ignore-citations -->` with no path excuses every citation the line carries instead, and the reference-form check reads either form the same way, since both ask whether a line points at a file and the marker is how a line says it displays a name instead.
 
 The marker itself stays out of anything that installs. A seed, a plugin skill body, and a stack reference all reach a target, so a marker there lands as toolkit bookkeeping in someone else's tree. Reword those lines to drop the path instead, and where a stop message has to spell it, move that message into a fenced block, which this check already skips.
 

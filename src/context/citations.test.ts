@@ -1,7 +1,9 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { execSync } from 'node:child_process'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import {
   auditCitations,
   citationPattern,
@@ -78,8 +80,20 @@ describe('collectCitations', () => {
     ])
   })
 
-  it('should skip a line carrying the ignore marker', () => {
+  it('should skip a line carrying the bare ignore marker', () => {
     const text = `One \`.claude/context/web.md\` per domain. <!-- ${IGNORE_MARKER} -->`
+
+    expect(paths(text)).toEqual([])
+  })
+
+  it('should skip only the path a named ignore marker lists', () => {
+    const text = `Placeholder \`.claude/context/X.md\` beside real \`.claude/context/cli.md\`. <!-- ${IGNORE_MARKER}: .claude/context/X.md -->`
+
+    expect(paths(text)).toEqual(['.claude/context/cli.md'])
+  })
+
+  it('should skip every path a named ignore marker lists', () => {
+    const text = `Both \`.claude/context/web.md\` and \`.claude/context/api.md\` are placeholders. <!-- ${IGNORE_MARKER}: .claude/context/web.md, .claude/context/api.md -->`
 
     expect(paths(text)).toEqual([])
   })
@@ -96,6 +110,79 @@ describe('auditCitations', () => {
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
+  })
+})
+
+describe('auditCitations against a real tree', () => {
+  let root: string
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'aitk-citations-tree-'))
+    // A git hook exports GIT_DIR into every process it runs, and it takes
+    // precedence over `cwd`, so an inherited environment initializes the
+    // repository somewhere other than the fixture and every case reads empty.
+    execSync('git init --quiet', { cwd: root, env: gitEnv() })
+    mkdirSync(join(root, '.claude', 'context'), { recursive: true })
+    writeFileSync(join(root, '.claude', 'context', 'cli.md'), '# CLI\n')
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  it('should report a citation naming a path that does not exist', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      'See `.claude/context/missing.md` for the layout.\n',
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({
+      kind: 'scanned',
+      unresolved: [
+        {
+          file: 'README.md',
+          path: '.claude/context/missing.md',
+        },
+      ],
+    })
+  })
+
+  it('should leave a citation naming a path that exists unresolved-free', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      'See `.claude/context/cli.md` for the layout.\n',
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({ kind: 'scanned', unresolved: [] })
+  })
+
+  it('should skip a broken path carrying the ignore marker', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      `Cite it as \`.claude/context/X.md\`. <!-- ${IGNORE_MARKER} -->\n`,
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({ kind: 'scanned', unresolved: [] })
+  })
+
+  it('should still report a real broken path beside a named placeholder', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      `Placeholder \`.claude/context/X.md\` beside broken \`.claude/context/missing.md\`. <!-- ${IGNORE_MARKER}: .claude/context/X.md -->\n`,
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({
+      kind: 'scanned',
+      unresolved: [{ file: 'README.md', path: '.claude/context/missing.md' }],
+    })
   })
 })
 
