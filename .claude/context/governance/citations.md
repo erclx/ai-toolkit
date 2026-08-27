@@ -33,6 +33,10 @@ Each rule below duplicated bullets the cited standard already states. The rule-a
 - `governance/rules/claude/580-readme.md` → `aitk standards readme`: cut the audience-and-voice bullets, each restated close to verbatim.
 - `governance/rules/claude/590-rule-authoring.md` → `aitk standards rule`: cut the numbering and body bullets, each restated close to verbatim.
 - `governance/rules/claude/591-standard-authoring.md` → `aitk standards standard`: cut the scope-statement bullets, each restated close to verbatim.
+- `governance/rules/claude/510-context.md` → `aitk standards context`: cut the supersede-in-place bullet. Moot for a target holding governance alone, per the row below, and cut anyway rather than left for whoever opens the file next.
+- `governance/rules/claude/556-groundwork.md` → `aitk standards groundwork`: cut the folder-name and measuring-and-closing bullets. Moot for the same reason.
+- `governance/rules/claude/557-intake.md` → `aitk standards intake`: cut the folder-name and answer-contract bullets. Moot for the same reason.
+- `governance/rules/claude/561-teach.md` → `aitk standards teach`: cut the workspace-conventions bullets. Moot for the same reason.
 
 ### Resolved only for a plugin-holding target, now repaired
 
@@ -51,7 +55,7 @@ A rule scoped to a folder only a plugin skill creates is inert rather than broke
 - `governance/rules/claude/561-teach.md`, scoped to `.claude/teach/**`. Nothing but `claude-teach` creates a workspace.
 - `governance/rules/core/025-indexes.md` names both `.claude/context/` and `.claude/wireframes/` as places to check an index before searching. Only the second is moot. A governance-only target can hand-author a wireframe entry against `standards/wireframes.md` with no plugin skill involved, so that half of the rule is a clean pointer.
 
-Each of the four whole-rule entries above also restates its standard, which only matters for the plugin-holding target that can actually reach the folder. That restatement stayed as-is here, since the row it would occupy is smaller than the moot finding that already governs the file, and cutting it is the same mechanical fix the repaired list above already demonstrates whenever someone next opens one of these four files.
+Each of the four whole-rule entries above also restated its standard, which only matters for the plugin-holding target that can actually reach the folder. Cutting it costs nothing beyond the mechanical pass the repaired list above already ran, so it went out with the rest rather than waiting for whoever next opens one of these four files. The verdict table above reflects that: each entry is listed both as restated-and-cut and as moot, since the two verdicts answer different questions about the same file.
 
 ### Clean pointer, no other note
 
@@ -64,4 +68,4 @@ Each of the four whole-rule entries above also restates its standard, which only
 
 - A "Does not govern:" line naming a skill or a sibling standard is a scope exclusion, not a citation. `standards/standard.md` requires exactly this shape for every excluded concern, so the many "the `write-human` skill" mentions across the standards corpus carry no verdict here.
 - The mechanical duplication sweep behind `aitk gov restated` catches a rule restating a sibling rule or `CLAUDE.md`. It does not catch a rule restating the standard it cites, which is this entry's subject and stayed a manual read for that reason.
-- Reading a moot rule's restatement as urgent double-counts the same defect the moot verdict already excuses for the target that cannot reach the rule at all. Fix it opportunistically, in whichever change next opens one of the four listed files, rather than queuing a row for it.
+- A rule can carry both the restated-its-target and the moot verdict at once. Moot says the citation never fires for a target holding governance alone. Restated says the rule's own bullets duplicated its standard regardless. Neither excuses the other.
