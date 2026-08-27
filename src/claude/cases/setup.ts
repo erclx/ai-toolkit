@@ -60,6 +60,14 @@ export const SETUP_CASES: readonly SkillCase[] = [
       "I don't know which specific toolkit skill I need, just handle it for me.",
     expect: 'toolkit-operator',
   },
+  // The performing skill wins a phrase naming its operation over the front
+  // door's own routing framing, even though toolkit-operator's description
+  // quotes a phrase near this one. See .claude/context/cli/audits.md.
+  {
+    prompt:
+      "Whatever the right toolkit command is, get this project's rules installed.",
+    expect: 'setup-gov',
+  },
   {
     prompt:
       'Work through the open feedback issues on the toolkit repo one by one.',

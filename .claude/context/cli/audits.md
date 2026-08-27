@@ -87,6 +87,12 @@ The tokenizer strips a fixed stopword list and every word three characters or un
 
 That fallback is a defect in the instrument rather than only in the one description it happened to catch. A tie-break over an all-zero score set hands the win to whichever skill sorts first alphabetically, so a case whose expected skill happens to be that one reports a false rank-one rather than the unmeasured result it actually is. `buildModel.rank` returns an empty ranking for a prompt whose token vector is empty, and `measureCases` sorts that case into `unmeasurable` rather than crediting it toward `rank1`, `top3`, or `misses`. `aitk claude skills rank --json` carries the count separately from `misses`, since it names a gap in what the run could measure rather than a routing collision the catalog itself carries.
 
+A phrase two skills can each plausibly claim is settled by the operation it names rather than by whichever skill's description happens to quote it first. `toolkit-operator` calls itself the toolkit's front door and quotes `install rules` among its own triggers, and `setup-gov` is the skill that runs that install, so a phrase naming the install wins for `setup-gov` even though the front door's own words match it too. The corpus now asserts that pairing on one added case rather than by correcting an existing one, since no case tested this exact ambiguity before.
+
+The miss `v61.3` reported is a different prompt and stays open. `toolkit-operator` still loses `I don't know which specific toolkit skill I need, just handle it for me.` to `create-skill` at rank 2, and that prompt names no operation, so the rule above predicts nothing about it. Closing it needs its own read rather than riding on this one.
+
+Rank-one moved to 60 of 70 on the one case this row added, up from 59 of 69, and the miss count holds at 10. Read the move as one new case demonstrating the rule rather than as the corpus closing a count, since the phrase this row resolves and the phrase the earlier report named are not the same one.
+
 ## The context audit
 
 ### What gates and what reports
