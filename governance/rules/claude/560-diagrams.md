@@ -16,4 +16,3 @@ paths:
 
 - Write a new diagram to `.claude/diagrams/<kind>.md`, never to `.claude/DIAGRAMS.md`
 - Convert a `.claude/DIAGRAMS.md` left by an older install into per-kind entries before editing it
-- Refresh only the entries whose source signal moved. Do not rewrite the folder wholesale.

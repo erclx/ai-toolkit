@@ -6,15 +6,6 @@ paths:
 
 # Groundwork standards
 
-## Folder name
-
-- Name a new track `.claude/groundwork/<nn>-<slug>/`, a two-digit zero-padded ordinal followed by a kebab-case slug. Take the ordinal from the highest one already present across both `.claude/groundwork/` and `.claude/intake/`, incremented, or `01` when neither folder holds an entry. Never renumber an existing folder.
-
-## Measuring and closing
-
-- Never carry a figure from an earlier session without re-measuring it. Mark an inference as an inference.
-- Never close a track while an open question quietly fails an outcome. Resolve it, or record it as knowingly accepted.
-
 ## Authority
 
 - Follow the groundwork standard for reserved numbering, frontmatter and dating, what each required file holds, and the conventions a track keeps. It is the single source. Read it with `aitk standards groundwork`.

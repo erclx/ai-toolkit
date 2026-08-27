@@ -13,7 +13,7 @@ Governs what a check can decide about a markdown file: headings, paragraph and l
 
 The two frontmatter fields it reaches are `title` and `description`. They are named here rather than in the statement above, since a backticked token in a scope statement's first sentence is published as the standard's jurisdiction.
 
-The split with the voice guidance is what reads the rule rather than what the rule covers. Every ban below ships as data `aitk markdown audit` and the installed audit hook both read, so a violation is measured on every run. Cadence, rhythm, and information density are judgments a reader settles, and those travel in the `write-human` skill, which a markdown edit routes to.
+The split with the voice guidance is what reads the rule rather than what the rule covers. Every ban below ships as data `aitk markdown audit` and the installed audit hook both read, so a violation is measured on every run. Cadence, rhythm, and information density are judgments a reader settles, and those travel in the `aitk:write-human` skill, which a markdown edit routes to.
 
 Does not govern:
 
