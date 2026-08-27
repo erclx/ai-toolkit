@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.28.0](https://github.com/erclx/aitk/compare/v3.27.0...v3.28.0) (2026-08-27)
+
+
+### Features
+
+* **inventory:** report one computed property across every route ([#1180](https://github.com/erclx/aitk/issues/1180)) ([6b4f1ee](https://github.com/erclx/aitk/commit/6b4f1ee9eaf38da459832562a501c3833d99d6f0))
+
 ## [3.27.0](https://github.com/erclx/aitk/compare/v3.26.1...v3.27.0) (2026-08-27)
 
 
