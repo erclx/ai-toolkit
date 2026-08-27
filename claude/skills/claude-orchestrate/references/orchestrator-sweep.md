@@ -10,6 +10,8 @@ Sweep the board as orchestrator after merging. Run this once per batch of merges
 3. Re-verify every plan already written, not only the ones this sweep writes. A queued plan goes stale from whatever merged while it waited, and the loop's verify step fires at handoff rather than after a merge, so nothing else catches it. Grep each construct the plan names and count the sites against its claim, then open each file rather than trusting its account.
 4. Re-check any precondition a plan states about live state outside the repository. A remote branch, an open issue, or an installed version was true when the plan was written and is not a fact about the tree.
 
+Run `aitk worktrees list` after the pull, which is the first point at which the merges this sweep followed are readable. It owns the reclaim rule and it removes nothing, so read its rows and act on the ones you mean to. Never substitute a git ancestry check for it.
+
 Run `aitk tasks validate` once the board is rewritten and before reporting it. It resolves every plan pointer, accounts every task file against the board and the backlog both, tests the `## Run now` file sets for overlap, and re-takes the two blocker kinds a command can settle. It reports and never writes, so fix each row it names and run it again. A finding it reports is a board defect rather than a task finding, so it goes nowhere but the board.
 
 Then run `orchestrator-parked.md` over the rows the validator listed as untested. Those carry the three blocker kinds no command settles, and the merge this sweep followed changed the tree under every one of them at once while the refill above re-read none. Take the untested rows alone rather than the whole board, since the validator already answered the rest.
