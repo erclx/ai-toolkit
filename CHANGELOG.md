@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.26.1](https://github.com/erclx/aitk/compare/v3.26.0...v3.26.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **governance:** stop rule citations from restating or dangling ([#1173](https://github.com/erclx/aitk/issues/1173)) ([5549201](https://github.com/erclx/aitk/commit/554920101a3a77b20c28454ed5a6691cfd14bab9))
+
 ## [3.26.0](https://github.com/erclx/aitk/compare/v3.25.2...v3.26.0) (2026-08-27)
 
 
