@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.23.0](https://github.com/erclx/aitk/compare/v3.22.0...v3.23.0) (2026-08-27)
+
+
+### Features
+
+* **gov:** read governance rules in the restated sweep ([#1160](https://github.com/erclx/aitk/issues/1160)) ([eadbcd2](https://github.com/erclx/aitk/commit/eadbcd23a67551e299ea4f189535a8048f40b812))
+
 ## [3.22.0](https://github.com/erclx/aitk/compare/v3.21.0...v3.22.0) (2026-08-27)
 
 
