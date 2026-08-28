@@ -520,7 +520,7 @@ function reportDepth(
     'A run that is entirely table rows is excluded too, since a heading inside a table splits the table rather than the run.',
   )
   logInfo(
-    'A heading breaks a run and so does a bold section marker at column zero ending in a colon, such as a line reading only Risks in bold. A colon-less or indented one stays prose.',
+    'A heading breaks a run and so does a bold section marker at column zero, such as a line reading only Risks in bold. A colon-less one breaks when it holds one whole code span, or when it runs to 20 characters or fewer, and an indented one stays prose.',
   )
 
   const over = reports

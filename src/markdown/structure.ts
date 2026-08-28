@@ -19,19 +19,51 @@ const HEADING = /^#{1,6}\s/
  * headings was the alternative and it clears no plan already written, leaving
  * each flagged until someone rewrites it.
  *
- * The marker starts at column zero and carries a colon, and the whole line is
- * the marker or none of it is. A bold phrase opening a sentence is emphasis
- * rather than a seam, and an indented one is a label inside a list item, so
- * both stay prose. This ships as package data every project reads, where a
- * missed break costs one unbroken run and a false one shortens every run around
- * it until the measure stops reporting, which is the dearer of the two.
+ * The marker starts at column zero and the whole line is the marker or none of
+ * it is. A bold phrase opening a sentence is emphasis rather than a seam, and
+ * an indented one is a label inside a list item, so both stay prose. This ships
+ * as package data every project reads, where a missed break costs one unbroken
+ * run and a false one shortens every run around it until the measure stops
+ * reporting, which is the dearer of the two.
  *
- * The colon is what a colon-less `**Testing**` is held out by, and that shape
- * is a real section marker in a review body rather than a hypothetical. Widening
- * to reach it moves the shipped pattern rather than the wording, so the rule
- * states the colon and the widening stays open for a decision of its own.
+ * A colon ends most markers and not all of them. `claude-pr-review` writes
+ * three colon-less ones into every body it posts and a bold path heading for
+ * each file it reviews, so requiring the colon held a real seam out. Two
+ * signals stand in where the colon is absent, because the shape a marker has to
+ * be told from is a sentence set in bold and no one test separates both kinds
+ * of marker from it.
+ *
+ * A label that is one whole code span breaks at any width. A path runs long and
+ * a sentence set in bold is never a single span, so shape settles this half
+ * where width cannot. Across 81 colon-less markers in the review bodies posted
+ * on this repository, the 30 path headings run from 20 to 70 characters, and no
+ * colon-less line in the records tree is a whole span at all, so the rule adds
+ * reach without adding a false break.
+ *
+ * `MARKER_WIDTH` covers the rest and is read off the corpus rather than picked.
+ * Of the remaining 51 markers in those review bodies, 50 sit at or under 20
+ * visible characters, and so do 48 of the 94 colon-less lines in the records
+ * tree at `9960a4d7`, every one of them a label. The 21 to 30 band above it
+ * holds 8 lines nobody can classify on sight, where `One change across four
+ * files.` reads as a sentence and `Rule plus a mechanical half` reads as a
+ * seam, so the ceiling sits under that band rather than over it. That is where
+ * the asymmetry above points, a false break being the dearer error. Terminal
+ * punctuation separates nothing, since 45 of the 48 shortest colon-less lines
+ * end in one.
+ *
+ * Both signals govern the colon-less shape alone. A colon is its own evidence
+ * of a label, and capping the colon form as well takes the break back from four
+ * markers between 31 and 50 characters that already have it, every one of them
+ * a genuine section marker.
+ *
+ * One marker in that review corpus is reached by neither signal, a 48-character
+ * heading a session wrote by hand rather than from the template. Widening to
+ * catch it means raising the ceiling back through the band, so it is left as
+ * the cheap error the asymmetry above already names.
  */
-const SECTION_MARKER = /^\*\*[^*]+:\*\*\s*$/
+const BOLD_LINE = /^\*\*([^*]+)\*\*\s*$/
+const SPAN_LABEL = /^`[^`]+`$/
+const MARKER_WIDTH = 20
 
 const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
 const TABLE_ROW = /^\s*\|/
@@ -273,10 +305,32 @@ function isTableRun(run: readonly BodyLine[]): boolean {
 }
 
 /**
+ * Reports whether a line is a section marker rather than emphasis.
+ *
+ * `BOLD_LINE` fixes the shape, and a colon-less label then answers to
+ * `SPAN_LABEL` or to `MARKER_WIDTH`, per the record above. Both read visible
+ * text, which reduces a link to its anchor text and leaves a backticked path
+ * counted whole, the same reading `isScannablePeerList` takes. The reduction is
+ * what lets a linked path reach the span test at all, since the markup around
+ * it would fail the pattern the destination is still attached.
+ */
+function isSectionMarker(text: string): boolean {
+  const marker = text.match(BOLD_LINE)
+  if (!marker) return false
+
+  const label = marker[1]
+  if (label.endsWith(':')) return true
+
+  const visible = visibleText(label)
+
+  return SPAN_LABEL.test(visible) || visible.length <= MARKER_WIDTH
+}
+
+/**
  * Measures the longest run of lines no signpost breaks, in rendered lines.
  *
  * A heading breaks a run and so does a section marker, which is the same
- * signpost written the way a template asked for it. `SECTION_MARKER` above
+ * signpost written the way a template asked for it. `isSectionMarker` above
  * fixes which lines qualify.
  *
  * Fenced lines are skipped rather than treated as breaks, per the standard:
@@ -325,7 +379,7 @@ export function longestRun(
   for (const line of lines) {
     if (line.fenced) continue
 
-    if (HEADING.test(line.text) || SECTION_MARKER.test(line.text)) {
+    if (HEADING.test(line.text) || isSectionMarker(line.text)) {
       close()
       continue
     }

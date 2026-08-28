@@ -37,7 +37,8 @@ Does not govern:
 - Exempt a block whose lines are all table rows, at any length. The peer list above is exempt because it is already navigable, and a table because the remedy does not exist: a subheading dropped inside one splits the table rather than the run, so no edit short of rewriting it as a list clears the checkpoint.
 - Prose either side of the table ends that exemption, since the block has a seam and a heading breaks it there.
 - Break a run on a bold section marker holding its line alone, the way a heading breaks one. A document whose template separates sections with `**Risks:**` rather than `## Risks` has written the seam a reader lands on, and reading only the heading reported every such file at its full length whatever it carried.
-- Require the marker to start at column zero and to end in a colon inside the bold, and to be the whole line. `**Risks:**` breaks a run, a bold phrase opening a sentence stays emphasis, and an indented one stays a label inside its list item. A colon-less `**Testing**` does not break either, which holds a real section marker out and is the cost of keeping the pattern narrow on data every project is measured against.
+- Require the marker to start at column zero and to be the whole line. `**Risks:**` breaks a run, a bold phrase opening a sentence stays emphasis, and an indented one stays a label inside its list item.
+- Break a colon-less marker on either of two signals, since no one test separates every marker from a sentence set in bold. A label that is one whole code span breaks at any width, which is how a bold line holding only a backticked path reads as the file heading it is. Anything else breaks at 20 characters or fewer, which reaches `**Testing**` and leaves a bold sentence as prose.
 
 ## Paragraphs and lists
 
