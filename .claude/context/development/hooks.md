@@ -115,7 +115,7 @@ Precedence is the reason to leave the seed alone as well. A project or local val
 - `commit-msg` runs `commitlint` against the conventional commit format.
 - `pre-push` runs `bun run check`. After pushing, run `git status`. If files changed, commit the diff as `style(<scope>):` and push again.
 - `post-merge` archives the task each merged pull request closed and stays silent otherwise. It is the only trigger that fires after a merge, covered in `.claude/context/claude-plugin/skill-archiving.md`. It reads `ORIG_HEAD..HEAD` rather than the tip, since one pull routinely fast-forwards over several merges and reading `git log -1` would strand every task but the last.
-- `post-merge` then runs `aitk records push`, which backs the eight gitignored record folders to a private remote. The call sits last so an unreachable remote delays no archiving, and it fires on every merge rather than on one that closed a task, since a review report and a memory entry both land on runs that close nothing.
+- `post-merge` then runs `aitk records push`, which backs the nine gitignored record folders to a private remote. The call sits last so an unreachable remote delays no archiving, and it fires on every merge rather than on one that closed a task, since a review report and a memory entry both land on runs that close nothing.
 - A checkout that never ran the one-time setup answers `no-repository` and reports nothing
 - `post-rewrite` delegates to `post-merge` on the `rebase` argument, so a `pull.rebase=true` machine gets the same check. It exits on `amend`, which rewrites nothing on the board.
 
