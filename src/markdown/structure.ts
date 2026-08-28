@@ -44,12 +44,12 @@ const HEADING = /^#{1,6}\s/
  * Of the remaining 51 markers in those review bodies, 50 sit at or under 20
  * visible characters, and so do 48 of the 94 colon-less lines in the records
  * tree at `9960a4d7`, every one of them a label. The 21 to 30 band above it
- * holds 8
- * lines nobody can classify on sight, where `One change across four files.`
- * reads as a sentence and `Rule plus a mechanical half` reads as a seam, so the
- * ceiling sits under that band rather than over it. That is where the asymmetry
- * above points, a false break being the dearer error. Terminal punctuation
- * separates nothing, since 45 of the 48 shortest colon-less lines end in one.
+ * holds 8 lines nobody can classify on sight, where `One change across four
+ * files.` reads as a sentence and `Rule plus a mechanical half` reads as a
+ * seam, so the ceiling sits under that band rather than over it. That is where
+ * the asymmetry above points, a false break being the dearer error. Terminal
+ * punctuation separates nothing, since 45 of the 48 shortest colon-less lines
+ * end in one.
  *
  * Both signals govern the colon-less shape alone. A colon is its own evidence
  * of a label, and capping the colon form as well takes the break back from four
