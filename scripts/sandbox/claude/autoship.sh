@@ -114,6 +114,8 @@ EOF
     log_info "Context: feat/add-farewell branch with approved plan and one seeded memory entry"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements farewell fn, verify passes, review runs, PR opened as draft"
+    log_info "         Step 7 invokes git-ship rather than restating the chain, so the verify"
+    log_info "         runs twice and the draft marking lands before the CI watch"
     log_info "         then captures session memory and runs Propose over the pen"
     log_info "         receipt at .claude/review/memory/memory-review-<slug>.md; Apply is NOT run"
     ;;
