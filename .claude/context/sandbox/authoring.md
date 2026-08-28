@@ -170,6 +170,14 @@ A trigger keyed to a file entering the tree never fires when the seed already pu
 
 A helper that builds a work list from `git diff --name-only` or `git ls-files` treats every path as present, so a delete-only branch is where the missing existence check first surfaces. `inject_changed_skills` in `scripts/manage-sandbox.sh` unions the `claude/skills/**/SKILL.md` diff against `main` with untracked folders and copies each hit, and the diff lists a deleted skill exactly like a changed one, so removing one skill made every run print `cp: cannot stat`. Provisioning still completed, which is why the defect survived: it degrades to noise rather than a failure. Fix the guard in the same branch as the deletion, and treat a non-fatal error printed mid-run as a defect, since a helper that reports a failed copy and continues provisions a tree nobody verified.
 
+### An arm scoring a judgment is nondeterministic on the axis it scores
+
+The `claude:pr-review` `repeat-close-out` arm failed its `^## Review closed` pin on its first run and passed it on the second against an unchanged fixture. The pin cannot be loose, since that heading is one of five fixed strings the skill body mandates and the pin anchors to the first line, so no phrasing variance reaches it. What varies is upstream: the pass reads a real refactor commit and decides whether it raises a finding, and a pass that legitimately raises one posts `## Review` and reddens the pin correctly.
+
+No fixture can close that. The arm seeds a commit chosen to raise nothing and an independent pass is free to disagree, which is the judgment the skill exists to make rather than a defect to provision away. Read a red pin here as the arm scoring a judgment, and re-run before editing either the pin or the skill.
+
+The general shape is worth carrying past this arm. An assertion over a fixed string the body mandates is deterministic, and one that depends on a pass electing to emit that string is not, so an arm mixing the two reports a verdict whose stability its own count does not show.
+
 ### A pending verdict pins the format its fixture asserts
 
 Defer a format change that would retarget an assertion belonging to a verification nobody has run yet. The `claude-tasks` plan proposed turning `Plan:` into a markdown link, which retargets the anchored regex in the `claude/docs` `drift` fixture, and that arm's verdict was another task's open outcome, so a failing run afterward could be read as neither skill defect nor format change. Grep the fixtures for assertions on a format before editing it and check whether any owning task still carries an unchecked verification outcome.
