@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.43.1](https://github.com/erclx/aitk/compare/v3.43.0...v3.43.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **skills:** correct the sandbox checklist's stale who-drives claim ([#1245](https://github.com/erclx/aitk/issues/1245)) ([4865d32](https://github.com/erclx/aitk/commit/4865d324fac563f214e62f7e73b65d07fa9d4b8e))
+
 ## [3.43.0](https://github.com/erclx/aitk/compare/v3.42.1...v3.43.0) (2026-08-28)
 
 
