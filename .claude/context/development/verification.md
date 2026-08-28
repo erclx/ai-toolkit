@@ -25,7 +25,49 @@ Measure CPU seconds and not wall clock when judging a stage's cost. The suite fa
 
 ### A shell script's own test file does not gate the script
 
-Types and tests run on any `src/` change, per the scoping rule above, so a shell script under `claude/skills/*/scripts/` gates only the Shell stage even when a `src/*.test.ts` file covers it. `claude/skills/claude-orchestrate/scripts/poll.sh` and `src/orchestrate-poll.test.ts` are one such pair. A branch touching only the script reports clean on `bun run check` and on `bash -n` alike while the classifier crashes on a carried line, caught only by running `bun test src/orchestrate-poll.test.ts` by hand. Run the specific test file for a `claude/skills/` script before trusting a green `bun run check` that never touched `src/`.
+Types and tests run on any `src/` change, per the scoping rule above, so a shell script under `claude/skills/*/scripts/` gates only the Shell stage even when a `src/*.test.ts` file covers it. `claude/skills/claude-orchestrate/scripts/poll.sh` and `src/orchestrate-poll.test.ts` are one such pair. A branch touching only the script reports clean on `bun run check` and on `bash -n` alike while the classifier crashes on a carried line, caught only by running `bun --bun vitest run src/orchestrate-poll.test.ts` by hand. Run the specific test file for a `claude/skills/` script before trusting a green `bun run check` that never touched `src/`.
+
+That command used to read `bun test src/orchestrate-poll.test.ts`, which the `## The other stages` section below rules out for every file in this repository, so the one instruction this gotcha carried named a form that reports a broken suite on a green tree. The two sit in one entry and nothing compared them.
+
+### A `src/` test does not gate the corpus it asserts over
+
+The direction above is half of one gap and this is the other half. The Types and Tests stages sit at `scripts/core/verify.sh:634` and `:642`, guarded on `^src/|^tsconfig\.json$|^package\.json$` and on that set plus `^vitest\.config\.ts$`, so a branch editing a corpus outside `src/` runs neither stage even where a `src/` test asserts over that corpus.
+
+`#1233` added a skill, passed the gate locally, and met `src/claude/cases/all.test.ts` in CI. The same shape reproduces on demand at `64ed1865`: dropping `'**/*.astro'` from the `paths:` list in `governance/rules/ui/450-link-behavior.md` fails `src/gov/list.test.ts` while `bun run check` prints `✓ Verification passed` on that tree, reporting `Skipped, no TypeScript changes` for both stages.
+
+**The count**
+
+Eleven files bound the exposure. The count reads every file under `src/**/*.test.ts` that resolves a path outside `src/` against the repository root and asserts over what it finds there, and it excludes a test reading a fixture as data. That exclusion is what puts `src/comments/trend.test.ts` outside the set, since it replays fixed git revisions and skips itself when they are unreachable, and `src/commands/exit-code.test.ts`, which copies `src/` and `tsconfig.json` into a temp root and names two paths the guards already admit. `src/gh-invocations.test.ts` and `src/ui.test.ts` resolve the repository root and then walk `src/` alone, so neither reaches a corpus outside the scope either.
+
+A temp root is not the repository root, which is the clause that decides three more. `src/commands/records-migrate.test.ts`, `src/commands/tooling-sync.test.ts`, and `src/records/backup.test.ts` each resolve against an `mkdtempSync` directory, so a sweep reaches all three before it reaches the reason they fall outside. Reading for the resolution form alone returns 18 candidates rather than eleven.
+
+A file reaches the root two ways and a sweep reading for one of them undercounts. Ten of the eleven name a root constant, being `PROJECT_ROOT`, `import.meta.dirname`, or `process.cwd()`, and `src/markdown/bans.test.ts` names none: it passes `.cspell/banned-spellings.txt` to `Bun.file` as a bare relative path that resolves against the runner's working directory. Grep for the implicit form as well as the explicit one, or the count comes back at ten and reads as complete.
+
+Run the file beside its corpus before trusting a green gate that never touched `src/`:
+
+- `claude/skills/*/SKILL.md`: `bun --bun vitest run src/claude/cases/all.test.ts`
+- `governance/rules/ui/*.md` frontmatter globs: `bun --bun vitest run src/gov/list.test.ts`
+- `governance/rules/` category folders: `bun --bun vitest run src/gov/adapter.test.ts`
+- `standards/markdown.md`: `bun --bun vitest run src/standards/read.test.ts`
+- `tooling/base/reference.md`: `bun --bun vitest run src/tooling/read.test.ts`
+- `.cspell/banned-spellings.txt`: `bun --bun vitest run src/markdown/bans.test.ts`
+- `.claude/hooks/` and `tooling/claude/seeds/.claude/hooks/`: `bun --bun vitest run src/hooks-guard.test.ts`
+- `claude/skills/claude-orchestrate/scripts/poll.sh`: `bun --bun vitest run src/orchestrate-poll.test.ts`
+- `tooling/web/configs/scripts/worktree-port.sh`: `bun --bun vitest run src/worktree-port.test.ts`
+- `scripts/lib/worktree.sh`: `bun --bun vitest run src/worktree-repair.test.ts`
+- `scripts/core/check-ignore-parity.sh`: `bun --bun vitest run src/ignore-parity.test.ts`
+
+The two directions split the eleven five and six. Five assert over a `.sh` file, so a branch touching one runs the Shell stage, which runs shellcheck and the color-source walk and never the test that covers the behavior. The other six assert over markdown, a plain text list, or a corpus's shape, where no stage fires at all. `src/gov/adapter.test.ts` is the one asserting an absence, that `governance/rules/project/` ships empty because the subfolder is reserved for a target, so adding a rule there is what trips it rather than editing one.
+
+**The decision**
+
+The stage stays scoped. Widening Tests to admit these corpora puts the suite on every prose branch, and it is the most expensive stage in the gate at 11.76 CPU seconds against a total near 31, in a repository where most branches are markdown. Both known failures were caught by CI within minutes, so the cost of the gap is a red pipeline rather than a defect reaching main.
+
+What would argue for widening anyway is a count no reader holds in their head, and eleven pairs is past that, so the scoping is open rather than settled and this entry did not decide it. `v67.7` on the task board carries that decision, which is where the reasoning for whichever way it goes will sit.
+
+Naming a board row is what keeps the sentence above from claiming a queue nothing holds, and the row is gitignored, so a reader without this checkout's board resolves nothing through it. What that reader needs is here instead: eleven is the count, `bun run check:ci` passes `--all` so CI runs the full suite either way, and the case against widening is the 11.76 CPU seconds on a branch that is usually markdown.
+
+This entry is the only carrier and it reaches a reader who has already opened it. Neither direction fires on the branch that trips it, so writing the gap down changed what a reader can find and changed nothing about what the gate does.
 
 ### The install gate
 
