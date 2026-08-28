@@ -91,7 +91,7 @@ allowed-tools: <tools required>
 
 - Skill is a folder named in kebab-case containing `SKILL.md` (required), `REQUIREMENT.md` (required), `EVAL.md` (optional), `scripts/` (optional), `references/` (optional), `assets/` (optional)
 - Name a file sitting directly in the skill folder in capitals and a bundled folder in lowercase, so the parts a reader opens are distinct from the ones a skill loads
-- `EVAL.md` holds prompts and a judging rubric a person runs by hand, so a skill carrying one needs no runner beside it
+- `EVAL.md` holds prompts and a judging rubric a person runs by hand, which is the path open to everyone. `claude plugin eval` is the automated one and it is gated in early access, refusing before it parses a target, so write the hand-run rubric and know that the runner exists rather than that it does not
 - `SKILL.md` must start with YAML frontmatter between `---` delimiters
 - No `README.md` inside the skill folder
 - No spaces, capitals, or underscores in folder or skill name
