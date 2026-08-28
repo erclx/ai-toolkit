@@ -25,6 +25,8 @@ The ban on writing at all fails on a different axis, which is that nothing enfor
 
 That removes the independent pass the repository built to catch what a self-review misses, and the vantage does not come back, since no later session can review the change without re-deriving the context that produced it. A correction no open task owns has nowhere to go either, so the route matters as much as the ban.
 
+The contract also stops one state short of what the session holds. Its sections cover what the human launches and what they review, which was the whole state space while every build was hand-launched, and a self-dispatching session adds a third that sits between them for ten to thirty minutes. A session holding four running workers reports them under no section and invents a shape per report, which the same block forbids while offering no term to use, and the launch section keeps recommending a plan a worker is already building because the plan file sits in place for the whole build.
+
 Output drifts everywhere the contract stops. The specified shape covers invocation alone, so a sweep report, a board report, and an analysis each end in a decision the human owns and each buries it under the evidence they would have skipped. A compaction is the same failure one step earlier, since the file that survives it has a stated reader and no stated writer, and the session improvises what to save and loses the reasoning the board never held.
 
 Naming that reader without naming the way in fails on the next axis, and it fails circularly. The command that routes a resume request lives in this body, which is the surface a long session is likeliest to have dropped, and dropping it is the condition the handoff exists to survive, so the session holding a complete handoff cannot reach the runbook that reads it back. The review poll is lost in the same moment and recovered by neither, since it is session-scoped and the resume performs no restart, which leaves a reader who follows the whole handoff with a board and no trigger.
@@ -34,6 +36,8 @@ The runbooks the session cannot run from memory fail on a third axis, which is w
 Every one of them therefore has to ship inside the skill, the four covering the moments the loop cannot detect and the fifth holding the review trigger. That last one fails on an axis of its own, since it names one client's command as the way to start the loop, so a session holding a different recurring-prompt scheduler reaches no path and a client without that command reaches none either, and the file ships to every target holding the plugin.
 
 The dispatch's return leg is unplaced for the same reason. A reply reaches this session as a message and settles a finding, corrects which session holds which branch, or names a gate a worker's edits pass through, and reading it is the whole of what happens to it. Both sessions then end, so the half that belonged on the pull request never reaches it and the half that belonged on the board is rediscovered by whoever needs it next.
+
+Both halves of that channel are written here and one of them is performed elsewhere, so a worker owes what nothing it loads states. The review trigger inherits the same asymmetry: it fires on a dispatch as well as on a pull request, spending an interval against a building worker that has none, which five consecutive runs measured as reporting nothing across roughly fifteen minutes. The one reading that would close the gap is the roster read the poll script cannot make, since a worker that finishes goes idle and one that crashes vanishes, so a trigger matching pull requests alone stays silent through the second. The loop that did make it ran for an afternoon in a session's temporary directory against a hardcoded repository path, and it died with that session with no runbook naming it.
 
 Cost never enters the decision to widen a wave. The rule weighing how many tracks to open measures collision and review attention, and both describe what a worker writes rather than what the loop spends. Claude Code delivers a message from another session as a fresh turn carrying the whole accumulated context, and a recurring poll bills that same window on its own interval, so a wave's spend tracks this session's context rather than the work coming back. The one setting that bounds it reads as available to whoever finds it, and the two values that would bound it break the handback the loop runs on.
 
@@ -54,6 +58,11 @@ The session also records nothing of what it learns. Both other callers of memory
 - Write the priority file with an editing tool that errors on a non-match, since the board is where a silent failure costs a dispatch
 - Carry a plan pointer in the Plan column and a file set in the Touches column, so a row's readiness and disjointness claims stay checkable
 - Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
+- Carry a slot for this session's own workers mid-build, one row apiece naming the session, the branch, the model, and a progress reading taken from the worktree, since the two other slots cover what a human launches and what they review and nothing between
+- Withhold a plan from the launch slot once a row in flight names it, since the plan file sits in place for the whole build and listing it recommends handing off work already underway
+- Start the review poll on an open pull request rather than on a dispatch, and keep the dispatch as a fallback for an announcement that never arrives, since the script reads pull requests and a building worker has none
+- Point at the worker's own skill for the announcement, the block message, and the board ban, rather than holding the only written copy of obligations this session does not perform
+- Ship the roster-and-pull-request watch as a script beside the poll, since the loop that covered the gap lived in one session's temporary directory against a hardcoded path and died with that session
 - Lead a sweep report, a board report, and an analysis with the state, the open decisions, and the next action, keeping the evidence below them
 - Write the pre-compact handoff with what no other file carries, and name the runbook that reads it back
 - Carry the resume invocation and the owed poll restart in the handoff file itself, not in the runbook that writes it alone, since the file is what survives a compaction and the runbook is what a session has to already be holding to read
@@ -106,4 +115,5 @@ The session also records nothing of what it learns. Both other callers of memory
 - Writing the plan itself, which `claude-feature` owns and this session runs rather than reimplements
 - Reviewing a worker's pull request, which `claude-pr-review` owns
 - Entering the worktree a build runs in, which the worker opens for itself whether a human launched it or this session dispatched it
+- The worker's half of the channel and the boundaries a building session holds, which `claude-worker` states where that session reads them
 - The operating model this enacts, which the toolkit's own docs hold
