@@ -14,8 +14,9 @@ stage_setup() {
   log_info "typed-branch : branch feat/baz + matching plan, target collides and the skill stops before entry"
   log_info "no-deps      : branch qux + matching plan + a manifest with nothing installed, skill reports the install command"
   log_info "port-offset  : branch corge + matching plan + the port helper installed, skill reports a derived offset"
-  log_info "submodule    : a submodule checkout inside the project, skill stops and names the superproject"
-  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset" "submodule"
+  log_info "submodule    : run from inside the submodule, skill stops and names the superproject"
+  log_info "submodule-root: the same tree run from the superproject root, skill proceeds"
+  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset" "submodule" "submodule-root"
 
   mkdir -p .claude/plans
 
@@ -147,7 +148,7 @@ EOF
     log_info "Action:  /aitk:claude-worktree"
     log_info "Expect:  declared in fixtures/claude/worktree/port-offset/expect.toml"
     ;;
-  "submodule")
+  "submodule" | "submodule-root")
     cat <<'EOF' >.claude/plans/feature-grault.md
 # Feature: grault
 
@@ -176,16 +177,28 @@ EOF
     git -c protocol.file.allow=always submodule add -q ./.sandbox-submodule-origin vendor
     git commit -m "chore(vendor): add submodule" --no-verify -q
 
-    log_step "Scenario ready: submodule guard (Guards)"
-    log_info "Branch: grault"
-    log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
-    log_info "Action:  cd vendor, then /aitk:claude-worktree"
-    log_info "Expect:  both rev-parse reads return one path, so the linked-worktree guard passes"
-    log_info "         the superproject read resolves, so the skill stops and names this root"
-    log_info "         no worktree is created and no .claude/ is written under vendor"
-    log_info "Control: from the superproject root the same run derives grault and proceeds,"
-    log_info "         which is the half declared in fixtures/claude/worktree/submodule/expect.toml"
-    log_info "         since a headless session starts at this root and cannot cd first"
+    # Both arms stage one tree and differ only in where the session is told to
+    # run. The expectation format carries no prompt field, so each arm's
+    # `expect.toml` names the prompt it was written against and the two would
+    # silently swap verdicts if a caller crossed them.
+    if [ "$SELECTED_OPTION" = "submodule" ]; then
+      log_step "Scenario ready: submodule guard (Guards)"
+      log_info "Branch: grault"
+      log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
+      log_info "Action:  cd vendor, then /aitk:claude-worktree"
+      log_info "Expect:  both rev-parse reads return one path, so the linked-worktree guard passes"
+      log_info "         the superproject read resolves, so the skill stops and names this root"
+      log_info "         no worktree is created and no .claude/ is written under vendor"
+      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"cd vendor, then /aitk:claude-worktree\" submodule"
+    else
+      log_step "Scenario ready: submodule control (Guards)"
+      log_info "Branch: grault"
+      log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
+      log_info "Action:  /aitk:claude-worktree from this root"
+      log_info "Expect:  the superproject read is empty here, so the guard stays silent"
+      log_info "         entry derives grault from the plan and creates the worktree"
+      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"/aitk:claude-worktree\" submodule-root"
+    fi
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

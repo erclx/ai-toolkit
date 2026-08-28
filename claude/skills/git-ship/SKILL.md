@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Run the full post-feature workflow by invoking each skill in sequence using the Skill tool. After each skill returns, invoke the next step immediately in the same response.
 
-Do not output any text between steps and do not wait for user input. Tool permission dialogs are the only interrupts allowed. The final output is `✅ Shipped`.
+Do not output any text between steps and do not wait for user input. Tool permission dialogs are the only interrupts allowed. The final output is `✅ Shipped`, unless a wrapping caller states it closes on its own block, which `claude-autoship` does.
 
 ## Verify
 
@@ -52,3 +52,5 @@ Output up to four lines:
 ```
 
 Omit the second line if nothing routed. Omit the third and fourth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal.
+
+Emit nothing here when a wrapping caller states it closes on its own block. `claude-autoship` is that caller and its block carries these same three trailing lines above a first line naming the draft state, so emitting both reports one run twice. A caller that states no such thing gets this block, which is every direct invocation.

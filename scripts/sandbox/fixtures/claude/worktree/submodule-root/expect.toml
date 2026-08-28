@@ -1,0 +1,34 @@
+# What a correct `/claude-worktree` run leaves behind on the submodule control
+# arm. Read by `aitk sandbox check`. Patterns use TOML literal strings so a
+# regex needs no backslash escaping.
+
+# This arm stages the same tree as `submodule` next door and runs from the
+# superproject root instead. It is written against the bare prompt
+# `/aitk:claude-worktree`, since the expectation format carries no prompt field.
+# The guard is asserted by the sibling arm and this one asserts that it stays
+# silent where it should, which is the half a regression would break first.
+
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so an array written at the bottom parses
+# clean and asserts nothing.
+
+max_turns = 30
+
+paths = [
+  ".claude/worktrees/grault/.claude/plans/feature-grault.md",
+  "vendor/lib.js",
+]
+
+# The plan reaching the worktree is what proves entry read the superproject's
+# own tree rather than a root it derived from somewhere else. The submodule file
+# is the precondition: a tree with no populated `vendor` cannot show that the
+# guard stayed silent for the right reason.
+
+reply = [
+  "feat/grault",
+  "No package manifest",
+]
+
+manual = [
+  "That the guard stayed silent rather than never running is not separable here. Unwired: a skipped read and a read returning empty produce the same output, and only the sibling arm shows the command is wired at all.",
+]

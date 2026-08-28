@@ -1,13 +1,13 @@
-# What a correct `/claude-worktree` run leaves behind on the submodule arm.
+# What a correct `/claude-worktree` run leaves behind on the submodule guard arm.
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
-# This arm carries two cases and a headless run reaches one of them. The session
-# starts at the sandbox root, which is the superproject, and the prompt carries
-# no directory change, so what asserts here is the control: the superproject
-# read returns empty at the root, the submodule guard stays silent, and entry
-# proceeds on the plan the branch matches. The guard itself needs a session
-# started inside `vendor`, which the `manual` entry below names.
+# This arm asserts the guard. It is written against the prompt
+# `cd vendor, then /aitk:claude-worktree`, since the expectation format carries
+# no prompt field and the runner takes one as a free argument. The session's
+# `Bash` working directory persists across calls, so the directory change lands
+# before the skill reads any git state. Run against the bare skill prompt this
+# arm fails every assertion below, which is `submodule-root` next door.
 
 # Every top-level key sits above the first `[[content]]` block. A bare key below
 # one belongs to that table in TOML, so an array written at the bottom parses
@@ -15,23 +15,26 @@
 
 max_turns = 30
 
-paths = [
-  ".claude/worktrees/grault/.claude/plans/feature-grault.md",
-  "vendor/lib.js",
+paths = ["vendor/lib.js"]
+
+# The submodule file is the arm's precondition rather than its subject. A run
+# that found no populated `vendor` had no submodule to be guarded against, so
+# every assertion below would pass for the wrong reason.
+
+absent = [
+  ".claude/worktrees/grault",
+  "vendor/.claude",
 ]
 
-# The plan reaching the worktree is what proves entry read the
-# superproject's own tree rather than a root it derived from somewhere else.
-# The submodule file is the arm's precondition rather than its subject: a run
-# that found no populated `vendor` never had a submodule to be guarded against,
-# so a green control case would mean nothing.
+# The guard stops before entry, so neither path is written. `vendor/.claude` is
+# the sharper of the two: it is where the run lands if the guard is removed and
+# every derivation after it takes the submodule for the project.
 
 reply = [
-  "feat/grault",
-  "No package manifest",
+  "Inside a submodule",
 ]
 
 manual = [
-  "The guard branch needs a session started inside `vendor`, and `scripts/sandbox/run.sh` starts every session at the sandbox root with no directory change in the prompt. Unwired: run the interactive re-test, `cd vendor`, and confirm the skill stops naming the superproject rather than entering a worktree under the submodule.",
-  "The control case is a regression guard rather than a demonstration. It passes today because `git rev-parse --show-superproject-working-tree` returns empty at a superproject root, measured across all four repository shapes, so a guard written to fire on the wrong branch would go red here.",
+  "The stop names the superproject by absolute path, which is the sandbox root and moves per machine, so the reply assertion matches the fixed half of the message alone. Semantic: a run that named the wrong root would pass this.",
+  "Whether the operator is told to re-run from the superproject is carried by the same sentence and not separated here. Unwired: no assertion kind reads a message's second clause apart from its first.",
 ]
