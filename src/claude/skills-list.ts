@@ -11,7 +11,12 @@ export interface SkillListing {
 }
 
 export interface SkillsCorpus {
-  /** The corpus spelling in POSIX form, so a report reads the same on Windows. */
+  /**
+   * The corpus spelling in POSIX form, so a report reads the same on Windows.
+   * `CorpusReport.rel` in `skills-audit.ts` is the same spelling left as `join`
+   * produced it, so the two verbs disagree there. Normalizing it is a contract
+   * change on an existing JSON field and belongs to a branch reading the audit.
+   */
   readonly rel: string
   /** The folder a listing reads, absolute against the root it was resolved at. */
   readonly dir: string

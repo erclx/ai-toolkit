@@ -113,7 +113,7 @@ export function loadCaseCorpus(path: string): CaseCorpusReport {
       return {
         kind: 'refused',
         reason: 'bad-cases',
-        detail: `case ${index} carries no string prompt and expect`,
+        detail: `case ${index} carries no string prompt or expect`,
       }
     }
 

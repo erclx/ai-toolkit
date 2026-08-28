@@ -132,7 +132,7 @@ describe('loadCaseCorpus', () => {
     expect(loadCaseCorpus(path)).toEqual({
       kind: 'refused',
       reason: 'bad-cases',
-      detail: 'case 1 carries no string prompt and expect',
+      detail: 'case 1 carries no string prompt or expect',
     })
   })
 
