@@ -530,10 +530,11 @@ export const AUDITS: readonly AuditSpec[] = [
     // The one reason this verb refuses for, and it is an absence rather than a
     // break. A tracked corpus normally allows nothing, since a tree that ships
     // to targets and cannot be found is a broken checkout, and this is the
-    // second exception on the same test the secret scan takes: no target holds
-    // `claude/skills/`, so without the allowance every project installing this
-    // CLI reports the verb unmeasured on every run and never changes, which is
-    // the permanent signal the per-machine allowance exists against.
+    // second exception on the same test the secret scan takes: a project
+    // carrying neither `claude/skills/` nor `.claude/skills/` has adopted no
+    // skill convention, so without the allowance it reports the verb
+    // unmeasured on every run and never changes, which is the permanent signal
+    // the per-machine allowance exists against.
     absentReasons: ['no-skills'] satisfies ReachRefusal[],
     counts: reachCounts,
   },
@@ -547,9 +548,11 @@ export const AUDITS: readonly AuditSpec[] = [
     // moved rank would teach a contributor to route around the stage.
     gatingExits: [],
     corpus: 'tracked',
-    // The one reason this verb refuses for, and it is an absence for the same
-    // reason the reach check's is: a project carrying no `claude/skills/` has
-    // adopted no skill convention this audit reads.
+    // The one reason this run refuses for, and it is an absence for the same
+    // reason the reach check's is: a project carrying neither `claude/skills/`
+    // nor `.claude/skills/` has adopted no skill convention this audit reads.
+    // The two case-corpus refusals never reach here, since they need `--cases`
+    // and this argv passes none.
     absentReasons: ['no-skills'] satisfies RankRefusal[],
     counts: rankCounts,
   },

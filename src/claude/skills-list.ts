@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { CORPORA } from '@/claude/skills-audit'
 
 const FRONTMATTER = /^---\n([\s\S]*?)\n---/
 
@@ -7,6 +8,33 @@ export interface SkillListing {
   readonly name: string
   readonly description: string
   readonly requirement: boolean
+}
+
+export interface SkillsCorpus {
+  /** The corpus spelling in POSIX form, so a report reads the same on Windows. */
+  readonly rel: string
+  /** The folder a listing reads, absolute against the root it was resolved at. */
+  readonly dir: string
+}
+
+/**
+ * The skill corpus a measure reads at a given root: the shipped tree in this
+ * repository and a target's own `.claude/skills/` in a project that consumes
+ * it. `CORPORA` order settles a tree carrying both, so every reading taken
+ * here still comes from `claude/skills/`.
+ *
+ * Kept apart from `listSkills` deliberately. `src/counts/catalogs.ts` counts
+ * the shipped catalog through that function, so teaching it to read both
+ * corpora would move the reported total off the tree that installs and
+ * falsify every sentence in the corpus stating it.
+ */
+export function resolveSkillsCorpus(root: string): SkillsCorpus | undefined {
+  for (const rel of CORPORA) {
+    const dir = join(root, rel)
+    if (existsSync(dir)) return { rel: rel.replaceAll('\\', '/'), dir }
+  }
+
+  return undefined
 }
 
 /**
@@ -22,7 +50,14 @@ export interface SkillListing {
  * `aitk claude skills audit` is what fails on it, across both corpora.
  */
 export function listSkills(root: string): SkillListing[] {
-  const skillsRoot = join(root, 'claude', 'skills')
+  return listSkillsAt(join(root, 'claude', 'skills'))
+}
+
+/**
+ * The same enumeration against a corpus folder the caller already resolved,
+ * which is what `resolveSkillsCorpus` hands a measure that reaches a target.
+ */
+export function listSkillsAt(skillsRoot: string): SkillListing[] {
   if (!existsSync(skillsRoot)) return []
 
   const paths = [

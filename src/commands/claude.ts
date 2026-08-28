@@ -36,9 +36,11 @@ import {
 } from '@/claude/skills-reach'
 import { SKILL_CASES } from '@/claude/cases/all'
 import {
+  loadCaseCorpus,
   type RankRefusal,
   type RankReport,
   scanRank,
+  type SkillCase,
 } from '@/claude/skills-rank'
 import {
   planSettings,
@@ -93,6 +95,7 @@ interface SkillsReachOptions {
 
 interface SkillsRankOptions {
   readonly json?: boolean
+  readonly cases?: string
 }
 
 interface RoutingOptions {
@@ -331,8 +334,8 @@ export function register(program: Command): void {
 
   skills
     .command('reach')
-    .description('Report shipped bodies citing a path no target receives')
-    .argument('[path]', 'Repository root, defaulting to the current directory')
+    .description('Report skill bodies citing a path no target receives')
+    .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Add a machine-readable record on stdout')
     .addHelpText(
@@ -341,10 +344,12 @@ export function register(program: Command): void {
         '',
         'Scope:',
         '  Every markdown file under claude/skills/, which is the tree that',
-        '  installs into a target. A cited path counts when it sits under an',
-        '  authoring root no install channel delivers and this repository',
+        '  installs into a target, or under .claude/skills/ in a project',
+        '  carrying that corpus alone. A cited path counts when it sits under',
+        '  an authoring root no install channel delivers and the project',
         '  holds it. A path under src/, scripts/, or bare docs/ names the',
-        "  reader's own tree and is not measured.",
+        "  reader's own tree and is not measured, and .claude/context/ joins",
+        "  them when the corpus read is a project's own.",
         '',
         'Exit codes:',
         '  0  every citation names the toolkit as the owner',
@@ -358,6 +363,7 @@ export function register(program: Command): void {
         'Examples:',
         '  aitk claude skills reach',
         '  aitk claude skills reach --json',
+        '  aitk claude skills reach ~/repos/my-project',
         '',
       ].join('\n'),
     )
@@ -367,21 +373,33 @@ export function register(program: Command): void {
 
   skills
     .command('rank')
-    .description('Score the shipped catalog against the routing case corpus')
-    .argument('[path]', 'Repository root, defaulting to the current directory')
+    .description('Score a skill catalog against a routing case corpus')
+    .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Add a machine-readable record on stdout')
+    .option(
+      '--cases <path>',
+      "A project's own case corpus as JSON, replacing the toolkit's",
+    )
     .addHelpText(
       'after',
       [
         '',
         'Scope:',
-        '  TF-IDF cosine similarity over every claude/skills/*/SKILL.md',
-        '  frontmatter description, scored against the hand-authored corpus',
-        '  at src/claude/cases/. A necessary condition rather than a report of',
-        '  real routing behavior: it asks whether the descriptions are',
-        '  separable by the words they use, and Claude Code does not route',
-        '  this way.',
+        '  TF-IDF cosine similarity over every SKILL.md frontmatter',
+        '  description under claude/skills/, or under .claude/skills/ in a',
+        '  project carrying that corpus alone, scored against the',
+        '  hand-authored corpus at src/claude/cases/. A necessary condition',
+        '  rather than a report of real routing behavior: it asks whether the',
+        '  descriptions are separable by the words they use, and Claude Code',
+        '  does not route this way.',
+        '',
+        'The case corpus:',
+        '  --cases takes a JSON array of { "prompt", "expect" } objects, the',
+        '  shape src/claude/cases/ already holds, where expect is a skill',
+        "  folder name. A project's own skills need its own prompts, so the",
+        '  toolkit corpus is not a default anything else can measure against.',
+        '  No standard stands behind the file until a third project needs one.',
         '',
         'Exit codes:',
         '  0  the catalog was read, whether or not a case missed rank one',
@@ -394,6 +412,7 @@ export function register(program: Command): void {
         'Examples:',
         '  aitk claude skills rank',
         '  aitk claude skills rank --json',
+        '  aitk claude skills rank ~/repos/my-project --cases cases.json',
         '',
       ].join('\n'),
     )
@@ -794,12 +813,14 @@ function reportRouting(
 /** What a reader does about the one way the corpus fails to build. */
 const REACH_REFUSALS: Record<ReachRefusal, string> = {
   'no-skills':
-    'No claude/skills/ here, so this tree ships no plugin body to measure.',
+    'Neither claude/skills/ nor .claude/skills/ here, so this project carries no skill body to measure.',
 }
 
 /**
  * Measures the cwd rather than the toolkit root, matching the audit and drift
- * verbs, so a linked worktree reads its own branch instead of `main`.
+ * verbs, so a linked worktree reads its own branch instead of `main`, and a
+ * target carrying `.claude/skills/` alone is in scope the way the audit
+ * already has it.
  */
 function runSkillsReach(
   path: string | undefined,
@@ -830,6 +851,7 @@ function runSkillsReach(
     process.stdout.write(
       `${JSON.stringify({
         root,
+        corpus: report.corpus,
         bodies: report.bodies,
         qualified: report.qualified,
         unqualified: report.unqualified,
@@ -848,7 +870,7 @@ function runSkillsReach(
 function reportReach(report: Extract<ReachReport, { kind: 'measured' }>): void {
   logStep('Corpus')
   logInfo(
-    `${plural(report.bodies, 'shipped file')} read, ${plural(report.qualified.length, 'citation')} already naming the toolkit as owner`,
+    `${report.corpus}: ${plural(report.bodies, 'file')} read, ${plural(report.qualified.length, 'citation')} already naming the toolkit as owner`,
   )
 
   logStep('Unqualified citations')
@@ -865,37 +887,44 @@ function reportReach(report: Extract<ReachReport, { kind: 'measured' }>): void {
   )
 }
 
-/** What a reader does about the one way the measure fails to build. */
+/** What a reader does about each way the measure fails to build. */
 const RANK_REFUSALS: Record<RankRefusal, string> = {
   'no-skills':
-    'No claude/skills/ here, so this tree ships no plugin body to measure.',
+    'Neither claude/skills/ nor .claude/skills/ here, so this project carries no skill body to measure.',
+  'no-cases': 'No case corpus at the path given to --cases.',
+  'bad-cases':
+    'The case corpus is not a JSON array of { "prompt", "expect" } objects.',
 }
 
 /**
  * Measures the cwd rather than the toolkit root, matching the reach and audit
- * verbs, so a linked worktree reads its own branch instead of `main`. The
- * case corpus is the toolkit's own, since a target project ships no cases of
- * its own for a catalog it did not author.
+ * verbs, so a linked worktree reads its own branch instead of `main`, and a
+ * target carrying `.claude/skills/` alone is in scope.
+ *
+ * The toolkit's own cases are the default and answer for this catalog alone.
+ * A project measuring its own skills supplies its own prompts through
+ * `--cases`, since a corpus written against skills it did not author scores
+ * vocabulary it never uses.
  */
 function runSkillsRank(
   path: string | undefined,
   opts: SkillsRankOptions,
 ): number {
   const root = resolve(path ?? process.cwd())
-  const report = scanRank(root, SKILL_CASES)
+
+  let cases: readonly SkillCase[] = SKILL_CASES
+  if (opts.cases !== undefined) {
+    const corpus = loadCaseCorpus(resolve(opts.cases))
+    if (corpus.kind === 'refused') {
+      return refuseRank(root, corpus.reason, corpus.detail, opts)
+    }
+    cases = corpus.cases
+  }
+
+  const report = scanRank(root, cases)
 
   if (report.kind === 'refused') {
-    frameError(RANK_REFUSALS[report.reason])
-    if (opts.json) {
-      process.stdout.write(
-        `${JSON.stringify({
-          root,
-          reason: report.reason,
-          message: RANK_REFUSALS[report.reason],
-        })}\n`,
-      )
-    }
-    return 1
+    return refuseRank(root, report.reason, '', opts)
   }
 
   intro('aitk claude skills rank')
@@ -906,6 +935,7 @@ function runSkillsRank(
     process.stdout.write(
       `${JSON.stringify({
         root,
+        corpus: report.corpus,
         skills: report.skills,
         cases: report.cases,
         rank1: report.rank1,
@@ -920,6 +950,28 @@ function runSkillsRank(
 }
 
 /**
+ * Carries the detail beside the reason, since three refusals share one verb
+ * and only one of them names a path the caller can correct without it.
+ */
+function refuseRank(
+  root: string,
+  reason: RankRefusal,
+  detail: string,
+  opts: SkillsRankOptions,
+): number {
+  const message = RANK_REFUSALS[reason]
+  frameError(detail === '' ? message : `${message} ${detail}`)
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({ root, reason, message, detail })}\n`,
+    )
+  }
+
+  return 1
+}
+
+/**
  * States the corpus and both counts on every run, including a clean one. A
  * miss list alone reads as a verdict on the catalog unless the run also says
  * how many skills and cases it measured against.
@@ -927,7 +979,7 @@ function runSkillsRank(
 function reportRank(report: Extract<RankReport, { kind: 'measured' }>): void {
   logStep('Corpus')
   logInfo(
-    `${plural(report.skills, 'skill')} scored against ${plural(report.cases, 'case')}`,
+    `${report.corpus}: ${plural(report.skills, 'skill')} scored against ${plural(report.cases, 'case')}`,
   )
 
   logStep('Score')

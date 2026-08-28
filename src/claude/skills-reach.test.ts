@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  authoringRootsFor,
   citationsIn,
   isQualified,
   isToolkitOwned,
@@ -71,6 +72,29 @@ describe('isToolkitOwned', () => {
 
   it('should disown a path outside every authoring root', () => {
     expect(isToolkitOwned('src/ui.ts', new Set())).toBe(false)
+  })
+
+  it('should disown a context entry when the roots exclude it', () => {
+    expect(
+      isToolkitOwned(
+        '.claude/context/ci.md',
+        new Set(),
+        authoringRootsFor('.claude/skills'),
+      ),
+    ).toBe(false)
+  })
+})
+
+describe('authoringRootsFor', () => {
+  it('should keep every root when reading the shipped corpus', () => {
+    expect(authoringRootsFor('claude/skills')).toContain('.claude/context/')
+  })
+
+  it("should drop the reader's own dotted roots for a project corpus", () => {
+    const roots = authoringRootsFor('.claude/skills')
+
+    expect(roots).not.toContain('.claude/context/')
+    expect(roots).toContain('standards/')
   })
 })
 
@@ -179,7 +203,54 @@ describe('scanReach', () => {
     expect(report.unqualified).toEqual([])
   })
 
-  it('should refuse when the shipped skill corpus is not on disk', () => {
+  it("should read a target's own corpus and name which one it read", () => {
+    write('standards/intake.md', '# Intake\n')
+    write(
+      '.claude/skills/alpha/SKILL.md',
+      'See `standards/intake.md` for the shape.\n',
+    )
+
+    const report = scanReach(root)
+    if (report.kind !== 'measured') throw new Error('expected a measurement')
+
+    expect(report.corpus).toBe('.claude/skills')
+    expect(report.unqualified).toEqual([
+      {
+        file: '.claude/skills/alpha/SKILL.md',
+        line: 1,
+        path: 'standards/intake.md',
+        qualified: false,
+      },
+    ])
+  })
+
+  it('should not fault a target for citing its own context entry', () => {
+    write('.claude/context/ci.md', '# CI\n')
+    write(
+      '.claude/skills/alpha/SKILL.md',
+      'See `.claude/context/ci.md` for the workflow.\n',
+    )
+
+    const report = scanReach(root)
+    if (report.kind !== 'measured') throw new Error('expected a measurement')
+
+    expect(report.unqualified).toEqual([])
+    expect(report.qualified).toEqual([])
+  })
+
+  it('should prefer the shipped corpus over the internal one', () => {
+    write('standards/intake.md', '# Intake\n')
+    write('claude/skills/shipped/SKILL.md', 'See `standards/intake.md`.\n')
+    write('.claude/skills/internal/SKILL.md', 'See `standards/intake.md`.\n')
+
+    const report = scanReach(root)
+    if (report.kind !== 'measured') throw new Error('expected a measurement')
+
+    expect(report.corpus).toBe('claude/skills')
+    expect(report.bodies).toBe(1)
+  })
+
+  it('should refuse when neither skill corpus is on disk', () => {
     expect(scanReach(root)).toEqual({ kind: 'refused', reason: 'no-skills' })
   })
 })
