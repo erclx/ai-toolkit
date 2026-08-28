@@ -21,6 +21,8 @@ Neither number weighs an arm by what it asserts. An arm can carry a single asser
 
 The scenarios declaring an injection flag were recorded on 2026-08-21 as the first candidates for arming, on the grounds that moving to the real installers narrowed what they receive from all 38 source rules to the 20 in `base` and nothing would detect a scenario depending on a rule outside it. That reads stronger than it is. The flag is a boolean naming no rule, so which scenario depends on which rule resolves by reading the skill bodies rather than by paying for an arm each, and the rule below selects on damage instead. Only `SANDBOX_INJECT_GOV` remains, the standards injection having gone with the install channel. The overlap against the armed arms is still empty and no existing assertion is affected.
 
+The date opening that paragraph is load-bearing rather than tidying, so a later pass rephrasing it has to keep one. That clause puts the quantifier `all` straight against a figure of 38 and then the catalog noun, which is the shape `aitk gov counts` reads, so the figure lands as a whole-catalog claim against a tree holding 69 and only the date reads it past. Correcting the figure instead is the wrong repair, since 38 is what the tree held when the candidates were recorded and the sentence states the grounds of that decision rather than the tree today.
+
 A scenario enumerates from its script under `scripts/sandbox/<category>/`, not from the fixture tree. An unarmed scenario has no fixture directory to find, so counting fixtures would hide exactly the arms the report exists to surface. A declaration sitting at the command root belongs to the unnamed arm and reports as `(default)`.
 
 ## What earns a declaration
