@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.36.0](https://github.com/erclx/aitk/compare/v3.35.1...v3.36.0) (2026-08-28)
+
+
+### Features
+
+* **governance:** give the ci and debugging skills an inbound rule ([#1212](https://github.com/erclx/aitk/issues/1212)) ([9a2fed0](https://github.com/erclx/aitk/commit/9a2fed0d59431fa0e09764d9bafeceabd5d9ff4d))
+
 ## [3.35.1](https://github.com/erclx/aitk/compare/v3.35.0...v3.35.1) (2026-08-28)
 
 
