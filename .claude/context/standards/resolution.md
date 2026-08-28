@@ -59,7 +59,16 @@ A shipped body names one path for a standard, and the command route is what near
 
 The two-branch citation those 38 replaced named an installed path first and the plugin root behind it. Both branches resolved while the corpus still installed, which is what hid a partial sweep, so the collapse ran as one pass rather than riding along with each skill's next edit.
 
-A grep for the installed prefix comes back near-empty now, and one class accounts for the survivors. A line describing a target's stale folder is it, covering `toolkit-cli`, `docs/target-projects.md`, and the ban in `standards/skill.md`. The `paths` glob on `591-standard-authoring` was the second class and the mirror's retirement took it. A write destination naming where a promoted entry lands was the third, covering `claude-memory-review`. Read a survivor against the stale-folder class before calling it a missed citation, and note that no check will find one for you.
+A grep for the installed prefix comes back at 25 lines across 18 files outside the fixture trees, and none of them is a citation. Six classes account for every one, and a line matching none of them is a live citation the sweep missed:
+
+- A target's own stale folder, inert and safe to delete, covering `toolkit-cli`, `docs/target-projects.md`, `docs/agents/records.md`, and the gotcha below.
+- The rule forbidding the citation, covering `standards/skill.md` and `create-standard`'s requirement.
+- A dated record of a past mechanism or measurement, covering `.claude/ARCHITECTURE.md`, `destinations.md`, and `distribution.md`.
+- Fixture or test data, covering `scripts/sandbox/`, `scripts/eval/`, and every `*.test.ts`.
+- A marker-syntax illustration, covering `src/context/citations.ts`.
+- The label-map prefix kept so a diff deleting the folder stays covered, covering `.claude/aitk/pr-labels.toml`.
+
+Run that classification rather than a bare grep. The first sweep moved 64 citations and left three lines stating the mirror as live, in `orchestration.md`, `sandbox/overview.md`, and `scripts/eval.md`, each of which reads as prose about a folder until the rule is applied to it. Nothing here is checkable, so the classification is the whole of the discipline.
 
 The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its second root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in any target. `<aitk>` is how a resolve from that root spells itself, since the other label is project-relative and a report could join it to a root.
 
