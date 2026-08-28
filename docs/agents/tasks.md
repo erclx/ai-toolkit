@@ -28,6 +28,10 @@ Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a war
 
 `bad-input` covers a malformed command line, which all three task verbs answer the same way. It is separate from `ambiguous` and `no-match` because those describe the board, and a caller that passed two selectors would otherwise be sent to repair a task citation that is fine.
 
+The row is matched by the link in its first cell rather than by a pattern against the whole line. A row names the task it is about in the first cell, so a link anywhere after it is a reference, such as a blocker naming what it waits on, and matching the line would drop the referring task's row too.
+
+The row removal reaches `priority.md` alone. A task gets to a merge by being planned and handed out, and both steps move it onto the board first, so one archived straight off `backlog.md` leaves its bullet standing and `aitk tasks validate` reports that bullet as naming a file that is gone.
+
 The board is shared scratch at the main worktree root, so `--root` defaults to the first entry of `git worktree list` rather than the working directory. A linked worktree archives against the same board every other session reads.
 
 Skills branch on the reason rather than on the exit code:
@@ -46,6 +50,8 @@ aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .re
 | `--root <path>` | Board root, defaulting to the main worktree |
 
 The record carries `location`, one of `unstated`, `live`, `archived`, or `outside`, and `citedBy`, the other live tasks whose `Plan:` line lands on the same file. Exit codes: `0` read, `1` refused with `no-board` or `no-match`.
+
+The target resolves against `.claude/tasks/` and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file and one plan two tasks spelled differently counts once.
 
 `aitk tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, so a sweep calling a verb the installed `aitk` predates gets no record back and archives nothing.
 
