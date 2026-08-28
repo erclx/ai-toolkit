@@ -11,11 +11,16 @@
 node_modules/
 
 # Claude
+# Every .claude/ pattern below is checked against the "# Claude" array in
+# tooling/claude/manifest.toml by scripts/core/check-ignore-parity.sh, which
+# holds the reason for each of the two that stays out of it.
 # .records.git holds the backup history for the folders below, not a record itself.
 .claude/.records.git/
-# README.md is the records repository's landing page, written back by records pull.
+# README.md is the records repository's landing page, written back by records
+# pull. Not shipped to a target, which has no records remote to receive it from.
 .claude/README.md
 .claude/.tmp
+# Not shipped to a target, which keeps its own diagrams under the context audit.
 .claude/diagrams/
 .claude/groundwork/
 .claude/intake/

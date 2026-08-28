@@ -12,10 +12,12 @@ import { gitEnv } from '@/git-env'
  * list is spelled out rather than read off that group so adding an ignore entry
  * cannot silently enlarge the payload.
  *
- * `diagrams` and `proposals` are the two names the manifest group does not
- * carry, so a target tracks both where this repository ignores them. That is
- * the second reason to spell the list out: the manifest bounds it rather than
- * producing it, and no count taken off that group matches this one.
+ * `diagrams` is the one name the manifest group does not carry, so a target
+ * tracks it where this repository ignores it. That is the second reason to
+ * spell the list out: the manifest bounds it rather than producing it, and no
+ * count taken off that group matches this one. `scripts/core/check-ignore-parity.sh`
+ * compares the two lists and holds the reason `diagrams` stays apart, so the
+ * one difference is enforced rather than assumed.
  *
  * The manifest group is the one this reads rather than the enclosing
  * repository's own `.gitignore`, which spreads the same entries across two

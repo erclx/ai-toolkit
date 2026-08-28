@@ -207,6 +207,8 @@ The census counts `claude/skills/`, not `.claude/skills/`. The second holds tool
 
 The ship-time pairing audit reads it. `aitk-sandbox-check` used to prompt whenever its own `<category>/<rest>.sh` split found no file, and the answer was a per-run label that reached nothing, so the next branch touching the same skill asked again. It now resolves the skill here first, taking the `scenarios` entry as the pairing and the verdict as the report.
 
+The census reaches skills alone, so the audit's script mapping keeps a prompt of its own and `scripts/core/` is the domain that meets it on every branch. No `infra/core.sh` exists and none should: those scripts are the check runner and the guards it calls, exercised by every `bun run check` rather than by a provisioned target. The standing answer is `none`, and it is recorded here because the prompt has no census row to read it from and would otherwise be re-decided each time.
+
 The prompt survives where evidence of a scenario outlives both spellings. Eleven skills are carried with no scenario, and two of them have a file at `infra/<rest>.sh`: `setup-gov` and `setup-indexes`. The audit offers that path and records neither answer on its own, because the file proves a scenario exists rather than proving it exercises the skill.
 
 `setup-gov` against `infra/gov.sh` is a real pairing. `setup-indexes` against `infra/indexes.sh` is the other, and it settles what the file alone cannot, since the scenario declares a `bootstrap` arm whose own log line names the skill it seeds for. Neither spelling reaches either one, because no `setup` category exists and both sit under `infra/`.
