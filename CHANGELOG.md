@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.42.0](https://github.com/erclx/aitk/compare/v3.41.1...v3.42.0) (2026-08-28)
+
+
+### Features
+
+* **skills:** add migration-standards-drop for the standards tree ([#1238](https://github.com/erclx/aitk/issues/1238)) ([174d649](https://github.com/erclx/aitk/commit/174d6497614fa3e9ce9d8effe7c5bb5ddb70316b))
+
 ## [3.41.1](https://github.com/erclx/aitk/compare/v3.41.0...v3.41.1) (2026-08-28)
 
 
