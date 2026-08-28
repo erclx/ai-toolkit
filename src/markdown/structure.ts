@@ -19,12 +19,19 @@ const HEADING = /^#{1,6}\s/
  * headings was the alternative and it clears no plan already written, leaving
  * each flagged until someone rewrites it.
  *
- * The whole trimmed line has to be the marker. A bold phrase opening a sentence
- * is emphasis rather than a seam, and this ships as package data every project
- * reads, so a missed break costs one unbroken run where a false one costs a
- * measure that stops reporting.
+ * The marker starts at column zero and carries a colon, and the whole line is
+ * the marker or none of it is. A bold phrase opening a sentence is emphasis
+ * rather than a seam, and an indented one is a label inside a list item, so
+ * both stay prose. This ships as package data every project reads, where a
+ * missed break costs one unbroken run and a false one shortens every run around
+ * it until the measure stops reporting, which is the dearer of the two.
+ *
+ * The colon is what a colon-less `**Testing**` is held out by, and that shape
+ * is a real section marker in a review body rather than a hypothetical. Widening
+ * to reach it moves the shipped pattern rather than the wording, so the rule
+ * states the colon and the widening stays open for a decision of its own.
  */
-const SECTION_MARKER = /^\*\*[^*]+:\*\*$/
+const SECTION_MARKER = /^\*\*[^*]+:\*\*\s*$/
 
 const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
 const TABLE_ROW = /^\s*\|/
@@ -268,8 +275,9 @@ function isTableRun(run: readonly BodyLine[]): boolean {
 /**
  * Measures the longest run of lines no signpost breaks, in rendered lines.
  *
- * A heading breaks a run and so does a section marker holding its own line,
- * which is the same signpost written the way a template asked for it.
+ * A heading breaks a run and so does a section marker, which is the same
+ * signpost written the way a template asked for it. `SECTION_MARKER` above
+ * fixes which lines qualify.
  *
  * Fenced lines are skipped rather than treated as breaks, per the standard:
  * they leave the count without ending the run, so prose either side of an
@@ -317,7 +325,7 @@ export function longestRun(
   for (const line of lines) {
     if (line.fenced) continue
 
-    if (HEADING.test(line.text) || SECTION_MARKER.test(line.text.trim())) {
+    if (HEADING.test(line.text) || SECTION_MARKER.test(line.text)) {
       close()
       continue
     }

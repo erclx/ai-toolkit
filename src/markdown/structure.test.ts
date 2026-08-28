@@ -171,6 +171,35 @@ describe('longestRun', () => {
     expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
   })
 
+  it('should refuse the break to an indented section marker', () => {
+    const half = prose(30)
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n  **Risks:**\n\n${half}\n`
+
+    // An indented marker is a label inside a list item rather than a document
+    // seam. A false break shortens every run around it, which is the direction
+    // that quietly stops the measure reporting.
+    expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+
+  it('should refuse the break to a bold section marker carrying no colon', () => {
+    const half = prose(30)
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Testing**\n\n${half}\n`
+
+    // A real section marker the narrow pattern holds out. Review bodies write
+    // this shape, so widening to reach it is a decision about the shipped
+    // pattern rather than a wording fix.
+    expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+
+  it('should break on a section marker carrying trailing whitespace', () => {
+    const half = prose(30)
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Risks:**  \n\n${half}\n`
+
+    // Column zero is what the pattern anchors, so a trailing space cannot cost
+    // a break the author wrote.
+    expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)
+  })
+
   it('should refuse the break to a bold phrase sharing its line with prose', () => {
     const half = prose(30)
     const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Emphasis:** and the sentence carries on.\n\n${half}\n`
