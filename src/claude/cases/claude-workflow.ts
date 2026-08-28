@@ -120,7 +120,7 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt:
-      'You are a worker session on this branch. What may you not touch while you build?',
+      'I am building this branch for another session. What am I on the hook for, and what is off limits?',
     expect: 'claude-worker',
   },
   {
