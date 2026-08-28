@@ -59,7 +59,7 @@ Removing `plugin.json` from the subdirectory changes none of it. The manifest go
 
 The shape that narrows in this layout is a curated root holding one symlink per kept skill and no `skills/` directory, with the entry naming each path. The full entry loads 63 skills at roughly 8,100 always-on tokens, and a four-skill curated entry loads 4 at roughly 330. Install dereferences the symlinks the way it does `claude/standards`, so the cache holds real directories at 104K against 964K for the full plugin.
 
-What that shape drops is the standards fallback. Install copies the named skill directories alone, so no `standards/` sibling arrives, and a skill sitting one level under the curated root rather than two under the plugin root resolves `${CLAUDE_SKILL_DIR}/../../standards/X.md` to nothing. That reaches 37 of the 59 shipped bodies, which all lose their fallback at once, and a curated entry has to answer it before one ships.
+What that shape drops is the standards fallback. Install copies the named skill directories alone, so no `standards/` sibling arrives, and a skill sitting one level under the curated root rather than two under the plugin root resolves `${CLAUDE_SKILL_DIR}/../../standards/X.md` to nothing. That reaches 40 of the 63 shipped bodies, which all lose their fallback at once, and a curated entry has to answer it before one ships.
 
 ### The install ref reads as malformed
 
