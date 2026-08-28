@@ -4,6 +4,7 @@ applestyleguide
 argjson
 asciinema
 asyncio
+autocompact
 axios
 backgrounded
 bierner
