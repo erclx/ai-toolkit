@@ -261,7 +261,7 @@ main() {
 
   log_step "Consumed copies"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-claude-copies.sh" "Consumed-copy regen failed"
-  assert_no_drift ".claude/snippets .claude/internal .claude/rules" "Consumed copies drifted. Run bun run check and commit .claude/snippets, .claude/internal, and .claude/rules."
+  assert_no_drift ".claude/rules" "Consumed copies drifted. Run bun run check and commit .claude/rules."
   log_info "Consumed copies clean"
 
   # Only the HTML is asserted. The PNG beside it is a chromium render whose bytes

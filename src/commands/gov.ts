@@ -774,9 +774,9 @@ function runList(opts: ListOptions): number {
 }
 
 /**
- * Silent on success so the consumed-copy stage that calls it stays as quiet as
- * the three `mirror_dir` lines it sits beside. The installed set is readable on
- * disk, so printing it would only add noise to every `bun run check`.
+ * Silent on success so the consumed-copy stage that calls it stays quiet. It is
+ * the only work that stage does now. The installed set is readable on disk, so
+ * printing it would only add noise to every `bun run check`.
  */
 async function runRegen(opts: RegenOptions): Promise<number> {
   const result = await regenConsumedRules(resolve(opts.root ?? PROJECT_ROOT))
