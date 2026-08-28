@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.41.1](https://github.com/erclx/aitk/compare/v3.41.0...v3.41.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **claude:** resolve a task path through the plan it names ([#1237](https://github.com/erclx/aitk/issues/1237)) ([bd06e28](https://github.com/erclx/aitk/commit/bd06e28e70e87c6760a05dac36af570fa3b07346))
+
 ## [3.41.0](https://github.com/erclx/aitk/compare/v3.40.0...v3.41.0) (2026-08-28)
 
 
