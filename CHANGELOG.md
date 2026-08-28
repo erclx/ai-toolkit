@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.42.1](https://github.com/erclx/aitk/compare/v3.42.0...v3.42.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **verify:** gate tests on the corpora a src test asserts over ([#1241](https://github.com/erclx/aitk/issues/1241)) ([2685b56](https://github.com/erclx/aitk/commit/2685b56d1e1ef6e457990cc8df5c6594017afa93))
+
 ## [3.42.0](https://github.com/erclx/aitk/compare/v3.41.1...v3.42.0) (2026-08-28)
 
 
