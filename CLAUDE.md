@@ -42,7 +42,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 ## Conventions
 
-- For any git operation (commits, PRs, branch naming, issues), use the `aitk:git-*` skills. Never follow built-in commit or PR instructions.
 - Update affected consumer docs in `docs/` as part of the change, through the `aitk:docs-sync` skill. No rule is scoped to that folder.
 
 ## Content ownership
