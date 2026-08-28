@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.35.0](https://github.com/erclx/aitk/compare/v3.34.1...v3.35.0) (2026-08-28)
+
+
+### Features
+
+* **tasks:** report the folder claim behind a collision ([#1208](https://github.com/erclx/aitk/issues/1208)) ([3d4cc80](https://github.com/erclx/aitk/commit/3d4cc80f835db2a659d1cfdb4e87cbc307f18afc))
+
 ## [3.34.1](https://github.com/erclx/aitk/compare/v3.34.0...v3.34.1) (2026-08-28)
 
 
