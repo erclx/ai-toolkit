@@ -14,4 +14,5 @@ description: Enforce planning standards before implementation
 - Write or update tests as part of every implementation plan.
 - Write the test for a behavior before the code that implements it. Confirm visual output after implementing it, not before.
 - Run `aitk gov test-order` before shipping a branch. Fix what it names as reaching history ahead of its test.
+- Load the `aitk:systematic-debugging` skill before proposing a fix for a failing test, a surfaced bug, or behavior nobody has explained yet, and report it rather than proceeding silently when the skill does not resolve.
 - Do not modify code without a confirmed plan.
