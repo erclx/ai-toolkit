@@ -1,12 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-
-/**
- * The tree that installs into a target. The internal skills under `.claude/`
- * never leave this repository, so a citation there is read by a session that
- * already has the file and cannot be a reach defect.
- */
-const SHIPPED_SKILLS = join('claude', 'skills')
+import { resolveSkillsCorpus } from '@/claude/skills-list'
 
 /**
  * The authoring roots this repository owns and no install channel delivers.
@@ -71,6 +65,8 @@ export type ReachRefusal = 'no-skills'
 export type ReachReport =
   | {
       readonly kind: 'measured'
+      /** The corpus spelling read, since a root can carry either one. */
+      readonly corpus: string
       /** Files opened, so a report can state what the verdict covers. */
       readonly bodies: number
       readonly qualified: readonly Citation[]
@@ -80,6 +76,25 @@ export type ReachReport =
 
 export function isQualified(line: string): boolean {
   return QUALIFIER.test(line)
+}
+
+/**
+ * The roots that belong to the toolkit rather than to the reader, read
+ * against the corpus being measured.
+ *
+ * A target's `.claude/context/` is the reader's own tree. A seed put the
+ * entries there and the project owns them afterward, so a body under
+ * `.claude/skills/` citing one names a file its reader holds. Measuring it
+ * would report a correct citation on every run, which is exactly why `src/`
+ * and `scripts/` are absent from the list above. In this repository the seed
+ * tree settles the same question through `readReceivedPaths`, which a target
+ * carrying no `tooling/` folder cannot answer at all, so the root comes out
+ * by corpus instead.
+ */
+export function authoringRootsFor(corpus: string): readonly string[] {
+  if (!corpus.startsWith('.claude/')) return AUTHORING_ROOTS
+
+  return AUTHORING_ROOTS.filter((root) => !root.startsWith('.claude/'))
 }
 
 /**
@@ -113,7 +128,11 @@ export function readReceivedPaths(root: string): Set<string> {
  * outgrows one file becomes `<domain>/`, which is still the entry the seed
  * delivered, so reporting the split form would fail a target for growing.
  */
-export function isToolkitOwned(path: string, received: Set<string>): boolean {
+export function isToolkitOwned(
+  path: string,
+  received: Set<string>,
+  roots: readonly string[] = AUTHORING_ROOTS,
+): boolean {
   if (received.has(path)) return false
 
   for (const seeded of received) {
@@ -121,7 +140,7 @@ export function isToolkitOwned(path: string, received: Set<string>): boolean {
     if (stem !== seeded && path.startsWith(`${stem}/`)) return false
   }
 
-  return AUTHORING_ROOTS.some((prefix) => path.startsWith(prefix))
+  return roots.some((prefix) => path.startsWith(prefix))
 }
 
 /**
@@ -135,6 +154,7 @@ export function citationsIn(
   file: string,
   text: string,
   received: Set<string>,
+  roots: readonly string[] = AUTHORING_ROOTS,
 ): Citation[] {
   const citations: Citation[] = []
 
@@ -144,7 +164,7 @@ export function citationsIn(
     for (const match of line.matchAll(TOKEN)) {
       const path = match[1]
       if (!CONCRETE.test(path) || !path.includes('/')) continue
-      if (!isToolkitOwned(path, received)) continue
+      if (!isToolkitOwned(path, received, roots)) continue
 
       citations.push({ file, line: index + 1, path, qualified })
     }
@@ -154,20 +174,27 @@ export function citationsIn(
 }
 
 /**
- * Reads every shipped body for a path its reader cannot open.
+ * Reads every body in the root's skill corpus for a path its reader cannot
+ * open.
  *
  * A citation of a path this repository does not hold is dropped rather than
  * reported. The measure asks whether a claim true here is false in a target,
  * and a path true in neither is a different defect that `aitk context audit`
  * already reports against its own corpus.
+ *
+ * `resolveSkillsCorpus` prefers `claude/skills/`, which is the tree that
+ * installs into a target, so this repository's own reading is the one it
+ * always was. A project carrying `.claude/skills/` alone has no shipped tree
+ * and its own skills are the whole corpus a reader there opens.
  */
 export function scanReach(root: string): ReachReport {
-  const skillsRoot = join(root, SHIPPED_SKILLS)
-  if (!existsSync(skillsRoot)) return { kind: 'refused', reason: 'no-skills' }
+  const corpus = resolveSkillsCorpus(root)
+  if (corpus === undefined) return { kind: 'refused', reason: 'no-skills' }
 
   const received = readReceivedPaths(root)
+  const roots = authoringRootsFor(corpus.rel)
   const files = [
-    ...new Bun.Glob('**/*.md').scanSync({ cwd: skillsRoot, onlyFiles: true }),
+    ...new Bun.Glob('**/*.md').scanSync({ cwd: corpus.dir, onlyFiles: true }),
   ].sort()
 
   const qualified: Citation[] = []
@@ -175,12 +202,13 @@ export function scanReach(root: string): ReachReport {
 
   for (const file of files) {
     const posix = file.replaceAll('\\', '/')
-    const text = readFileSync(join(skillsRoot, file), 'utf8')
+    const text = readFileSync(join(corpus.dir, file), 'utf8')
 
     for (const citation of citationsIn(
-      `${SHIPPED_SKILLS.replaceAll('\\', '/')}/${posix}`,
+      `${corpus.rel}/${posix}`,
       text,
       received,
+      roots,
     )) {
       if (!existsSync(join(root, citation.path))) continue
 
@@ -189,5 +217,11 @@ export function scanReach(root: string): ReachReport {
     }
   }
 
-  return { kind: 'measured', bodies: files.length, qualified, unqualified }
+  return {
+    kind: 'measured',
+    corpus: corpus.rel,
+    bodies: files.length,
+    qualified,
+    unqualified,
+  }
 }

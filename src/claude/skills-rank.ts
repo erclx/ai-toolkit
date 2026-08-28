@@ -1,6 +1,5 @@
-import { existsSync } from 'node:fs'
-import { join } from 'node:path'
-import { listSkills } from '@/claude/skills-list'
+import { existsSync, readFileSync } from 'node:fs'
+import { listSkillsAt, resolveSkillsCorpus } from '@/claude/skills-list'
 
 /**
  * Whether a prompt reaches the right skill, measured by TF-IDF cosine
@@ -13,8 +12,6 @@ import { listSkills } from '@/claude/skills-list'
  * ran once against this catalog and named the collisions this measure now
  * tracks on a cadence.
  */
-
-const SKILLS_DIR = join('claude', 'skills')
 
 const STOP = new Set(
   'a about after again all also and any are as at be before but by can do does for from has have help how in into is it its just make not of on or our so that the then there these this to use used uses using want was what when where which who why with you your run'.split(
@@ -44,11 +41,25 @@ export interface Miss {
 }
 
 /** Why a measure produced no reading, which is never the same as a clean one. */
-export type RankRefusal = 'no-skills'
+export type RankRefusal = 'no-skills' | 'no-cases' | 'bad-cases'
+
+/** The refusals a case corpus read produces, which the scan itself cannot raise. */
+export type CaseCorpusRefusal = Extract<RankRefusal, 'no-cases' | 'bad-cases'>
+
+export type CaseCorpusReport =
+  | { readonly kind: 'cases'; readonly cases: readonly SkillCase[] }
+  | {
+      readonly kind: 'refused'
+      readonly reason: CaseCorpusRefusal
+      /** What the caller has to change, which the reason alone never says. */
+      readonly detail: string
+    }
 
 export type RankReport =
   | {
       readonly kind: 'measured'
+      /** The corpus spelling measured, since a root can carry either one. */
+      readonly corpus: string
       readonly skills: number
       readonly cases: number
       readonly rank1: number
@@ -60,13 +71,80 @@ export type RankReport =
   | { readonly kind: 'refused'; readonly reason: RankRefusal }
 
 /**
+ * Reads a project's own case corpus, which is JSON in the shape `SKILL_CASES`
+ * already holds. A target authors its own skills and its own vocabulary, so
+ * the toolkit corpus answers a question no other project asked.
+ *
+ * No standard stands behind the shape until a third project needs one, so
+ * every way the file fails is reported with what to change rather than
+ * measured against a spec. An empty array refuses for the reason a missing
+ * file does: a corpus of nothing scores 0 of 0 and reads as a clean pass.
+ */
+export function loadCaseCorpus(path: string): CaseCorpusReport {
+  if (!existsSync(path)) {
+    return { kind: 'refused', reason: 'no-cases', detail: path }
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(readFileSync(path, 'utf8'))
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error)
+    return { kind: 'refused', reason: 'bad-cases', detail }
+  }
+
+  if (!Array.isArray(parsed)) {
+    return {
+      kind: 'refused',
+      reason: 'bad-cases',
+      detail: 'the file holds something other than an array of cases',
+    }
+  }
+
+  const cases: SkillCase[] = []
+  for (const [index, entry] of parsed.entries()) {
+    const record = entry as Record<string, unknown> | null
+    if (
+      typeof record !== 'object' ||
+      record === null ||
+      typeof record.prompt !== 'string' ||
+      typeof record.expect !== 'string'
+    ) {
+      return {
+        kind: 'refused',
+        reason: 'bad-cases',
+        detail: `case ${index} carries no string prompt or expect`,
+      }
+    }
+
+    cases.push({ prompt: record.prompt, expect: record.expect })
+  }
+
+  if (cases.length === 0) {
+    return {
+      kind: 'refused',
+      reason: 'bad-cases',
+      detail: 'the file holds no cases at all',
+    }
+  }
+
+  return { kind: 'cases', cases }
+}
+
+/**
  * Every shipped skill's frontmatter description, read the way a prompt is
  * matched against it: whole, including the quoted trigger phrases it states.
  * A skill whose frontmatter carries no description contributes no vocabulary
  * and never wins a rank, so it is dropped rather than scored on nothing.
  */
 export function loadCatalog(root: string): RankedSkill[] {
-  return listSkills(root)
+  const corpus = resolveSkillsCorpus(root)
+  return corpus === undefined ? [] : loadCatalogAt(corpus.dir)
+}
+
+/** The same read against a corpus folder the caller already resolved. */
+export function loadCatalogAt(skillsRoot: string): RankedSkill[] {
+  return listSkillsAt(skillsRoot)
     .filter((skill) => skill.description !== '')
     .map((skill) => ({ name: skill.name, description: skill.description }))
 }
@@ -214,22 +292,24 @@ export function measureCases(
 }
 
 /**
- * Reads the shipped catalog off disk and scores it against the given case
- * corpus. Measures the cwd's catalog rather than the toolkit root, matching
- * the reach and audit verbs, so a linked worktree reads its own branch.
+ * Reads whichever skill corpus the root carries and scores it against the
+ * given cases. Measures the cwd's catalog rather than the toolkit root,
+ * matching the reach and audit verbs, so a linked worktree reads its own
+ * branch and a target reads the skills it wrote itself.
  */
 export function scanRank(
   root: string,
   cases: readonly SkillCase[],
 ): RankReport {
-  const skillsRoot = join(root, SKILLS_DIR)
-  if (!existsSync(skillsRoot)) return { kind: 'refused', reason: 'no-skills' }
+  const corpus = resolveSkillsCorpus(root)
+  if (corpus === undefined) return { kind: 'refused', reason: 'no-skills' }
 
-  const catalog = loadCatalog(root)
+  const catalog = loadCatalogAt(corpus.dir)
   const { rank1, top3, misses, unmeasurable } = measureCases(catalog, cases)
 
   return {
     kind: 'measured',
+    corpus: corpus.rel,
     skills: catalog.length,
     cases: cases.length,
     rank1,

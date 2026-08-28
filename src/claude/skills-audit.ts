@@ -43,6 +43,12 @@ export interface SkillFinding {
 }
 
 export interface CorpusReport {
+  /**
+   * Left as `join` produced it, where `SkillsCorpus.rel` in `skills-list.ts`
+   * normalizes the same spelling to POSIX. This one is an existing JSON field
+   * a caller already reads, so the split holds until a branch reading this verb
+   * is the one to close it.
+   */
   readonly rel: string
   readonly skills: number
 }

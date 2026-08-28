@@ -93,6 +93,10 @@ The miss `v61.3` reported is a different prompt and stays open. `toolkit-operato
 
 Rank-one moved to 60 of 70 on the one case this row added, up from 59 of 69, and the miss count holds at 10. Read the move as one new case demonstrating the rule rather than as the corpus closing a count, since the phrase this row resolves and the phrase the earlier report named are not the same one.
 
+The verb now reads a target as well. `resolveSkillsCorpus` in `src/claude/skills-list.ts` answers which corpus a root carries, taking `claude/skills/` ahead of `.claude/skills/` in `CORPORA` order, so every reading taken in this repository is the one it always was and a project holding its own skills alone is measured for the first time. `--cases <path>` replaces the toolkit corpus with a JSON array of `{ prompt, expect }` objects in the shape `src/claude/cases/` already holds, because a project's own skills need its own prompts and a corpus written against a catalog it did not author scores vocabulary it never uses. No standard stands behind the file until a third project needs one, and an empty array refuses rather than scoring 0 of 0, which a reader takes for a clean pass.
+
+The resolver sits beside `listSkills` rather than inside it. `src/counts/catalogs.ts` counts the shipped catalog through that function, so widening the function itself would take the reported total from 62 to 70, falsify every sentence in the corpus stating what ships, and move `assets/hero.html` with it. A measure that reaches a target resolves its own corpus and the counter keeps reading the tree that installs.
+
 ## The context audit
 
 ### What gates and what reports
@@ -413,7 +417,13 @@ A body naming a toolkit path is sometimes correct. A toolkit-scoped instruction 
 
 The first run found eight, all of them real, and the repairs took the count to zero. A check that lands clean is the preventive shape the skill audit already records: what it buys is the regression it stops rather than the backlog it surfaces.
 
-The spec names `no-skills` as an absence, which is the second tracked corpus to override the default. This repository is the only tree that holds `claude/skills/`, so in every project installing the CLI the verb refuses on every run, and reading that as unmeasured would pin the aggregate at `incomplete` there permanently. `aitk claude skills audit` carries the same exposure and writes no record at all on its refusal, so the aggregate cannot tell an absent corpus from a broken verb for that one. Closing it is separate work.
+The spec names `no-skills` as an absence, which is the second tracked corpus to override the default. A project carrying neither `claude/skills/` nor `.claude/skills/` refuses the verb on every run, and reading that as unmeasured would pin the aggregate at `incomplete` there permanently. `aitk claude skills audit` carries the same exposure and writes no record at all on its refusal, so the aggregate cannot tell an absent corpus from a broken verb for that one. Closing it is separate work.
+
+### What a target's own corpus changes
+
+The check reads whichever corpus `resolveSkillsCorpus` finds, so a project holding `.claude/skills/` alone is now measured rather than refused, and the refusal narrows to a tree carrying neither. What the two corpora do not share is which prefixes belong to the toolkit. A seeded path is disowned by reading `tooling/*/seeds/`, and a target carries no tooling tree at all, so nothing disowns anything there and every citation of the project's own `.claude/context/` entry read as a path its reader cannot open.
+
+`authoringRootsFor` drops the dotted roots when the corpus being read is a project's own, on the same reasoning that keeps `src/` and `scripts/` off the list: a body naming one of those describes the reader's own tree, and reporting it is a correct citation on every run. Measured on 2026-08-28 against the two live targets at 16 such citations in `career` and 5 in `life`, enough to exit 2 on both before the split.
 
 ## The routing report
 

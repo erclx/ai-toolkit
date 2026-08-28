@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   buildModel,
+  loadCaseCorpus,
   loadCatalog,
   measureCases,
   type RankedSkill,
@@ -12,8 +13,8 @@ import {
 
 let root: string
 
-function writeSkill(name: string, description: string): void {
-  const path = join(root, 'claude', 'skills', name, 'SKILL.md')
+function writeSkillIn(corpus: string, name: string, description: string): void {
+  const path = join(root, corpus, 'skills', name, 'SKILL.md')
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(
     path,
@@ -21,6 +22,21 @@ function writeSkill(name: string, description: string): void {
       '\n',
     ),
   )
+}
+
+function writeSkill(name: string, description: string): void {
+  writeSkillIn('claude', name, description)
+}
+
+/** A project that wrote its own skills and never shipped a plugin corpus. */
+function writeTargetSkill(name: string, description: string): void {
+  writeSkillIn('.claude', name, description)
+}
+
+function writeCases(name: string, text: string): string {
+  const path = join(root, name)
+  writeFileSync(path, text)
+  return path
 }
 
 beforeEach(() => {
@@ -48,8 +64,86 @@ describe('loadCatalog', () => {
     ])
   })
 
-  it('should return an empty catalog when claude/skills does not exist', () => {
+  it("should read a target's own corpus when no shipped tree is present", () => {
+    writeTargetSkill('alpha', 'Handles alpha requests for the alpha subsystem.')
+
+    expect(loadCatalog(root)).toEqual([
+      {
+        name: 'alpha',
+        description: 'Handles alpha requests for the alpha subsystem.',
+      },
+    ])
+  })
+
+  it('should prefer the shipped corpus over the internal one', () => {
+    writeSkill('shipped', 'The tree that installs into a target.')
+    writeTargetSkill('internal', 'The tree that never leaves this repository.')
+
+    expect(loadCatalog(root).map((skill) => skill.name)).toEqual(['shipped'])
+  })
+
+  it('should return an empty catalog when neither corpus exists', () => {
     expect(loadCatalog(root)).toEqual([])
+  })
+})
+
+describe('loadCaseCorpus', () => {
+  it('should read a JSON array of prompt and expect pairs', () => {
+    const path = writeCases(
+      'cases.json',
+      JSON.stringify([{ prompt: 'name this branch', expect: 'git-branch' }]),
+    )
+
+    expect(loadCaseCorpus(path)).toEqual({
+      kind: 'cases',
+      cases: [{ prompt: 'name this branch', expect: 'git-branch' }],
+    })
+  })
+
+  it('should refuse a path holding no file', () => {
+    const path = join(root, 'absent.json')
+
+    expect(loadCaseCorpus(path)).toEqual({
+      kind: 'refused',
+      reason: 'no-cases',
+      detail: path,
+    })
+  })
+
+  it('should refuse a file that is not JSON at all', () => {
+    const path = writeCases('broken.json', 'not json')
+
+    const report = loadCaseCorpus(path)
+
+    expect(report.kind).toBe('refused')
+    if (report.kind !== 'refused') throw new Error('expected a refusal')
+    expect(report.reason).toBe('bad-cases')
+  })
+
+  it('should name the case whose fields are not both strings', () => {
+    const path = writeCases(
+      'shape.json',
+      JSON.stringify([
+        { prompt: 'fine', expect: 'git-branch' },
+        { prompt: 'missing an expect' },
+      ]),
+    )
+
+    expect(loadCaseCorpus(path)).toEqual({
+      kind: 'refused',
+      reason: 'bad-cases',
+      detail: 'case 1 carries no string prompt or expect',
+    })
+  })
+
+  it('should refuse an empty corpus rather than scoring it a clean pass', () => {
+    const path = writeCases('empty.json', '[]')
+
+    expect(loadCaseCorpus(path)).toEqual({
+      kind: 'refused',
+      reason: 'bad-cases',
+      detail: 'the file holds no cases at all',
+    })
   })
 })
 
@@ -185,7 +279,23 @@ describe('scanRank', () => {
     expect(report.rank1).toBe(1)
   })
 
-  it('should refuse when the catalog is not on disk', () => {
+  it("should measure a target's own corpus and name which one it read", () => {
+    writeTargetSkill('git-branch', FIXTURE[0].description)
+
+    const report = scanRank(root, [
+      {
+        prompt: 'rename this branch to a conventional name',
+        expect: 'git-branch',
+      },
+    ])
+
+    if (report.kind !== 'measured') throw new Error('expected a measurement')
+    expect(report.corpus).toBe('.claude/skills')
+    expect(report.skills).toBe(1)
+    expect(report.rank1).toBe(1)
+  })
+
+  it('should refuse when neither corpus is on disk', () => {
     expect(scanRank(root, [])).toEqual({ kind: 'refused', reason: 'no-skills' })
   })
 })

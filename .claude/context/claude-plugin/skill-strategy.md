@@ -475,6 +475,16 @@ Four of the twenty-two have an identifiable counterpart in the installed marketp
 
 Two of the four comparisons surface a borrow, which takes the standing set from four to six. Neither is taken here, on the test the other four already sit on: each edits a skill body no verdict pass has opened.
 
+## A skill that is not built, and the gate that decides when to ask again
+
+`aitk-skill-eval` was proposed as a thin wrapper composing `claude plugin eval`, which is the one runner that scores whether a skill changes behavior rather than whether it conforms. It is not built, and this is where the reason sits, since a session proposing it again reads this entry before it finds a groundwork folder.
+
+The command is gated. `claude plugin eval`, `claude plugin eval init`, and every target spelling refuse with `` `plugin eval` is currently in early access `` at Claude Code `2.1.250`, and the refusal precedes target parsing, so the resolution question the proposal turns on cannot be measured at all. A wrapper shipped against it would refuse in every target whose operator is not enrolled, and the toolkit would own a body whose failure it caused and cannot explain. Building the guard alone is a `README` line wearing a skill folder, which fails `create-skill`'s second question outright, and building a runner here instead is the forked-curation trap `## Workflow skills and domain-knowledge skills` already names.
+
+Read that as a state on a date rather than a verdict. The gate can lift without notice, and the probe that reopens it is `claude plugin validate <path>`, the one ungated surface in the family nobody has run. `.claude/groundwork/47-skill-eval-resolution/` carries the four dropped alternatives and the enrolment question that closed unanswered.
+
+What shipped instead is the half nothing blocks. `aitk claude skills rank` and `reach` now read a target's own `.claude/skills/` through `resolveSkillsCorpus`, and `rank --cases` takes a project's own prompts as JSON, so the two live targets carrying 23 skills between them can be measured on routing for the first time. Routing against a project's own vocabulary is the axis no external runner will ever cover, because only that project can pose the question.
+
 ## Redundancy audit
 
 Thirteen toolkit skills were compared against community counterparts. All thirteen are kept, one took a borrowed section, and six carry a standing borrow nobody has taken.
