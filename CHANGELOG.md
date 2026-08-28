@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.37.1](https://github.com/erclx/aitk/compare/v3.37.0...v3.37.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **records:** resolve backup pathspecs from the work tree ([#1219](https://github.com/erclx/aitk/issues/1219)) ([51e36f3](https://github.com/erclx/aitk/commit/51e36f38dad8480b73e90af4576b36e15ea500e3))
+
 ## [3.37.0](https://github.com/erclx/aitk/compare/v3.36.1...v3.37.0) (2026-08-28)
 
 
