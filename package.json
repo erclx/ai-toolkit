@@ -1,7 +1,7 @@
 {
   "name": "@erclx/aitk",
   "type": "module",
-  "version": "3.39.0",
+  "version": "3.40.0",
   "description": "Infrastructure and quality tooling for developer workflows",
   "license": "MIT",
   "bin": {
