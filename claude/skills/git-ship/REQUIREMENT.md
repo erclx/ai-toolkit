@@ -25,7 +25,7 @@ The sequence also reaches the remote on work nothing re-checked. This skill is t
 
 ## Must not
 
-- Auto-trigger. Shipping is a decision the user takes, which is what the disabled model invocation encodes.
+- Auto-trigger. Shipping is a decision the user takes, and the tool permission dialog on the push and the pull request is the gate that holds it now that the frontmatter no longer disables model invocation.
 - Fix a failing check. The stop is the point, since a green pull request reached by auto-fix hides what broke.
 - Run the memory Apply phase. Promoting an entry changes how the agent operates and ships as its own change.
 - Attempt a fix for a failing verify. The user is already making one, which is what brought the run back here.
