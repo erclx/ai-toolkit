@@ -47,6 +47,11 @@ export const SETUP_CASES: readonly SkillCase[] = [
   },
   {
     prompt:
+      'This project still carries a copy of the standards folder, get rid of it and point everything at the CLI.',
+    expect: 'migration-standards-drop',
+  },
+  {
+    prompt:
       "Before I run this sync, tell me exactly what it's going to overwrite.",
     expect: 'toolkit-cli',
   },
