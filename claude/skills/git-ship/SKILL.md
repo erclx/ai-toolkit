@@ -10,6 +10,14 @@ Run the full post-feature workflow by invoking each skill in sequence using the 
 
 Do not output any text between steps and do not wait for user input. Tool permission dialogs are the only interrupts allowed. The final output is `✅ Shipped`.
 
+## Verify
+
+Run the verify commands `CLAUDE.md` names (lint, typecheck, tests) before the sequence starts. On a failure, stop: `❌ Verify failed. Fix the reported errors and run /git-ship again.` Make no fix attempt. This skill is the resume point after a stop, so the fix is the one the user is already making.
+
+When `CLAUDE.md` names no verify command, say so on one line and continue. A project with no suite is not a project with a failing one.
+
+Verify runs ahead of the sync skills so a stop leaves the tree exactly as the user left it. Re-running a suite the caller already ran costs one command, and the path it closes is the one that has no other guard: `claude-autoship` verifies at its own Step 3 and then hands four of its stop points straight back here, so a fix made by hand after one of those stops otherwise reaches the remote with nothing re-run.
+
 ## Pre-check
 
 Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If output is empty and there are unstaged changes, run `git add -A` to stage everything before proceeding.
@@ -25,6 +33,8 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 7. Invoke `aitk:git-pr` to push branch and open pull request
 8. After the PR opens, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
 9. If step 1 wrote or updated at least one memory file, invoke `aitk:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If the pen got nothing, skip this step.
+
+A caller wrapping this sequence may act between step 7 and step 8, which is the one gap the order leaves open, since the pull request exists there and nothing has read its checks yet. `claude-autoship` marks the pull request draft in it. Nothing else may go there, and a caller that needs a step anywhere else in the sequence is asking for a change to this body rather than for a place to stand.
 
 Capture leads the sequence because a routed fact lands in a context entry, which is a tracked file. Running it after the pull request opens leaves that edit off the branch entirely, so the fact reaches nothing. Memory files are gitignored either way, which is what hid the ordering while capture wrote only those.
 

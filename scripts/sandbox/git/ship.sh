@@ -85,14 +85,16 @@ EOF
     log_step "Scenario ready: with changelog"
     log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, CHANGELOG.md present, one seeded memory entry"
     log_info "Action:  /git:ship"
-    log_info "Expect:  README updated, changes committed, branch renamed, PR opened, changelog appended"
+    log_info "Expect:  the verify gate finds no command named and says so rather than stopping,"
+    log_info "         then README updated, changes committed, branch renamed, PR opened, changelog appended"
     log_info "         then captures session memory and runs Propose; receipt at .claude/review/memory/memory-review-<slug>.md, Apply not run"
     ;;
   "without-changelog")
     log_step "Scenario ready: without changelog"
     log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, no CHANGELOG.md, one seeded memory entry"
     log_info "Action:  /git:ship"
-    log_info "Expect:  README updated, changes committed, branch renamed, PR opened, changelog step skipped"
+    log_info "Expect:  the verify gate finds no command named and says so rather than stopping,"
+    log_info "         then README updated, changes committed, branch renamed, PR opened, changelog step skipped"
     log_info "         then captures session memory and runs Propose; receipt at .claude/review/memory/memory-review-<slug>.md, Apply not run"
     ;;
   *)

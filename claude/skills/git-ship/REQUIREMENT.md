@@ -9,11 +9,16 @@ description: What the ship chain is for, the gaps it closes, and why it does not
 
 Without this skill, the post-feature sequence runs from memory. Doc sync gets skipped, so the pull request ships with planning docs describing the previous scope, or it runs after staging has already closed and its output never reaches a commit. Chaining by hand is also where a session narrates between steps, which turns one flow into a conversation and invites a decision at every boundary.
 
+The sequence also reaches the remote on work nothing re-checked. This skill is the resume point `claude-autoship` names at four of its stop points, including the one a failed verify takes, so the fix the user makes by hand after that stop is pushed with no suite run against it. Every branch shipped so far passed that verify on its first attempt, which is why the path has produced no instance rather than being closed.
+
 ## Must
 
+- Run the project's verify commands before the sequence starts, and stop on a failure rather than fixing it
+- Say so and continue when the project names no verify command, since silence there reads as a suite that passed
 - Invoke each step through the Skill tool in the stated order and continue without waiting
 - Stage after the sync skills write, so what they produced reaches a commit
 - Emit no text between steps. The sequence is the unit and prose inside it reopens settled decisions.
+- Name the one point a wrapping caller may act at, so a chain built on this one is not left to pick a gap of its own
 - Watch continuous integration to a terminal state, and stop on a failure naming the check
 - Stop memory work at the Propose phase
 
@@ -22,13 +27,15 @@ Without this skill, the post-feature sequence runs from memory. Doc sync gets sk
 - Auto-trigger. Shipping is a decision the user takes, which is what the disabled model invocation encodes.
 - Fix a failing check. The stop is the point, since a green pull request reached by auto-fix hides what broke.
 - Run the memory Apply phase. Promoting an entry changes how the agent operates and ships as its own change.
-- Implement, verify, or review. This chain starts from work already believed done.
+- Attempt a fix for a failing verify. The user is already making one, which is what brought the run back here.
+- Implement or review. This chain starts from work already believed done.
 
 ## Guards
 
+- A failing verify stops the run before the sync skills write, so the tree is left as the user left it
 - A failing check stops the sequence. This is the one place text is allowed between steps.
 
 ## Out of scope
 
-- Implementation, verification, and review, which `claude-autoship` chains ahead of this same sequence. That skill is the full pipeline and this one is the resume point after a stop, which is why the two overlap by design.
+- Implementation and review, which `claude-autoship` chains ahead of this same sequence. That skill is the full pipeline and this one is the resume point after a stop, which is why the two overlap by design. Verification is the one of the three that belongs on both, since a resume point that trusts the caller's verify trusts a run that stopped.
 - The behavior of each step, owned by the skill invoked. This skill owns the order and nothing else.
