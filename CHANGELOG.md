@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.40.0](https://github.com/erclx/aitk/compare/v3.39.0...v3.40.0) (2026-08-28)
+
+
+### Features
+
+* **skills:** reach a target's own corpus from rank and reach ([#1232](https://github.com/erclx/aitk/issues/1232)) ([1829000](https://github.com/erclx/aitk/commit/18290009337d4bd9d649f96b7d0b43b6d715c14a))
+
 ## [3.39.0](https://github.com/erclx/aitk/compare/v3.38.1...v3.39.0) (2026-08-28)
 
 
