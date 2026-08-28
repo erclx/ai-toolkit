@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { $ } from 'bun'
 import { gitEnv } from '@/git-env'
 
@@ -124,19 +124,30 @@ interface GitResult {
 }
 
 /**
- * Runs one git command against the records history.
+ * Runs one git command against the records history, from the work tree.
  *
- * Both flags go on every call. `git --git-dir=<path> init` writes
+ * All three flags go on every call. `git --git-dir=<path> init` writes
  * `core.bare = true`, and an explicit `--work-tree` is what overrides it, so
- * dropping the flag on a single call reads the enclosing project as the tree
+ * dropping that flag on a single call reads the enclosing project as the tree
  * and stages everything in it.
+ *
+ * `-C` is what makes a bare pathspec like `groundwork` mean the work-tree root
+ * wherever the caller stands. Git derives a pathspec prefix from the current
+ * directory, so without it a caller sitting inside `.claude/`, which is every
+ * session in a linked worktree under `.claude/worktrees/<name>/`, prefixes
+ * each name with its own path and matches nothing. The root a caller names
+ * does not reach that prefix, so `--root` cannot stand in for this.
+ *
+ * Both paths are absolute because `-C` takes effect before the other two flags
+ * are read, so a relative root would otherwise send them looking inside the
+ * work tree.
  */
 async function records(root: string, args: string[]): Promise<GitResult> {
-  const gitDir = join(root, RECORDS_GIT_DIR)
-  const workTree = join(root, WORK_TREE)
+  const gitDir = resolve(root, RECORDS_GIT_DIR)
+  const workTree = resolve(root, WORK_TREE)
 
   const result =
-    await $`git --git-dir=${gitDir} --work-tree=${workTree} ${args}`
+    await $`git -C ${workTree} --git-dir=${gitDir} --work-tree=${workTree} ${args}`
       .env(gitEnv())
       .quiet()
       .nothrow()
