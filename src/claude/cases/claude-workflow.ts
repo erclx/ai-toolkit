@@ -119,6 +119,11 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
     expect: 'claude-ux-measure',
   },
   {
+    prompt:
+      'You are a worker session on this branch. What may you not touch while you build?',
+    expect: 'claude-worker',
+  },
+  {
     prompt: 'Get me set up in a fresh Claude Code worktree for this branch.',
     expect: 'claude-worktree',
   },
