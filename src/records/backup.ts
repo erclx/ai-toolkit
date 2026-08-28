@@ -4,18 +4,22 @@ import { $ } from 'bun'
 import { gitEnv } from '@/git-env'
 
 /**
- * The folders a backup carries, relative to `.claude/`. They are the `# Claude`
- * group the claude manifest ships, minus three: `.claude/.tmp`, which is
- * defined as deletable without loss, `.claude/worktrees/`, whose contents
- * belong to the enclosing repository already, and `.claude/.records.git/`,
- * which is the history the other seven are pushed into. The list is spelled out
- * rather than read off that group so adding an ignore entry cannot silently
- * enlarge the payload.
+ * The folders a backup carries, relative to `.claude/`. Most of them are the
+ * `# Claude` group the claude manifest ships, minus three: `.claude/.tmp`,
+ * which is defined as deletable without loss, `.claude/worktrees/`, whose
+ * contents belong to the enclosing repository already, and
+ * `.claude/.records.git/`, which is the history the rest are pushed into. The
+ * list is spelled out rather than read off that group so adding an ignore entry
+ * cannot silently enlarge the payload.
+ *
+ * `diagrams` and `proposals` are the two names the manifest group does not
+ * carry, so a target tracks both where this repository ignores them. That is
+ * the second reason to spell the list out: the manifest bounds it rather than
+ * producing it, and no count taken off that group matches this one.
  *
  * The manifest group is the one this reads rather than the enclosing
  * repository's own `.gitignore`, which spreads the same entries across two
- * headers and carries `.claude/README.md` that no target receives. Subtracting
- * three from that file instead yields eight names against this list of seven.
+ * headers and carries `.claude/README.md` that no target receives.
  *
  * Each entry is a top-level record folder and every archive sits inside the one
  * it archives, so the three former archive entries are covered by their parents
@@ -28,6 +32,7 @@ import { gitEnv } from '@/git-env'
  * tracked so a backup would carry a second copy of committed files.
  */
 export const BACKED_FOLDERS = [
+  'diagrams',
   'groundwork',
   'intake',
   'memory',

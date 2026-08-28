@@ -16,6 +16,7 @@ node_modules/
 # README.md is the records repository's landing page, written back by records pull.
 .claude/README.md
 .claude/.tmp
+.claude/diagrams/
 .claude/groundwork/
 .claude/intake/
 .claude/memory/

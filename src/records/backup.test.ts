@@ -86,6 +86,26 @@ describe('BACKED_FOLDERS', () => {
       BACKED_FOLDERS.filter((folder) => folder.endsWith('-archive')),
     ).toEqual([])
   })
+
+  // Every other assertion in this file reads the list rather than pinning it,
+  // so a name arriving or leaving passes them all. The payload is what a disk
+  // loss would take on one side and what a backup ships to a private remote on
+  // the other, so both directions are worth failing on: a name added by
+  // accident enlarges what leaves the machine, and a name dropped by accident
+  // strands a folder nothing else copies.
+  it('should name exactly the record folders a backup carries', () => {
+    expect([...BACKED_FOLDERS]).toEqual([
+      'diagrams',
+      'groundwork',
+      'intake',
+      'memory',
+      'plans',
+      'proposals',
+      'review',
+      'tasks',
+      'teach',
+    ])
+  })
 })
 
 describe('pushRecords', () => {
