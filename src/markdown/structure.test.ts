@@ -181,13 +181,25 @@ describe('longestRun', () => {
     expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
   })
 
-  it('should refuse the break to a bold section marker carrying no colon', () => {
+  it('should let a short bold section marker carrying no colon break a run', () => {
     const half = prose(30)
     const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Testing**\n\n${half}\n`
 
-    // A real section marker the narrow pattern holds out. Review bodies write
-    // this shape, so widening to reach it is a decision about the shipped
-    // pattern rather than a wording fix.
+    // The fixture that proved the narrow pattern held this shape out, kept in
+    // place asserting the other direction. `claude-pr-review` writes this
+    // marker into every body it posts, so the break is a shipped seam rather
+    // than a hypothetical one.
+    expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)
+  })
+
+  it('should refuse the break to a bold sentence past the marker width', () => {
+    const half = prose(30)
+    const sentence = '**The pass found four things, and it took one read.**'
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n${sentence}\n\n${half}\n`
+
+    // The half of the widening that keeps the measure reporting. A colon-less
+    // bold line is a marker or a sentence set in bold, width is the only signal
+    // separating them, and a false break shortens every run around it.
     expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
   })
 

@@ -61,7 +61,7 @@ Two ban shapes stay unmeasured and the report says so on every run. A multi-word
 
 ### Bullets, paragraphs, and depth
 
-Bullet weight and depth are the checks that moved off `aitk context audit`, carrying what they measured at the time. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run reports past roughly 40 rendered lines, measured at 80 columns, where a heading breaks one and so does a bold section marker taking the whole line at column zero and ending in a colon, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows. Each file reports its longest run alone, so a second run past the checkpoint in the same file is never named.
+Bullet weight and depth are the checks that moved off `aitk context audit`, carrying what they measured at the time. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run reports past roughly 40 rendered lines, measured at 80 columns, where a heading breaks one and so does a bold section marker taking the whole line at column zero, either ending in a colon or running to 30 characters or fewer, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows. Each file reports its longest run alone, so a second run past the checkpoint in the same file is never named.
 
 Every weight and depth measure counts the text a reader is shown. A link reduces to its anchor text and an autolink drops whole, since no reader is shown either destination. A backticked path stays counted, which is where these measures part from the ban scan above: that one blanks a code span so a standard quoting its own banned character does not report itself, and discounting the same span here would under-report a paragraph carrying several. One file holds both span sets and each answers its own question.
 
@@ -136,7 +136,7 @@ Measured at `4b7b13a2` across 444 files with the paragraph checkpoint at 600: 8 
 
 The ban half reached zero, which was the precondition the gate waited on, and it was re-measured against the same corpus at the moment the gate landed. Three sweep slices then took the structural half, and the corpus reports 1 heavy bullet and 22 heavy paragraphs across 6 files on 2026-08-06, every one on a ground the triage record holds as exempt.
 
-Depth is the one measure no slice triaged, so its figure moved with the sweep rather than with the corpus. The break rule widened to bold section markers on 2026-08-28, which drops the count again with no edit to any file, so the 41 above reads against a rule the command no longer runs. Read all four structural counts from a run rather than from this paragraph.
+Depth is the one measure no slice triaged, so its figure moved with the sweep rather than with the corpus. The break rule widened to bold section markers on 2026-08-28 and again to the colon-less ones the same day, and each drop came with no edit to any file, so the 41 above reads against a rule the command no longer runs. Read all four structural counts from a run rather than from this paragraph.
 
 ### What a hit asks of an author
 

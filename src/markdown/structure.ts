@@ -19,19 +19,35 @@ const HEADING = /^#{1,6}\s/
  * headings was the alternative and it clears no plan already written, leaving
  * each flagged until someone rewrites it.
  *
- * The marker starts at column zero and carries a colon, and the whole line is
- * the marker or none of it is. A bold phrase opening a sentence is emphasis
- * rather than a seam, and an indented one is a label inside a list item, so
- * both stay prose. This ships as package data every project reads, where a
- * missed break costs one unbroken run and a false one shortens every run around
- * it until the measure stops reporting, which is the dearer of the two.
+ * The marker starts at column zero and the whole line is the marker or none of
+ * it is. A bold phrase opening a sentence is emphasis rather than a seam, and
+ * an indented one is a label inside a list item, so both stay prose. This ships
+ * as package data every project reads, where a missed break costs one unbroken
+ * run and a false one shortens every run around it until the measure stops
+ * reporting, which is the dearer of the two.
  *
- * The colon is what a colon-less `**Testing**` is held out by, and that shape
- * is a real section marker in a review body rather than a hypothetical. Widening
- * to reach it moves the shipped pattern rather than the wording, so the rule
- * states the colon and the widening stays open for a decision of its own.
+ * A colon ends most markers and not all of them. `claude-pr-review` writes
+ * three colon-less ones into every body it posts, so requiring the colon held a
+ * real seam out. Width stands in where the colon is absent, since a marker is a
+ * label and the shape it has to be told from is a sentence set in bold, and
+ * nothing else on the line separates the two.
+ *
+ * `MARKER_WIDTH` is read off the corpus rather than picked. Across 1,465 bold
+ * lines taking their own line in the records tree at `9960a4d7`, 1,369 of the
+ * 1,373 carrying a colon sit at or under 30 visible characters and all 1,373
+ * sit at or under 50, so 30 is the width this measure already trusts as a
+ * label. Of the 92 colon-less lines, the 54 at or under it read as markers and
+ * the 38 above it are sentences, which is what points the ceiling low.
+ * Terminal punctuation separates nothing here, since 45 of the 48 colon-less
+ * lines at or under 20 characters end in one.
+ *
+ * The width governs the colon-less shape alone. A colon is its own evidence of
+ * a label, and capping the colon form as well takes the break back from four
+ * markers that already have it, which is a change this decision was not asked
+ * to make.
  */
-const SECTION_MARKER = /^\*\*[^*]+:\*\*\s*$/
+const BOLD_LINE = /^\*\*([^*]+)\*\*\s*$/
+const MARKER_WIDTH = 30
 
 const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
 const TABLE_ROW = /^\s*\|/
@@ -273,10 +289,29 @@ function isTableRun(run: readonly BodyLine[]): boolean {
 }
 
 /**
+ * Reports whether a line is a section marker rather than emphasis.
+ *
+ * `BOLD_LINE` fixes the shape and `MARKER_WIDTH` the ceiling the colon-less
+ * half is held to. The width reads visible text, which reduces a link to its
+ * anchor text and leaves a backticked path counted whole, and it is the same
+ * reading `isScannablePeerList` takes above. No marker in the measured corpus
+ * carried a link, so the call costs nothing there and holds the measure to one
+ * definition of length rather than two.
+ */
+function isSectionMarker(text: string): boolean {
+  const marker = text.match(BOLD_LINE)
+  if (!marker) return false
+
+  const label = marker[1]
+
+  return label.endsWith(':') || visibleText(label).length <= MARKER_WIDTH
+}
+
+/**
  * Measures the longest run of lines no signpost breaks, in rendered lines.
  *
  * A heading breaks a run and so does a section marker, which is the same
- * signpost written the way a template asked for it. `SECTION_MARKER` above
+ * signpost written the way a template asked for it. `isSectionMarker` above
  * fixes which lines qualify.
  *
  * Fenced lines are skipped rather than treated as breaks, per the standard:
@@ -325,7 +360,7 @@ export function longestRun(
   for (const line of lines) {
     if (line.fenced) continue
 
-    if (HEADING.test(line.text) || SECTION_MARKER.test(line.text)) {
+    if (HEADING.test(line.text) || isSectionMarker(line.text)) {
       close()
       continue
     }
