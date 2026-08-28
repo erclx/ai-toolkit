@@ -18,7 +18,6 @@ mirror_dir() {
   done < <(find "$src" -type f "${find_args[@]}" | sort)
 }
 
-mirror_dir "$PROJECT_ROOT/standards" "$PROJECT_ROOT/.claude/standards" -name "*.md" -not -path "*/bundled/*"
 mirror_dir "$PROJECT_ROOT/snippets" "$PROJECT_ROOT/.claude/snippets" -name "*.md"
 
 # `internal/` is the surface the plugin does not symlink. Mirrored on its own so

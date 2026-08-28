@@ -1,7 +1,6 @@
 ---
 description: Enforce shape, scope, and success criterion for authoring convention files
 paths:
-  - '.claude/standards/**/*.md'
   - 'standards/**/*.md'
 ---
 

@@ -5,11 +5,15 @@ import { INDEX_FILE, listIndexes } from '@/indexes/walk'
 /**
  * Folder names under `.claude/` audited by default.
  *
- * The index-plus-entry contract on its own over-collects. `.claude/standards/`
- * also carries a generated index beside entries with frontmatter, and auditing
- * it would measure the consumed copy of `standards/` against a rule written for
- * per-domain narrative. This list names the folders `standards/context.md`
- * governs, and `--folder` admits another without an edit here.
+ * A named list rather than the index-plus-entry contract read off disk, so a
+ * generated tree satisfying that contract is never measured against a rule
+ * written for per-domain narrative. This list names the folders
+ * `standards/context.md` governs, and `--folder` admits another without an edit
+ * here.
+ *
+ * It doubles as the citation check's scope, since `citationPattern` spells only
+ * these names. A `.claude/` folder left off the list is never resolved, so a
+ * path into one goes stale silently rather than failing a push.
  */
 export const DEFAULT_FOLDERS: readonly string[] = [
   'context',

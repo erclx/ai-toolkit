@@ -19,7 +19,10 @@ paths:
 ## Which copy to edit and cite
 
 - Edit the authoring root, never the consumed copy under `.claude/`. Regenerate that copy with `bun run check`.
-- Cite `.claude/standards/X.md` from a rule, skill, or seed. Cite `aitk standards <name>` from anything a target reads. <!-- audit-ignore-citations: .claude/standards/X.md -->
+- Cite a standard in the form its carrier resolves. The corpus has no consumed copy, so no single spelling answers on every surface.
+- Cite `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` from a body under `claude/`, which resolves off the `claude/standards` symlink in every plugin cache.
+- Call `aitk standards <name>` from a rule or a seed. Both are read with no skill context, so `${CLAUDE_SKILL_DIR}` expands to nothing there.
+- Cite `standards/<name>.md` from a file that stays in this repository, which is the working root the resolver reads first.
 
 ## Before shipping
 

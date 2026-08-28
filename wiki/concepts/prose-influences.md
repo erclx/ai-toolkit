@@ -5,7 +5,7 @@ description: Industry style guides behind markdown.md and the write-human skill,
 
 # Prose influences
 
-The rules in `.claude/standards/markdown.md` and the `write-human` skill draw from three industry style guides plus AI-specific additions. The standard holds word choice, punctuation, and formatting, and the skill holds voice and cadence, so a rule below is attributed to whichever carrier states it. Source: Google, Microsoft, and Apple, whose guides are linked in the table below.
+The rules in `standards/markdown.md` and the `write-human` skill draw from three industry style guides plus AI-specific additions. The standard holds word choice, punctuation, and formatting, and the skill holds voice and cadence, so a rule below is attributed to whichever carrier states it. Source: Google, Microsoft, and Apple, whose guides are linked in the table below.
 
 ## Industry guides
 
