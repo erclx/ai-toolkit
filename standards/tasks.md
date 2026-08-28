@@ -133,13 +133,7 @@ Add no fourth readiness group in place of this file. The three group names are t
 
 ## Validation
 
-`aitk tasks validate` reads the columns above and reports where a row's claim and the tree disagree: a plan pointer resolving to no file, a task file reached by neither surface, a task on both surfaces or in two groups, and two `## Run now` rows touching a path in common. It also re-takes the two blocker kinds a command can settle, reporting a parked row whose cited task reached the trunk and one whose cited file nothing under `## Run now` still holds. Both halves read a citation out of the cell rather than parsing it into fields, and a row citing neither is reported as untested, which is where the three kinds resting on a person's judgment land. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on. It reports and never writes, so a session fixes the row it names.
-
-A cited task is settled by being archived, or by closing every outcome and carrying a `Pull request:` line the trunk holds. The closed checkbox alone settles nothing, because the ship chain marks outcomes as its first step and opens the pull request several steps later, so a row read off the checkbox reports settled while the branch is still in review. A task that closed every outcome and names no pull request, and one whose pull request the run could not read against the trunk, are both reported as untested. Degrading either back to the checkbox would reproduce the defect under a name claiming it was fixed.
-
-The trunk is read as the clone already holds it, `origin/main` first and local `main` behind it, and no run fetches. A validate happens several times a sweep and a fetch per run is a cost this check does not carry, so a clone behind the remote under-reports rather than claiming work landed.
-
-A task file is accounted for when a row on `priority.md` or a line on `backlog.md` names it, and reported when neither does. One check across both surfaces is what lets a task move between them without the move looking like a dropped file, and a task named by both is reported for the same reason a task in two groups is: it claims two things about itself and only one of them can hold. A project carrying no `backlog.md` is read as an empty backlog rather than refused, which leaves the one-to-one mapping this check ran before the second surface existed.
+`aitk tasks validate` reads the board against the tree, and what it checks, what it refuses on, and what it reports are at `docs/agents/tasks.md`. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on.
 
 ## Filenames
 
@@ -247,30 +241,14 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
+Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns that move, and what it does and what it refuses on are at `docs/agents/tasks.md`.
 
 The archive nests inside `.claude/tasks/` rather than sitting beside it as a flat `.claude/task-archive/`. Nesting is what lets a reader tell the two shapes apart on sight: the flat sibling is what a binary predating this convention still writes, so meeting one names an older checkout rather than a second archive to reconcile against this one.
 
-Two callers reach that command. The `claude-tasks` skill runs it inside a session, and the `post-merge` hook runs it unattended after a pull that merged the work. Both go through the command rather than moving the file themselves, so the two paths cannot drift into archiving differently. Every gate the command applies refuses with a non-zero exit rather than reporting, because a caller with nobody watching cannot act on a warning.
-
 One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/plans/archive/`, sitting inside the folder it archives the same way, and it inherits the board's own ignore entry rather than needing one of its own. The cost is that an archived task does not appear in diffs, which is the cost the live board already carries.
 
-The archive clears a row from `priority.md` and reads no other surface, which holds because a task reaches a merge by being planned and handed out, and both steps move it onto the board first. A task archived straight off the backlog therefore leaves its line standing, and the validator reports that line as naming a file that is gone rather than the board losing it silently.
+Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation, so the sweep runs before the archive rather than after it. The sweep finds its work by scanning the live folder, and a task archived first is beyond its reach for good, leaving the plan with no live task citing it and an archived task pointing at a path nothing will retarget.
 
-Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. The archive clears the task's row from `priority.md` itself, since a shipped task left in the ordering reads as ready to hand a worker. It leaves prose naming the task alone for a person to resolve.
-
-The row is matched by the link in its first cell rather than by a pattern against the whole line. A row names the task it is about in the first cell, so a link anywhere after that is a reference, such as a blocker pointing at what it waits on. Matching the line would delete the referring task's row too, on a board that is gitignored and has nothing to recover it from.
-
-Sweep the plan before archiving the task. The sweep finds its work by scanning the live folder, so a task archived first is beyond its reach for good, and the plan is left with no live task citing it and an archived task pointing at a path nothing will retarget. The archive refuses the last task pointing at a live plan for that reason, which puts the ordering under a gate rather than under a convention the unattended caller cannot follow.
-
-The gate counts the other live tasks citing the same plan rather than reading which folder the plan sits in. A plan several tasks share stays in the live folder by design, because the sweep is correct to leave a plan another live task still cites, so a gate reading the folder alone refuses every one of those tasks and the board and the sweep block each other with neither in the wrong. Counting the citations asks the question the gate means: a plan nothing else holds is one the sweep has yet to reach, and a plan a sibling still holds is one the sweep already decided about.
-
-The count resolves the target against `.claude/tasks/` and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file and one plan two tasks spelled differently counts once. `aitk tasks plan-citations` exposes that count for a caller that wants it, and the gate reads it.
-
-The `claude-docs` sweep states the rule rather than calling that verb, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `aitk` predates gets no record back and sweeps nothing. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
-
-A caller reads the outcome off the record's `reason` field and never off the exit code. An operator's shell profile may wrap `aitk` in a function that runs the binary and then another command, taking its status from the second, which masks an ordinary refusal exactly as it masks an absent verb.
-
-Surviving a shared plan is not the same as sanctioning one. `standards/plan.md` puts one concern in one plan file, so a plan serving several tasks is a shape to correct rather than to build on, and the gate only stops it from deadlocking the board.
+The `claude-docs` sweep states that ordering in its own body rather than reading it back from a command, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `aitk` predates gets no record back and sweeps nothing. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
 
 A task with an open outcome stays on the board. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. The sweep is gated on the same condition, so archiving around an open outcome also leaves the plan behind.
