@@ -20,7 +20,7 @@ Project docs live in `.claude/` at the project root.
 ├── ARCHITECTURE.md  ← technical design decisions
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
-├── diagrams/        ← one Mermaid entry per diagram kind with a generated index.md
+├── diagrams/        ← one Mermaid entry per diagram kind with a generated index.md, redrawn on demand
 ├── tasks/           ← one file per task with a generated index.md, gitignored local scratch
 ├── context/         ← per-domain narrative loaded on demand via index.md
 └── rules/           ← path-scoped governance rules, written by aitk gov install
@@ -95,7 +95,7 @@ An execution that picks other than the suggestion rewrites the `- Suggested:` li
 
 `aitk records validate plans` reports where a plan and that standard disagree: a filename that is not `feature-<slug>.md`, a missing required section, a files-to-touch entry naming no file, and a question carrying a suggestion with no answer slot. The same verb takes `groundwork`, `intake`, `memory`, and `teach`, which are governed the same way and were unreachable for the same reason. Nothing fires it automatically, because all five folders are gitignored and every check the repository runs reads changed files from git. It reports and never writes, since the folders are per-machine scratch with no history to recover a wrong repair from.
 
-`aitk records push` carries these folders off the disk they live on, and `aitk records pull` brings them back. Seven of them are backed: `groundwork`, `intake`, `memory`, `plans`, `review`, `tasks`, and `teach`, each carrying whatever it has archived inside it. The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every path a task file cites stays where it is.
+`aitk records push` carries these folders off the disk they live on, and `aitk records pull` brings them back. Nine of them are backed: `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, each carrying whatever it has archived inside it. The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every path a task file cites stays where it is.
 
 A person points it at a private repository once and both verbs refuse until they have, and `push` refuses when that origin is also a remote of the project, since the payload is the memory pen and the groundwork trails. `.husky/post-merge` runs the push after its archive loop, on every merge rather than only on one that closed a task. See [records](agents/records.md) for the refusal table.
 

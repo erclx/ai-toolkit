@@ -19,7 +19,7 @@ A catalog, a table of cases, or a format spec running past roughly fifteen lines
 
 Each move owes a named branch that skips it. Body lines are paid on every invocation and a reference only when the body sends the session to it, so a block every run dereferences costs a read and saves nothing, and the asymmetry is the entire argument for moving anything. The body keeps the trigger, the skip condition, and the guard, because a run that never reaches the block has to decide that without opening the reference.
 
-That test is what bounds the rule. All three sweeps in `claude-docs` moved on it: a project with no wireframe folder and a diff adding no source signal skips the first two outright, and an architecture record carrying no anchored entry skips the third. The rebase machinery in `claude-address-review` moved because a branch that still merges never reaches it. A reply format the same skill writes on every run stayed, having failed the test.
+That test is what bounds the rule. Every sweep in `claude-docs` moved on it: a project with no wireframe folder skips the first outright, and an architecture record carrying no anchored entry skips the second. A third moved the same way and later retired with the diagram surface, which cost the rule nothing, since a reference deleted with its step is the move working rather than failing. The rebase machinery in `claude-address-review` moved because a branch that still merges never reaches it. A reply format the same skill writes on every run stayed, having failed the test.
 
 ## Applying it is maintenance, not a sweep
 

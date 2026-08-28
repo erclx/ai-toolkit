@@ -64,7 +64,7 @@ Scaffold installs tooling and seeds. It does not fill the planning docs or the d
 
 A machine without a renderer still gets the diagrams and is told which check was skipped.
 
-Each diagram entry records the commit and date it was last verified against, and `aitk:claude-docs` maintains that record on every ship: it annotates an entry whose cited code path left the tree and stubs a kind whose source signal arrived uncovered. The sweep writes frontmatter only, so a diagram's picture and prose change when you redraw them and at no other time.
+Each diagram entry records the commit and date it was last verified against, and nothing maintains that record for you. The folder is redrawn on demand rather than swept on every ship, so `verified` carries the whole signal: an entry whose date sits far behind your branch is due a read, and no pass will name which one. Run `aitk:claude-diagram` again when the code a kind is drawn from moves.
 
 `.claude/ARCHITECTURE.md` carries the same mechanism on the same ship. `aitk:claude-docs` anchors a decision it amends to the paths that decision cites, and reports an anchored decision whose cited path the branch touched.
 

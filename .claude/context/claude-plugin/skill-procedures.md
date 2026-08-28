@@ -165,7 +165,7 @@ An entry describing a cross-cutting rule never refreshes from the diff. `claude-
 
 ### A stub never refires when its real signal arrives late
 
-The uncovered-kinds trigger in `claude-docs` Step 5 fires only when a diff adds a signal and no entry covers that kind, so an entry already drawn from something weaker is never told its real source now exists. `standards/diagrams.md` specifies the components diagram as drawn from `.claude/ARCHITECTURE.md`, the entry predated that file and named a code scan instead, and the commit creating `.claude/ARCHITECTURE.md` added exactly that signal while the sweep emitted nothing. The `stale` half keys on a cited path leaving the tree, so it does not cover this either.
+The trigger this records is retired. `claude-docs` no longer carries a diagram sweep at all, so nothing keys on a signal arriving or a cited path leaving, and `.claude/diagrams/` is redrawn on demand by `claude-diagram` rather than watched on every ship. The defect is kept because the shape outlives the step: an uncovered-kinds trigger fires only when a diff adds a signal and no entry covers that kind, so an entry already drawn from something weaker was never told its real source now existed. `standards/diagrams.md` specifies the components diagram as drawn from `.claude/ARCHITECTURE.md`, the entry predated that file and named a code scan instead, and the commit creating `.claude/ARCHITECTURE.md` added exactly that signal while the sweep emitted nothing. Any later trigger keyed on a signal entering the tree inherits the same blind spot.
 
 ### Pull request detection hits a merged namesake
 
