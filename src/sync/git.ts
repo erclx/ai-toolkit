@@ -164,7 +164,13 @@ export function createPullRequestOpener(target: string): PullRequestOpener {
       const result = await execa(
         'gh',
         ['pr', 'create', '--title', title, '--body-file', '-'],
-        { cwd: target, input: body, reject: false },
+        {
+          cwd: target,
+          input: body,
+          reject: false,
+          env: gitEnv(),
+          extendEnv: false,
+        },
       )
 
       if (result.exitCode !== 0) {
