@@ -19,6 +19,14 @@ Claude Code includes built-in features that overlap with some toolkit skills. Th
 
 Use both: run `claude-review` locally before pushing, then let Code Review catch anything on the PR.
 
+The table covers the pre-push half and stops there. Two more surfaces meet on the pull request itself, and the closing skill-verdict batch measured that gap on 2026-08-28.
+
+The `/code-review` slash command takes a pull request number, a branch, or a path, runs at a chosen effort level, and posts findings back with `--comment` as inline comments or, under `ultra`, with `--post` as one comment from the operator's own account. `claude-pr-review` reaches the same moment and posts under `## Review` while a finding is open and `## Review closed` once a pass carries none.
+
+What separates them is the re-review contract rather than the review. `claude-pr-review` scopes a first pass to the whole change and every later pass to the commits added since, reads the task board for cross-feature context, and refuses a close-out that repeats one already standing. `/code-review` reviews the target it is handed each time and keeps no state between passes.
+
+Use `claude-pr-review` where an orchestrator and a worker trade passes on one pull request, since the heading state is what tells the next pass which half to read. Use `/code-review` for a one-shot read on a pull request nobody is iterating on.
+
 ## Planning
 
 | Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                                                                                                              |
