@@ -134,33 +134,17 @@ Bound the repair at one pass, the way Step 3 bounds verify. When that re-read sh
 
 ## Step 7: ship
 
-Invoke each sub-skill in order via the Skill tool. After each returns, invoke the next immediately. Do not output text between steps.
+Invoke `aitk:git-ship`. That body owns the sequence, being the verify gate, memory capture, both doc syncs, staging, the commit grouping, the branch rename, the pull request, the CI watch, and the scoped memory review, along with the reason each step sits where it does. This step used to restate that list and the two drifted apart with nothing comparing them, so read the order there and never here.
 
-1. `aitk:claude-memory-capture`: route what this session learned to the context entries that own it, and write the residue to `.claude/memory/`
-2. `aitk:claude-docs`: sync `.claude/` planning docs against session decisions, folding in the routed facts
-3. `aitk:docs-sync`: sync public docs against changes since main
-4. Run `git add -A` to stage files the sync skills wrote
-5. `aitk:git-stage`: group staged changes and commit by concern
-6. `aitk:git-branch`: rename the branch to conventional format
-7. `aitk:git-pr`: push and open the pull request
-
-Capture runs first because a routed fact lands in a context entry, which is a tracked file. Running it after `git-pr`, where it used to sit, leaves that edit outside the branch and outside the pull request, so the fact reaches nothing. Memory files stay gitignored either way, which is why the old order was invisible.
-
-After the PR is created, mark it as draft:
+One thing this chain adds. Mark the pull request as a draft as soon as `git-ship`'s pull request step returns, ahead of its CI watch:
 
 ```bash
 gh pr ready --undo
 ```
 
-After marking draft, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status.
+Placement is the whole point of naming it. Marking after the watch leaves the pull request ready to merge for as long as CI runs, which is the window an unattended worker's branch is least supervised.
 
-On all-pass, continue. On any failure, stop and report the failing check with its URL. Do not auto-fix.
-
-8. `aitk:claude-memory-review`: if step 1's capture wrote or updated at least one memory file, propose fixes scoped to those entries, writing the decision-ready receipt while session context is fresh. Skip when capture wrote nothing to the folder, which is the ordinary outcome once routing has taken the domain facts.
-
-Review stays last because its receipt is gitignored and needs nothing from the commit, and because a proposal is worth more once CI has said whether the branch stands.
-
-Stop at the Propose phase. Do not run Apply. Promoting an entry to `CLAUDE.md` or a skill body mutates how the agent operates and ships as its own change, separate from this feature.
+`git-ship` verifies again at its own gate, which repeats this chain's Step 3 on the run where nothing stopped. That cost is deliberate: four of the stop points in the table below hand the run straight back to that body, and a gate the chain skips for being redundant is a gate no resumed run ever meets.
 
 ## Output
 
@@ -175,6 +159,8 @@ Respond with up to five lines:
 ```
 
 Omit the second line if there were no minor findings, and the third if nothing routed. Omit the fourth and fifth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal. A run that routes every fact and writes none is the shape to expect, and it reports three lines.
+
+This block replaces the one `git-ship` closes on rather than following it. The two carry the same three trailing lines and differ on the two above them, since the first names the draft state and the second reports the minor findings Step 6 kept, neither of which that body has a counterpart for. Emitting both reports one run twice and buries the draft under a `✅ Shipped` that does not name it.
 
 ## Failure recovery
 

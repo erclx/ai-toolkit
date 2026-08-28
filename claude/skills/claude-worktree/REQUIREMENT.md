@@ -15,6 +15,8 @@ The tree the entry hands over is also not one the session can run. Dependencies 
 
 A declined request also has to land somewhere. The description turns away a list, cleanup, or rotation request and names no destination, so the session that reads it picks one, while the sibling owning those requests already points back here. One half of a pair carrying the pointer reads as the boundary running one way.
 
+A submodule checkout is the state the entry path reads wrong while reporting nothing. The two directory reads that separate a linked worktree from a plain checkout return the same path there, so the guard passes and every derivation after it takes the submodule for the project: the main root, the plan lookup, and the folder entry builds all resolve inside a tree the superproject tracks as a commit.
+
 A stack that derives its ports from the working directory has the same shape. The number is correct and invisible, and `claude-orchestrate` sends a reader here to read it rather than assign one, so the entry that knows the working directory is the surface that owes it.
 
 ## Must
@@ -44,6 +46,7 @@ A stack that derives its ports from the working directory has the same shape. Th
 ## Guards
 
 - Already inside a linked worktree: stop rather than nesting
+- Inside a submodule checkout: stop and name the superproject, since the two reads that catch a linked worktree return the same path here and everything derived afterward would take the submodule for the project
 - Not a git repository and no creation hook configured: stop
 - Target branch already exists: stop before entering and leave it alone, since resolving it automatically risks the wrong branch
 - Target worktree directory already exists: stop before entering, which is the only read that sees two branches differing by type collapsing onto one name

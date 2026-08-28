@@ -63,7 +63,7 @@ Start a fresh Claude Code session. The diff is sufficient context for both revie
 
 - Invoke `aitk:claude-review` to review all changes since main and output a findings report
 - Fix any valid findings
-- Invoke `aitk:git-ship` to sync docs, commit by concern, rename branch, and open PR
+- Invoke `aitk:git-ship` to run the project's verify commands, sync docs, commit by concern, rename branch, and open PR
 
 ### Parallel features
 
@@ -146,7 +146,7 @@ An empty changed-file list stops the chain rather than counting as prose-only. T
 
 #### Memory in the chain
 
-Both `autoship` and `git-ship` open with `claude-memory-capture`, which sends what the session learned to the surface that owns it. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.claude/memory/`.
+`git-ship` runs its verify gate and then opens on `claude-memory-capture`, which sends what the session learned to the surface that owns it. `autoship` reaches the same step by invoking that skill at its Step 7 rather than restating the order. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.claude/memory/`.
 
 Capture leads rather than trails because a routed fact edits a tracked file, which has to reach the branch before the commit steps run.
 
@@ -226,17 +226,17 @@ This section is the corpus the coverage claim is measured against: every name `a
 
 ### Ship it
 
-| Skill                        | When to use                                                                        |
-| ---------------------------- | ---------------------------------------------------------------------------------- |
-| `aitk:git-ship`              | To run the whole post-feature chain from docs sync through open PR                 |
-| `aitk:claude-memory-capture` | First in that chain, to route what the session learned to the surface owning it    |
-| `aitk:claude-docs`           | When decisions diverged from the plan, or a shipped task needs its outcomes marked |
-| `aitk:docs-sync`             | When a change since main left `README.md` or `docs/` stale                         |
-| `aitk:git-stage`             | When the staged set spans several concerns and wants one commit each               |
-| `aitk:git-commit`            | When the staged set is one concern, or was staged hunk by hand                     |
-| `aitk:git-branch`            | When a branch name needs generating or renaming to conventional form               |
-| `aitk:git-pr`                | When a pull request needs a title and body written from the diff                   |
-| `aitk:claude-memory-review`  | After capture writes an entry, to propose where each one belongs                   |
+| Skill                        | When to use                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------- |
+| `aitk:git-ship`              | To run the whole post-feature chain from the verify gate through open PR              |
+| `aitk:claude-memory-capture` | First skill in that chain, to route what the session learned to the surface owning it |
+| `aitk:claude-docs`           | When decisions diverged from the plan, or a shipped task needs its outcomes marked    |
+| `aitk:docs-sync`             | When a change since main left `README.md` or `docs/` stale                            |
+| `aitk:git-stage`             | When the staged set spans several concerns and wants one commit each                  |
+| `aitk:git-commit`            | When the staged set is one concern, or was staged hunk by hand                        |
+| `aitk:git-branch`            | When a branch name needs generating or renaming to conventional form                  |
+| `aitk:git-pr`                | When a pull request needs a title and body written from the diff                      |
+| `aitk:claude-memory-review`  | After capture writes an entry, to propose where each one belongs                      |
 
 ### After the pull request opens
 

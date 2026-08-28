@@ -11,6 +11,9 @@ Wrap the `EnterWorktree` entry path with name derivation so the user does not pi
 
 - If `git rev-parse --git-dir` and `git rev-parse --git-common-dir` differ, the session is already inside a linked worktree. Stop: `❌ Already in a worktree. Run ExitWorktree first.`
 - If neither command resolves, the session is not in a git repo and no `WorktreeCreate` hook is configured. Stop: `❌ Not a git repository. EnterWorktree needs git or a WorktreeCreate hook.`
+- If the two match and `git rev-parse --show-superproject-working-tree` prints a path, the session is inside a submodule checkout. Stop: `❌ Inside a submodule of <path>. Run this from there instead.`
+
+The submodule guard sits on the matching branch rather than ahead of the first one, and a measurement decided that. Inside a submodule at git 2.43.0 both reads return the same absorbed path under the superproject's `.git/modules/`, so the first guard does not fire and the session proceeds. Every derivation below then reads the submodule as the project: Step 1 resolves the main root to the submodule, the plan lookup reads a `.claude/plans/` the project never wrote, and entry builds `.claude/worktrees/` inside a tree the superproject tracks as a commit. The superproject read is empty in a linked worktree of a submodule and in one of the superproject alike, which is why it separates the two states rather than qualifying the first guard.
 
 ## Step 1: resolve the main worktree root
 

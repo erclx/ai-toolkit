@@ -54,9 +54,17 @@ Measure these three and nothing else:
 
 - **Paint**: Largest Contentful Paint, the moment the largest element in the viewport finishes rendering
 - **Processor**: Total Blocking Time, main-thread time past 50ms per long task between first paint and interactive
-- **Layout**: Cumulative Layout Shift, the summed score of unexpected shifts over the page lifetime
+- **Layout**: Cumulative Layout Shift, the summed score of unexpected shifts over the page lifetime, reported with the elements that shifted
 
 Through Playwright or an MCP server, read them from a `PerformanceObserver` registered before navigation against the `largest-contentful-paint`, `longtask`, and `layout-shift` entry types. Lighthouse reports all three under its JSON audits, so parse rather than re-derive them.
+
+### Attributing the layout figure
+
+A layout score on its own names nothing to look at, and the elements are already in the reading rather than a second measurement. Each `layout-shift` entry carries a `sources` array naming the nodes that moved, so sum each entry's `value` against the nodes its sources name and keep the three largest. Lighthouse carries the same attribution in the `details.items` of its layout-shift audit, which names elements rather than scores in some versions, so report what that audit gives and do not compute a score it withheld.
+
+Take the attribution from the run that produced the median rather than merging all three, so the parts sum to the figure printed beside them. Merging reports shares of a total no run measured.
+
+Identify each element the way the harness names it, which is a selector from Playwright and a node label from Lighthouse. Do not open the source to improve a name. Reading the tree that produced the page is what this skill exists to replace.
 
 Write any probe the harness needs into the project's own test folder, run it, then delete it. Leave no file behind.
 
@@ -83,12 +91,16 @@ These are Google's published Core Web Vitals boundaries, with the Lighthouse lab
 | TBT    | <n>    | `≤ 200ms` | <verdict>                    |
 | CLS    | <n>    | `≤ 0.1`   | <verdict>                    |
 
+Shifted: `<element>` <n>, `<element>` <n>, `<element>` <n>.
+
 Thresholds: Google Core Web Vitals, Lighthouse lab boundary for TBT.
 
 Not measured: network waterfall, bundle size, accessibility, contrast.
 ```
 
-Report the reading and stop there. A remedy for a poor verdict is a change with its own review, so name no fix and edit no source.
+Write `Shifted: nothing recorded.` when the median run logged no shift, and drop any element past the third. A layout figure of zero and a harness that reported no sources are different states, and the line says which one the run met.
+
+Report the reading and stop there. A remedy for a poor verdict is a change with its own review, so name no fix and edit no source. Naming a shifted element stays inside that rule, since it says where the score came from rather than what to do about it.
 
 ### Persist
 

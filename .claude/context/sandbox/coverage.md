@@ -191,6 +191,16 @@ Three runs on 2026-08-28 each passed at 14 asserted and 0 failed with 6 unchecke
 
 The cap stays at 30 against a 10-to-15 spread. Identical assertions across a 50 percent range in turns is what a variable path looks like, so the low end is one route through the reads rather than a floor, and this is the reading `superseded` above could not reach on a sample of one.
 
+### The prompt sets the working directory, and two arms over one tree is what that buys
+
+The runner takes the prompt as a free argument and a session's `Bash` working directory persists across calls, so a prompt opening with `cd vendor` puts every git read the skill makes inside the submodule. `claude:worktree` is the first scenario to use that: `submodule` runs from inside the submodule and asserts the guard, `submodule-root` runs from the superproject root over the same staged tree and asserts that the guard stays silent. Both pass at 4 asserted and 0 failed.
+
+This was first written the other way, as an arm whose guard no headless run could reach, and the reason given was that the runner starts every session at the sandbox root. That half is true and the conclusion did not follow, since the default is not a refusal. Nothing was tried before the note was written, and a review asking whether it had been is what separated the two. Read a claim that the harness cannot drive something as owing one attempt.
+
+What the split does cost is a coupling nothing checks. `Expectation` in `src/sandbox/expect.ts` carries no prompt field, so an arm's assertions are written against a prompt the caller supplies and the two are joined by nothing. Crossing the prompts here swaps both verdicts and the run reports ordinary failures. Each header names the prompt it assumes, which is a convention rather than a check.
+
+A scenario staging a subdirectory read inside its own script is the other mechanism and stays distinct. `infra:standards read` runs `aitk standards skill` from `install/` because the scenario body invokes the command there. The prompt route reaches the skill session's own directory, which no scenario body can set.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
