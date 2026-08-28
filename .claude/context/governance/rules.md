@@ -13,15 +13,17 @@ What earns a rule in the first place, and which standard each one routes to, is 
 
 Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
-| Range     | Domain                                                                                                                                                                            |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                      |
-| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                   |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                        |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                 |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                               |
-| `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring) |
-| `700–799` | ci (GitHub Actions workflow files)                                                                                                                                                |
+| Range     | Domain                                                                                                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                                                                      |
+| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                                                                   |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                                                                        |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                                                                 |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                                                                               |
+| `500–599` | claude and snippets (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring, plus the `@`-reference convention) |
+| `700–799` | ci (GitHub Actions workflow files)                                                                                                                                                                                                |
+
+`snippets/` is the one folder sharing a band rather than holding its own. Its single rule numbers at 505, so the leading digit reads as claude and the folder is what separates them. Every other folder maps one to one, which is why a number states its domain everywhere else.
 
 An eighth range sits outside the table. `900-999` is reserved for a rule a target authored itself, and no shipped rule takes a number in it. `600-699` and `800-899` are what remain of the headroom between the two, held for categories the toolkit has not added. `ci` is the first category drawn from that headroom, opening `700` at a band boundary rather than crowding a range the six original folders already divide.
 

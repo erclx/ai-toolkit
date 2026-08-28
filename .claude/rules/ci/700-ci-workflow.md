@@ -24,7 +24,7 @@ paths:
 
 ## Job dependencies
 
-- Use `needs` for a data dependency or a gate alone. Leave independent jobs unwired so they run in parallel.
+- Use `needs` for a data dependency, where a job consumes another job's artifact, or for a job whose cost is prohibitive against the gate in front of it. Leave every other job unwired so it runs in parallel.
 - Gate E2E on the job that uploads the build artifact.
 - Gate release and deploy on E2E.
 - Emit a deploy, publish, or release job with a placeholder step and name what the caller fills in. Never guess a deploy command.
