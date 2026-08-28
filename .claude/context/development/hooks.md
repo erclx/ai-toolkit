@@ -81,6 +81,8 @@ A hook that is the only enforcer of a rule cannot discard its command's output, 
 
 Three Claude Code settings bound what a long session costs, and they sit in this entry because `.claude/settings.json` is the same file the hooks above register in. This repository sets none of them, and `tooling/claude/seeds/.claude/settings.json` sets none of them either. Two are live in the operator's own `~/.claude/settings.json` and the third is deliberately unset, so this section is the only place the repository says so. A session reading the settings file alone would conclude all three are unconfigured and set them again, possibly to a different value.
 
+Nothing routes that session here. `.claude/settings.json` is JSON and carries no pointer, and no rule under `governance/rules/` is scoped to that path, so the record reaches only a reader who already knows it exists. Closing that gap needs a path-scoped rule, which is a different change from this one.
+
 Every value quoted below was read on 2026-08-28 from `https://code.claude.com/docs/en/settings-reference`, `https://code.claude.com/docs/en/model-config`, `https://code.claude.com/docs/en/cross-session-messaging`, and `https://code.claude.com/docs/en/costs`. A local search ahead of that reading concluded neither of the operator's two asks was reachable and was wrong on both, so read the vendor pages before deciding a knob does not exist.
 
 ### autoCompactWindow
