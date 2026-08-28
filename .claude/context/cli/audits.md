@@ -113,7 +113,7 @@ The rule has a writer as well as a check. `claude-docs` instructs the path form 
 
 ### Folder scope and resolution
 
-The audit's folder scope is a named list rather than the index-plus-entry contract read off disk. `.claude/internal/standards/` satisfies the contract too, and auditing it would measure a generated copy against a rule written for per-domain narrative. `--folder` admits another folder without an edit, which is the escape hatch the contract reading would have given for free.
+The audit's folder scope is a named list rather than the index-plus-entry contract read off disk. `.claude/internal/standards/` satisfied the contract too while its mirror generated it, and auditing it would have measured a generated copy against a rule written for per-domain narrative. `--folder` admits another folder without an edit, which is the escape hatch the contract reading would have given for free.
 
 The named list is also what bounds the citation gate, since `citationPattern` builds its expression from the same names. A `.claude/` folder outside the list is never resolved, so a path into one rots with nothing reporting it. That is how the retired `.claude/standards/` mirror could be deleted with 60-odd live citations still spelling it and no stage going red.
 
@@ -325,7 +325,7 @@ The bullet number stays at 400. Findings sampled at 404, 420, and 458 characters
 
 The paragraph weight number moves from 600 to 700. Samples at 604, 633, and 677 characters each read as an ordinary four-sentence paragraph on one topic, which is a finding reading well past its checkpoint and the signal that the number is low. Density arrives around 760 and is plain by 860, so 700 is where the reading stops being comfortable. The move takes the weight half from 146 findings to 78 and leaves the sentence cap untouched, since 96 of its hits sit at 700 characters or under and fire on sentence count alone.
 
-Generated copies were held out of the sample and moved neither number. The mirrors under `.claude/snippets/`, `.claude/rules/`, and `.claude/internal/`, plus the `.claude/standards/` one retired since, carry findings in 5 files, worth zero bullets and 7 paragraphs, and only one of those 7 is a weight hit while the other 6 fire on the sentence cap. The half the decision was taken on therefore differs by a single finding. Counting them would have weighted an authoring source twice in a decision taken on distribution.
+Generated copies were held out of the sample and moved neither number. The mirror under `.claude/rules/`, plus the `.claude/snippets/`, `.claude/internal/`, and `.claude/standards/` ones retired since, carry findings in 5 files, worth zero bullets and 7 paragraphs, and only one of those 7 is a weight hit while the other 6 fire on the sentence cap. The half the decision was taken on therefore differs by a single finding. Counting them would have weighted an authoring source twice in a decision taken on distribution.
 
 Moving a number in a standard is two edits rather than one. `DEFAULT_CHECKPOINTS` in `src/markdown/structure.ts` holds the value applied when the standard's sentence cannot be parsed, and `structure.test.ts` parses `standards/markdown.md` and asserts the result against that constant, so a number moved in prose alone fails the test and leaves the fallback measuring against the retired figure. The parse is what runs on every ordinary invocation, which is why the mirror is easy to miss and why the test is the thing that catches it.
 
@@ -379,7 +379,7 @@ The 6 split two ways. `wiki/tools/community-mcp-servers.md` and `community-skill
 
 The 23 above is history rather than the number a later run compares against. `.claude/audits/baseline.json` holds the current floor and `aitk audits run` does the comparison, which is the whole reason the record exists: this paragraph told every reader to check a number against a sentence, no surface ran that check, and the corpus reached 110 against it. Do not restate a count here that the record already holds. A figure written into this prose is one nothing compares, which is how the regression stood for two weeks with the measure reporting it on every run.
 
-The generated mirrors reach zero the same way the tree does. A finding under `.claude/snippets/`, `.claude/rules/`, or `.claude/internal/` is fixed at its authoring root and cleared by `bun run check`, so the two never need counting apart once a slice has run, and one number over the whole corpus is what a later run reproduces.
+The generated mirror reaches zero the same way the tree does. A finding under `.claude/rules/` is fixed at its authoring root and cleared by `bun run check`, so the two never need counting apart once a slice has run, and one number over the whole corpus is what a later run reproduces.
 
 Depth is the one measure no slice triaged, and the reading it would start from is not the one any slice recorded. Clearing a paragraph finding adds a blank line inside the run it sat in, per the paragraph above, so the 48 files past the checkpoint measured after this sweep count the sweep as much as the corpus. Triaging it means measuring first rather than reading a figure a paragraph pass moved.
 
