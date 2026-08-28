@@ -102,7 +102,7 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 1. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. Every plan written from here also carries a constraint per track in flight, which the paragraph below this list states.
 2. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 3. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
-4. Hand off. Read `${CLAUDE_SKILL_DIR}/references/orchestrator-dispatch.md` and follow it: check the branch is unclaimed, check the worker cap, then dispatch a background worker with `claude --bg`. Fall back to the human-launch line it replaces when the check refuses, the cap is reached, or the row fails Parallelism against something already in flight.
+4. Hand off. Read `${CLAUDE_SKILL_DIR}/references/orchestrator-dispatch.md` and follow it: check the branch is unclaimed, check the row's file set against every track in flight, then dispatch a background worker with `claude --bg`. Fall back to the human-launch line it replaces when the check refuses, the sets overlap, or a stated reason serializes the row behind something already out.
 5. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate.
    - Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. That runbook holds the routing, and a summary of it here is a second source that drifts from it.
 6. Dispatch the handback. A pass posting anything owed, a finding at any severity or a testing question, tells the session holding that branch to run `claude-address-review`, rather than waiting for a person to relay it. Re-review when the answer lands, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
@@ -128,7 +128,7 @@ Stamp the block with the commit this session read the tree at, which the same se
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
 - Do not spawn a worker with the Agent tool. An in-process subagent shares this session's context and cannot be steered or reached independently, which breaks the property this boundary protects rather than the mechanism it names. The dispatch in `orchestrator-dispatch.md` is a separate `claude --bg` process with its own worktree and its own PR, so it preserves that property instead.
-- Dispatch a background worker only once the collision check in `orchestrator-dispatch.md` clears and the worker cap still has room. Colliding with an existing worktree or session, or exceeding the cap, is what the check and the cap exist to catch, not a judgment call this session makes case by case.
+- Dispatch a background worker only once the collision check in `orchestrator-dispatch.md` clears and the row's file set is disjoint from every track in flight. Colliding with an existing worktree or session is what the check exists to catch rather than a judgment call this session makes case by case. No fixed count binds how many tracks run at once, and Parallelism below states what does.
 - Do not edit tracked files from this session, at any size. The boundary offers no proportionality exception and nothing enforces it.
 - Do not hand a worker anything but a plan, since scope lives there. A plan carries exact diffs only when they are already known, otherwise it states the scope and the open questions and lets the worker write the diff.
 
@@ -196,9 +196,16 @@ No fixed number caps worker tracks. Collision between file sets is what binds, s
 list the files a candidate touches against every track already in flight and open
 it only when the sets are disjoint. What thins as tracks multiply is the review
 attention each output gets, so add a track while you can still review every one
-properly and stop when you cannot.
+properly and stop when you cannot. An operator can also cap this session's
+workers by saying so, and a spoken cap binds for that session rather than
+standing as a number in a file.
 
-Serialize any track that touches a shared wiring seam with another in flight.
+Serialize any track that touches a shared wiring seam with another in flight, and
+serialize one whose sets are disjoint when a stated reason still puts it behind
+another, since two tracks interact in ways no file-set comparison reads. One
+building a skill and one auditing that catalog write nothing in common and the
+audit still counts a denominator the other is moving.
+
 Merge the branch with the smallest shared-file footprint first, and merge a
 branch touching `CLAUDE.md`, a Claude context entry, or a regenerated `index.md`
 last. Have every sibling rebase on the new `main` before the next merge. Two
