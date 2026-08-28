@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.34.1](https://github.com/erclx/aitk/compare/v3.34.0...v3.34.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **markdown:** break a depth run on a bold section marker ([#1202](https://github.com/erclx/aitk/issues/1202)) ([5d96651](https://github.com/erclx/aitk/commit/5d96651692b289a79cdd28ad1dbb4166678538c5))
+
 ## [3.34.0](https://github.com/erclx/aitk/compare/v3.33.1...v3.34.0) (2026-08-28)
 
 
