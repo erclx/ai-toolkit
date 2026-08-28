@@ -39,6 +39,8 @@ The direction above is half of one gap and this is the other half. The Types and
 
 Eleven files bound the exposure. The count reads every file under `src/**/*.test.ts` that resolves a path outside `src/` against the repository root and asserts over what it finds there, and it excludes a test reading a fixture as data. That exclusion is what puts `src/comments/trend.test.ts` outside the set, since it replays fixed git revisions and skips itself when they are unreachable, and `src/commands/exit-code.test.ts`, which copies `src/` and `tsconfig.json` into a temp root and names two paths the guards already admit. `src/gh-invocations.test.ts` and `src/ui.test.ts` resolve the repository root and then walk `src/` alone, so neither reaches a corpus outside the scope either.
 
+A temp root is not the repository root, which is the clause that decides three more. `src/commands/records-migrate.test.ts`, `src/commands/tooling-sync.test.ts`, and `src/records/backup.test.ts` each resolve against an `mkdtempSync` directory, so a sweep reaches all three before it reaches the reason they fall outside. Reading for the resolution form alone returns 18 candidates rather than eleven.
+
 A file reaches the root two ways and a sweep reading for one of them undercounts. Ten of the eleven name a root constant, being `PROJECT_ROOT`, `import.meta.dirname`, or `process.cwd()`, and `src/markdown/bans.test.ts` names none: it passes `.cspell/banned-spellings.txt` to `Bun.file` as a bare relative path that resolves against the runner's working directory. Grep for the implicit form as well as the explicit one, or the count comes back at ten and reads as complete.
 
 Run the file beside its corpus before trusting a green gate that never touched `src/`:
@@ -59,7 +61,11 @@ The two directions split the eleven five and six. Five assert over a `.sh` file,
 
 **The decision**
 
-The stage stays scoped. Widening Tests to admit these corpora puts the suite on every prose branch, and it is the most expensive stage in the gate at 11.76 CPU seconds against a total near 31, in a repository where most branches are markdown. Both known failures were caught by CI within minutes, so the cost of the gap is a red pipeline rather than a defect reaching main. What would argue for widening anyway is a count no reader holds in their head, and eleven pairs is past that, so the widening is queued rather than declined and nothing here has taken it.
+The stage stays scoped. Widening Tests to admit these corpora puts the suite on every prose branch, and it is the most expensive stage in the gate at 11.76 CPU seconds against a total near 31, in a repository where most branches are markdown. Both known failures were caught by CI within minutes, so the cost of the gap is a red pipeline rather than a defect reaching main.
+
+What would argue for widening anyway is a count no reader holds in their head, and eleven pairs is past that, so the scoping is open rather than settled and this entry did not decide it. `v67.7` on the task board carries that decision, which is where the reasoning for whichever way it goes will sit.
+
+Naming a board row is what keeps the sentence above from claiming a queue nothing holds, and the row is gitignored, so a reader without this checkout's board resolves nothing through it. What that reader needs is here instead: eleven is the count, `bun run check:ci` passes `--all` so CI runs the full suite either way, and the case against widening is the 11.76 CPU seconds on a branch that is usually markdown.
 
 This entry is the only carrier and it reaches a reader who has already opened it. Neither direction fires on the branch that trips it, so writing the gap down changed what a reader can find and changed nothing about what the gate does.
 
