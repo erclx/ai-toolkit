@@ -73,7 +73,9 @@ Suppressing the pass was the first alternative and it fails twice. A reader scan
 
 A sixth heading was the other alternative, and the five-heading set closes it outright. `poll.sh` matches those five in jq and reports anything else as `UNMATCHED`, so a `## Superseded` would break the classification it would be invented to clarify.
 
-What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's prior commit and the one `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and the poll reports the head as moved rather than as covered. Each errs toward more reading, and repairing either needs a second mechanism carrying the covered head outside the field GitHub pins.
+What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's prior commit and the one `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and repairing it needs a second mechanism carrying the covered head outside the field GitHub pins.
+
+`poll.sh`'s `SEEN` branch is the sharper half and it was measured rather than assumed. That branch fires on `prior` equalling the head, which a pinned `commit.oid` never reaches, so an out-of-band pass over this pull request reports as `MOVED` for the rest of its life. It is one wasted dispatch per head move and not a repeating one: `FINAL` writes the head the run observed back to the baseline every tick and the report gates on `old_head`, so `head != old_head` fires once per move whatever `prior` says. A review pass read it as a loop posting every three minutes, which the baseline write rules out.
 
 The guard fires on `## Review closed` alone. Two open passes carry different findings and both are worth reading, so a repeated `## Review` stays an ordinary post. Measured 2026-08-28.
 

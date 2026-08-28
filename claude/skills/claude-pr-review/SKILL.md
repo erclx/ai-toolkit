@@ -220,6 +220,8 @@ Close the body with `🤖 Reviewed by Claude Code` on its own line so the review
 
 Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
 
+Do not run the command below when `<prior-heading>` from Step 2 reads `## Review closed` and this pass carries nothing owed. That pass replaces the standing comment rather than adding one, under `### A close-out that repeats the standing one` at the end of this step. Posting first and reaching that section afterward leaves two close-outs both naming the new head, which is worse than the pair the guard exists against.
+
 ```bash
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md
 ```
@@ -266,7 +268,9 @@ gh api -X PUT repos/{owner}/{repo}/pulls/<number>/reviews/<review-id> -F body=@<
 
 The guard fires on `## Review closed` alone. Two open passes carry different findings and both are worth reading, so a repeated `## Review` posts normally. A pass carrying anything owed posts normally too, under `## Review`, which is what keeps a finding raised after a close-out from being swallowed by the guard that exists for a silent one.
 
-What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's `<prior-oid>` and the prior commit `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and the poll reports the head as moved rather than as already covered. Each errs toward more reading, so neither is repaired here.
+What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's `<prior-oid>` and the prior commit `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and its commit count spans back to the pinned commit rather than covering the delta.
+
+The poll's `SEEN` branch is the sharper half. It fires on `prior` equalling the head, which a pinned `commit.oid` never reaches, so an out-of-band pass over this pull request reports as `MOVED` for the rest of its life and never as already covered. That is one wasted dispatch per head move rather than a repeating one, since the poll gates its report on the head it wrote to its own baseline and not on `prior`. Each cost errs toward more reading, so neither is repaired here.
 
 ## Step 5: output
 
