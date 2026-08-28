@@ -9,6 +9,8 @@ description: How a skill is invoked, the split between the two task-board writer
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
+A chain naming a skill the model cannot invoke stops at that step. `claude-autoship` Step 7 instructs invoking `aitk:git-ship`, which carries `disable-model-invocation`, so the Skill tool refuses it and the run halts one step short of shipping with the whole branch built. The chain's failure-recovery table has no row for it, since its `git-ship fails` row assumes the body ran and met a hook or a remote error. The operator resumes by typing `/aitk:git-ship`, and autoship's one addition to that sequence, marking the pull request a draft between the pull request step and the CI watch, reaches nobody on that path unless someone runs `gh pr ready --undo` by hand. A flag is a fact about who may start a skill rather than about who may name it, so a body naming another is checked against that flag rather than against the skill existing.
+
 A harness hook is the third route and `session-map` is the only skill reached by one. A `PreCompact` hook names it in the reason it blocks a manual compaction with, which `.claude/context/development/hooks.md` covers. What separates that route from the two above is that a skill named by a hook is named in a string nothing validates, so a rename here leaves the hook pointing at a skill that no longer answers and no stage compares the two.
 
 ## The task board split
