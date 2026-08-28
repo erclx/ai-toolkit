@@ -31,7 +31,7 @@ An eighth range sits outside the table. `900-999` is reserved for a rule a targe
 
 `internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, so the two sources cannot collide silently. The core band is already full at every ten, which is what forces the split rather than leaving it to convention.
 
-`core/087-git.md` is the first shipped rule in this band to claim a gap. The `claude` and `lib` bands already hold several, so core is the last band where every shipped number sat on a ten, and a reader taking core as the pattern would have read the convention backwards.
+`core/087-git.md` is the first shipped rule in this band to claim a gap. The `claude` and `lib` bands already hold several, so a reader taking core's unbroken run of tens as the pattern would have read the convention backwards.
 
 A target's own rules are the third source and they are divided by reservation rather than by that convention. Neither of the two bands the toolkit crowds most has room left for a top-of-band claim: `core/` runs to 090 with internal at 095 through 097, and `claude/` runs to 592 with internal at 595 through 598, leaving three free numbers in the band where the collision was actually measured. `standards/rule.md` states `900-999` instead, which no release can reach.
 

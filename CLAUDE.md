@@ -42,7 +42,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 ## Conventions
 
-- Git operations follow the always-loaded git rule in `.claude/rules/core/`. It is the single source for precedence over built-in commit and pull request behavior.
 - Update affected consumer docs in `docs/` as part of the change, through the `aitk:docs-sync` skill. No rule is scoped to that folder.
 
 ## Content ownership
