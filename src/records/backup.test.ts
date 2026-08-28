@@ -60,6 +60,31 @@ async function makeRecordsRepo(root: string, origin: string): Promise<void> {
   await recordsGit(root, ['remote', 'add', 'origin', origin])
 }
 
+/**
+ * Runs `verb` with the process sitting inside the records work tree, which is
+ * where a session in a linked worktree under `.claude/worktrees/<name>/`
+ * stands and the one place neither verb could reach.
+ *
+ * A plain subdirectory reproduces that exactly, since what decides both cases
+ * is git deriving a pathspec prefix from the current directory. Provisioning a
+ * real worktree would cost the fixture without changing what is measured.
+ */
+async function fromInsideWorkTree<T>(
+  root: string,
+  verb: () => Promise<T>,
+): Promise<T> {
+  const nested = join(root, '.claude', 'worktrees', 'feature')
+  mkdirSync(nested, { recursive: true })
+  const origin = process.cwd()
+
+  try {
+    process.chdir(nested)
+    return await verb()
+  } finally {
+    process.chdir(origin)
+  }
+}
+
 beforeEach(async () => {
   ROOT = await makeProject()
   ORIGIN = mkdtempSync(join(tmpdir(), 'aitk-backup-origin-'))
@@ -310,26 +335,13 @@ describe('pushRecords', () => {
     expect(tracked).not.toContain('memory/entry.md')
   })
 
-  // Stands for a session in a linked worktree under `.claude/worktrees/<name>/`,
-  // which is where every worker runs. A plain subdirectory of the work tree
-  // reproduces the case exactly, since what decides it is git deriving a
-  // pathspec prefix from the current directory, and provisioning a real
-  // worktree would cost the fixture without changing what is measured.
-  // `pullRecords` builds its own pathspecs through the same helper, so it
-  // resolves them from the same directory this asserts.
+  // Every worker runs from inside the work tree, so the folder set staged there
+  // and the folder set staged from the root are the same claim the verb makes
+  // everywhere else.
   it('should stage the same folders when run from inside the work tree', async () => {
     await makeRecordsRepo(ROOT, ORIGIN)
-    const nested = join(ROOT, '.claude', 'worktrees', 'feature')
-    mkdirSync(nested, { recursive: true })
-    const origin = process.cwd()
 
-    let outcome: Awaited<ReturnType<typeof pushRecords>>
-    try {
-      process.chdir(nested)
-      outcome = await pushRecords(ROOT)
-    } finally {
-      process.chdir(origin)
-    }
+    const outcome = await fromInsideWorkTree(ROOT, () => pushRecords(ROOT))
 
     expect(outcome.ok).toBe(true)
     if (!outcome.ok) return
@@ -435,6 +447,25 @@ describe('pullRecords', () => {
     expect(outcome.ok).toBe(false)
     if (outcome.ok) return
     expect(outcome.reason).toBe('local-changes')
+  })
+
+  // The push half of this fails loudly and the pull half fails quietly, which
+  // is the worse of the two. `git status` tolerates a pathspec matching
+  // nothing, so from inside the work tree the gate that refuses rather than
+  // discarding an unpushed record reads clean and the reset behind it takes
+  // the file.
+  it('should still refuse an unpushed record when run from inside the work tree', async () => {
+    await makeRecordsRepo(ROOT, ORIGIN)
+    await pushRecords(ROOT)
+    const unpushed = join(ROOT, '.claude', 'memory', 'unpushed.md')
+    writeFileSync(unpushed, 'local only\n')
+
+    const outcome = await fromInsideWorkTree(ROOT, () => pullRecords(ROOT))
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('local-changes')
+    expect(readFileSync(unpushed, 'utf8')).toBe('local only\n')
   })
 
   it('should write the records the remote carries onto a machine holding none', async () => {
