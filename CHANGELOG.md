@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.43.2](https://github.com/erclx/aitk/compare/v3.43.1...v3.43.2) (2026-08-28)
+
+
+### Bug Fixes
+
+* **skills:** git-worktree cleanup skips a tree it did not create ([#1248](https://github.com/erclx/aitk/issues/1248)) ([7cdd6be](https://github.com/erclx/aitk/commit/7cdd6becd5c8c02d96e0cc917fc082a5372701db))
+* **skills:** let the autoship chain reach its git-ship step ([#1247](https://github.com/erclx/aitk/issues/1247)) ([7fdab6e](https://github.com/erclx/aitk/commit/7fdab6e1fc301555fed54eab4feab7b47f4a22d3))
+
 ## [3.43.1](https://github.com/erclx/aitk/compare/v3.43.0...v3.43.1) (2026-08-28)
 
 
