@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.43.0](https://github.com/erclx/aitk/compare/v3.42.1...v3.43.0) (2026-08-28)
+
+
+### Features
+
+* **skills:** gate git-ship on the project's verify commands ([#1242](https://github.com/erclx/aitk/issues/1242)) ([64074d0](https://github.com/erclx/aitk/commit/64074d029ad0250fb8b1326df27c72f25f935135))
+
 ## [3.42.1](https://github.com/erclx/aitk/compare/v3.42.0...v3.42.1) (2026-08-28)
 
 
