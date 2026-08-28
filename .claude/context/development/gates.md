@@ -91,6 +91,8 @@ Growth reports for the reason the ceiling above gates. The standards behind the 
 
 The baseline goes stale on `main` itself, so the branch report is not the reading a session wants. A branch inherits whatever growth `main` already carries and the stage attributes all of it to the run in front of the reader. Separating the two means running `bun src/cli.ts audits run` in the main worktree and diffing the two reports, which is the invocation the stage uses at `scripts/core/verify.sh:510`. Reach for the source rather than the binary, since a hand-run `aitk audits run` reads whatever version is installed and `0.106.0` carries no `audits` command at all. Measured 2026-08-20 against baseline `bd2be81a` on `feat/intake-origin-report`, which reported five grown measures before its own fix landed and four of them read identically on `main`.
 
+A branch touching few files answers the same question without a second checkout. Stash the working-tree change, re-run `bun src/cli.ts audits run`, and compare the two readings in place. Measured 2026-08-28 on `fix/autoship-takes-a-task`, where `contradictions 0 to 1` and `degradationHits 7 to 14` both read identically with the branch's one edited file stashed, placing all of it in `main`.
+
 It reads a flat `summary` object of scalars rather than parsing the nested record, through `json_summary_field`. That helper was `sandbox_summary_field` until this stage arrived and needed the same read, so both callers now share one grep-based reader in `scripts/core/verify.sh`.
 
 ### An absent corpus is not a stage failure

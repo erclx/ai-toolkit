@@ -46,3 +46,9 @@ The assert compares against the index, the way the Consumed copies stage above d
 The frame carries no version number. `package.json` is bumped on `main` by the release tooling, and a pull request builds against the merge commit, so an embedded version drifts on every open branch the moment a release lands and the stage then fails for work that touched nothing. Counts have the same shape and are kept, because a catalog change is what the stage exists to catch and the branch that changes a catalog is the one that goes red.
 
 `assets/hero.html` is in `.prettierignore` because the stage and the formatter would otherwise both own it and serialize it differently. The Format stage runs first and rewrites the file, the Hero stage rewrites it back, and the drift assert then reports against whichever version was committed last. The pre-push hook reformats and asks for the result to be committed as `style(<scope>):`, which is exactly the path that would commit the formatter's version and deadlock the stage. One writer per generated file is the rule the entry beside it already applies to the release tooling.
+
+### An exit 2 with no message
+
+The stage has failed transiently once. On 2026-08-28 it reported `✗ Hero regen failed` inside `bun run check`, and running `scripts/core/regen-hero.sh` directly exited 2 with nothing on stderr, since `catalog()` sends every `list` call's stderr to `/dev/null`. A bare re-run against an unchanged tree exited 0 and wrote a clean `assets/hero.html`, and no cause was found.
+
+Re-run the script before reading that shape as a real finding. `claude-autoship` bounds verify at one fix attempt, so a chain meeting this stops on a stage that passes on retry.
