@@ -1,0 +1,37 @@
+# What a correct `/claude-worktree` run leaves behind on the submodule arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# This arm carries two cases and a headless run reaches one of them. The session
+# starts at the sandbox root, which is the superproject, and the prompt carries
+# no directory change, so what asserts here is the control: the superproject
+# read returns empty at the root, the submodule guard stays silent, and entry
+# proceeds on the plan the branch matches. The guard itself needs a session
+# started inside `vendor`, which the `manual` entry below names.
+
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so an array written at the bottom parses
+# clean and asserts nothing.
+
+max_turns = 30
+
+paths = [
+  ".claude/worktrees/grault/.claude/plans/feature-grault.md",
+  "vendor/lib.js",
+]
+
+# The plan reaching the worktree is what proves entry read the
+# superproject's own tree rather than a root it derived from somewhere else.
+# The submodule file is the arm's precondition rather than its subject: a run
+# that found no populated `vendor` never had a submodule to be guarded against,
+# so a green control case would mean nothing.
+
+reply = [
+  "feat/grault",
+  "No package manifest",
+]
+
+manual = [
+  "The guard branch needs a session started inside `vendor`, and `scripts/sandbox/run.sh` starts every session at the sandbox root with no directory change in the prompt. Unwired: run the interactive re-test, `cd vendor`, and confirm the skill stops naming the superproject rather than entering a worktree under the submodule.",
+  "The control case is a regression guard rather than a demonstration. It passes today because `git rev-parse --show-superproject-working-tree` returns empty at a superproject root, measured across all four repository shapes, so a guard written to fire on the wrong branch would go red here.",
+]

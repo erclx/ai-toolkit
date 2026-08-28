@@ -14,7 +14,8 @@ stage_setup() {
   log_info "typed-branch : branch feat/baz + matching plan, target collides and the skill stops before entry"
   log_info "no-deps      : branch qux + matching plan + a manifest with nothing installed, skill reports the install command"
   log_info "port-offset  : branch corge + matching plan + the port helper installed, skill reports a derived offset"
-  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset"
+  log_info "submodule    : a submodule checkout inside the project, skill stops and names the superproject"
+  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset" "submodule"
 
   mkdir -p .claude/plans
 
@@ -145,6 +146,46 @@ EOF
     log_info "Plan:   .claude/plans/feature-corge.md"
     log_info "Action:  /aitk:claude-worktree"
     log_info "Expect:  declared in fixtures/claude/worktree/port-offset/expect.toml"
+    ;;
+  "submodule")
+    cat <<'EOF' >.claude/plans/feature-grault.md
+# Feature: grault
+
+Stub plan seeded for the submodule guard. It sits at the superproject root, which is the copy a session inside the submodule cannot reach.
+EOF
+
+    # The origin the submodule is added from stays on disk for later fetches
+    # and is ignored, since an untracked nested repository inside the fixture
+    # shows up in every status read and enters the index as a gitlink on the
+    # next git add.
+    echo ".sandbox-submodule-origin/" >>.gitignore
+
+    git add . && git commit -m "feat(plans): seed grault plan" --no-verify -q
+    git checkout -b grault -q
+
+    # An absorbed submodule returns one identical path from --git-dir and
+    # --git-common-dir, so the linked-worktree guard passes here and the
+    # superproject read is the only one that separates the two states.
+    git init -q .sandbox-submodule-origin
+    git -C .sandbox-submodule-origin config user.email sandbox@example.com
+    git -C .sandbox-submodule-origin config user.name Sandbox
+    echo 'export const VALUE = 1;' >.sandbox-submodule-origin/lib.js
+    git -C .sandbox-submodule-origin add -A
+    git -C .sandbox-submodule-origin commit -m "chore(lib): init" -q
+
+    git -c protocol.file.allow=always submodule add -q ./.sandbox-submodule-origin vendor
+    git commit -m "chore(vendor): add submodule" --no-verify -q
+
+    log_step "Scenario ready: submodule guard (Guards)"
+    log_info "Branch: grault"
+    log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
+    log_info "Action:  cd vendor, then /aitk:claude-worktree"
+    log_info "Expect:  both rev-parse reads return one path, so the linked-worktree guard passes"
+    log_info "         the superproject read resolves, so the skill stops and names this root"
+    log_info "         no worktree is created and no .claude/ is written under vendor"
+    log_info "Control: from the superproject root the same run derives grault and proceeds,"
+    log_info "         which is the half declared in fixtures/claude/worktree/submodule/expect.toml"
+    log_info "         since a headless session starts at this root and cannot cd first"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
