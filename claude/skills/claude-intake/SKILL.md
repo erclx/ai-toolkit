@@ -77,7 +77,7 @@ Where an item's call is the operator's, pair it with a suggestion rather than a 
 
 ## Step 6: write the index
 
-Write `00-overview.md` last, once the clusters are filed and the counts are real. It carries the format block, the cluster table, the verdict counts, the ready list, and the open questions.
+Write `00-overview.md` last, once the clusters are filed and the counts are real. It carries the cluster table, the verdict counts, the ready list, and the open questions.
 
 Each open question in the index is a labeled markdown link to its owning item's heading anchor. The index points and the item owns, so no answer slot appears in the index. One question in two answerable places has no rule for which wins, and retrieval walks item headings, so an answer typed into the index is found by nothing and lost silently.
 
