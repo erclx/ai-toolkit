@@ -79,7 +79,9 @@ To run several worktrees as a coordinated flow rather than ad hoc, assert the or
 
 Execution order comes off `.claude/tasks/priority.md` and nothing sequences work into versions. Scope stays in `.claude/REQUIREMENTS.md` as a statement of what is wanted, and it reaches the board as discrete tasks the orchestrator orders by readiness.
 
-Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives. No fixed number caps the worker tracks underneath it. Collision between file sets is what binds, so a candidate opens only when its files are disjoint from every track in flight, and the ceiling in practice is how many outputs one session can still review properly.
+Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives.
+
+No fixed number caps the worker tracks underneath it. Collision between file sets is what binds, so a candidate opens only when its files are disjoint from every track in flight, compared at the file path rather than at a folder above it, and the ceiling in practice is how many outputs one session can still review properly. Disjointness is necessary and not sufficient, since two tracks interact in ways no file-set comparison reads, so a stated reason can still hold a disjoint candidate behind another. An operator caps a session's workers by saying so, and that cap binds for the session rather than standing as a number in a file.
 
 Before a handoff, the orchestrator checks the plan against the tree rather than reading it: grep each construct it names and count the sites, confirm every phase label it cites is still open, and open each file it describes. A plan goes stale from whatever merged after it was written, and reading cannot catch that.
 

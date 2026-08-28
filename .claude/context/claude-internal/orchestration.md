@@ -152,7 +152,7 @@ The runbook holds the routing and the skill body points at it, after a rewrite i
 
 ## The self-dispatch
 
-Step 4 of the loop can now launch a background `claude --bg` worker itself for a `## Run now` row, rather than only naming the invocation for a human to run. `orchestrator-dispatch.md` holds the procedure: derive the candidate branch, check it against `aitk sessions list --branch <branch> --json`, check a cap of three concurrent self-dispatched workers, then dispatch.
+Step 4 of the loop can now launch a background `claude --bg` worker itself for a `## Run now` row, rather than only naming the invocation for a human to run. `orchestrator-dispatch.md` holds the procedure: derive the candidate branch, check it against `aitk sessions list --branch <branch> --json`, check the row's file set against every track in flight, then dispatch.
 
 The check reads `claimed` off that record rather than composing the readings itself. The field already answers across all three, and reading a pre-composed field is what keeps the check a verb rather than a rule the model can talk itself out of. `src/sessions/claim.ts` is the composition, joining the session roster against `listWorktrees()` and `branchRefs()` in `src/worktree.ts`.
 
@@ -168,9 +168,17 @@ The launch window is the one defect closed by a rule rather than by a reading. A
 
 The launch also names the model. A `claude --bg` session inherits the launching session's model rather than reading the machine's configured default, measured with `settings.json` on `sonnet` while both dispatched workers ran `claude-opus-5`, so an orchestrator on the larger model silently spends it on every worker. Sizing the model to the row is the dispatcher's call, which is the same shape as naming the branch there.
 
-The worker cap counts live sessions named `orchestrator-<slug>`, a prefix only a self-dispatch writes, filtered to the current repository. A worker the operator launches by hand carries no such name and is never counted against it, so the cap binds the one path nobody is watching rather than the whole loop.
-
 Spawning a worker with the Agent tool stays forbidden, since an in-process subagent cannot be steered or reached independently. The `claude --bg` dispatch is a separate process with its own worktree and its own pull request, which is the property the boundary protects rather than the mechanism it happens to name.
+
+### What binds concurrency
+
+The bound is the file-set disjointness test `## Parallelism` states, compared at the file path rather than at a folder above it, plus a stated reason to serialize a disjoint pair the sets cannot separate. A fixed cap of three concurrent workers stood there until 2026-08-27, resting on the evidence of one task shipped once, and by the time the operator withdrew it seven workers had run across a single afternoon with four concurrent and no collision between them. The cap and the test never answered the same question, since a count reads session names and knows nothing about what those sessions write.
+
+Granularity decides whether the test reports anything at all. `aitk tasks validate` compares path segments and called two rows colliding on `src`, where one writes `src/github.ts` and the other `src/markdown/structure.ts`, found 2026-08-28 while promoting a wave of five. Most of the CLI sits under `src/`, so that reading fires on nearly every parallel pair and buries the real collision it caught in the same run, `.claude/ARCHITECTURE.md` held by two rows.
+
+The `orchestrator-<slug>` prefix outlives the count it was introduced for. Only a self-dispatch writes it, so a session listing separates a dispatched worker from an operator's own launch, and that reading is still taken. What no longer follows from it is a number.
+
+Seven surfaces state this policy rather than the six a grep on the phrase reports. `docs/operating-model.md` carries it twice, once in loop step 2 and once in its own `## Parallelism` section, and the second spelling names a number without using the word, so a sweep keyed on the phrase leaves it stating a retired rule.
 
 ## The reclaim reading
 

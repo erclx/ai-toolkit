@@ -1,9 +1,9 @@
 ---
 title: Orchestrator dispatch runbook
-description: The collision check before a self-dispatch, the worker cap, the branch and model the launch names, and the loop's stopping condition
+description: The collision check before a self-dispatch, the file-set disjointness gate, the branch and model the launch names, and the loop's stopping condition
 ---
 
-Run this at loop step 4, for a `## Run now` row whose plan is verified and whose file set has already cleared the Parallelism test against every track in flight, in place of handing the worktree to a human.
+Run this at loop step 4, for a `## Run now` row whose plan is verified, in place of handing the worktree to a human. The disjointness gate below is where that row's file set is tested against every track in flight.
 
 ## Derive the candidate
 
@@ -16,7 +16,7 @@ This is the branch the worker takes, not a guess at one it will derive for itsel
 Run `aitk sessions list --branch <type>/<slug> --json` and read `claimed` off the record.
 
 - `claimed: true`: the row is not free. Report what holds it, `worktree` when it names a path, `sessions` when it carries a row, and `refs` when the branch already exists. Move to the next candidate rather than colliding.
-- `claimed: false`, `sessionsReadable: true`, and `refsReadable: true`: proceed to the cap check.
+- `claimed: false`, `sessionsReadable: true`, and `refsReadable: true`: proceed to the disjointness gate.
 - `claimed: false` with either flag false, or the command refuses, or the record carries no `claimed` key (`reason` reads `no-registry` or `no-repository`): treat the candidate as unverified rather than clear. Report which reading could not be taken and fall back to the human-launch line below. Dispatching on a check that could not be read reproduces the exact collision this exists to prevent.
 
 Reading `claimed` off the record is what keeps this a check rather than a rule a session can talk itself out of. The field is already the composed answer across the worktree listing, the live session roster, and the refs that name the branch, so nothing here re-derives the OR.
@@ -31,11 +31,17 @@ A worker registers with `branch: main` and the main worktree as its `cwd` until 
 
 Keep the branch of every row this pass has launched and treat a candidate matching one as claimed, without re-running the check. That closes the window for this dispatcher and only for it. A second dispatcher in another session reads git and the roster alone, sees none of this record, and can still take the same row. Say so when reporting, rather than implying the window is shut.
 
-## Check the worker cap
+## Check the file sets are disjoint
 
-Run `aitk sessions list --json` with no `--branch`, then count entries whose `name` starts with `orchestrator-` and whose `repository` matches this run's own (`git rev-parse --path-format=absolute --git-common-dir`). An unscoped listing spans every repository on the machine, so the repository match is what keeps a busy sibling project from binding this one's cap. Every dispatch below names its session that way for exactly this count, so a worker the human launched by hand carries no such name and is never counted against it.
+No count binds this. List the files the candidate's plan touches, from its `**Files to touch:**` lines, against the file set of every track already in flight, read off the Touches column of each row on the board. Dispatch when the sets are disjoint and hold the row otherwise.
 
-Three already out: report the cap and stop dispatching for this pass, leaving the row ready for the next one. The cap binds the self-dispatch path alone, since the evidence behind it is one task shipped once and the operator's own launches stay uncapped by count.
+The board is not the whole set. A track a person launched by hand carries no row, so that column cannot see it, which is the ordinary shape whenever the operator is launching rather than dispatching. Read `aitk sessions list --json` for the branches in flight, and take the file set of any branch no row names from the plan that branch is building. A candidate cleared against the board alone is cleared against a partial reading.
+
+Take the comparison at the file path rather than at a folder above it. `aitk tasks validate` compares path segments, and on 2026-08-28 it reported two rows as colliding on `src` where one writes `src/github.ts` and the other `src/markdown/structure.ts`. Most of the CLI sits under `src/`, so a folder-level reading fires on nearly every parallel pair and buries the one real collision that same run caught, `.claude/ARCHITECTURE.md` held by two rows. Read that verb's output as a candidate list and settle each pair by file.
+
+Disjointness is necessary and not sufficient, so hold a candidate whose sets do not touch when a stated reason serializes it, and write the reason on the hold. One row creating a skill and another auditing that catalog and counting it write nothing in common, measured 2026-08-27, and dispatching both still leaves the audit counting a denominator that moves underneath it. Nothing verifies that a reason was written, so the rule holds only while the dispatcher applies it.
+
+What binds past that is review attention rather than a count, and `## Parallelism` in the skill body states it along with the cap an operator can set for a session. No file here carries a number and this runbook does not either.
 
 ## Pick the model
 
@@ -49,7 +55,7 @@ Name `<model>` on the launch, and pick it against the task rather than copying w
 claude --bg --model <model> -n "orchestrator-<slug>" "Run /aitk:claude-worktree <type>/<slug>, then /aitk:claude-autoship <plan>"
 ```
 
-`--bg, --background` starts the session as a background agent and returns immediately, `-n, --name` sets the display name `aitk sessions list` reads back for the worker cap, and `--model` overrides the inheritance the section above measured.
+`--bg, --background` starts the session as a background agent and returns immediately, `-n, --name` sets the display name that tells a self-dispatched worker from an operator's own launch in `aitk sessions list`, and `--model` overrides the inheritance the section above measured. Keep the `orchestrator-` prefix. It outlives the count it was introduced for, since the roster read still needs a way to separate the two kinds of launch.
 
 The worktree call comes first and carries the branch as its argument, which is tier 0 of `claude-worktree` Step 2 and the only tier a caller can reach. `claude-autoship` Step 0 then finds the session already in a linked worktree and continues, which is a path it already documents. The autoship call carries `<plan>`, the same file this runbook already read to derive the branch, so its Step 1 takes it as the caller-supplied plan rather than re-deriving one from the slug the worker's branch happens to carry.
 
@@ -59,7 +65,7 @@ Report the dispatch as loudly as the human-launch line it replaces: name the bra
 
 ## Fall back to the human
 
-Hand the row to the human-launch line in step 4 instead of dispatching when any of these hold, and name which one: the collision check refused, the cap is reached, or the row's file set failed the Parallelism test against something already out.
+Hand the row to the human-launch line in step 4 instead of dispatching when any of these hold, and name which one: the collision check refused, the row's file set overlaps a track already out, or a stated reason holds the row behind one.
 
 ## Stop the loop
 

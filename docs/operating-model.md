@@ -37,7 +37,7 @@ and no later session recovers that vantage.
 One feature travels this path end to end.
 
 1. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
-2. Orchestrator checks the branch is unclaimed and the worker cap has room, then dispatches a background worker with `claude --bg` against the plan, naming the branch and the model on the launch rather than leaving the worker to derive either. The branch travels as the argument to the worker's own worktree call, which is the one place the name is read rather than inferred. It falls back to naming the invocation for a human to run through `claude-worktree` and `claude-autoship` when the check refuses, the cap is reached, or the plan collides with a track already in flight. Either way, the worker enters its own worktree, builds, self-checks, opens a PR, and stops at the PR boundary.
+2. Orchestrator checks the branch is unclaimed and the plan's file set is disjoint from every track in flight, then dispatches a background worker with `claude --bg` against the plan, naming the branch and the model on the launch rather than leaving the worker to derive either. No count caps how many run at once. The branch travels as the argument to the worker's own worktree call, which is the one place the name is read rather than inferred. It falls back to naming the invocation for a human to run through `claude-worktree` and `claude-autoship` when the check refuses, the sets overlap, or a stated reason serializes the plan behind a track already in flight. Either way, the worker enters its own worktree, builds, self-checks, opens a PR, and stops at the PR boundary.
 3. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 4. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target then with `aitk sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.
 5. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds anything and under `## Review closed` when it finds nothing, so a reader learns from the heading whether work is still owed and takes the merge decision from the counts on the line under it. Repeat from step 4 until a pass closes the review.
@@ -147,9 +147,12 @@ before another is carried nowhere at all.
 
 ## Parallelism
 
-The binding constraint is the human and the shared files, not the board. Cap
-at two or three worker tracks and split them across the stack so they do not
-collide on the same files.
+The binding constraint is the human and the shared files rather than the board.
+No number caps worker tracks. Open one whenever its file set is disjoint from
+every track already in flight, compared at the file path rather than at a folder
+above it, and stop adding once you can no longer review every output properly.
+Serialize a track sharing a wiring seam with another, and serialize one whose
+sets are disjoint when a stated reason still puts it behind another.
 
 Unit checks run freely in many worktrees at once.
 A dev server, an end-to-end run, and a screenshot run alongside each other on a
