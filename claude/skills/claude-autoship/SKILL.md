@@ -29,7 +29,11 @@ The baseline is unusable when no merge base resolves against either ref. Stop: `
 
 The base equalling HEAD stays usable here, unlike in the four read-only siblings carrying this section. Step 5 runs before anything is committed, since `git-stage` commits at Step 7, so the base equals HEAD on every ordinary run. The classifier diffs the base against the working tree rather than against HEAD, which keeps the uncommitted work in the set at correct scope. Do not port the sibling `base == HEAD` stop into this skill.
 
-## Step 0: enter a worktree
+## Step 0: take the role, then enter a worktree
+
+Invoke `aitk:claude-worker` first, whatever the worktree state. This session is about to build one branch under one plan, and that skill states the boundaries, the lifetime, and the channel obligations the role carries. A dispatched worker reaches the role here and nowhere else, since the launch names this chain rather than the role, and a hand-launched one reaches it on the same path.
+
+Report it rather than proceeding silently when `aitk:claude-worker` does not resolve. It ships with the plugin, so a session running this chain from a project holding the CLI alone builds with no role asserted.
 
 If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `aitk:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
 
