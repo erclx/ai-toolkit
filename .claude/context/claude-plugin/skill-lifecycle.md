@@ -7,7 +7,7 @@ description: How a skill is invoked, the split between the two task-board writer
 
 ## Invocation
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-orchestrate`, `create-skill`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
 A harness hook is the third route and `session-map` is the only skill reached by one. A `PreCompact` hook names it in the reason it blocks a manual compaction with, which `.claude/context/development/hooks.md` covers. What separates that route from the two above is that a skill named by a hook is named in a string nothing validates, so a rename here leaves the hook pointing at a skill that no longer answers and no stage compares the two.
 
