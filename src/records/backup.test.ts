@@ -310,6 +310,36 @@ describe('pushRecords', () => {
     expect(tracked).not.toContain('memory/entry.md')
   })
 
+  // Stands for a session in a linked worktree under `.claude/worktrees/<name>/`,
+  // which is where every worker runs. A plain subdirectory of the work tree
+  // reproduces the case exactly, since what decides it is git deriving a
+  // pathspec prefix from the current directory, and provisioning a real
+  // worktree would cost the fixture without changing what is measured.
+  // `pullRecords` builds its own pathspecs through the same helper, so it
+  // resolves them from the same directory this asserts.
+  it('should stage the same folders when run from inside the work tree', async () => {
+    await makeRecordsRepo(ROOT, ORIGIN)
+    const nested = join(ROOT, '.claude', 'worktrees', 'feature')
+    mkdirSync(nested, { recursive: true })
+    const origin = process.cwd()
+
+    let outcome: Awaited<ReturnType<typeof pushRecords>>
+    try {
+      process.chdir(nested)
+      outcome = await pushRecords(ROOT)
+    } finally {
+      process.chdir(origin)
+    }
+
+    expect(outcome.ok).toBe(true)
+    if (!outcome.ok) return
+    expect(outcome.changed).toBe(BACKED_FOLDERS.length)
+    expect(outcome.pushed).toBe(true)
+    expect((await trackedOnOrigin()).split('\n').sort()).toEqual(
+      BACKED_FOLDERS.map((folder) => `${folder}/entry.md`).sort(),
+    )
+  })
+
   it('should leave the project working tree untouched', async () => {
     await makeRecordsRepo(ROOT, ORIGIN)
 
