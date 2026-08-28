@@ -64,4 +64,4 @@ Seed files merge across layers. Each stack contributes words to the target's `.c
 ## Reference
 
 - `.claude/context/tooling.md`: system overview, configs vs seeds vs references, extends chain, manifest authoring
-- `.claude/internal/standards/tooling-reference.md`: conventions for writing reference.md docs
+- `internal/standards/tooling-reference.md`: conventions for writing reference.md docs

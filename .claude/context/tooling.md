@@ -65,7 +65,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 
 ### Manifest syntax
 
-- The syntax invariants and the manifest-to-reference symmetry moved to `internal/rules/claude/595-tooling-reference.md`, which globs `tooling/*/manifest.toml` alongside `tooling/*/reference.md` so an edit to either side loads both. `.claude/internal/standards/tooling-reference.md` carries the symmetry in prose.
+- The syntax invariants and the manifest-to-reference symmetry moved to `internal/rules/claude/595-tooling-reference.md`, which globs `tooling/*/manifest.toml` alongside `tooling/*/reference.md` so an edit to either side loads both. `internal/standards/tooling-reference.md` carries the symmetry in prose.
 - A manifest edit shipping a stale reference is what widened that glob. The rule matched the reference alone, and the manifest is the side that moves first
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
 - Bun's script shell expands command substitution and a leading environment assignment, so a script value may carry `VAR=$(bash scripts/x.sh) command`. Verified 2026-08-13 against `bun run`.

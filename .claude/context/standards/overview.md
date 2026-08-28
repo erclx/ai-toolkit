@@ -13,7 +13,6 @@ Nothing installs the corpus into a project and nothing mirrors it under `.claude
 
 - `standards/` owns the authoring source, one file per installable standard
 - `internal/standards/` owns toolkit-internal standards, outside anything the plugin ships
-- `.claude/internal/standards/` owns the consumed copy of the internal ones, regenerated alongside it
 
 ## Gotchas
 
@@ -31,7 +30,7 @@ A sibling domain asking the same question applies the condition against its own 
 
 Run `aitk standards list` for the catalog of installable standards and their descriptions.
 
-`internal/standards/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set. The toolkit-local rule `.claude/rules/claude/595-tooling-reference.md` routes edits to its consumed copy at `.claude/internal/standards/tooling-reference.md`.
+`internal/standards/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set. The toolkit-local rule `.claude/rules/claude/595-tooling-reference.md` routes edits to it at that authoring path, which is where its two readers sit.
 
 ## CLI
 
