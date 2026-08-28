@@ -35,9 +35,11 @@ Keep the branch of every row this pass has launched and treat a candidate matchi
 
 No count binds this. List the files the candidate's plan touches, from its `**Files to touch:**` lines, against the file set of every track already in flight, read off the Touches column of each row on the board. Dispatch when the sets are disjoint and hold the row otherwise.
 
+The board is not the whole set. A track a person launched by hand carries no row, so that column cannot see it, which is the ordinary shape whenever the operator is launching rather than dispatching. Read `aitk sessions list --json` for the branches in flight, and take the file set of any branch no row names from the plan that branch is building. A candidate cleared against the board alone is cleared against a partial reading.
+
 Take the comparison at the file path rather than at a folder above it. `aitk tasks validate` compares path segments, and on 2026-08-28 it reported two rows as colliding on `src` where one writes `src/github.ts` and the other `src/markdown/structure.ts`. Most of the CLI sits under `src/`, so a folder-level reading fires on nearly every parallel pair and buries the one real collision that same run caught, `.claude/ARCHITECTURE.md` held by two rows. Read that verb's output as a candidate list and settle each pair by file.
 
-Disjointness is necessary and not sufficient, so hold a candidate whose sets do not touch when a stated reason serializes it, and write the reason on the hold. `v62.5` creates a skill under `claude/skills/` while `v63.8` audits that catalog and counts it, measured 2026-08-27, and their written sets are disjoint while dispatching both still leaves the audit counting a denominator that moves underneath it. Nothing verifies that a reason was written, so the rule holds only while the dispatcher applies it.
+Disjointness is necessary and not sufficient, so hold a candidate whose sets do not touch when a stated reason serializes it, and write the reason on the hold. One row creating a skill and another auditing that catalog and counting it write nothing in common, measured 2026-08-27, and dispatching both still leaves the audit counting a denominator that moves underneath it. Nothing verifies that a reason was written, so the rule holds only while the dispatcher applies it.
 
 What binds past that is review attention rather than a count, and `## Parallelism` in the skill body states it along with the cap an operator can set for a session. No file here carries a number and this runbook does not either.
 
