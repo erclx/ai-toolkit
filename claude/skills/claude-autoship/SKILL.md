@@ -1,6 +1,6 @@
 ---
 name: claude-autoship
-description: Chains implement → verify → review → ship after a feature plan is approved. Reads the plan the caller names, or the plan for the current branch when none is named, runs the full pipeline in one session, and stops on any failure or non-minor review finding. Use when asked to "autoship", "ship this feature end to end", or "run the chain". Do NOT auto-trigger. Requires an approved plan file.
+description: Chains implement → verify → review → ship after a feature plan is approved. Reads the plan the caller names, the plan a named task points at, or the plan for the current branch when none is named, runs the full pipeline in one session, and stops on any failure or non-minor review finding. Use when asked to "autoship", "ship this feature end to end", or "run the chain". Do NOT auto-trigger. Requires an approved plan file.
 disable-model-invocation: true
 ---
 
@@ -45,12 +45,29 @@ If the two commands differ, the session is already in a linked worktree. Continu
 
 Resolve `<plan>` in this order, stopping at the first match:
 
-1. **Caller-supplied.** The invocation carried an argument. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.claude/plans/feature-<slug>.md`, and a path is taken as given, relative to the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
-2. **Derived.** `.claude/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
+1. **Caller-supplied task.** The invocation carried a path under `.claude/tasks/`. If it does not resolve to a file, stop: `❌ No task at <path>. Path was supplied, not derived, so check it and re-run.` Read that task's first `Plan:` line and take what it names as `<plan>`, per `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`.
+2. **Caller-supplied plan.** The invocation carried something else. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.claude/plans/feature-<slug>.md`, and a path is taken as given from the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
+3. **Derived.** `.claude/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
 
-Test the shape of whatever `<plan>` resolved to before reading it as one. A file resolving under either tier can still be the wrong document, a task file most often, so the test runs after both rather than guarding the supplied tier alone.
+Only a path reaches tier 1, and a bare slug is read as a plan's throughout. The two would collide on any similar name, and a caller who means the task holds its path already, having read it off the board. One plan per task is what makes the tier 1 read unambiguous, so it takes the first `Plan:` line and never scans for a second.
 
-Check for a `**Files to touch:**` or `## Files to touch` marker per `${CLAUDE_SKILL_DIR}/../../standards/plan.md`, the one section every plan carries structurally and a task never does, where `## Outcomes` and `## Findings` are the task's own. If neither form is present, stop: `❌ <path> carries no plan sections. A plan lives at .claude/plans/feature-<slug>.md; a task lives at .claude/tasks/. Point autoship at the plan and re-run.`
+Read the target out of the link's parentheses, and take the rest of the line when the line carries no link, since an older task writes the target as a plain path with nothing around it. Resolve a relative target against the directory holding the task file rather than against `.claude/tasks/`, and take a project-root target from the root. The archived task is what makes that base matter, since the standard points its line at `../../plans/archive/feature-<slug>.md` once the task sits a folder deeper, and reading that from `.claude/tasks/` lands on a repository-root `plans/archive/` that never exists.
+
+### When a tier fails
+
+Tier 1 stops on three failures, and each names a different repair:
+
+- No `Plan:` line at all. Stop: `❌ <path> carries no Plan: line, so nothing there names a plan to run. Write the plan and point the task at it, or pass the plan path directly.` A row still awaiting a plan is the ordinary case, so the message names the missing pointer rather than the missing plan sections a reader would then go hunting for.
+- The pointer resolves into a plans archive. Stop: `❌ <path> points at an archived plan, which describes work that already shipped. Reopen the task against a live plan, or pass that plan directly.` Test the resolved path rather than the task's outcomes or its `Pull request:` line, since a stale board gets its ticks wrong and the standard fixes where a shipped pointer lands.
+- The pointer resolves to no file. Stop: `❌ <path> points at <target>, which does not exist. The citation is stale, so repoint the task or pass the plan path directly.`
+
+An archive is `.claude/plans/archive/` and also the two older spellings `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` leaves in place for a project that archived plans before the folder nested, written from a task as `../plans-archive/` and `../.tmp/plans-archive/`. Test all three, since a shipped pointer in a project nobody migrated lands on the older two. Run the archive test ahead of the existence test, so a pointer into an archive that no longer holds the file still refuses as shipped work rather than as a stale citation.
+
+Each tier fails for a different reason and says so. A supplied path resolving to nothing is a typo, a derived path resolving to nothing is a plan nobody wrote, and a task pointer resolving to nothing is a stale citation the board should have caught.
+
+Test the shape of whatever `<plan>` resolved to before reading it as one. A file resolving under any tier can still be the wrong document, and tier 1 resolves through a pointer rather than from the caller, so the test runs after all three rather than guarding a supplied path alone.
+
+Check for a `**Files to touch:**` or `## Files to touch` marker per `${CLAUDE_SKILL_DIR}/../../standards/plan.md`, the one section every plan carries structurally and a task never does, where `## Outcomes` and `## Findings` are the task's own. If neither form is present, stop: `❌ <path> carries no plan sections. A plan lives at .claude/plans/feature-<slug>.md, and a task reaches one through its Plan: line only from .claude/tasks/. Point autoship at either and re-run.`
 
 Read `<plan>` at the main worktree root. This file is the scope for this run.
 
@@ -163,16 +180,20 @@ Omit the second line if there were no minor findings, and the third if nothing r
 
 Every stop point leaves recoverable state. The user resumes manually from the appropriate step.
 
-| Stop point                          | Recovery                                                                                                                                       |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| No plan (derived)                   | Run `/claude-feature` to create one                                                                                                            |
-| No plan (caller-supplied)           | Check the path or slug passed to autoship, then re-run                                                                                         |
-| Resolved file carries no plan shape | Point autoship at a real plan under `.claude/plans/feature-<slug>.md`, not a task file, then re-run                                            |
-| No diff baseline                    | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
-| Empty changed-file list             | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
-| Branch collision on worktree entry  | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
-| Verify fails                        | Read logs, fix manually, run `/git-ship`                                                                                                       |
-| UI checklist                        | Verify visually, run `/git-ship`                                                                                                               |
-| Inherited review findings           | Fix findings, run `/git-ship`                                                                                                                  |
-| Self-introduced finding survived    | Read the receipt for what the one repair pass left open, fix it, run `/git-ship`                                                               |
-| git-ship fails                      | Inspect hook or remote error, run again                                                                                                        |
+| Stop point                                 | Recovery                                                                                                                                       |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| No plan (derived)                          | Run `/claude-feature` to create one                                                                                                            |
+| No plan (caller-supplied)                  | Check the path or slug passed to autoship, then re-run                                                                                         |
+| No task (caller-supplied)                  | Check the task path passed to autoship, then re-run                                                                                            |
+| Task carries no `Plan:` line               | Write the plan, point the task's `Plan:` line at it, then re-run                                                                               |
+| Task points at an archived plan            | The work already shipped. Reopen the task against a live plan, or pass that plan's path directly.                                              |
+| Task's `Plan:` pointer resolves to nothing | Repoint the task's `Plan:` line at the plan that exists, then re-run                                                                           |
+| Resolved file carries no plan shape        | Point autoship at a plan under `.claude/plans/feature-<slug>.md` or at a task under `.claude/tasks/`, then re-run                              |
+| No diff baseline                           | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
+| Empty changed-file list                    | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
+| Branch collision on worktree entry         | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
+| Verify fails                               | Read logs, fix manually, run `/git-ship`                                                                                                       |
+| UI checklist                               | Verify visually, run `/git-ship`                                                                                                               |
+| Inherited review findings                  | Fix findings, run `/git-ship`                                                                                                                  |
+| Self-introduced finding survived           | Read the receipt for what the one repair pass left open, fix it, run `/git-ship`                                                               |
+| git-ship fails                             | Inspect hook or remote error, run again                                                                                                        |
