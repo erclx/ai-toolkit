@@ -64,7 +64,7 @@ Print the enumeration as a table, then stop. `list` has no final command.
 | -- | ---------------------------------- | ----------------- | -------- | ------ | -------- |
 ```
 
-Notes column shows the first that applies of `current`, `dirty`, `foreign`, or empty. Show paths relative to `MAIN_ROOT` (`.claude/worktrees/<name>`). A `foreign` row sits outside `MAIN_ROOT`, so print its path in full.
+Notes column shows the first that applies of `current`, `foreign`, `dirty`, or empty. Show paths relative to `MAIN_ROOT` (`.claude/worktrees/<name>`). A `foreign` row sits outside `MAIN_ROOT`, so print its path in full.
 
 After the table, append a one-line hint:
 
@@ -81,7 +81,7 @@ From the enumeration, include a worktree in the remove set when all hold:
 - State is `merged` or `merged (local)`.
 - Working tree is clean.
 
-Every other non-main row goes to the skip set with a one-word reason, the first that applies in this order: `current`, `dirty`, `foreign`, `open`, `closed`, `unmerged`. A merged clean tree outside the prefix reports `foreign` rather than passing into the remove set, and a `foreign` tree that is also dirty reports `dirty`, since either reason holds it back.
+Every other non-main row goes to the skip set with a one-word reason, the first that applies in this order: `current`, `foreign`, `dirty`, `open`, `closed`, `unmerged`. A `foreign` tree that is also dirty reports `foreign`, since `dirty` is a state the operator can clear and `foreign` is not. Leading with the transient reason invites a commit or stash that changes nothing, after which the row reports `foreign` and holds back anyway.
 
 ### Preview
 
