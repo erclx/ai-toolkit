@@ -9,7 +9,11 @@ Run the orchestrator's review trigger. The poll reports pull request movement an
 
 ## When to run it
 
-Start the poll on a dispatch and stop it when the last pull request merges with nothing else out. An open pull request or a dispatched worker is the condition, and both resolve from the board plus `gh pr list` without asking the operator. A release pull request alone does not qualify, since its sweep carries no findings.
+Start the poll on an open pull request and stop it when the last one merges with nothing else out. That is the whole condition and it resolves from `gh pr list` without asking the operator. A release pull request alone does not qualify, since its sweep carries no findings.
+
+A dispatch no longer starts it. The script reads pull requests and a building worker has none, so every interval between the launch and the push is a fixed cost returning nothing, measured as five consecutive runs reporting no movement across roughly fifteen minutes while one worker built. What replaces it is the worker announcing its own pull request the moment it opens one, per the `claude-worker` skill that session loads, which covers exactly the transition the poll cannot observe.
+
+The dispatched-worker condition survives as a fallback rather than as a trigger. Start the poll against any dispatch still out after thirty minutes with no announcement, which is past the upper end of the ten to thirty minutes a row here takes. The announcement is newer than the narrowing it justifies, so a silent failure would otherwise leave a finished worker unnoticed the way one already sat idle for eighteen minutes, and the fallback keeps the cover a straight narrowing would have removed. `${CLAUDE_SKILL_DIR}/scripts/watch.sh` covers the same window at a lower cost, since it reads the roster alongside the pull request list and reports a worker that vanished as well as one that finished.
 
 A session holding a recurring-prompt scheduler starts the loop itself on that condition and cancels it on the same test, without waiting for the operator. Both halves belong to whoever holds the loop, since a session that can start one can stop one, and a runbook stating only the start leaves the always-on failure unaddressed on the side that causes it.
 
@@ -61,3 +65,13 @@ The five review headings the script matches are written by `claude-pr-review` an
 `STALLED` is the one state the script derives from a heading rather than from a commit or a count, since `claude-pr-review` posts the open heading exactly when a dispatch is owed, per the threshold that skill states. The heading alone cannot carry it, because an open pass means a dispatch was owed and made, so the ordinary healthy thread is a worker still working. The age of that pass is the third test: the state fires when the open pass covers the head, nothing has followed it, and it is older than the `STALE_AFTER` seconds set at the top of the script. It reports once per entry and fires again after any commit or reply resets the thread. A project whose workers run longer than the default two hours raises that number.
 
 The state reaches every stalled dispatch, since one threshold governs the heading and the dispatch alike and a pass carrying anything posts the open heading. A minors-only pass therefore reports here on the same terms as a blocking one, which widens the state from what it caught while the two were split. It stays a heading test rather than a count test, so nothing here pins the summary line, which is a second string this script does not own.
+
+## The watch beside it
+
+`${CLAUDE_SKILL_DIR}/scripts/watch.sh` is a long-running loop rather than a scheduled prompt. It reads the open pull request list and the session roster together every sixty seconds and prints one line per new pull request, per worker whose status changed, and per worker that dropped out of the roster. Start it in the background and read what it emits. It writes nothing.
+
+Coverage is what it buys over the poll. A worker that finishes goes idle and a worker that crashes disappears, so a trigger reading pull requests alone stays silent through the second, and the roster read is the half `poll.sh` cannot make. It ran a full afternoon over four concurrent workers and caught every transition, while the three-minute poll it replaced reported no movement five times in a row.
+
+It classifies nothing and routes nothing. A line it prints says a pull request opened or a worker moved, and the routing block above is still what decides whether a review follows, so the two compose rather than replace each other.
+
+Every session in the repository holding a branch other than the base one counts as a worker, whoever launched it. The prototype matched the `orchestrator-` prefix instead, which reads a dispatched worker and misses every hand-launched one. A failed read of either source reports itself on a `watch:` line and leaves the baseline untouched, since reading an empty result as current state would report every worker gone on the pass after.

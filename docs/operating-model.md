@@ -17,14 +17,27 @@ order, port collisions), see [Claude Code and git worktrees](../wiki/claude/clau
 
 The split is by vantage, not by capability. Both are Claude Code sessions.
 
-| Role         | Session                               | Owns                                  | Does not                      |
-| ------------ | ------------------------------------- | ------------------------------------- | ----------------------------- |
-| Orchestrator | One warm, long-lived session          | Planning, deep PR review, merge order | Edit tracked files, merge PRs |
-| Worker       | One cold worktree session per feature | Implement, self-check, open PR        | Question the plan, merge      |
+| Role         | Session                               | Owns                                                    | Does not                      |
+| ------------ | ------------------------------------- | ------------------------------------------------------- | ----------------------------- |
+| Orchestrator | One warm, long-lived session          | Planning, deep PR review, merge order                   | Edit tracked files, merge PRs |
+| Worker       | One cold worktree session per feature | Implement, self-check, open PR, answer the orchestrator | Write the shared board, merge |
 
-The orchestrator is worth asserting explicitly at the start of a session with
-`claude-orchestrate`, which loads the loop and its boundaries. It is framing and
-dispatch, not logic.
+Each role is asserted explicitly rather than inferred. The orchestrator loads
+`claude-orchestrate` at the start of its session, and a worker loads
+`claude-worker`, which `claude-autoship` invokes at Step 0 so a dispatched build
+and a hand-launched one reach it on the same path. Both are framing and
+boundaries rather than logic.
+
+Refusing is part of the worker's job rather than a failure of it. A worker that
+halts on a plan question it may not answer, or argues back against an
+instruction the tree contradicts, is working correctly. The four measured halts
+to date each cost the dispatcher one reply and each was right.
+
+What the worker may not do is write `.claude/tasks/priority.md` or the backlog
+beside it. Those are gitignored, so an overwrite drops a row with no history to
+recover it from, and a worker cannot pick a free task label without reading
+every task file and every archive entry. It reports the row it needs and lets
+the orchestrator write it.
 
 The orchestrator's cell reads every tracked file rather than every feature, and
 it offers no exception for a small one. A correction found while orchestrating
@@ -72,6 +85,25 @@ reply to it, which is a notification layer over a record that stays on the PR. A
 reply that changes an outcome, such as a worker naming the plan question that
 already declined a finding, still belongs back on the PR, since the session
 holding it ends and the thread is what a later reader opens.
+
+Two messages travel the other way and the worker owes both. It announces its own
+pull request as the ship chain opens one, naming the number, the branch, and the
+task it closes. That is the one transition only that session can observe, since
+a worker that finishes goes idle rather than exiting, and one sat unnoticed for
+eighteen minutes before the announcement existed.
+
+The second reports a block before that block becomes an interactive prompt. A
+queued message drains at the next tool round and a session already waiting on
+input never reaches one, so an answer relayed to an open prompt renders beneath
+the question and changes nothing. Nothing is sent on progress, which would
+rebuild the poll on the sender's side of the channel.
+
+The announcement is what let the review poll narrow. It used to start on a
+dispatch as well as on an open pull request, and the script reads pull requests
+while a building worker has none, so five consecutive runs reported no movement
+across roughly fifteen minutes while one worker built. An open pull request is
+now the whole trigger, with a dispatch still out after thirty minutes and silent
+kept as a fallback.
 
 Two rules put it there rather than leaving that to whoever remembers. A finding
 the worker declines carries the fact that settled it in the same reply body that

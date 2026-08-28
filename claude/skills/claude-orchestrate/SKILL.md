@@ -66,6 +66,11 @@ Ready to build (hand each to its own worker):
   no plan yet. A handoff without a plan has no scope
   → /claude-feature here first
 
+In flight (this session's workers, building now):
+
+<session name>  <branch>  <model>
+  task: <row>, <n> commits, <n> files changed
+
 In review (your turn):
 
 PR #<n> <title>
@@ -77,6 +82,10 @@ Next: <the single most useful action>
 ```
 
 Omit any section with nothing in it. Recommend a handoff only for a plan whose file set is disjoint from every track already in flight, per Parallelism below.
+
+`In flight` covers the state between the other two, which lasts ten to thirty minutes and is most of what an operator sees once this session dispatches its own workers. Before it existed, a session holding running workers reported them under no section and invented a shape per report, which the block below forbids two paragraphs down while giving it no term to use. Read the progress figures off each worker's worktree rather than from the worker, since a busy status says a session is alive and nothing about whether it is moving, and name the model because a dispatcher now picks one per row.
+
+Leave a plan out of `Ready to build` once a row in flight names it. The plan file stays in `.claude/plans/` for the whole build, so listing it there recommends handing off work already underway, and the disjointness rule below withdraws the recommendation only for a reader who already knows what is running.
 
 The block opens on the board rather than on a version, because no committed file states one. Adding a version line here would restate what a reader can already see on the rows, dated by nothing, which is how the retired sequencing surface produced an unsourced claim on every run.
 
@@ -114,7 +123,9 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 
 A session is reachable when it appears in a live listing, which reads what each session registered on disk rather than probing it, and a message carries plain text and no authority. When no live session holds the branch, report the invocation for the human, naming the branch, the pull request, and the skill to run, then stop. Retrying or waiting leaves the loop believing it is open while nothing acts on it. Every dispatch in the trial behind this step found a live session, so this branch stands on reasoning rather than on observation.
 
-The channel runs both ways and the return leg carries what the pull request cannot. A worker answering a posted finding by naming the plan question that had already declined it changes the outcome in the moment, where a thread comment waits on whoever reads it next. Read what a worker volunteers as part of the review rather than as an aside.
+The channel runs both ways and the return leg carries what the pull request cannot. A worker answering a posted finding by naming the plan question that had already declined it changes the outcome in the moment, where a thread comment waits on whoever reads it next. Read what a worker volunteers as part of the review rather than as an aside, and read a refusal the same way, since the corrections that landed on this session's model of the world arrived as a worker arguing back rather than complying.
+
+What the worker owes on its own side is stated in the `claude-worker` skill that session loads, being the pull-request announcement, the message a block goes out as before it becomes a prompt, and the ban on writing the board. Do not restate any of it here. This half held the only written copy of a channel that runs both ways, which put every obligation on the side that does not perform it.
 
 What arrives there does not become a record by being read, so place it by what it changes. An answer that settles a finding goes onto the pull request through the next pass, which withdraws or regrades that finding and names the fact behind it, per `claude-pr-review`. An answer that changes what this session believes about the world instead, which is a mapping correction or a constraint on what a worker can do, settles no finding and reaches no thread, so route it the way Boundaries below routes a change found while orchestrating, which lands it on the task owning the surface it describes. Writing a tracked file to hold either is forbidden here, which leaves the pull request and the board as the two surfaces this session writes.
 
