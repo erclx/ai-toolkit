@@ -57,6 +57,7 @@ The document opens with `# Feature: <short title>` and one paragraph stating wha
 
 - Write each marker as the table gives it. `Summary` opens the prose a reader scans, so it takes an H2, and the four that follow are labels over lists rather than sections of prose.
 - A section written in the other spelling is still that section. `## Risks` and `**Risks:**` name one thing, and a plan carrying either has stated its risks, so neither reads as an omission. Write the table's form in a new plan and leave an existing plan's spelling alone.
+- Both spellings break a depth run, so `aitk markdown audit` reads either as the seam it is and reports a plan for a section that genuinely runs long rather than for its whole body. The markdown standard states the rule.
 - Write `None identified.` under a required section with nothing to report rather than dropping the marker. A dropped section and an unconsidered one read identically.
 - Aim `## Summary` at a person scanning the plan, not at the session executing it. The other sections carry what execution needs.
 - Give every `**Files to touch:**` entry a backticked path and something said about it. A bare path states scope and not intent, and the reason is what an executing session checks its edit against. Lead with the path or lead with a label carrying the path, whichever reads better for the entry.
