@@ -183,6 +183,14 @@ A run on 2026-08-28 passed at 7 asserted and 0 failed, in 13 turns at 0.32 dolla
 
 That last pair is the most useful reading the run produced and the half no assertion covers. A `PUT` rewrite moves a review's body and leaves its `commit_id` pinned, so the field `claude-pr-review` Step 2 and `poll.sh` both derive a prior commit from goes stale the moment the guard fires. `.claude/context/claude-plugin/skill-review.md` holds why that cost was accepted rather than repaired.
 
+### The standards-drop arm scores a three-way split against the catalog
+
+`claude/migration-standards-drop.sh` stages four files under `.claude/standards/` across the three verdicts the skill reaches, plus a runtime reader and three citing surfaces. Its two toolkit copies come out of `aitk standards list --json` rather than out of this repository's own `standards/`, because the skill compares an installed file against that catalog's `content` field while `aitk standards <name>` strips frontmatter on its way to stdout. A fixture staged through the verb reads as drifted against a corpus it came from, and the unchanged branch of the split would never run.
+
+Three runs on 2026-08-28 each passed at 14 asserted and 0 failed with 6 unchecked, at 15, 11, and 10 turns for 0.34, 0.24, and 0.23 dollars. The fixture did not move between them, so all three read the same arm. The split came back 1 unchanged, 1 drifted, and 2 matching no standard every time, which is the fixture. Four of the six manual entries were confirmed by reading the reply: the sync is named ahead of the drop, the project-local skill repoints to `aitk standards slug` rather than to the plugin-root form, `prose` lands under `You supply` rather than taking a one-to-one repoint, and `slug` and `branch` sort into the right buckets. The other two are unwired, needing an arm that stages a stale binary and one that leaves the tree out of the index.
+
+The cap stays at 30 against a 10-to-15 spread. Identical assertions across a 50 percent range in turns is what a variable path looks like, so the low end is one route through the reads rather than a floor, and this is the reading `superseded` above could not reach on a sample of one.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.

@@ -49,6 +49,6 @@ The frame carries no version number. `package.json` is bumped on `main` by the r
 
 ### An exit 2 with no message
 
-The stage has failed transiently once. On 2026-08-28 it reported `✗ Hero regen failed` inside `bun run check`, and running `scripts/core/regen-hero.sh` directly exited 2 with nothing on stderr, since `catalog()` sends every `list` call's stderr to `/dev/null`. A bare re-run against an unchanged tree exited 0 and wrote a clean `assets/hero.html`, and no cause was found.
+`scripts/core/regen-hero.sh` exits 2 with nothing on stderr on roughly one run in five, reported as `✗ Hero regen failed` inside `bun run check`. The rate, the failing command, and what to do about it sit under `## Hero provenance` in `.claude/context/development/gates.md`, beside the stage that reports it.
 
-Re-run the script before reading that shape as a real finding. `claude-autoship` bounds verify at one fix attempt, so a chain meeting this stops on a stage that passes on retry.
+Two accounts of this landed within a day of each other, one here and one there, because the flake fires on any branch that moves a catalog count and nothing pairs the two entries. One is kept and this is the pointer.

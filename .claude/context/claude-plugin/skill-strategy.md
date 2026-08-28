@@ -7,9 +7,11 @@ description: Where a plugin skill lives, the catalog command, the workflow again
 
 Plugin skills live in `claude/skills/` and are auto-discovered from the plugin root, whether that root is a marketplace install or a `--plugin-dir` pointed at a checkout. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-claude-md`, `migration-context`, `migration-superseded`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
+Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix, which `aitk claude skills list --names` enumerates rather than this line. Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
 
-The family lost a member rather than drifting one: `migration-standards` relocated a root `snippets/` folder into `.claude/snippets/`, and once the snippets install channel closed alongside the standards one, that destination stopped being legitimate for either domain, leaving the skill no move left to propose. The retirement runs by hand across every target still holding a root `standards/` or `snippets/` tree, dropping the installed copy and repointing citations at `aitk standards <name>` or the plugin's live snippets symlink. A backlog task files that gap rather than closing it here. `setup-init` still names its remaining siblings under `Out of scope` and still invokes `setup-verify` as chain step 4, so the setup-chain admission holds unchanged.
+The family lost a member rather than drifting one: `migration-standards` relocated a root `snippets/` folder into `.claude/snippets/`, and once the snippets install channel closed alongside the standards one, that destination stopped being legitimate for either domain, leaving the skill no move left to propose. The retirement runs by hand across every target still holding a root `standards/` or `snippets/` tree, dropping the installed copy and repointing citations at `aitk standards <name>` or the plugin's live snippets symlink. `setup-init` still names its remaining siblings under `Out of scope` and still invokes `setup-verify` as chain step 4, so the setup-chain admission holds unchanged.
+
+`migration-standards-drop` closes the standards half of that gap and takes the family back to four members. It proposes the drop and the citation repoint and applies neither, on the shape its three siblings already set. What it ships against is the 2026-08-28 census rather than a live move, since the one task performing the repair stays parked on the operator declining outside-repository work. The snippets half is closed by neither a skill nor a task.
 
 ## The catalog
 
@@ -458,6 +460,8 @@ Where a zero is load-bearing the amount is worth measuring, since that is the on
 #### All twenty-two keep, and the audit closes at sixty-two
 
 Every folder under `claude/skills/` now carries a verdict. Forty took one across the eight-verdict pass, the redundancy audit, and batches one through five, and these twenty-two close the set.
+
+Read that as closed at the sixty-two the audit ran over rather than at whatever the tree holds now. Two folders have landed since and neither carries a row: `claude-worker` from `#1233` and `migration-standards-drop`. A skill added after a sweep arrives without one by construction, since the census the third question reads has nothing to count for a folder that has never shipped, so the gap closes on a later pass rather than inside the branch that opens it.
 
 The routing corpus covers all twenty-two at exactly one case each, so the untested set the eight-verdict pass had to reason around is empty for the first time. Sandbox coverage splits instead. Sixteen carry an arm and six do not: `bash-script`, `cli-script`, `create-rule`, `session-resume`, `toolkit-cli`, and `toolkit-feedback`. Four of those six also score zero typed, which is the thinnest evidence any batch has decided on, and each rests on a citation the census cannot see.
 

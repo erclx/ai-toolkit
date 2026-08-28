@@ -259,14 +259,15 @@ This section is the corpus the coverage claim is measured against: every name `a
 
 ### Keep the project current with the toolkit
 
-| Skill                       | When to use                                                                        |
-| --------------------------- | ---------------------------------------------------------------------------------- |
-| `aitk:claude-seed-sync`     | After a toolkit update, to reconcile installed seeds without losing customizations |
-| `aitk:migration-claude-md`  | When `CLAUDE.md` grew past what always-load context should carry                   |
-| `aitk:migration-context`    | When `docs/` holds agent-flavored files belonging in `.claude/context/`            |
-| `aitk:migration-superseded` | When a drift report names a `.claude/` file a folder has replaced                  |
-| `aitk:toolkit-feedback`     | When something in the toolkit is broken, missing, or off                           |
-| `aitk:toolkit-triage`       | In the toolkit repo, to work through the open feedback issues                      |
+| Skill                           | When to use                                                                        |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| `aitk:claude-seed-sync`         | After a toolkit update, to reconcile installed seeds without losing customizations |
+| `aitk:migration-claude-md`      | When `CLAUDE.md` grew past what always-load context should carry                   |
+| `aitk:migration-context`        | When `docs/` holds agent-flavored files belonging in `.claude/context/`            |
+| `aitk:migration-superseded`     | When a drift report names a `.claude/` file a folder has replaced                  |
+| `aitk:migration-standards-drop` | When the project still holds an installed `.claude/standards/` tree                |
+| `aitk:toolkit-feedback`         | When something in the toolkit is broken, missing, or off                           |
+| `aitk:toolkit-triage`           | In the toolkit repo, to work through the open feedback issues                      |
 
 ### Generate an artifact on demand
 
