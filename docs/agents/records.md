@@ -146,7 +146,7 @@ git --git-dir=.claude/.records.git remote add origin <private-repo-url>
 printf '.claude/.records.git/\n' >> .gitignore
 ```
 
-The ignore line is part of the setup rather than part of the installed gitignore group, because the person running these commands is the one who creates the directory. Every path that group ships is written by a toolkit command without anyone asking, and this one is not, so a project that never sets up records would carry a rule for a directory it will never hold. Leaving it out and adding it here puts the rule where whoever creates the directory reads it.
+The ignore line is repeated here rather than left to the install, because the person running these commands is the one who creates the directory and the rule is worth reading beside the command that needs it. The claude manifest ships `.claude/.records.git/` as the first entry of its group, so a project that ran `aitk claude sync` already carries it and this line is a no-op there. What the group buys is the project that never sets records up: it holds a rule for a directory it will never create, which costs nothing, and the backed-folder derivation above subtracts that entry from the group rather than from a list it does not sit in.
 
 Point it at a private repository, and at one that is not a remote of the project. Records carry the memory pen, the review reports, and the groundwork trails, so a public project publishes all of it to anyone who fetches all refs. `push` compares the configured origin against every remote of the project and refuses on a match. A read of that list which fails refuses as well, since an empty list clears the comparison for every origin and a gate that passes on its own failure is no gate.
 
