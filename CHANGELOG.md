@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.37.0](https://github.com/erclx/aitk/compare/v3.36.1...v3.37.0) (2026-08-28)
+
+
+### Features
+
+* **governance:** ship the git skill precedence as an always-loaded rule ([#1213](https://github.com/erclx/aitk/issues/1213)) ([7374bb5](https://github.com/erclx/aitk/commit/7374bb51a00250f3451316b11a6c2295827e3acf))
+
 ## [3.36.1](https://github.com/erclx/aitk/compare/v3.36.0...v3.36.1) (2026-08-28)
 
 
