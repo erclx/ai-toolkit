@@ -48,6 +48,8 @@ Each rule below duplicated bullets the cited standard already states. The rule-a
 
 Three prior instances of this defect, named in this task's own findings, are already fixed on `main` and needed no further repair here: `claude/592-claude-md.md` no longer cites `.claude/ARCHITECTURE.md`, and `claude/575-hooks.md` no longer cites a context entry. The third, `standards/teach.md` plus `claude/561-teach.md` already carrying the fallback line for the `claude-teach` glossary reference, turned out to be half-fixed rather than fixed: the fallback line was there, the `aitk:` prefix was not, which is the repair two rows above closes.
 
+The context-entry half of that defect recurs on rules written after the repairs rather than being closed by them. `claude/576-settings.md` was drafted on 2026-08-28 closing on `.claude/context/development/hooks.md` as the record holding this repository's own answer for the settings it governs, which is the citation `claude/575-hooks.md` had already been repaired for and which sits in the same folder one number away. What pulls an author there is real: a rule stating a general fact wants to point at where the local decision lives, and for a rule that ships through `aitk gov sync` no such path exists on the reader's machine. A rule stating its facts and naming no path is what ships instead, and the local answer is reached from the entry rather than from the rule.
+
 ### Moot: the target cannot reach the governed surface
 
 A rule scoped to a folder only a plugin skill creates is inert rather than broken for a target holding governance alone. The folder never exists there, so the file glob never matches and the citation never fires. No repair applies. The row exists so a later pass does not misread inertness as a defect.
