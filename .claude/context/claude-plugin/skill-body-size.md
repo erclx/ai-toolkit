@@ -5,7 +5,7 @@ description: The line checkpoint that replaced a word cap nothing reached, the m
 
 # Skill body size
 
-`.claude/standards/skill.md` checks a skill body against 150 lines and names what moves to `references/` past it. The number is a prompt to look rather than a gate, matching the context-entry checkpoint the repository already runs, so nothing enforces it and a body carrying nothing but procedure stays whole at any length.
+`standards/skill.md` checks a skill body against 150 lines and names what moves to `references/` past it. The number is a prompt to look rather than a gate, matching the context-entry checkpoint the repository already runs, so nothing enforces it and a body carrying nothing but procedure stays whole at any length.
 
 ## Why the cap was replaced rather than lowered
 

@@ -18,7 +18,7 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 ## Decisions
 
 - One skill covers both paths. They shared a seed, a render pipeline, and two byte-identical steps, and the split cost a caller a choice the project already answers.
-- The skill picks its path from whether UI code exists, never from a flag. The general ban on dispatch flags in `.claude/standards/skill.md` targets a toggle the model reads and misapplies. A test against the tree has no such failure.
+- The skill picks its path from whether UI code exists, never from a flag. The general ban on dispatch flags in `standards/skill.md` targets a toggle the model reads and misapplies. A test against the tree has no such failure.
 - Switching paths later is a rewrite of `DESIGN.md`, not a migration.
 - Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
 - The toolkit's own record anchors its dark palette to `assets/hero.html` and its light palette to the `LIGHT` theme in `src/slides/styles.ts`. Deriving a light set from the hero's neutrals was the alternative, and it makes every light value a proposal where the slide theme supplies five of the six roles as readings. The two surfaces reconcile on no value, so the light half is anchored by a surface shipping it rather than by following from the dark half.
@@ -52,9 +52,9 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 ## Extract skill
 
-`aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `.claude/standards/markdown.md`, load the `write-human` skill for tone, fill the same seed, and end at the same render.
+`aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `standards/markdown.md`, load the `write-human` skill for tone, fill the same seed, and end at the same render.
 
-The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`. `.claude/standards/design.md` now specifies that tag, its two spellings, and what the renderer does with it. The skill body was the only specification until then, which left the parser stripping a token no standard described.
+The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`. `standards/design.md` now specifies that tag, its two spellings, and what the renderer does with it. The skill body was the only specification until then, which left the parser stripping a token no standard described.
 
 The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
 

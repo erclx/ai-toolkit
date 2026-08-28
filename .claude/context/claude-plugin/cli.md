@@ -24,7 +24,7 @@ The section is gone: `500-prose.md`, `501-markdown.md`, `510-context.md`, and `5
 
 ### Seeded folders
 
-The `.claude/wireframes/` folder ships with an `index.md` discovery anchor. Add a file per surface as the UI grows, following `.claude/standards/wireframes.md`. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
+The `.claude/wireframes/` folder ships with an `index.md` discovery anchor. Add a file per surface as the UI grows, following `standards/wireframes.md`. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
 
 The `.claude/context/` folder ships only its `index.md` discovery anchor. The entries themselves come from elsewhere: `tooling/base/seeds/` installs `development.md` and `ci.md` as user-owned files, and `aitk init` runs base tooling before the Claude domain, so those land first and the Claude seed pass skips what is already present. Do not add a context entry to the Claude seeds without checking `tooling/base/seeds/.claude/context/` for the same path, since two seed sources writing one destination resolve by whichever domain runs first.
 

@@ -33,7 +33,7 @@ A guard on a standard's presence names the file under the plugin root rather tha
 
 ### The first executable in a skill
 
-`claude-orchestrate/scripts/poll.sh` is the only non-markdown file any skill ships, so a plugin that carried prose alone now carries code a target runs. It sits in `scripts/` rather than beside the runbook that invokes it, because `.claude/standards/skill.md` splits a skill folder by role and assigns `references/` to detail and `scripts/` to deterministic operations.
+`claude-orchestrate/scripts/poll.sh` is the only non-markdown file any skill ships, so a plugin that carried prose alone now carries code a target runs. It sits in `scripts/` rather than beside the runbook that invokes it, because `standards/skill.md` splits a skill folder by role and assigns `references/` to detail and `scripts/` to deterministic operations.
 
 Three stages had to reach a tree that had never held a shell file. `check:shell` globs `claude`, and so do both shfmt stages behind `format` and `check:format`. Adding it to the linter alone leaves the file checked and never formatted, which fails nothing while it happens to be clean and drifts silently on its next edit. The boundary walk needed no change, since it reads every file rather than every markdown file.
 

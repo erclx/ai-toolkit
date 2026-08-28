@@ -27,7 +27,7 @@ Flat by default: one `.md` per domain (`.claude/context/web.md`, `.claude/contex
 
 ## What goes where
 
-For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `.claude/standards/context.md`. Its `## What a working entry looks like` section is the criterion the shape rules serve: an entry works when a session can read it and answer where things live, why they are that way, and how to add one more, without opening source. An entry that fails those three is non-conforming even when it satisfies every shape rule.
+For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `standards/context.md`. Its `## What a working entry looks like` section is the criterion the shape rules serve: an entry works when a session can read it and answer where things live, why they are that way, and how to add one more, without opening source. An entry that fails those three is non-conforming even when it satisfies every shape rule.
 
 The conceptual placement decision is:
 
@@ -40,7 +40,7 @@ The conceptual placement decision is:
 
 ### A folder split is a ceiling rather than a fix
 
-A folder split gets re-breached rather than durably fixing entry length. Measured 2026-08-05 with `aitk context audit`, 22 of the 48 audited entries sat past the 150-line checkpoint and 14 of those were already sub-files of folders that had split: `sandbox/` was over in all four of its files, `claude-plugin/` in 6 of 12, `cli/` in 3 of 5, and `scripts/` in 1 of 5. `.claude/standards/context.md` names no split at all. It asks for three checks past 150 lines, being whether the entry still covers a single domain, whether it has filled with content a command reproduces, and whether it carries the history of its own changes, then says to fix whichever is true. Split only when the single-domain check is the one that fails. A task filed as a split on line count alone has skipped the diagnosis.
+A folder split gets re-breached rather than durably fixing entry length. Measured 2026-08-05 with `aitk context audit`, 22 of the 48 audited entries sat past the 150-line checkpoint and 14 of those were already sub-files of folders that had split: `sandbox/` was over in all four of its files, `claude-plugin/` in 6 of 12, `cli/` in 3 of 5, and `scripts/` in 1 of 5. `standards/context.md` names no split at all. It asks for three checks past 150 lines, being whether the entry still covers a single domain, whether it has filled with content a command reproduces, and whether it carries the history of its own changes, then says to fix whichever is true. Split only when the single-domain check is the one that fails. A task filed as a split on line count alone has skipped the diagnosis.
 
 ### A weight remedy grows the file
 
@@ -68,7 +68,7 @@ What the cap governs is a second copy of the structure inside a per-domain entry
 
 `claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing `.claude/context/<domain>.md` entries that reference those files, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
 
-New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `.claude/standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
+New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
 
 The rule governs `claude-docs` and the Claude seeds. It does not reach the tooling stacks, which ship `development.md` and `ci.md` as user-owned seeds under `tooling/base/seeds/.claude/context/`. Those arrive filled rather than generated, so they do not pad the catalog, and `tooling/base/reference.md` owns that decision. Check both seed sources before concluding an entry is absent from a scaffolded project.
 

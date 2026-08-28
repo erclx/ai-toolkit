@@ -9,7 +9,7 @@ A standard answers two questions before it answers anything about its own shape:
 
 ## Which tree a standard lives in
 
-The root is the authoring source and `.claude/standards/` is a generated consumed copy, so rules, skills, and seeds cite `.claude/standards/X.md` and the path resolves identically here and in every target. <!-- audit-ignore-citations: .claude/standards/X.md --> That mirrors the `governance/rules/` to `.claude/rules/` split. Standards are uniform across every project, with no stack variation and no extends chain, so nothing resolves at install time.
+The root is the authoring source and there is no consumed copy beneath it. `snippets/` and `governance/rules/` still mirror under `.claude/`, and standards left that pattern once nothing installed the corpus into a project, so the one spelling a mirror bought was a path only this repository could resolve. A citation now takes the form its carrier resolves, which `internal/rules/claude/598-authoring-layout.md` states as one case apiece. Standards are uniform across every project, with no stack variation and no extends chain, so nothing resolves at install time.
 
 A convention governing a surface only the toolkit has lives in `internal/standards/`, a tree no CLI entry point and no plugin symlink reads. A filter at each entry point was the alternative, and it cannot see a symlink an installer dereferences. Location is what enforces the boundary, so nothing has to remember to exclude it.
 
@@ -79,7 +79,7 @@ The scope statement is read by machine as well as by a person, which is what cos
 
 Publishing the declaration was the alternative to widening the audit's hardcoded mapping, which bound three document types out of thirteen. The cost is that rewording a Governs line can break a consumer with no error in front of it, which is why an unreadable statement emits an empty array rather than a guess.
 
-`standard.md` names `standards/` rather than `.claude/standards/`, so the declaration matches the authoring root and the installed copy alike.
+`standard.md` names `standards/`, which is the only tree the declaration has to match now that neither an install nor a mirror writes the corpus anywhere else.
 
 A second consumer now reads the statement, the `standards` kind of the record validator, and it reads it on the same contract rather than on one of its own. Two readings of one sentence would let a standard pass the check while publishing a different jurisdiction to every consumer of the catalog, which is a disagreement no stage would report.
 

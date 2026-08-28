@@ -1,6 +1,6 @@
 ---
 title: Resolution
-description: The two roots a standard resolves against, why the install channel closed and what closing it removed, the retired fan-out and its consumers field, and the reading gotchas
+description: The two roots a standard resolves against, why the install channel and the generated mirror both closed, the retired fan-out and its consumers field, and the reading gotchas
 ---
 
 # Resolution
@@ -11,11 +11,19 @@ No standard installs into a project. A reader resolves one instead, and everythi
 
 `standardRoots` in `src/standards/read.ts` returns `standards/` at the caller's working directory, then the corpus inside the aitk package. The first is this repository's authoring root and a project's own folder anywhere else, so a repository that writes standards governs its own copy. The second answers everywhere else, which is every target.
 
-`.claude/standards/` is not a root. Here it is the generated mirror `regen-claude-copies.sh` writes and `bun run check` asserts, read by a session opening a cited path rather than by the resolver. In a target it is a stale artifact an older toolkit left, and nothing reads it.
+`.claude/standards/` is not a root and no longer exists anywhere. In a target it is a stale artifact an older toolkit left. Here it was the generated mirror `regen-claude-copies.sh` wrote and `bun run check` asserted, 28 tracked files rebuilt on every run, and it is gone.
 
 Two entries rather than one because a checkout of this repository would otherwise resolve an edit in progress against whatever the installed package holds. A target carries neither the first root nor a copy of the second, so only one answers there and no precedence is left to reason about.
 
-## What closing the channel removed
+## What retiring the mirror removed
+
+The mirror existed so a rule, a skill, or a seed could cite one path resolving here and in a target alike, which is the pattern `snippets/` and `governance/rules/` still run. It stopped buying that the day the install channel closed, since no target could hold the copy the citation named, so the spelling was portable in form and resolved in this checkout alone. Forty of the 62 shipped bodies already name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` instead, which is the measurement that says the form was not carrying the readers it claimed.
+
+Removing it took the `mirror_dir` call for `standards/` out of `scripts/core/regen-claude-copies.sh`, dropped `.claude/standards` from the drift assertion in `scripts/core/verify.sh`, and deleted the 28 files. The `paths:` glob on `591-standard-authoring` lost its mirrored entry, so a target holding an old installed copy stops matching that rule. That is the intended outcome rather than a regression, since the rule governs authoring and such a copy is not authored.
+
+What it costs is that one citation form no longer answers everywhere. A body under `claude/` cites the plugin root, a rule and a seed call `aitk standards <name>`, and a file staying in this repository cites `standards/<name>.md`, which `internal/rules/claude/598-authoring-layout.md` now states as one case apiece rather than as a single spelling. A reader has to know which surface they are on, and nothing checks that they got it right: `DEFAULT_FOLDERS` in `src/context/folders.ts` covers `context`, `diagrams`, and `wireframes`, so the citation gate never resolved a `.claude/standards/` path and would not have reported one left behind. The sweep that moved them was a grep rather than a check. Measured at `7374bb51` on 2026-08-28.
+
+## What closing the install channel removed
 
 `aitk standards install` copied the flat root into a target and `aitk standards sync` reconciled it afterward. Both are gone, with `src/standards/install.ts`, `src/standards/adapter.ts`, `src/standards/index-refresh.ts`, and `src/standards/closure.ts`. The domain left `SCANNED_DOMAINS`, `SYNC_DOMAINS`, `STAMP_DOMAINS`, and the root layouts `detectUnmigrated` walks, and `aitk init` lost its `Standards` step and its `--standards` flag.
 
@@ -51,7 +59,7 @@ A shipped body names one path for a standard, and the command route is what near
 
 The two-branch citation those 38 replaced named an installed path first and the plugin root behind it. Both branches resolved while the corpus still installed, which is what hid a partial sweep, so the collapse ran as one pass rather than riding along with each skill's next edit.
 
-A grep for the installed prefix does not come back empty, and two classes account for every survivor now that the channel is closed. A write destination naming where a promoted entry lands is the first, covering `claude-memory-review`. A `paths` glob is the second, covering `591-standard-authoring` alone. The three migration skills, `claude-seed-sync`, and `create-standard` were the third class and no longer name the path, since a target holds no installed tree for them to be about. Read a survivor against those two before calling it a missed citation.
+A grep for the installed prefix comes back near-empty now, and one class accounts for the survivors. A line describing a target's stale folder is it, covering `toolkit-cli`, `docs/target-projects.md`, and the ban in `standards/skill.md`. The `paths` glob on `591-standard-authoring` was the second class and the mirror's retirement took it. A write destination naming where a promoted entry lands was the third, covering `claude-memory-review`. Read a survivor against the stale-folder class before calling it a missed citation, and note that no check will find one for you.
 
 The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its second root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in any target. `<aitk>` is how a resolve from that root spells itself, since the other label is project-relative and a report could join it to a root.
 
@@ -59,10 +67,10 @@ The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped 
 
 ## Gotchas
 
-- A target holding `.claude/standards/` from an older toolkit resolves nothing through it. The folder is inert rather than authoritative, and deleting it is safe.
+- A target holding `.claude/standards/` from an older toolkit resolves nothing through it. The folder is inert rather than authoritative, and deleting it is safe. This repository no longer carries one either.
 - A project that wants a standard of its own writes `standards/<slug>.md` at its root, which the resolver reads ahead of the package. `create-standard` writes there in the toolkit and in a target alike.
 - Do not hand-edit `standards/index.md` here. `regen-indexes.sh` rewrites it from the frontmatter of whatever is present, and a standard missing `title` or `description` fails that regen.
-- `bun run check` regenerates the consumed copy, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches. There is no skill-reference fan-out to regenerate any more, since a `references/` file is skill-local now and edited in place.
+- `bun run check` no longer regenerates anything for this corpus, and the Consumed copies stage names `.claude/snippets`, `.claude/internal`, and `.claude/rules` alone. Editing `standards/<name>.md` needs no second file staged behind it. There is no skill-reference fan-out either, since a `references/` file is skill-local now and edited in place.
 - A grep for `standards install` or `standards sync` in a skill body or a doc is a stale citation, not a verb. Neither exists.
 
 A plan's measured claim that nothing covers an artifact can be false when the covering file sits in a source subfolder the mirror and the index both exclude, since every catalog read then reports it missing. One plan measured `standards/` at twelve files and concluded nothing governed a standard, while `standards/bundled/standard.md` already carried the overview, frontmatter, structure, rule, success-criterion, and example sections. `mirror_dir` excluded `*/bundled/*` and `standards/index.md` never listed it, so the listing the plan trusted was accurate and the conclusion drawn from it was not. Writing the planned new file would have duplicated it near-wholesale. The specific exclusion closed with the fan-out, since `standard.md` sits at the flat root now and every catalog read reaches it, but the general failure did not: glob a domain root recursively rather than reading its `index.md`, and where a match turns up in a subfolder a mirror or index excludes, the change is usually a promotion plus the one missing rule.

@@ -26,7 +26,7 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - Every folder under `snippets/` is publishable, so nothing filters. The ones no entry point reads live in `internal/snippets/`.
 - The retrieval half of the retirement is the cost the delivery half does not carry. A standard is read by `aitk standards <name>`, which resolves against the package from anywhere, so closing its install cost a reader nothing. A snippet is reached by a path a person types after `@`, and a plugin cache path can be typed but not discovered, so a target that stops holding `.claude/snippets/` may leave its snippets reachable in principle and unreachable in practice. `aitk snippets list` is the catalog a reader without a memorized path falls back to.
 - `governance/rules/snippets/505-at-references.md`, the `@`-reference convention rule, used to install only through `installSnippetsRule` inside the now-retired `aitk snippets install`. Losing that channel left the rule no delivery path at all, so `base` now carries `snippets` as a folder-whole entry (see `.claude/context/governance/rules.md`), reaching every base consumer through `aitk gov install`/`sync` instead.
-- `migration-standards`, the skill that proposed moving a root `snippets/` folder into `.claude/snippets/`, is retired with the install channel it existed to backfill. `.claude/snippets/` is no longer a legitimate destination for anything, the same way `.claude/standards/` was not before it.
+- `migration-standards`, the skill that proposed moving a root `snippets/` folder into `.claude/snippets/`, is retired with the install channel it existed to backfill. `.claude/snippets/` is no longer a legitimate destination for anything a person authors, though the mirror still generates into it, which is the one difference from `standards/` now that its mirror has retired.
 
 ### Where a snippet lives
 
@@ -45,7 +45,7 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - An overlap without such a reason loses to the skill, which is what retired the `create-snippet` snippet against the skill of the same name
 - A runbook one skill fires and nothing else reads belongs in that skill's `references/`, not in this catalog. The three orchestrator runbooks moved to `claude/skills/claude-orchestrate/references/` and the `orchestrator` preset retired with them, leaving `essentials` as the only preset.
 - The two channels are what forced it: a skill loads live from the plugin root while a snippet is copied by a CLI command, so a skill citing an installed path breaks for a project that added the plugin and ran no install, and nothing reports it. A reference travels with the body that cites it, so long as that body is the only reader.
-- What the move costs is the typed entry point, since a person fires a snippet by path and cannot type a reference, so the skill body routes a request for either compaction side to the runbook that serves it. An invocation word was the first attempt and `.claude/standards/skill.md` bans it, because a flag selecting an alternate flow is the shape the model misreads on its way to the vanilla path.
+- What the move costs is the typed entry point, since a person fires a snippet by path and cannot type a reference, so the skill body routes a request for either compaction side to the runbook that serves it. An invocation word was the first attempt and `standards/skill.md` bans it, because a flag selecting an alternate flow is the shape the model misreads on its way to the vanilla path.
 
 ### The boundary
 
