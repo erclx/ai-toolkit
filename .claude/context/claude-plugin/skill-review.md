@@ -61,6 +61,22 @@ The relocation copied the equality test verbatim, and the test matched `## Revie
 
 Widening the query surfaced a second gap the same shift exposed: a `## Review response` is an answer to a finding this skill already argued, so reading it and skipping the diff and file reads costs nothing, but a `## Post-review findings` reply asserts a defect nobody has checked, and the first arm run proved it. The pass read the worker's claim, never opened the file it named, and posted a should-fix sourced from that claim alone, which is the reviewing session repeating an assertion rather than checking one. Step 2 now splits on the heading: a response or a rebase report still skips straight to composing the body, and a late finding gets the file it names read at `<headRefOid>` first, the same confirmation Step 3 already runs against a stale ticked box. Measured 2026-08-27.
 
+### A close-out repeating the standing one
+
+The unchanged-head stop tests an empty range, so a pass whose head moved passes it whatever the thread already says. `#1201` ran three passes on 2026-08-28, `## Review` at `1d128ce` and `## Review closed` at both `1d51b0d` and `9666bb8`, and the two close-outs read alike. Every step was individually correct, which is why nothing reported the pair and the operator found it by reading the thread.
+
+The shape that produces it is narrow enough to name. A pass tells the author a change is their own call, the author makes it, and the delta the next pass reads has nothing left to say by construction, so a correct pass over real commits arrives carrying nothing.
+
+The guard therefore turns on the standing verdict rather than on the range. Step 2 widens its existing query to return the last family review's first line beside its commit, one read answering both, and Step 4 rewrites the standing close-out through `gh api -X PUT` instead of posting beside it. `PUT` keeps the timestamp and the position in the thread, so the verdict stays where a reader last found it, and a submitted review cannot be deleted anyway.
+
+Suppressing the pass was the first alternative and it fails twice. A reader scanning the thread would see a close-out naming an older commit with no way to tell whether the newer one was covered or skipped, and a test broad enough to suppress early would swallow a pass that raised a real finding. That second cost is why the guard sits after Step 3 rather than beside the stop it reads next to.
+
+A sixth heading was the other alternative, and the five-heading set closes it outright. `poll.sh` matches those five in jq and reports anything else as `UNMATCHED`, so a `## Superseded` would break the classification it would be invented to clarify.
+
+What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's prior commit and the one `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and the poll reports the head as moved rather than as covered. Each errs toward more reading, and repairing either needs a second mechanism carrying the covered head outside the field GitHub pins.
+
+The guard fires on `## Review closed` alone. Two open passes carry different findings and both are worth reading, so a repeated `## Review` stays an ordinary post. Measured 2026-08-28.
+
 ### The heading contract
 
 The heading is the half a reader sees without opening anything, so it reports state rather than pass number. `## Review` covers a pass carrying a finding at any severity and `## Review closed` covers a pass carrying none, so the state comes off the most recent comment rather than off a label on a kind of pass. A close-out does not close the pull request, which is why the rule reads the latest heading rather than promising the closed one is last.

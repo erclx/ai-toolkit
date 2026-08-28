@@ -18,6 +18,10 @@ none, so the most recent comment's heading reports whether any work is owed.
 Owed is a finding at any severity, a Testing question, or a reviewer request nobody has answered, defined once at Step 4. Every pass is this skill, and which one it is gets detected from
 the thread rather than named by the caller.
 
+One live verdict stands at a time. A pass that would repeat a standing
+close-out rewrites that comment in place rather than posting beside it, so a
+reader scanning the thread finds the current verdict where the last one sat.
+
 ## Guards
 
 - If no open PR resolves for the target branch via `gh pr view`, stop: `❌ No open PR to review. Open one first, or use /claude-review for local changes.`
@@ -39,11 +43,13 @@ Coding standards from `.claude/rules/` are auto-loaded by Claude Code.
 
 ## Step 2: scope the read
 
-Find the commit the last pass covered:
+Find the commit the last pass covered and the verdict it posted:
 
 ```bash
-gh pr view <number> --json reviews --jq '[.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .commit.oid'
+gh pr view <number> --json reviews --jq '[.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | select(. != null) | ((.commit.oid // "") + "\t" + (.body | split("\n")[0] | rtrimstr("\r")))'
 ```
+
+The two fields are `<prior-oid>` and `<prior-heading>`. The commit scopes the read below and the heading feeds the repeat guard at the end of this step, so one query answers both rather than two reads of the same review. Keep the `select(. != null)` guard, since the string concatenation aborts jq on the null an empty selection returns, and an aborted command reaches the session as an error rather than as the empty result the first-pass branch reads.
 
 Match the first line for equality against the two headings this skill posts. A prefix test also matches `## Review response` and any heading merely starting with those words, which would scope the pass to whatever commit that comment carried. The `\r` trim covers a body composed in the GitHub web editor, which stores CRLF.
 
@@ -89,6 +95,12 @@ A non-empty result carries the comment id Step 4 needs for the third filename se
 
 A `## Post-review findings` reply carries no argued finding behind it, since it asserts a new defect rather than answering one, and this pass is its first independent reader. Restating it as a finding without opening anything is repeating the worker's claim rather than checking it. Read the file the comment names at `<headRefOid>`, the same `git show <headRefOid>:<path>` read Step 3 already runs to confirm a ticked box, and confirm the defect before it becomes a finding of this pass's own.
 
+A moved head has its own way to add nothing, which the ancestor test cannot see. When `<prior-heading>` reads `## Review closed`, the standing verdict already reports the branch clear, so a pass over the new commits that raises nothing posts a comment saying what the one above it said. Two close-outs landed on `#1201` that way on 2026-08-28, and the operator caught the pair rather than any check.
+
+The producing shape is narrow. A prior pass tells the author a change is their own call, the author makes it, and the delta reaching the next pass has nothing left to say by construction.
+
+Carry `<prior-heading>` into Step 4 and run Step 3 unchanged. This guard cannot stop the pass the way the unchanged-head stop above does, because that stop reads an empty range and this one turns on what the pass carries, which is Step 3's output. Deciding ahead of the review would swallow the pass that does find something, and that is the costlier error, so the rule is stated beside its sibling and executed where the heading is picked.
+
 Read each changed file in scope. Skip deleted files. Run reads in parallel.
 
 ## Step 3: review
@@ -121,11 +133,11 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered.
+Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`, which the rest of this step calls `<body-file>`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered.
 
 Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
 
-When `<prior-oid>` from Step 2 equals `headRefOid`, the head repeats and the folder already holds `body-<number>-<short-sha>.md`. Add a third segment taking the id of the reply Step 2 resolved, giving `body-<number>-<short-sha>-r<comment-id>.md`. That satisfies both prohibitions above rather than carving an exception into either. Step 2 already stopped the pass when that resolution came back empty, so reaching this line means the comment id is in hand.
+When `<prior-oid>` from Step 2 equals `headRefOid`, the head repeats and the folder already holds `body-<number>-<short-sha>.md`. Add a third segment taking the id of the reply Step 2 resolved, giving `body-<number>-<short-sha>-r<comment-id>.md`, which is `<body-file>` on that path. That satisfies both prohibitions above rather than carving an exception into either. Step 2 already stopped the pass when that resolution came back empty, so reaching this line means the comment id is in hand.
 
 The comment is a rendered-for-human GitHub surface, so load the `write-human` skill for voice and follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for the banned words: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
 
@@ -233,6 +245,28 @@ A pass that closed by withdrawing a finding rather than by reading its fix takes
 A pass whose only content is a `## For the reviewer` block with every bullet answered, and that owes nothing else, takes the same shape: `## Review closed`, the block in place of the canned line, and the footer. The heading reports what the branch author still owes rather than what the pass did, and an answer discharged in the same comment owes nothing back.
 
 Post a close-out even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
+
+### A close-out that repeats the standing one
+
+When `<prior-heading>` from Step 2 reads `## Review closed` and this pass carries nothing owed, the thread already holds this verdict. Replace the standing close-out rather than posting a second one beside it.
+
+Resolve its numeric id. `gh pr view --json reviews` carries a GraphQL node id under `id`, which no REST route accepts, so read the id off the REST listing instead:
+
+```bash
+gh api repos/{owner}/{repo}/pulls/<number>/reviews --jq '[.[] | select((.body // "") | split("\n")[0] | rtrimstr("\r") == "## Review closed")] | last | .id'
+```
+
+Write the replacement body to `<body-file>`, the name Step 4 already derived at the top of this step, keeping the heading and the footer and naming what this pass covered on the scope line in place of what the old one covered. Derive that name the same way whichever path reached here, since the guard reads `<prior-heading>` alone and a repeated head resolves the third segment as usual. The folder then gains a record of every covered head rather than losing the one the standing comment named. Then replace the comment:
+
+```bash
+gh api -X PUT repos/{owner}/{repo}/pulls/<number>/reviews/<review-id> -F body=@<body-file>
+```
+
+`PUT` keeps the comment's timestamp and its position in the thread, so the verdict stays where a reader already found it and the thread gains no second entry. A submitted review cannot be deleted, which is why this rewrites the standing comment rather than posting a fresh one.
+
+The guard fires on `## Review closed` alone. Two open passes carry different findings and both are worth reading, so a repeated `## Review` posts normally. A pass carrying anything owed posts normally too, under `## Review`, which is what keeps a finding raised after a close-out from being swallowed by the guard that exists for a silent one.
+
+What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's `<prior-oid>` and the prior commit `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and the poll reports the head as moved rather than as already covered. Each errs toward more reading, so neither is repaired here.
 
 ## Step 5: output
 

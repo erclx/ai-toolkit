@@ -171,6 +171,16 @@ A run on 2026-08-19 passed at 4 asserted and 0 failed with 2 unchecked, in 43 se
 
 What the arm cannot reach is the refusal branch the same change added to the skill body. Step 4 registers whatever it creates, so a fresh entry always lands on a worktree the helper answers for, and no staging puts the entry itself onto a leftover folder. The scenario seeds one as a sibling so a reader can drive the helper against it by hand, and the arm says as much in a `manual` entry rather than claiming coverage. The branch is covered instead by `src/worktree-port.test.ts`, which drives the helper directly across the directory shapes.
 
+### The repeat-close-out arm scores a thread shape no assertion kind reads
+
+`claude/pr-review.sh` gained a `repeat-close-out` arm on 2026-08-28, seeding a `## Review`, then a `## Review closed`, then one commit that raises nothing, which is the state a pass has to meet without posting a second close-out. Seven assertions run locally and four sit in `manual`, because the outcome the arm exists to score is the shape of a remote thread and no assertion kind reads one.
+
+What the local file proves is that a body was written under `## Review closed` naming what this pass covered. Whether a second close-out was posted beside the standing one is invisible to it, which is the whole defect, so the asserted count here is narrower than the behavior verified and a reader should take it that way.
+
+A run on 2026-08-28 passed at 7 asserted and 0 failed, in 13 turns at 0.32 dollars. All four manual entries were confirmed by hand through `gh api repos/erclx/aitk-sandbox/pulls/<n>/reviews`, the read the arm cannot make for itself. The thread carried one `## Review` and one `## Review closed` with no reply-family comment, and the close-out's `commit_id` still named the commit it was first submitted against while its rewritten body named the newer one.
+
+That last pair is the most useful reading the run produced and the half no assertion covers. A `PUT` rewrite moves a review's body and leaves its `commit_id` pinned, so the field `claude-pr-review` Step 2 and `poll.sh` both derive a prior commit from goes stale the moment the guard fires. `.claude/context/claude-plugin/skill-review.md` holds why that cost was accepted rather than repaired.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.

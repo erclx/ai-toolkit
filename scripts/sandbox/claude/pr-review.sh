@@ -167,7 +167,7 @@ EOF
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request" "late-finding"
+  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request" "late-finding" "repeat-close-out"
 
   case "$SELECTED_OPTION" in
   "first-pass")
@@ -351,6 +351,80 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
     log_info "         reads the ## Post-review findings comment rather than refusing in Step 2"
     log_info "         names the body body-<number>-<short-sha>-r<comment-id>.md, id off the comment url"
     log_info "         posts a review addressing the late finding rather than stopping with nothing to add"
+    ;;
+
+  "repeat-close-out")
+    log_step "Configuring pr-review repeat-close-out environment ($ANCHOR_REPO)"
+    seed_reviewable_pr
+
+    # The first pass, against the pre-fix head, so its commit.oid bounds the delta.
+    gh pr review "$PR_URL" --comment --body "## Review
+
+0 critical, 1 should-fix, 0 minor. Reviewed against project docs and the board.
+
+**\`src/tasks.ts\`**
+
+- **should-fix**: \`handleCreate\` does not reject an empty title, so a blank task is created. Guard the title before calling \`createTask\`.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the first pass. Post one manually before testing."
+
+    cat <<'EOF' >src/tasks.ts
+export function createTask(title: string) {
+  return { id: crypto.randomUUID(), title };
+}
+
+export function handleCreate(body: { title: string }) {
+  if (!body.title.trim()) {
+    throw new Error("title is required");
+  }
+  return createTask(body.title);
+}
+EOF
+
+    git add . && git commit -m "fix(api): reject an empty task title" --no-verify -q
+    git push origin HEAD -q
+
+    # The standing verdict. Posting it here rather than after the next commit is
+    # what pins its commit.oid to this head, which is the state the guard reads
+    # back and the field a PUT rewrite cannot move.
+    CLOSED_SHA=$(git rev-parse --short HEAD)
+    gh pr review "$PR_URL" --comment --body "## Review closed
+
+✅ Prior findings addressed. Re-reviewed $CLOSED_SHA, 1 commit since the prior pass.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the close-out. Post one manually before testing."
+
+    # The producing shape, written out. The close-out above left nothing owed,
+    # the author makes a change that was their own call, and the delta reaching
+    # the next pass has nothing to say by construction. A conforming pass has to
+    # rewrite the standing close-out rather than post a second one beside it.
+    cat <<'EOF' >src/tasks.ts
+export function createTask(title: string) {
+  return { id: crypto.randomUUID(), title };
+}
+
+export function handleCreate(body: { title: string }) {
+  const title = body.title.trim();
+  if (!title) {
+    throw new Error("title is required");
+  }
+  return createTask(title);
+}
+EOF
+
+    git add . && git commit -m "refactor(api): read the trimmed title once" --no-verify -q
+    git push origin HEAD -q
+
+    log_step "Scenario ready: a moved head whose standing verdict is already a close-out"
+    log_info "Context: open PR carrying ## Review, then ## Review closed, then one commit raising nothing"
+    log_info "Action:  /claude-pr-review"
+    log_info "Expect:  sees the prior commit reach the head, so the unchanged-head stop does not fire"
+    log_info "         reads the refactor commit alone and raises no finding on it"
+    log_info "         reads the standing verdict as ## Review closed and rewrites that comment"
+    log_info "         through gh api -X PUT rather than posting a second close-out beside it"
+    log_info "         leaves the thread with one ## Review closed, does NOT merge"
     ;;
 
   *)

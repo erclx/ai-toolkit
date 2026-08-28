@@ -170,6 +170,12 @@ A trigger keyed to a file entering the tree never fires when the seed already pu
 
 A helper that builds a work list from `git diff --name-only` or `git ls-files` treats every path as present, so a delete-only branch is where the missing existence check first surfaces. `inject_changed_skills` in `scripts/manage-sandbox.sh` unions the `claude/skills/**/SKILL.md` diff against `main` with untracked folders and copies each hit, and the diff lists a deleted skill exactly like a changed one, so removing one skill made every run print `cp: cannot stat`. Provisioning still completed, which is why the defect survived: it degrades to noise rather than a failure. Fix the guard in the same branch as the deletion, and treat a non-fatal error printed mid-run as a defect, since a helper that reports a failed copy and continues provisions a tree nobody verified.
 
+### A first arm run is weak evidence about the pin it reddens
+
+Read a single red pin on a brand-new arm as a question about how tight the pin is before reading it as a defect in the skill. The `claude:pr-review` `repeat-close-out` arm failed its `^## Review closed` pin on its first run and passed it on the second against an unchanged fixture, which is the agent phrasing a body two ways rather than provisioning reaching two states. A pin anchored to the first line of a body the skill is free to compose sits exactly where that variance lands.
+
+The cost of misreading it runs one way. Treating the flake as a skill defect sends a session editing a body that was correct, while treating a real defect as a flake costs one more run to find out, so re-run before editing.
+
 ### A pending verdict pins the format its fixture asserts
 
 Defer a format change that would retarget an assertion belonging to a verification nobody has run yet. The `claude-tasks` plan proposed turning `Plan:` into a markdown link, which retargets the anchored regex in the `claude/docs` `drift` fixture, and that arm's verdict was another task's open outcome, so a failing run afterward could be read as neither skill defect nor format change. Grep the fixtures for assertions on a format before editing it and check whether any owning task still carries an unchecked verification outcome.
