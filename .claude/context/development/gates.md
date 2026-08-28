@@ -57,6 +57,8 @@ The counts are regenerated from the standards and skills trees, so any branch ad
 
 `file_sha256` refuses on a machine carrying neither `sha256sum` nor `shasum`, and it refuses on stderr. Every caller reads it through a command substitution that captures stdout into the digest, so a message written there is swallowed and the stage reports a mismatch against a blank value, which names the image as wrong when the checker is what could not run.
 
+The regen half is intermittently non-deterministic and nothing here explains why. `scripts/core/regen-hero.sh` exits 2 with no stdout and no stderr on roughly one run in five, which reaches the reader as `Hero regen failed` under a `run_check` that has nothing to print. Measured 2026-08-28 on WSL2 at 3 failures in 12 runs and again at 1 in 15. The five catalog verbs it shells out to were each run 10 times with stderr surfaced and none failed, and a `bash -x` trace ends mid-write of the `STANDARDS_JSON` assignment, so the failing command is unpinned. A re-run clears it, which is what makes the flake cheap to route around and easy to read as a real stale count.
+
 ## Seed independence
 
 The Seed independence stage runs `scripts/core/check-seed-independence.sh`, which walks the `.md` files under every seed root and fails on the literal token `aitk`. Seed prose installs into a scaffolded project and is read there as instruction about that project, so a line naming this repository's CLI hands a target a verb it may not be able to run and tells the reader the file is about somewhere else.
