@@ -10,7 +10,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "diagram-sweep" "diagram-quiet" "anchor-sweep" "board-sweep" "receipt-sweep"
+  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "anchor-sweep" "board-sweep" "receipt-sweep"
 
   case "$SELECTED_OPTION" in
   "drift")
@@ -81,59 +81,9 @@ stage_setup() {
     log_info "         Step 4 stubs .claude/wireframes/mock-demo-strip.md with a TODO"
     log_info "         Operator resolves drift manually; auto-rewrite of prose is out of scope"
     ;;
-  "diagram-sweep")
-    # The injected seeds add .claude/REQUIREMENTS.md at the setup commit. Stage
-    # 02 has to *add* that signal for the stub to fire, so drop the seeded copy
-    # before the initial commit rather than letting stage 02 modify one.
-    rm -f .claude/REQUIREMENTS.md
-    stage_fixtures claude docs diagram-sweep 01-initial
-    git add -A && git commit -m "feat(gov): install rules into a target project" --no-verify -q
-
-    git checkout -b feat/split-install -q
-    stage_fixtures claude docs diagram-sweep 02-split
-    git rm -q src/gov/install.ts
-    git add . && git commit -m "feat(gov): replace the installer with a planner" --no-verify -q
-
-    log_step "Scenario ready: docs diagram staleness sweep"
-    log_info "Context: branch deletes the module components.md cites and adds a new source signal"
-    log_info "  .claude/diagrams/components.md cites src/gov/install.ts, which this branch deletes"
-    log_info "  It also cites src/gov/sync.ts, which survives and must not be flagged"
-    log_info "  .claude/REQUIREMENTS.md enters the tree with no system-context.md entry covering it"
-    log_info ""
-    log_info "Action:  /claude-docs"
-    log_info "Expect:  declared in fixtures/claude/docs/diagram-sweep/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:docs diagram-sweep"
-    log_info "         A stale: key on components.md naming install.ts, a stubbed"
-    log_info "         system-context.md, and verified: left untouched on both"
-    log_info "         Two expectations need a reader and report as unchecked."
-    ;;
-  "diagram-quiet")
-    stage_fixtures claude docs diagram-quiet 01-initial
-    git add . && git commit -m "feat(gov): install rules into a target project" --no-verify -q
-
-    git checkout -b feat/sync-stack-arg -q
-    stage_fixtures claude docs diagram-quiet 02-tweak
-    git add . && git commit -m "feat(gov): take a stack argument on sync" --no-verify -q
-
-    log_step "Scenario ready: ordinary change produces no diagram output"
-    log_info "Context: the control arm for diagram-sweep. Every trigger is present but unfired."
-    log_info "  .claude/REQUIREMENTS.md is already committed and no system-context.md covers it,"
-    log_info "  so a sweep keying on the signal existing would stub. This branch never adds it."
-    log_info "  src/gov/sync.ts changes body only, and components.md cites it, so a sweep keying"
-    log_info "  on a cited path being touched would annotate. The path never leaves the tree."
-    log_info ""
-    log_info "Action:  /claude-docs"
-    log_info "Expect:  declared in fixtures/claude/docs/diagram-quiet/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:docs diagram-quiet"
-    log_info "         No system-context.md, and components.md frontmatter pinned"
-    log_info "         whole so an appended stale: key fails the match"
-    log_info "         The run closes on one line. Step 2 reports no doc updates"
-    log_info "         and the After completion fallback stays suppressed."
-    log_info "         Two expectations need a reader and report as unchecked."
-    ;;
   "anchor-sweep")
     # The fixture record overwrites the seeded .claude/ARCHITECTURE.md in place.
-    # No delete first, unlike the diagram arms: nothing here keys on the file
+    # No delete first, unlike an arm keying on a path entering the tree: nothing here keys on the file
     # being added, so the branch diff is the same either way.
     stage_fixtures claude docs anchor-sweep 01-initial
     # `git init` runs without `-b`, so the baseline branch follows the machine's

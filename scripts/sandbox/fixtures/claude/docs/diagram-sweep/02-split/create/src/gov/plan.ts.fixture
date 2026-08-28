@@ -1,3 +1,0 @@
-export function planInstall(target: string): string[] {
-  return [`planned base for ${target}`]
-}

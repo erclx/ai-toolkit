@@ -1,3 +1,0 @@
-export function syncRules(target: string, stack = 'base'): string[] {
-  return [`compared ${stack} against ${target}`]
-}

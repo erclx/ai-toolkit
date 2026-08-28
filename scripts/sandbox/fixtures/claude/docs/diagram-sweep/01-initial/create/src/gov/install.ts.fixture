@@ -1,3 +1,0 @@
-export function installRules(target: string): string[] {
-  return [`installed base into ${target}`]
-}
