@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.41.0](https://github.com/erclx/aitk/compare/v3.40.0...v3.41.0) (2026-08-28)
+
+
+### Features
+
+* **claude:** give a building session a role of its own ([#1233](https://github.com/erclx/aitk/issues/1233)) ([64ed186](https://github.com/erclx/aitk/commit/64ed186522898db12f89d31a2f76dcc16e78a5da))
+
 ## [3.40.0](https://github.com/erclx/aitk/compare/v3.39.0...v3.40.0) (2026-08-28)
 
 
