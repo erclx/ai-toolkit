@@ -91,7 +91,6 @@ phrasability
 pipeable
 pipefail
 powerup
-precompact
 promptname
 punkpeye
 Pushback
