@@ -126,6 +126,8 @@ A third class was drafted and cut, covering a decision that cites no number whil
 
 Nothing writes the anchor back. The diagram field has two writers that never touch each other's half, one setting `verified` and one appending `stale`, and the architecture record has neither. The rule shipped ahead of the pass that maintains it, since a rule with no anchored entries yet costs nothing to carry, and `.claude/ARCHITECTURE.md` records the gap as an open risk rather than leaving it to be re-derived.
 
+Two of its rules pull opposite ways on a pass that amends a decision's reasoning without re-reading its numbers. Anchoring on an amendment asks for a refresh, and the marker recording what a claim was read against forbids one, so the honest answer dates the measurement rather than the edit. A branch retiring the worker cap imported a 2026-08-27 observation into the dispatch-boundary entry, stamped it at the branch point on 2026-08-28, and reverted to the observation's own date once the conflict surfaced.
+
 ## The publish standard's cross-reference form
 
 `standards/publish.md` states the form a pull request or issue number takes, under `## Cross-reference form`. The rule is one test rather than a list of surfaces: bare where the destination auto-links it, backticked where it does not. A list goes stale when a seventh surface appears, and the test covers the cross-repository spelling without a clause of its own, since the same auto-linking reaches it.
