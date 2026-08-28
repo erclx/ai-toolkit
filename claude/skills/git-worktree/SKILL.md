@@ -53,6 +53,8 @@ Determine dirtiness: `git -C <path> status --porcelain` non-empty means `dirty`.
 
 Determine current: the row whose `path` equals `git rev-parse --show-toplevel`. Resolve the root rather than comparing `pwd`, which equals the worktree root only when the session sits at the top of it. A session in any subdirectory would match no row, and the current-worktree exclusion in `cleanup` would pass its own worktree into the remove set.
 
+Determine provenance: a non-main row is `foreign` when its `path` does not start with `<MAIN_ROOT>/.claude/worktrees/`. That prefix is the folder `claude-worktree` creates under, a convention of that skill rather than a fact this one owns. A tree an operator registered by hand anywhere else on disk reads as `foreign`. Step 1 has already marked the main row `main`, so it never reaches this test.
+
 ## `list` mode
 
 Print the enumeration as a table, then stop. `list` has no final command.
@@ -62,11 +64,11 @@ Print the enumeration as a table, then stop. `list` has no final command.
 | -- | ---------------------------------- | ----------------- | -------- | ------ | -------- |
 ```
 
-Notes column shows `current`, `dirty`, or empty. Show paths relative to `MAIN_ROOT` (`.claude/worktrees/<name>`).
+Notes column shows the first that applies of `current`, `foreign`, `dirty`, or empty. Show paths relative to `MAIN_ROOT` (`.claude/worktrees/<name>`). A `foreign` row sits outside `MAIN_ROOT`, so print its path in full.
 
 After the table, append a one-line hint:
 
-- If any row is `merged` and clean and not current: `Hint: /git-worktree cleanup to remove <count> merged worktrees.`
+- If any row is `merged` and clean and not current and not `foreign`: `Hint: /git-worktree cleanup to remove <count> merged worktrees.`
 - Otherwise: `Hint: no worktrees ready for cleanup.`
 
 ## `cleanup` mode
@@ -75,10 +77,11 @@ From the enumeration, include a worktree in the remove set when all hold:
 
 - Not the main row.
 - Not the current session's worktree.
+- Not a `foreign` tree.
 - State is `merged` or `merged (local)`.
 - Working tree is clean.
 
-Every other non-main row goes to the skip set with a one-word reason: `current`, `dirty`, `open`, `closed`, `unmerged`.
+Every other non-main row goes to the skip set with a one-word reason, the first that applies in this order: `current`, `foreign`, `dirty`, `open`, `closed`, `unmerged`. A `foreign` tree that is also dirty reports `foreign`, since `dirty` is a state the operator can clear and `foreign` is not. Leading with the transient reason invites a commit or stash that changes nothing, after which the row reports `foreign` and holds back anyway.
 
 ### Preview
 
@@ -94,7 +97,7 @@ Every other non-main row goes to the skip set with a one-word reason: `current`,
 | ---- | ------ | ------ |
 ```
 
-If the remove set is empty, stop with `❌ Nothing to remove. All linked worktrees are current, dirty, or unmerged.`
+If the remove set is empty, stop with `❌ Nothing to remove. All linked worktrees are current, dirty, unmerged, or foreign.`
 
 ### Final command
 
