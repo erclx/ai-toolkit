@@ -33,8 +33,7 @@ Overlapping a skill that does the same job is not disqualifying on its own. A sn
 ## Invocation channels
 
 - Chrome extension: type `>slug` in a supported chat UI (claude.ai, gemini.google.com) to insert the snippet text inline
-- Claude Code terminal: prefix the install path with `@` (e.g. `@.claude/snippets/claude/feature`)
-- Snippets install preserving the source folder structure. A snippet at `claude/edit.md` installs as `.claude/snippets/claude/edit.md` and is invoked as `@.claude/snippets/claude/edit`
+- Claude Code terminal: prefix the plugin path with `@` (e.g. `@claude/snippets/claude/feature-recap`). `claude/snippets` is a symlink to the authoring root, so the folder a snippet is written in is the folder it is invoked from
 
 ## Use patterns
 
