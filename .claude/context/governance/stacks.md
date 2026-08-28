@@ -53,7 +53,7 @@ Extras are deduped against the stack's resolved rules, so a rule already in the 
 
 ### A rule in an unnamed folder installs for nobody
 
-A rule authored under `governance/rules/` in a folder no stack names reaches no target. Folder entries close that for `core`, `claude`, and `snippets`, since the other four folders are still enumerated per stack.
+A rule authored under `governance/rules/` in a folder no stack names reaches no target. Folder entries close that for `core`, `claude`, `snippets`, and `ci`, since the other four folders are still enumerated per stack.
 
 ### Why the unreferenced stage stays advisory
 

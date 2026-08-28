@@ -13,16 +13,19 @@ What earns a rule in the first place, and which standard each one routes to, is 
 
 Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
-| Range     | Domain                                                                                                                                                                            |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                      |
-| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                   |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                        |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                 |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                               |
-| `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring) |
+| Range     | Domain                                                                                                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                                                                      |
+| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                                                                   |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                                                                        |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                                                                 |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                                                                               |
+| `500–599` | claude and snippets (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring, plus the `@`-reference convention) |
+| `700–799` | ci (GitHub Actions workflow files)                                                                                                                                                                                                |
 
-A seventh range sits outside the table. `900-999` is reserved for a rule a target authored itself, and no shipped rule takes a number in it. `600-899` is unallocated headroom between the two, held for categories the toolkit has not added.
+`snippets/` is the one folder sharing a band rather than holding its own. Its single rule numbers at 505, so the leading digit reads as claude and the folder is what separates them. Every other folder maps one to one, which is why a number states its domain everywhere else.
+
+An eighth range sits outside the table. `900-999` is reserved for a rule a target authored itself, and no shipped rule takes a number in it. `600-699` and `800-899` are what remain of the headroom between the two, held for categories the toolkit has not added. `ci` is the first category drawn from that headroom, opening `700` at a band boundary rather than crowding a range the six original folders already divide.
 
 ### Two sources numbering into one folder
 
@@ -72,9 +75,11 @@ A `description` carrying a bare word, a colon, and a space breaks `Bun.YAML.pars
 
 ## Adding a rule
 
-Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed.
+Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. Discovery is automatic and the rest of the branch is not.
 
-Whether it reaches anyone depends on the stack roster rather than on the file. A rule added to `core/` or `claude/` reaches every `base` consumer with no stack edit, and a rule in any other folder needs its name in the relevant `governance/stacks/*.toml`. See `.claude/context/governance/stacks.md` for both cases and for the stage that reports the gap.
+`bun run check` has three things to say about the new file. The Consumed copies stage regenerates `.claude/rules/` and asserts no drift against the index, so the copy has to be staged before the stage clears. Governance rules are one of the five catalogs `scripts/core/regen-hero.sh` counts, so the rule moves both the count and the sampled entry list on `assets/hero.html`, and the Hero stage fails until `aitk capture assets/hero.html` re-renders the image and the stamp beside it. The stacks entry states that for a new stack file and it holds the same way for a rule. Then the two hardcoded counts the Gotchas below name need re-measuring in the same branch, since nothing gates either.
+
+Whether it reaches anyone depends on the stack roster rather than on the file. A rule added to `core/`, `claude/`, `snippets/`, or `ci/` reaches every `base` consumer with no stack edit, since `base` names each of those folders whole, and a rule in any other folder needs its name in the relevant `governance/stacks/*.toml`. See `.claude/context/governance/stacks.md` for both cases and for the stage that reports the gap.
 
 Glob the rule against every ecosystem it governs rather than only the one its stack serves, since `--add` layers a rule onto a stack that never names it. `360-security-server` and `370-database` sit on `python` alone and glob `**/*.py` beside `**/*.ts` and `**/*.js`, so a Node API project pulls either one in and the globs already match. A glob narrowed to the naming stack's language installs a rule that matches nothing in that case.
 

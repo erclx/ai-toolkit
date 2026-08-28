@@ -32,14 +32,14 @@ Write both when both apply. A rule stating the directive and a skill stating how
 ## Location
 
 - Rules live at `.claude/rules/<subdirectory>/<n>-<slug>.md`
-- Subdirectories group by domain: `core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`
+- Subdirectories group by domain: `core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`, `snippets/`, `ci/`
 - `<n>` is a number from the band reserved for the rule's source and `<slug>` is a one-to-three-word kebab topic
 - A rule the project authored itself lives at `.claude/rules/project/<subdirectory>/<n>-<slug>.md`, keeping the same subdirectory names
 - Give every rule a numeric prefix. A bare-word filename reads as a folder name where a stack names its rules, so a rule without one is unreachable from a stack entry.
 
 ## Reserved numbers
 
-`000-899` is reserved for a rule set that ships to targets. `000-599` is what the six subdirectories above already divide, at 100 per subdirectory, and `600-899` is held for subdirectories a shipped set has not added yet.
+`000-899` is reserved for a rule set that ships to targets. `000-599` is what the first six subdirectories above already divide, at 100 per subdirectory. `ci/` was the first to draw from the headroom past that, taking `700-799`, and `600-699` with `800-899` is what remains for a subdirectory a shipped set has not added yet.
 
 A project-authored rule takes `900-999`, one sequence across every subdirectory under `.claude/rules/project/`. Scanning for a free number instead is what fails, because a shipped set fills its own band release by release, so what reads as free today is what a later release lands on. One target authored `claude/561-self-check.md` on a day nothing shipped at 561, met `claude/561-teach.md` on its next install, and now reads two numbers differently from everywhere else.
 
