@@ -49,8 +49,8 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                                                       |
 | `aitk standards audit`     | Report the corpus against the `## Success criterion` gate, failing only on a standard new to the branch (`--json`, `--arrivals-only`)                                |
 | `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD`, and the installed version against the newest published (`--json`)                            |
-| `aitk claude skills reach` | Report the shipped bodies citing a toolkit path no target project receives, exiting 2 on an unqualified one                                                          |
-| `aitk claude skills rank`  | Score the shipped catalog's descriptions against a hand-authored case corpus by TF-IDF cosine similarity, reporting rank-one and top-three                           |
+| `aitk claude skills reach` | Report the bodies in either skill corpus citing a toolkit path no target project receives, exiting 2 on an unqualified one                                           |
+| `aitk claude skills rank`  | Score either skill corpus's descriptions against a case corpus by TF-IDF cosine similarity, reporting rank-one and top-three (`--cases <path>`)                      |
 | `aitk claude routing`      | Report per `CLAUDE.md` section how many bullets name a path and how many of those a path-scoped rule already covers (`--json`)                                       |
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                                              |
 | `aitk gov superseded`      | Report where the tree still asserts a value a changed convention no longer produces, keyed on the value (`--json`)                                                   |

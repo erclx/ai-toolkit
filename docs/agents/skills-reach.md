@@ -1,20 +1,25 @@
 ---
 title: Citation reach
-description: Reporting the shipped skill bodies that cite a path no target project receives, the ownership key that decides what counts, the one-word qualifier that marks a citation as decided, and why the verb reports instead of gating
+description: Reporting the skill bodies that cite a path no target project receives, which corpus the verb reads, the ownership key that decides what counts, the one-word qualifier that marks a citation as decided, and why the verb reports instead of gating
 ---
 
 # Citation reach
 
-`aitk claude skills reach [path]` reports every shipped skill body citing a path that exists in the toolkit and reaches no target project. It reads and reports. Repairing what it finds is separate work.
+`aitk claude skills reach [path]` reports every skill body citing a path that exists in the project and reaches no reader elsewhere. It reads and reports. Repairing what it finds is separate work.
 
 ```bash
 aitk claude skills reach
 aitk claude skills reach --json
+aitk claude skills reach ~/repos/my-project
 ```
 
 | Option   | Behavior                                                   |
 | -------- | ---------------------------------------------------------- |
 | `--json` | Add a machine-readable record on stdout, keeping the frame |
+
+## Which corpus it reads
+
+`claude/skills/` when the project holds it, and `.claude/skills/` otherwise. The shipped tree wins where both are present, so a toolkit reads what it ships and a project holding only its own skills is measured rather than refused. Every report names the corpus it read on its `Corpus` line and carries it as `corpus` in the `--json` record.
 
 ## The defect it reads for
 
@@ -38,6 +43,8 @@ A cited path counts when it sits under an authoring root no install channel deli
 
 `src/`, `scripts/`, and bare `docs/` are deliberately outside the list. A body naming one of those is describing the reader's own tree, so listing them reports a correct citation on every run and buries the finding under the pass.
 
+`.claude/context/` joins them when the corpus read is a project's own. A seed put those entries there and the project owns them afterward, so a body under `.claude/skills/` naming one points at a file its reader holds. The seed disowning below cannot answer that in a project, since it reads a `tooling/` tree only the toolkit carries.
+
 A path a seed installs is disowned twice, under its own name and under the folder spelling it takes once a project splits the entry. A domain that outgrows one file becomes `<domain>/`, which is still the entry the seed delivered, so reporting the split form would fail a project for growing.
 
 ## The qualifier
@@ -52,6 +59,6 @@ A line mentioning the toolkit for an unrelated reason exempts a citation on it. 
 
 ## Exit codes
 
-Exit codes are `0` when every citation names its owner, `1` for a refusal, and `2` when at least one is unqualified. The refusal is a tree carrying no `claude/skills/`, which ships no plugin body to measure, and it reports the reason rather than a clean count over nothing.
+Exit codes are `0` when every citation names its owner, `1` for a refusal, and `2` when at least one is unqualified. The refusal is a tree carrying neither `claude/skills/` nor `.claude/skills/`, which holds no skill body to measure, and it reports the reason rather than a clean count over nothing.
 
 The verb reports rather than gates. A toolkit-scoped instruction is sometimes meant for a session in this repository, so failing a push on one would make the check something to route around. `aitk audits run` registers it with no gating exit for the same reason, and carries `unqualifiedCitations` as its retained count.
