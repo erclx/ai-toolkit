@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.36.1](https://github.com/erclx/aitk/compare/v3.36.0...v3.36.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **pr-review:** stop a close-out repeating one already standing ([#1211](https://github.com/erclx/aitk/issues/1211)) ([4a2e710](https://github.com/erclx/aitk/commit/4a2e710283faa208b925013bba6bc2cf3cdcf6ef))
+
 ## [3.36.0](https://github.com/erclx/aitk/compare/v3.35.1...v3.36.0) (2026-08-28)
 
 
