@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.34.0](https://github.com/erclx/aitk/compare/v3.33.1...v3.34.0) (2026-08-28)
+
+
+### Features
+
+* **orchestrate:** replace the worker cap with a disjointness gate ([#1201](https://github.com/erclx/aitk/issues/1201)) ([2fa7d18](https://github.com/erclx/aitk/commit/2fa7d1870a7cd9234d4e200e67919a7bd370462f))
+
 ## [3.33.1](https://github.com/erclx/aitk/compare/v3.33.0...v3.33.1) (2026-08-28)
 
 
