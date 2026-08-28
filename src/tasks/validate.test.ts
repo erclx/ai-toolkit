@@ -1,5 +1,5 @@
 import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -473,6 +473,78 @@ describe('validateBoard', () => {
     const outcome = await validateBoard(ROOT)
 
     expect(outcome.ok && kinds(outcome.findings)).toEqual(['touches-collided'])
+  })
+
+  it('should name the row that claimed the containing path', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedPlan('v2.0-second')
+    await seedBoard(
+      boardBody([
+        readyTable([
+          { stem: 'v1.0-first', touches: '`src/tasks/archive.ts`' },
+          { stem: 'v2.0-second', touches: '`src/tasks/`' },
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      {
+        kind: 'touches-collided',
+        message: 'both touch src/tasks, which v2.0-second claims as a folder.',
+      },
+    ])
+  })
+
+  it('should report a run now row claiming a bare folder', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedPlan('v2.0-second')
+    await seedBoard(
+      boardBody([
+        readyTable([
+          { stem: 'v1.0-first', touches: '`src/tasks/`' },
+          { stem: 'v2.0-second', touches: '`docs/commands.md`' },
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.claims).toMatchObject([
+      {
+        group: 'Run now',
+        subject: 'v1.0-first',
+        message:
+          'claims the whole src/tasks folder, so it collides with every row written under it.',
+      },
+    ])
+  })
+
+  it('should leave a resolving file with no extension out of the claims', async () => {
+    await mkdir(join(ROOT, '.husky'), { recursive: true })
+    await writeFile(join(ROOT, '.husky', 'pre-push'), '#!/bin/sh\n')
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedPlan('v2.0-second')
+    await seedBoard(
+      boardBody([
+        readyTable([
+          { stem: 'v1.0-first', touches: '`.husky/pre-push`' },
+          { stem: 'v2.0-second', touches: '`docs/commands.md`' },
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.claims).toEqual([])
   })
 
   it('should report a run now table declaring no touches column', async () => {

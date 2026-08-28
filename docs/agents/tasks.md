@@ -129,6 +129,8 @@ A backlog line is a bullet carrying a link to a sibling task, since the backlog 
 
 The collision check is the one a person cannot run by eye. Paths come from the backticked spans in the Touches column, a span naming no file is dropped, and a directory collides with any file beneath it. A `## Run now` row whose column parses to nothing is reported rather than skipped, since a row stating no file set makes a claim nothing can check.
 
+Where a directory holds the other row's file, the finding names the row that claimed it, reading `both touch src/tasks, which v2.0-second claims as a folder.` The shared strings alone leave an over-broad cell and a genuine overlap identical, which is how a correct report was once read as the verb comparing folders rather than files.
+
 The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or by its work reaching the trunk, and a collision is settled by nothing under `## Run now` still holding the file the cell cites.
 
 A closed outcome is not the fact the dependency half needs. The ship chain marks outcomes as its first step and opens the pull request several steps later, so a check reading the checkbox reports the row settled while the branch is still in review. A live task therefore settles the row only once it closed every outcome and carries a `Pull request:` line the trunk holds. One that names no pull request, and one whose number no trunk ref could answer for, land in the untested array below rather than being settled or left silent.
@@ -154,6 +156,24 @@ The other three kinds rest on a person's judgment, so a row neither half reached
 ```
 
 An untested row is not a finding and moves no exit code. Reading a clean findings list as a clean board is the failure the array exists to prevent, and `orchestrator-parked.md` is the pass that takes those rows by hand.
+
+A `## Run now` row whose Touches column names a bare folder lands in a third array on the same reasoning:
+
+```json
+{
+  "claims": [
+    {
+      "group": "Run now",
+      "subject": "v1.0-first",
+      "message": "claims the whole src/tasks folder, so it collides with every row written under it."
+    }
+  ]
+}
+```
+
+That claim collides with every row a later session writes under the folder, and it is legitimate whenever the row does rewrite the directory, so the array states the reach and moves no exit code. A measure failing on a cell that is right teaches a reader to skip it. Folder against file is decided by asking the tree for a path that resolves, and by the extension only for a path the row has yet to create, since the name alone reads a file carrying no extension as a folder.
+
+The scan reaches `## Run now` and stops, where the collision check stops. A cell in another group describes work nobody has planned, written as a sentence and rewritten once a plan exists, so a claim read off one reports on prose rather than on a file set. A parked folder claim surfaces when its row is promoted, which is when the cell becomes something a dispatcher can act on.
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 

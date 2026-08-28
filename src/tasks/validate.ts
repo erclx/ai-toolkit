@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import {
@@ -64,6 +64,19 @@ export interface Untested {
 }
 
 /**
+ * A `Touches` cell naming a bare folder, which claims every file under it and
+ * so collides with every row a later session writes there. The claim is often
+ * correct, since a row rewriting a whole directory has no other way to say so,
+ * which is why it reports beside the findings rather than inside them and moves
+ * no exit code.
+ */
+export interface FolderClaim {
+  readonly group: BoardGroup
+  readonly subject: string
+  readonly message: string
+}
+
+/**
  * A backlog line, which carries a pointer and nothing else. The backlog is
  * explicitly unordered, so a line has no position to read and no columns to
  * resolve.
@@ -91,6 +104,7 @@ export interface ValidateReport {
   readonly tasks: number
   readonly findings: readonly Finding[]
   readonly untested: readonly Untested[]
+  readonly claims: readonly FolderClaim[]
 }
 
 export interface ValidateRefused {
@@ -162,6 +176,23 @@ function sharesPath(left: string, right: string): boolean {
     left.startsWith(`${right}/`) ||
     right.startsWith(`${left}/`)
   )
+}
+
+/**
+ * Whether a `Touches` path names a directory. The tree answers for a path that
+ * resolves, which is the only reading that separates a folder from a file
+ * carrying no extension, such as a hook script.
+ *
+ * A path the row has yet to create resolves to nothing, so the name decides
+ * there. `readPaths` admits a span for one of two reasons, a slash or an
+ * extension, so a span surviving without an extension is one a slash let
+ * through and reads as a folder.
+ */
+function isFolder(path: string, root: string): boolean {
+  const target = resolve(root, path)
+  if (existsSync(target)) return statSync(target).isDirectory()
+
+  return !/\.[A-Za-z][A-Za-z0-9]*$/.test(path)
 }
 
 function splitCells(line: string): string[] {
@@ -457,22 +488,96 @@ function checkCollisions(rows: readonly BoardRow[]): Finding[] {
     for (let j = i + 1; j < ready.length; j += 1) {
       const left = ready[i]
       const right = ready[j]
-      const shared = (left.touches ?? []).filter((path) =>
-        (right.touches ?? []).some((other) => sharesPath(path, other)),
-      )
+      const shared = (left.touches ?? []).flatMap((path) => {
+        const other = (right.touches ?? []).find((candidate) =>
+          sharesPath(path, candidate),
+        )
+        return other === undefined
+          ? []
+          : [describeShared(path, other, left, right)]
+      })
 
       if (shared.length === 0) continue
 
       findings.push({
         kind: 'touches-collided',
         group: 'Run now',
-        subject: `${left.stem ?? left.label} and ${right.stem ?? right.label}`,
-        message: `both touch ${shared.join(', ')}.`,
+        subject: `${subjectOf(left)} and ${subjectOf(right)}`,
+        message: `both touch ${joinShared(shared)}.`,
       })
     }
   }
 
   return findings
+}
+
+function subjectOf(row: BoardRow): string {
+  return row.stem ?? row.label
+}
+
+/**
+ * Names one path two rows share, and the row that claimed it as a folder when
+ * one side named a directory holding the other's file. Which side contributed
+ * the containing path is the fact a reader acts on, and printing the shared
+ * strings alone leaves an over-broad cell and a genuine overlap identical.
+ *
+ * The shorter path is the container, because `sharesPath` holds for an unequal
+ * pair only when one is a prefix of the other up to a separator.
+ */
+function describeShared(
+  path: string,
+  other: string,
+  left: BoardRow,
+  right: BoardRow,
+): string {
+  if (path === other) return path
+
+  const container = path.length < other.length ? path : other
+  const owner = container === path ? left : right
+  return `${container}, which ${subjectOf(owner)} claims as a folder`
+}
+
+/**
+ * A folder clause carries a comma of its own, so a comma between clauses would
+ * read as another path. The plain list keeps the comma it has always had.
+ */
+function joinShared(clauses: readonly string[]): string {
+  const separator = clauses.some((clause) => clause.includes(',')) ? '; ' : ', '
+  return clauses.join(separator)
+}
+
+/**
+ * Reports a `Touches` cell naming a bare folder. The claim collides with every
+ * row a later session writes under that folder, and it is legitimate whenever
+ * the row does rewrite the directory, so this states the reach rather than
+ * calling it a defect.
+ *
+ * The scan takes `## Run now` alone, where `checkCollisions` takes it. A cell in
+ * another group describes work nobody has planned, so it is written as a
+ * sentence and rewritten at planning time, and a claim read off one reports on
+ * prose rather than on a file set. That is the shape that teaches a reader to
+ * skip the report. A parked folder claim surfaces when the row is promoted,
+ * which is also when its cell becomes a set anything can act on.
+ */
+function checkFolderClaims(
+  rows: readonly BoardRow[],
+  root: string,
+): FolderClaim[] {
+  const claims: FolderClaim[] = []
+
+  for (const row of rows.filter((candidate) => candidate.group === 'Run now')) {
+    for (const path of row.touches ?? []) {
+      if (!isFolder(path, root)) continue
+
+      claims.push({
+        group: row.group,
+        subject: subjectOf(row),
+        message: `claims the whole ${path} folder, so it collides with every row written under it.`,
+      })
+    }
+  }
+
+  return claims
 }
 
 /**
@@ -734,5 +839,6 @@ export async function validateBoard(
     tasks: stems.length,
     findings,
     untested: parked.untested,
+    claims: checkFolderClaims(rows, root),
   }
 }
