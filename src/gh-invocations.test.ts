@@ -23,14 +23,14 @@ function callArgs(text: string, open: number): string | null {
 }
 
 /**
- * Names every file under `src/` holding an `execa('gh', ...)` call whose
- * argument list does not carry `gitEnv()`, or one this walk could not read
- * at all. An unreadable call fails loudly here rather than passing silently,
+ * Answers whether the given file text holds an `execa('gh', ...)` call whose
+ * argument list does not carry `gitEnv()`, or one this walk could not read at
+ * all. An unreadable call fails loudly here rather than passing silently,
  * since `gh` resolves its repository through the same environment variables
  * git does and they beat `cwd`, so a call missing the strip silently reads
  * whichever repository a hook's environment points at instead of this one.
  */
-function unstrippedGhCalls(text: string): boolean {
+function hasUnstrippedGhCall(text: string): boolean {
   const marker = /execa\(\s*'gh'/g
   let match: RegExpExecArray | null
   while ((match = marker.exec(text)) !== null) {
@@ -47,7 +47,7 @@ describe('the source tree', () => {
       .map(String)
       .filter((rel) => rel.endsWith('.ts') && !rel.endsWith('.test.ts'))
       .filter((rel) =>
-        unstrippedGhCalls(readFileSync(join(ROOT, 'src', rel), 'utf8')),
+        hasUnstrippedGhCall(readFileSync(join(ROOT, 'src', rel), 'utf8')),
       )
 
     expect(offenders).toEqual([])
