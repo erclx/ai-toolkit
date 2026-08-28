@@ -7,12 +7,16 @@
 # proposal-only arm cannot be covered by tree assertions alone, since a session
 # that read nothing and answered nothing passes every one of them.
 
-# The default cap rather than an observation. No run has scored this arm, so
-# there is no figure to derive a ceiling from, and the default still catches a
-# truncated run, which reports one turn past it. The staged tree is wider than
-# `migration-superseded/retired`, at four standards against three retired files
-# plus three citing surfaces and a reader, so a first observation is as likely
-# to sit above that arm's 17 turns as below it.
+# The default cap rather than an observation. A pass on 2026-08-28 cost 10 turns
+# at 0.23 dollars, and a ceiling at the cap still catches a truncated run, which
+# reports one turn past it.
+#
+# Ten is a floor on what a correct run costs rather than a bound on it, which is
+# the reading `migration-superseded/retired` records for its own single sample.
+# A proposal-only arm reads a whole staged tree and resolves four standards
+# against a catalog, so its count varies with how a run orders those reads, and
+# a second observation is what would separate a stable cost from one path
+# through a variable one.
 max_turns = 30
 
 # The four pins separate a run that read the tree from one that recited the
