@@ -237,7 +237,7 @@ Four of the other five held at a flat zero. `create-snippet` reads 2 rather than
 
 ### Set up a project: the first batch of the remaining fifty-one
 
-`feature-remaining-skill-verdicts.md` splits the 51 skills neither prior pass touched into the phase groups `docs/ai-workflow.md`'s `## Skills` table already carries, one pull request per group. This pass runs `create-skill`'s three questions against the first group, "Set up a project": `setup-init`, `toolkit-operator`, `setup-gov`, `setup-indexes`, `setup-plugins`, `setup-verify`, `claude-design-extract`, and `claude-diagram`.
+`feature-remaining-skill-verdicts.md` splits the 51 skills neither prior pass touched, the denominator this pass read on 2026-08-27, into the phase groups `docs/ai-workflow.md`'s `## Skills` table already carries, one pull request per group. This pass runs `create-skill`'s three questions against the first group, "Set up a project": `setup-init`, `toolkit-operator`, `setup-gov`, `setup-indexes`, `setup-plugins`, `setup-verify`, `claude-design-extract`, and `claude-diagram`.
 
 None carries a plausible community counterpart, so no redundancy comparison runs for this batch. The first two orchestrate installs no third-party marketplace ships, the middle three wrap this toolkit's own catalogs, and the last two write into formats this toolkit defines.
 

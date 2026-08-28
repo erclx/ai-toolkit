@@ -78,6 +78,16 @@ function sentencesOf(line: string): string[] {
  * asserting the catalog's own total, `the full entry loads 59 skills` being
  * the live one, and gating the match on that verb is what a full re-read of
  * the 290 showed removing all of them while keeping that one.
+ *
+ * `authors` joined the list on a corpus measurement rather than on the shape
+ * argument above. `.claude/context/development/regeneration.md` states `the
+ * toolkit authors 69 rules under governance/rules/`, which is the assertion
+ * shape this list was built for with a verb the list did not carry, and the
+ * word costs one further sentence across the whole corpus and no finding.
+ * Extending the vocabulary is the narrow half of this fix and it is taken
+ * knowingly: a list of thirteen verbs still grows by whatever the next author
+ * writes, and the measurement below is what ruled out the general axis that
+ * would have replaced it.
  */
 const ASSERTION_VERBS = [
   'loads',
@@ -92,7 +102,25 @@ const ASSERTION_VERBS = [
   'lists',
   'contains',
   'comprises',
+  'authors',
 ]
+
+/**
+ * A quantifier asserting the whole of a catalog immediately ahead of the
+ * number, which is the one trigger class that states a total outright rather
+ * than by implication.
+ *
+ * `all 69 rules` names the catalog entire, where `the 69 rules` leaves a
+ * reader to decide whether a qualifier narrows it. That makes this class
+ * tighter than the articles below rather than looser, and the corpus agrees:
+ * adding it reached 9 further sentences and produced 2 further findings, both
+ * of them real staleness this repository then repaired.
+ *
+ * `every` and `both` were measured beside `all` and reached nothing, so
+ * neither ships. A quantifier earns a place here by naming a sentence in the
+ * corpus, not by belonging to the same part of speech.
+ */
+const QUANTIFIERS = ['all']
 
 /**
  * An article immediately ahead of the number, admitting the shape a bare verb
@@ -120,8 +148,9 @@ const ASSERTION_VERBS = [
 const ARTICLES = ['the', 'a', 'an']
 
 /**
- * Matches a catalog's stated size: an assertion verb or an article, the
- * number, an optional single qualifying word, then the noun in either number.
+ * Matches a catalog's stated size: an assertion verb, a quantifier, or an
+ * article, the number, an optional single qualifying word, then the noun in
+ * either number.
  *
  * The optional word between the number and the noun is what reaches a form
  * like `installs 11 shipped snippets` without also reaching past an
@@ -130,16 +159,34 @@ const ARTICLES = ['the', 'a', 'an']
  * double as its match narrows the corpus this reads without hand-listing
  * every irregular plural, since none of these six is irregular.
  *
- * What this drops along with the false positives: `denominator of sixty-one
- * shipped skills` and `exposed all 59` both state a real catalog total and
- * neither puts a verb or an article directly ahead of the number, so both
- * read past. The gap between the trigger and the number is a second axis
- * this could widen once this design's own false-positive rate is measured
- * over more than the two runs behind it so far.
+ * The gap between the trigger and the number was the second axis this comment
+ * used to name as open to widening once the false-positive rate had been
+ * measured over more than two runs. It was measured over the whole corpus at
+ * 518 files and 31,836 sentences and it is not the axis to take. Widths of
+ * one, two, and three optional words reached 77, 104, and 132 sentences
+ * against a baseline of 65, and the two live misses that motivated the
+ * measurement came back missed at every width but one: no width reaches `took
+ * all 69 rules`, whose nearest verb or article is the `The` opening the
+ * sentence, with five words standing between it and the number, and the width
+ * that does reach `the toolkit authors 69 rules` is the same
+ * width that admits `a domain of 55 skills`, which is the indirect-noun shape
+ * this module already records as out of scope. Widening the gap buys one of
+ * two misses at 60 percent more reach and a false positive of a class already
+ * named.
+ *
+ * The trigger vocabulary carries both misses instead, at 75 sentences reached
+ * against 65 and no false positive: `all` reaches the first and `authors` the
+ * second. Two of the four findings that shape reports were new, and both were
+ * real. Measured at `ffe7e7c6` on 2026-08-28.
+ *
+ * What this still drops: `denominator of sixty-one shipped skills` states a
+ * real catalog total through an indirect noun and reads past, which the gap
+ * measurement above is the argument for leaving alone rather than an
+ * oversight.
  */
 function buildMatcher(catalog: Catalog): RegExp {
   const [singular, plural] = catalog.nouns
-  const triggers = [...ASSERTION_VERBS, ...ARTICLES].join('|')
+  const triggers = [...ASSERTION_VERBS, ...QUANTIFIERS, ...ARTICLES].join('|')
   return new RegExp(
     `\\b(?:${triggers})\\s+(${NUMBER_PATTERN})(?:\\s+[a-z]+)?\\s+(?:${singular}|${plural})\\b`,
     'gi',
@@ -187,10 +234,19 @@ function isPlausibleClaim(stated: number, actual: number): boolean {
  * What it does not measure: a delta phrased as a transition (`from fourteen
  * to fifteen`), a fraction (`thirteen of sixteen`), and a total reached
  * through an indirect noun (`denominator of sixty-one shipped skills`) are
- * all catalog-size claims this corpus carries, and none matches the
- * assertion-verb shape this reads. Each is a known gap rather than an
- * oversight, left for a wider pass once this one's false-positive rate is
- * measured.
+ * all catalog-size claims this corpus carries, and none matches the trigger
+ * shape this reads. Each stays a known gap. The rate that used to gate
+ * closing them is measured now, and what it showed is that the widening they
+ * would need is the one that costs a false positive rather than the one that
+ * does not, which `buildMatcher` records with its numbers.
+ *
+ * A second figure in a sentence whose first figure already matched is a
+ * fourth gap and a structural one: `regex.exec` takes one match per catalog
+ * per sentence, so `authors 69 rules under governance/rules/ and consumes 54
+ * into .claude/rules/` is read for its 69 alone. Reaching the 54 would be
+ * wrong here rather than better, since it counts the consumed mirror rather
+ * than the source catalog this sweep tracks, but a sentence stating one
+ * catalog twice would go unread the same way.
  */
 export async function scanCounts(root: string): Promise<CountsReport> {
   const scope = await resolveMarkdown(root, [])

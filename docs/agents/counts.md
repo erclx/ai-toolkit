@@ -35,11 +35,17 @@ The set is closed rather than derived, so widening it is a deliberate change to 
 
 ## How a match is decided
 
-A sentence has to carry an assertion verb (`loads`, `ships`, `carries`, `holds`, `counts`, `totals`, `documents`, `declares`, `installs`, `lists`, `contains`, `comprises`) or an article (`the`, `a`, `an`) immediately ahead of the number, which is immediately ahead of the catalog noun, with one optional qualifying word between the number and the noun (`sixty-one shipped skills`). The number reads either as digits or as a spelled-out cardinal through ninety-nine, since this corpus states a catalog size in words as often as in digits.
+A sentence has to carry an assertion verb (`loads`, `ships`, `carries`, `holds`, `counts`, `totals`, `documents`, `declares`, `installs`, `lists`, `contains`, `comprises`, `authors`), the quantifier `all`, or an article (`the`, `a`, `an`) immediately ahead of the number, which is immediately ahead of the catalog noun, with one optional qualifying word between the number and the noun (`sixty-one shipped skills`). The number reads either as digits or as a spelled-out cardinal through ninety-nine, since this corpus states a catalog size in words as often as in digits.
+
+Nothing stands between the trigger and the number, which is the rule an author writing a new count has to know. It separates `the toolkit authors 69 rules` and `took all 69 rules`, both read, from `a domain of 55 skills` and `denominator of sixty-one shipped skills`, neither of them read. A figure meant as a past state takes a date in the same sentence instead, which reads the sentence past whatever its shape.
+
+## How the trigger set grew
 
 The verb gate is not the first design tried. A bare number next to a catalog noun anywhere in the tracked corpus returned 290 findings against a repository whose actionable instance count was one. Reading that run showed why: `18 rules citing a standard`, `21 skill bodies`, and `eight internal skills` all pair a number with a catalog noun while naming a subset, an example, or a different catalog than the one matched, and that shape dominates ordinary prose. Every instance this sweep was written against reads the number as the direct object of a verb asserting the catalog's own total, and gating on that verb is what took the false-positive count from 290 to five on the same tree.
 
 The article half was added after a first review of the shipped design found a live miss: `.claude/context/development/gates.md` stated a stale audit total while the tree held 20, and the verb gate never reached it, since that sentence puts its verb after the noun rather than ahead of the number. Widening the trigger set to admit an article ahead of the number closed that gap.
+
+The quantifier `all` and the verb `authors` joined on the same evidence, two more live misses failing only the trigger test. Allowing words to stand between the trigger and the number was the other candidate, measured and declined: at widths of one, two, and three it reached 77, 104, and 132 sentences against a baseline of 65, missed `took all 69 rules` at every width, and reached `the toolkit authors 69 rules` only at a width admitting the indirect-noun shape below. The two words reach both at 75 sentences and no false positive.
 
 ## The plausibility filter
 
@@ -51,7 +57,9 @@ The article gate is looser than the verb list and carries a real cost. Re-runnin
 
 ## What it does not measure
 
-A delta phrased as a transition (`from fourteen to fifteen`), a fraction (`thirteen of sixteen`), and a total reached through an indirect noun (`denominator of sixty-one shipped skills`) are all catalog-size claims this corpus carries, and none matches the assertion-verb shape this reads. Each is a known gap rather than an oversight, left for a wider pass once this design's own false-positive rate is measured over more than one run.
+A delta phrased as a transition (`from fourteen to fifteen`), a fraction (`thirteen of sixteen`), and a total reached through an indirect noun (`denominator of sixty-one shipped skills`) are all catalog-size claims this corpus carries, and none matches the trigger shape this reads. Each stays a known gap. The false-positive rate that gated closing them has a measurement behind it now, and what it showed is that the widening these three need is the one that costs a false positive rather than the one that does not.
+
+A second figure in a sentence whose first figure already matched is a fourth gap and a structural one, since one match is taken per catalog per sentence. `authors 69 rules under governance/rules/ and consumes 54 into .claude/rules/` is read for its 69 alone, which is correct here because the two figures name different populations, and a sentence stating one catalog twice would go unread the same way.
 
 A calendar date (`2026-08-21`) or a backticked commit reference in the same sentence reads the whole sentence past, since that is how this corpus already marks a figure as a historical record rather than a live claim. `.claude/ARCHITECTURE.md` and the context entries carry a figure this way deliberately, and every one of them stays correct forever.
 

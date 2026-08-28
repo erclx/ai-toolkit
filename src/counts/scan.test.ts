@@ -124,6 +124,82 @@ describe('scanCounts', () => {
     ])
   })
 
+  it('should name a stale count reached through a whole-catalog quantifier', async () => {
+    // `.claude/context/sandbox/authoring.md` states `took all 69 rules`,
+    // where the trigger the verb gate wants sits five words ahead of the
+    // number and `all` is what sits against it.
+    seedSkills(63)
+    write('docs/sandbox.md', 'The copy it replaced took all 59 skills.\n')
+
+    const report = measured(await scanCounts(ROOT))
+
+    expect(report.findings).toEqual([
+      expect.objectContaining({
+        file: 'docs/sandbox.md',
+        catalog: 'skills',
+        stated: 59,
+        actual: 63,
+      }),
+    ])
+  })
+
+  it('should name a stale count reached through a production verb outside the original list', async () => {
+    // `.claude/context/development/regeneration.md` states `the toolkit
+    // authors 69 rules`, the assertion shape this gate was built for with a
+    // verb the first list did not carry.
+    seedSkills(63)
+    write(
+      'docs/regeneration.md',
+      'It resolves differently because the toolkit authors 59 skills under `claude/skills/`.\n',
+    )
+
+    const report = measured(await scanCounts(ROOT))
+
+    expect(report.findings).toEqual([
+      expect.objectContaining({
+        file: 'docs/regeneration.md',
+        catalog: 'skills',
+        stated: 59,
+        actual: 63,
+      }),
+    ])
+  })
+
+  it('should read past a total reached through an indirect noun, which is the false positive the gap axis would have admitted', async () => {
+    // Measured live at `.claude/context/claude-plugin/overview.md`: widening
+    // the trigger-to-number gap to two words reaches this sentence and reads
+    // a domain's own membership as the catalog's total. The trigger
+    // vocabulary carried both live misses without it, so the gap stayed shut
+    // and this shape stays unread.
+    seedSkills(63)
+    write(
+      'docs/overview.md',
+      'It held the per-skill reasoning for a domain of 55 skills, so almost any change wrote it.\n',
+    )
+
+    const report = measured(await scanCounts(ROOT))
+
+    expect(report.findings).toEqual([])
+  })
+
+  it('should read one figure per catalog per sentence, leaving a second figure in the same sentence unread', async () => {
+    // The structural limit `regex.exec` imposes. Both figures are stale, both
+    // sit inside the plausibility bound, and both carry a trigger against the
+    // number. Only the first is read, so what drops the second is the single
+    // match rather than any filter below it.
+    seedSkills(63)
+    write(
+      'docs/regeneration.md',
+      'The toolkit authors 59 skills and installs 40 skills into the cache.\n',
+    )
+
+    const report = measured(await scanCounts(ROOT))
+
+    expect(report.findings).toEqual([
+      expect.objectContaining({ catalog: 'skills', stated: 59, actual: 63 }),
+    ])
+  })
+
   it('should report nothing when the stated figure matches the true count', async () => {
     seedSkills(2)
     write('docs/plugin.md', 'The full entry loads 2 skills at install time.\n')
