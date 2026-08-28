@@ -17,5 +17,5 @@ Plugin skills shipped to target projects, the aitk claude CLI, and overlap with 
 - [Skill lifecycle](skill-lifecycle.md): How a skill is invoked, the split between the two task-board writers, where a session fact is routed, the plans sweep, and the sandbox arm that covers it
 - [Shared skill procedures](skill-procedures.md): The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
 - [Skill requirements](skill-requirements.md): The REQUIREMENT.md sibling, what loads it, and the admission test universal coverage retired
-- [Skill review paths](skill-review.md): The version-sequencing surface that was gated and then retired, the two-pass model a pull request review posts under, and the rebase stage the worker's return leg carries
+- [Skill review paths](skill-review.md): The version-sequencing surface that was gated and then retired, the two-pass model a pull request review posts under, the rebase stage the worker's return leg carries, and the worker role holding its own half of the channel
 - [Skill strategy](skill-strategy.md): Where a plugin skill lives, the catalog command, the workflow against domain-knowledge split, and the redundancy audit

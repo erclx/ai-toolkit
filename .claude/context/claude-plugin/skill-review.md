@@ -1,6 +1,6 @@
 ---
 title: Skill review paths
-description: The version-sequencing surface that was gated and then retired, the two-pass model a pull request review posts under, and the rebase stage the worker's return leg carries
+description: The version-sequencing surface that was gated and then retired, the two-pass model a pull request review posts under, the rebase stage the worker's return leg carries, and the worker role holding its own half of the channel
 ---
 
 # Skill review paths
@@ -150,6 +150,32 @@ The rules are stated where the stage runs, which is what makes it safe. A wholes
 No comment channel was built for it. Both sides of every hunk sit in the conflict, `main` is what the operator approved, and `git log origin/main` names what landed, so a per-conflict comment would restate the diff and add a surface the worker waits on. A hunk the tree does not settle stops instead and reaches the operator as an ordinary finding on the next pass, which holds only because the stage forbids guessing rather than leaving it to judgment.
 
 `git-followup` absorbed the consequence at its push, forcing under a lease when the tracking branch no longer reaches the head. Its plain `git push` was rejected on a rewritten branch, so the stage would have dead-ended one step past the resolution it exists to perform. The re-read is already covered above, since the close-out's ancestry test falls back to a full pass on exactly this branch shape.
+
+## The worker's own half
+
+`claude-worker` exists because the return leg the rebase stage above depends on was documented entirely on the side that does not perform it. One shipped body asserted a session role and it was the orchestrator, while worker behavior spread across `claude-worktree`, `claude-autoship`, and `claude-address-review`, each owning a step and none naming the role or the channel. The handback worked because a session reading plain text tends to follow it, which held while a person launched every worker and stopped on 2026-08-27, when the first self-dispatched worker ran with nobody watching.
+
+`claude-autoship` Step 0 invokes it, in the position that already invokes `claude-worktree`. That reaches a dispatched worker and a hand-launched one on one path and needs no change to the launch command, at the cost that a session doing something other than the ship chain never asserts the role.
+
+The body stays thin by construction, since it has three readers who need different things from it. A dispatched worker reads it as its whole operating contract with nobody watching, a hand-launched one reads it beside a person who can correct it, and the orchestrator reads it to know what it may assume. A rule written for the first can be wrong for the second, so the body carries the role, the boundaries, the two obligations, the refusal right, and the lifetime, and points at the three step-owning skills for everything else.
+
+### The channel splits by who sends
+
+Each half is stated where its sender reads it. The worker's obligations sit in `claude-worker` and the orchestrator's handback stays in `orchestrator-poll.md`, and the alternative of one shared section puts a worker's duties in a file no worker loads, which is the whole defect. The orchestrator's step 6 now points at the worker skill rather than holding the only copy.
+
+Two messages are owed and no more. One announces the pull request when it opens, carrying the number, the branch, and the task it closes. One reports a block before it becomes an interactive prompt, which is the ordering that matters: a queued message drains at the next tool round and a session already waiting on input never reaches one, so an answer relayed to an open prompt renders beneath the question and changes nothing. Nothing is sent on progress, since a worker reporting progress rebuilds the poll on the other side of the channel.
+
+Refusing stays a first-class move rather than a failure mode. Four measured halts across two days were each correct and each cost the dispatcher one reply, and the correction that mattered most reached the right place because a worker argued back with evidence rather than complying, which a body written only as report-upward would suppress.
+
+### What the announcement bought and what it did not
+
+The poll's condition narrowed from an open pull request or a dispatched worker to an open pull request alone. The script reads pull requests and a building worker has none, so five consecutive runs reported no movement across roughly fifteen minutes while one worker built, and the announcement covers exactly that interval because the transition from building to reviewable is the one moment only the worker knows.
+
+The narrowing and the announcement shipped together, which removes a trigger before its replacement has ever run. The dispatched-worker condition survives as a fallback rather than as a trigger, applied to any dispatch still out after thirty minutes with no announcement, so a silent failure does not leave a finished worker unnoticed the way one already sat idle for eighteen minutes.
+
+`scripts/watch.sh` covers the same window at lower cost and ships beside `poll.sh` rather than living in one session's temporary directory. It reads the open pull request list and the session roster together every sixty seconds, and coverage is the point: a worker that finishes goes idle and one that crashes vanishes, so a trigger matching only the pull request stays silent through the second. The shipped version resolves the repository from git rather than hardcoding a path, and it counts every session on a branch other than the base one as a worker rather than matching the `orchestrator-` prefix the prototype used, which reads a dispatched worker and misses every hand-launched one.
+
+The output contract gained the state between the two it already carried. A session holding four running workers reported them under neither `Ready to build` nor `In review` and invented a shape per report, which the same section forbids while offering no term to use, and the launch section kept recommending a plan a worker was already building because the plan file sits in place for the whole build.
 
 ## The origin split at Step 6
 
