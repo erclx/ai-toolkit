@@ -29,7 +29,7 @@ A project installed before the board became a folder still holds `.claude/TASKS.
 
 Convert by hand, once per project:
 
-1. Split each `###` block into `.claude/tasks/vXX.Y-<slug>.md`, adding the `title` and `description` frontmatter that `.claude/standards/tasks.md` requires. Compare each new file against the block it came from rather than checking that every block landed somewhere.
+1. Split each `###` block into `.claude/tasks/vXX.Y-<slug>.md`, adding the `title` and `description` frontmatter the tasks standard requires, which `aitk standards tasks` prints. Compare each new file against the block it came from rather than checking that every block landed somewhere.
 2. Run `aitk indexes regen --no-stage --root . .claude/tasks/<any-task>.md` to build the catalog.
 3. Delete `.claude/TASKS.md`, and swap its `.gitignore` entry for `.claude/tasks/`.
 

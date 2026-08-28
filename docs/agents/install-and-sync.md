@@ -76,7 +76,7 @@ standard exits 1 after listing the catalog on stderr.
 Two roots answer, in order: `standards/` at the working directory, then the
 corpus inside the package. A project that authors standards of its own uses the
 first, and this repository's own authoring root is the same path. `.claude/standards/`
-is not among them. It is this repository's generated mirror, and a copy an older
+is not among them, and no repository writes one any more. A copy an older
 toolkit installed into a target resolves nothing.
 
 There is no citation closure to compute, since nothing is copied. A standard

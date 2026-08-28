@@ -17,7 +17,7 @@ The family lost a member rather than drifting one: `migration-standards` relocat
 
 These entries hold the reasons instead: why a skill exists, where its boundary against a sibling sits, and what a coverage verdict turned on. None of that is recoverable from a listing, and the roster is recoverable from nothing else.
 
-A hand-written copy of the roster stood here and drifted the way `.claude/standards/context.md` predicts, describing two skills the plugin had already stopped shipping. That standard puts a catalog a `list` command already returns under what does not go in, and says to link the command so the entry cannot drift from it.
+A hand-written copy of the roster stood here and drifted the way `standards/context.md` predicts, describing two skills the plugin had already stopped shipping. That standard puts a catalog a `list` command already returns under what does not go in, and says to link the command so the entry cannot drift from it.
 
 ## The consumer map groups by phase, and its table is the corpus
 
@@ -77,7 +77,7 @@ The three orchestrator runbooks settled the rule. They were snippets cited by `c
 
 The test cuts both ways. `claude-groundwork` and `claude-intake` each carried their folder format in `references/folder-format.md`, and both folders are edited by sessions that never invoked the skill, so those two moved out to `standards/groundwork.md` and `standards/intake.md` with a rule routing each path.
 
-The cost is the typed entry point, which is the part worth knowing before moving anything else. A person fires a snippet by typing its path and cannot type a reference, so a runbook whose moment the loop cannot detect has to be reachable some other way. An invocation word looks like the answer and is banned by `.claude/standards/skill.md`, which turns down a flag that selects an alternate flow because the model misreads it and runs the vanilla path, and a handoff that silently does not happen is lost at the next compaction.
+The cost is the typed entry point, which is the part worth knowing before moving anything else. A person fires a snippet by typing its path and cannot type a reference, so a runbook whose moment the loop cannot detect has to be reachable some other way. An invocation word looks like the answer and is banned by `standards/skill.md`, which turns down a flag that selects an alternate flow because the model misreads it and runs the vanilla path, and a handoff that silently does not happen is lost at the next compaction.
 
 What replaces it is a body that routes a plain request to the runbook serving it, leaving one flow with no flag in it. `claude-orchestrate` does this for both compaction sides, while the sweep needs nothing because the loop already reaches it.
 
@@ -85,7 +85,7 @@ Which surface holds an invariant follows the same test, run against the failure 
 
 `claude-intake` carries both kinds: its write scope is a floor about paths outside `.claude/intake/`, which no glob over that folder can see, while its item format and answer contract are exactly what a rule would catch in a session editing the folder with the skill unloaded.
 
-Only the second kind is a rule's to hold, and `.claude/standards/rule.md` has a rule point at the standard owning a document-type convention rather than restate it, so the second kind waits on a standard that does not exist. Writing one beside the skill's bundled reference would make two sources for one text, which is the shape `.claude/ARCHITECTURE.md` turns down, and `claude-groundwork` carries the identical split, so the pair is one queued change rather than two.
+Only the second kind is a rule's to hold, and `standards/rule.md` has a rule point at the standard owning a document-type convention rather than restate it, so the second kind waits on a standard that does not exist. Writing one beside the skill's bundled reference would make two sources for one text, which is the shape `.claude/ARCHITECTURE.md` turns down, and `claude-groundwork` carries the identical split, so the pair is one queued change rather than two.
 
 Routing through the body moves the failure rather than removing it, and a skill carrying `disable-model-invocation` has to say so. The routing is only in play while the body is loaded, and a long session approaching a compaction is the likeliest place to have dropped it, which is the same moment the runbook exists for. A body that stops at the routing leaves the request landing as ordinary conversation with nothing reporting the miss, so it owes two recoveries: re-invoke the skill, and name the runbook paths so a reader can open one with the skill unloaded.
 

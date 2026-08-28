@@ -33,7 +33,8 @@ export interface ResolvedStandard {
 
 /**
  * The roots a standard resolves against. No toolkit standard installs into a
- * project any more, so `.claude/standards/` is gone from the list and a target
+ * project any more, so `.claude/standards/` is gone from the list, no repository
+ * generates one, and a target
  * carries neither entry below: the package corpus is the only root that
  * answers there, which is what leaves no precedence to reason about.
  *

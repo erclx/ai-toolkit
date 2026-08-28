@@ -79,8 +79,8 @@ A second reader takes prose rather than a list, and it needs a bounded span and 
 
 ## Authoring a new standard
 
-Follow `standards/standard.md`. It is the meta-standard: the success criterion, the scope rules, the frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It governs itself, so it is also the worked example. `591-standard-authoring` routes any edit under `standards/` or `.claude/standards/` to it.
+Follow `standards/standard.md`. It is the meta-standard: the success criterion, the scope rules, the frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It governs itself, so it is also the worked example. `591-standard-authoring` routes any edit under `standards/` to it.
 
-Create the `.md` file in `standards/` with `title` and `description` frontmatter, then run `bun run check` to regenerate the consumed copy and commit it.
+Create the `.md` file in `standards/` with `title` and `description` frontmatter, then run `bun run check` to regenerate `standards/index.md` and commit both. No consumed copy follows it any more.
 
-The `create-standard` skill resolves its write surface at either location: `standards/` at the root when present (the toolkit repo), otherwise `.claude/standards/` (a target project).
+The `create-standard` skill has one write surface, `standards/` at the working root, in the toolkit and in a target alike. That is the root the resolver reads first, so an author never picks between two spellings.

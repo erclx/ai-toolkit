@@ -80,5 +80,5 @@ Anthropic's first-party design product at [claude.ai/design](https://claude.ai/d
 When evaluating a community skill for adaptation into `claude/skills/`:
 
 1. Check whether an existing domain skill already covers the concern. Extend before duplicating.
-2. Import the pattern, not the prose. Rewrite the skill body to match `.claude/standards/skill.md` and toolkit tone.
+2. Import the pattern, not the prose. Rewrite the skill body to match `standards/skill.md` and toolkit tone.
 3. Keep frontmatter triggers narrow. Community skills often over-trigger.

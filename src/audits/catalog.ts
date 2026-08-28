@@ -570,7 +570,7 @@ export const AUDITS: readonly AuditSpec[] = [
     // `standards` is the one tracked kind here, so it takes none of the
     // per-machine default the other five inherit from their corpus. A target
     // reads standards through `aitk standards` rather than a copy in its own
-    // tree, so carrying neither `standards/` nor `.claude/standards/` is the
+    // tree, so carrying no standards folder at all is the
     // ordinary state of every project but this repository.
     ...(kind === 'standards' && {
       absentReasons: ['no-folder'] satisfies RecordRefusal[],

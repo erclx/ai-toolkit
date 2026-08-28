@@ -191,4 +191,4 @@ Skills branch on the findings rather than on the exit code:
 aitk tasks validate --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
 ```
 
-For the board format, the `Pull request:` line, and the archive rules, see `.claude/standards/tasks.md`.
+For the board format, the `Pull request:` line, and the archive rules, see `standards/tasks.md`.

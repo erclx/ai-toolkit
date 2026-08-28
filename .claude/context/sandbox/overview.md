@@ -154,7 +154,7 @@ Six things a run cannot reach. Each is a property of the harness rather than a g
 
 ### Reading the last three
 
-The fourth is a provisioning consequence rather than a harness defect. A skill body citing `.claude/standards/<file>.md` names `${CLAUDE_SKILL_DIR}/../../standards/<file>.md` as its fallback, and `${CLAUDE_SKILL_DIR}` expands to wherever the harness found the skill. Resolved through `--plugin-dir` the fallback is `<root>/standards/`, which is a different tree from the sandbox's `.claude/standards/` and stays distinguishable. Resolved through injection the base is `<sandbox>/.claude/skills/<name>/`, so the fallback is `<sandbox>/.claude/standards/`, byte-identical to the project path the same citation names.
+The fourth is a provisioning consequence rather than a harness defect. A shipped body cites `${CLAUDE_SKILL_DIR}/../../standards/<file>.md` and nothing else, and `${CLAUDE_SKILL_DIR}` expands to wherever the harness found the skill. Resolved through `--plugin-dir` that lands on `<root>/standards/`, a tree the sandbox does not carry, so an arm asserting the sandbox holds no standard still distinguishes the two. Resolved through injection the base is `<sandbox>/.claude/skills/<name>/`, so it lands on `<sandbox>/.claude/standards/`, which is a path inside the fixture and indistinguishable from one a project copy would answer from.
 
 Since `inject_changed_skills` injects exactly the skills the branch changed, the skills most in need of the check are the ones injection disqualifies, so checking a fallback means leaving that skill's body alone on the branch. Closing it would mean changing what injection copies or what `--plugin-dir` points at, and both trade one unreachable case for another, so it is recorded rather than fixed.
 

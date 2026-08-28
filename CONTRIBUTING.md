@@ -18,9 +18,9 @@ The [development notes](.claude/context/development/index.md) carry the full scr
 
 ## Where to author
 
-Standards and snippets author at `standards/` and `snippets/` in the repository root. They install into a target project under `.claude/standards/` and `.claude/snippets/`, and the toolkit commits its own consumed copy at those same paths. `bun run check` regenerates that copy from the root source and fails the run when the two drift.
+Standards and snippets author at `standards/` and `snippets/` in the repository root. Neither installs into a target project. A session reads a standard with `aitk standards <name>` and fires a snippet through its `@` reference off the live plugin symlink.
 
-Edit the root copy. A change written under `.claude/standards/` or `.claude/snippets/` is overwritten on the next check with nothing to explain where it went.
+Snippets also carry a consumed copy at `.claude/snippets/`, which `bun run check` regenerates from the root source and fails the run on when the two drift. Edit the root copy. A change written under `.claude/snippets/` is overwritten on the next check with nothing to explain where it went. Standards carry no such copy, so `standards/<name>.md` is the only file to edit and the only one to cite from a file staying in this repository.
 
 Governance rules split the same way, though through a different mechanism. Author under `governance/rules/`, which `aitk gov install` writes into a target project's `.claude/rules/`.
 

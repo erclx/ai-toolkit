@@ -41,7 +41,7 @@ Freezing the spellings gave up a property worth naming. They were derived by app
 
 A set shipped empty is reported rather than passed. It finds nothing and would exit clean, which reports a corpus nobody checked as a corpus carrying no violation, so the run names the empty set and exits `1`. The sets ship with the package, so a defect in the build is the only cause left.
 
-`aitk standards <name>` still resolves a standard under `.claude/standards/`, then the authoring root, then the package corpus, and prints it, so the human catalog reads without a project copy on disk.
+`aitk standards <name>` still resolves a standard at the authoring root, then the package corpus, and prints it, so the human catalog reads without a project copy on disk.
 
 ## What each check reports
 

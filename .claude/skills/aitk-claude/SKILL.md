@@ -11,8 +11,8 @@ Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `i
 
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
 - Read `.claude/context/claude-plugin/skill-strategy.md` before adding a plugin skill and `.claude/context/claude-internal/skills.md` before adding an internal one. Run `aitk claude skills list` for the plugin roster, which no entry restates.
-- Follow `.claude/standards/skill.md` for skill structure and frontmatter conventions.
-- Audit skill bodies against `.claude/standards/skill.md`, `.claude/standards/markdown.md`, and the `write-human` skill. The first covers structure and frontmatter. The second covers the body's word choice, punctuation, and formatting. The third covers its voice and rhythm.
+- Follow `standards/skill.md` for skill structure and frontmatter conventions.
+- Audit skill bodies against `standards/skill.md`, `standards/markdown.md`, and the `write-human` skill. The first covers structure and frontmatter. The second covers the body's word choice, punctuation, and formatting. The third covers its voice and rhythm.
 
 ## Authoring conventions
 
@@ -20,7 +20,7 @@ Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `i
 - Install a community skill rather than writing one when the need is domain expertise the toolkit does not maintain, such as frontend design, security audits, or stack-specific patterns. Reference it in per-tier install recommendations rather than absorbing it.
 - Do not fork a community skill. Propose a thin toolkit wrapper that composes the upstream one, and fork only when upstream diverges hard from a stated need and the maintenance cost is accepted explicitly. See `.claude/context/claude-plugin/skill-strategy.md` for the reasoning and the redundancy audit.
 - Task skills with preview+execute patterns must execute commands immediately after the preview. Do not add a "confirm before running" step or pause for user input. Claude Code's tool permission dialog is the confirmation gate. The user hits Enter to approve or Escape to interrupt and revise.
-- When a skill persists output to `.claude/` (plans, review, audits), follow `.claude/standards/slug.md`. Cite that standard from the skill body and state which empty-case the skill takes, rather than restating the derivation.
+- When a skill persists output to `.claude/` (plans, review, audits), follow `standards/slug.md`. Cite that standard from the skill body and state which empty-case the skill takes, rather than restating the derivation.
 - Never reference a repo-local path such as `wiki/` from a file under `claude/skills/`. It resolves to nothing in a target project, and the Skill paths stage of `bun run check` fails on it.
 - Reach supporting prose from a shipped skill through an `aitk docs <topic>` command, a bundled reference copied in by a `consumers:` frontmatter field, or text inlined in the skill body.
 - Plugin skills under `claude/skills/` do not use the `aitk-*` prefix. That prefix is reserved for internal skills under `.claude/skills/`. If a plan suggests `aitk-*` for a plugin skill, flag the mismatch before creating the folder.
@@ -66,4 +66,4 @@ When modifying either CLAUDE.md:
 - `.claude/context/snippets.md`: snippets catalog and invocation
 - `.claude/context/indexes.md`: index.md system rationale and contracts
 - `tooling/claude/reference.md`: seed layout and design notes
-- `.claude/standards/skill.md`: skill structure, frontmatter, and authoring rules
+- `standards/skill.md`: skill structure, frontmatter, and authoring rules

@@ -31,6 +31,6 @@ The registration failure is the one that passes every gate. A rule sitting in `g
 
 ## Out of scope
 
-- The frontmatter, headings, and bullet conventions a rule file carries, which `.claude/standards/rule.md` states
+- The frontmatter, headings, and bullet conventions a rule file carries, which `standards/rule.md` states
 - Creating a project-local rule inside a target, which the shipped `create-rule` skill does against that project's own numbering
 - Authoring the standard a rule routes to, and the catalog row it owes: `aitk-standards`

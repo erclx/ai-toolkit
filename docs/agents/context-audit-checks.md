@@ -9,7 +9,7 @@ What each finding from `aitk context audit` means. The command surface, its flag
 
 ## Required sections
 
-The required-section check reports what does not declare `## Overview` and `## Layout`, the two sections `.claude/standards/context.md` marks required. The list is held in code beside the numeric checkpoints rather than parsed out of the standard, so it fails on a defect rather than on a rewrite of the wording around it. A heading at any level counts, because a domain that split into a folder carries its overview in a sibling named `overview.md` where the section is the `#` title and an `##` beneath it would repeat the filename. Matching exactly is what keeps `## Layout catalog` from satisfying `Layout`.
+The required-section check reports what does not declare `## Overview` and `## Layout`, the two sections `standards/context.md` marks required. The list is held in code beside the numeric checkpoints rather than parsed out of the standard, so it fails on a defect rather than on a rewrite of the wording around it. A heading at any level counts, because a domain that split into a folder carries its overview in a sibling named `overview.md` where the section is the `#` title and an `##` beneath it would repeat the filename. Matching exactly is what keeps `## Layout catalog` from satisfying `Layout`.
 
 Which unit answers depends on the folder. Entries of the folder named under `.claude/` are one domain each, so each answers for itself and a finding names the entry. Entries of a folder a domain split into describe that one domain between them, so any sibling answers and a finding names the folder. Holding a split folder to the rule per file would report every child beside its `overview.md`, and rolling the named folder up would let one conforming entry stand in for every other domain sitting next to it.
 
@@ -19,7 +19,7 @@ It reports rather than gates by default, the closer call because a missing secti
 
 ## Reference form
 
-The reference-form check reports an entry naming a sibling entry by bare filename where `.claude/standards/context.md` asks for the path it sits at. A bare name resolves against whichever folder its reader is already in, so a domain that splits into subfolders strands every inbound reference and the break surfaces nowhere. A path is checkable, which is what makes the form rule worth measuring at all: once a reference spells its path, the citation gate resolves it and a split that moves the file fails the push.
+The reference-form check reports an entry naming a sibling entry by bare filename where `standards/context.md` asks for the path it sits at. A bare name resolves against whichever folder its reader is already in, so a domain that splits into subfolders strands every inbound reference and the break surfaces nowhere. A path is checkable, which is what makes the form rule worth measuring at all: once a reference spells its path, the citation gate resolves it and a split that moves the file fails the push.
 
 A finding is a backticked filename carrying no folder, matched against the entries beside the one that wrote it. The backticks are required, since a filename in running prose is not a reference a reader follows.
 
@@ -33,7 +33,7 @@ It reports and never gates, which is the split the citation check already draws.
 
 ## Length
 
-Length quotes its checkpoint from `.claude/standards/context.md`: roughly 150 rendered lines for an entry, applied to each of the 60 entries the audit measures, 51 of them under `.claude/context/` and 9 diagram files beside them. It counts rendered lines rather than source lines, wrapping each line at 80 columns and summing the heights.
+Length quotes its checkpoint from `standards/context.md`: roughly 150 rendered lines for an entry, applied to each of the 60 entries the audit measures, 51 of them under `.claude/context/` and 9 diagram files beside them. It counts rendered lines rather than source lines, wrapping each line at 80 columns and summing the heights.
 
 A line is wrapped at the width it renders at, so a link counts as its anchor text and a backticked path counts whole, which parts the rendered count from a source count wherever an entry cites a path in backticks rather than as a link. Entries here are authored one line per bullet, so a block of fifteen paragraph-bullets occupies fifteen source lines and renders past sixty, which source counting cannot see.
 
@@ -45,7 +45,7 @@ Only the third is mechanical, and it is the provenance check already reported be
 
 It reports and never gates, which the standard settles rather than the usual judgment-against-fact line: there is no hard cap, so an entry that answers all three and is still long is a correct outcome. The JSON record carries the joined findings as `length`, each with a `causes` array in the standard's order, and the jurisdiction the join reads as `entries[].governed`. That flag is what parts a provenance list measured and empty from one never scanned, which the count alone cannot say. The join is published rather than left to a consumer, since deriving it means restating which question the provenance count answers.
 
-Depth and bullet weight are quoted from `.claude/standards/markdown.md`, which states both over every markdown file rather than over a context entry, so `aitk markdown audit` measures them and this command no longer does. They share `renderedHeight` with the length measure, since the two checkpoints sit in one section of that standard and a reader compares them. What the split costs is that a session wanting both numbers for one entry runs two commands, and what it buys is that either number can be had for a file in a folder this audit refuses to resolve.
+Depth and bullet weight are quoted from `standards/markdown.md`, which states both over every markdown file rather than over a context entry, so `aitk markdown audit` measures them and this command no longer does. They share `renderedHeight` with the length measure, since the two checkpoints sit in one section of that standard and a reader compares them. What the split costs is that a session wanting both numbers for one entry runs two commands, and what it buys is that either number can be had for a file in a folder this audit refuses to resolve.
 
 ## Tables
 
@@ -63,7 +63,7 @@ Fenced blocks are excluded, which keeps a pinned version in an install command f
 
 ## Narration
 
-The narration check reports a bullet that states the design a sibling bullet replaced instead of rewriting it. `.claude/standards/context.md` asks for the rewrite because the subject is still live and two bullets on one subject leave a reader to work out which of them is current, and no other measure sees that shape.
+The narration check reports a bullet that states the design a sibling bullet replaced instead of rewriting it. `standards/context.md` asks for the rewrite because the subject is still live and two bullets on one subject leave a reader to work out which of them is current, and no other measure sees that shape.
 
 It reads structure rather than words, which the corpus decided. Measured across the 39 entries this toolkit held the day it shipped, the terms carrying clean signal for a supersession are too rare to catch anything: `superseded` appears twice, `previously` three times, and `formerly`, `originally`, and `at first` never. The one term that would have caught the case a review caught by hand is `now`, which appears 57 times across 24 entries in correct present-tense prose. A list including it reports 57 lines to catch one, and a list excluding it reports nothing.
 
@@ -101,13 +101,13 @@ The coverage report classifies each decision as carrying a countable claim, a st
 
 Three limits are stated on every run rather than hidden. The countable signal reads digits alone, so a measured claim written in words reads as uncounted. Entries are counted by heading, and one heading holding several decisions counts once. Nothing is stored, so an entry rewritten tomorrow is classified afresh the next time the verb runs and no verdict goes stale.
 
-The report gates nothing. Deciding whether a sentence states a claim is a judgment no parser settles, so the output names candidates for a reader. This answers a different question from the verification anchors `.claude/standards/architecture.md` describes, which record that one cited number was re-read. That mechanism says whether a marked figure held, and this one says how much of the record could be checked at all.
+The report gates nothing. Deciding whether a sentence states a claim is a judgment no parser settles, so the output names candidates for a reader. This answers a different question from the verification anchors `standards/architecture.md` describes, which record that one cited number was re-read. That mechanism says whether a marked figure held, and this one says how much of the record could be checked at all.
 
 ## Which folders each check reaches
 
 The provenance, required-section, and narration checks cover `.claude/context/` alone, the reference-form check covers the split folders inside it, and length and the table finding reach every audited folder.
 
-What narrows the three is stated in `.claude/standards/context.md`, which opens its scope by handing diagrams and wireframes to `diagrams.md` and `wireframes.md`, and the sibling standards do not restate it. A marker reported in a diagram entry would cite a rule that entry's own standard routes elsewhere, and a diagram entry carries a heading per kind rather than a run of bullets deciding anything. The split is between kinds of rule rather than kinds of folder, and what decides it is which tier states the rule rather than what the check measures.
+What narrows the three is stated in `standards/context.md`, which opens its scope by handing diagrams and wireframes to `diagrams.md` and `wireframes.md`, and the sibling standards do not restate it. A marker reported in a diagram entry would cite a rule that entry's own standard routes elsewhere, and a diagram entry carries a heading per kind rather than a run of bullets deciding anything. The split is between kinds of rule rather than kinds of folder, and what decides it is which tier states the rule rather than what the check measures.
 
 Length and the table finding generalize as judgments about how far a reader travels, so both reach wherever the audit is pointed. Required sections narrow for a plainer reason: the names are the context standard's own, and neither sibling standard states a required section at all.
 

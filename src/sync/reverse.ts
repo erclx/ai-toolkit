@@ -13,7 +13,7 @@ const CLAUDE_DIR = '.claude'
 
 /**
  * A `CLAUDE.md` past this many lines has more in it than the always-load tier
- * is for. The figure is the checkpoint `.claude/standards/context.md` sets for
+ * is for. The figure is the checkpoint `standards/context.md` sets for
  * a context entry, raised because `CLAUDE.md` legitimately carries more than
  * one domain. It gates a proposal rather than a failure, so being approximate
  * costs a line an operator can ignore.

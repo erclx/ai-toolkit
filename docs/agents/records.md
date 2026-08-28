@@ -23,7 +23,7 @@ aitk records validate intake --json
 
 It reads and never writes, and the reason splits by kind. A session record is per-machine scratch with no history behind it, so a repair that guessed wrong could not be undone. A standard installs into every target and is cited by bare filename, so a rename the verb performed would reach further than the file it moved, which is why a finding naming one says so.
 
-`standards` reads the authoring root at `standards/` where it exists and the installed copy at `.claude/standards/` otherwise. The authoring root wins because the installed tree is generated from it in the toolkit, where a fix written to the copy is discarded by the next regen. A project that consumed the corpus holds only the second, so one precedence serves both. The walk stays flat, matching install and the catalog.
+`standards` reads the authoring root at `standards/` where it exists and a copy at `.claude/standards/` otherwise. The authoring root wins because it is the only tree anyone authors in and the only one the resolver answers from, so a finding fixed anywhere else is fixed where nothing reads it. No repository generates the second candidate any more, which leaves it as a floor under a target holding a copy an older toolkit installed. The walk stays flat, matching the catalog.
 
 Nothing fires it automatically. The five record folders are gitignored, so the standards-audit hook exits early on them and any check reading changed files from git never lists one. The corpus is tracked and still unreached, since the markdown audit reads content across the files git lists and rules on no filename. The verb runs at the moment a session claims the record is finished, which is the same placement `aitk tasks validate` takes over the board.
 
@@ -70,7 +70,7 @@ Skills branch on the findings rather than on the exit code:
 aitk records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
 ```
 
-For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/standards/groundwork.md`, `.claude/standards/intake.md`, `.claude/standards/memory.md`, and `.claude/standards/standard.md`.
+For the shapes each check enforces, see `standards/plan.md`, `standards/groundwork.md`, `standards/intake.md`, `standards/memory.md`, and `standards/standard.md`.
 
 ## Migrate
 

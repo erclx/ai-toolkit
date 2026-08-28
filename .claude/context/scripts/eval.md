@@ -64,7 +64,7 @@ The sandbox picked a boundary, watching the four shared-scratch directories unde
 
 ### A fixture under the project root inherits its instructions
 
-A fixture a headless or subagent run is pointed at has to live outside the repository under `mktemp -d`, because a session started anywhere beneath the project root loads that project's `CLAUDE.md`, `.claude/rules/`, and `.claude/standards/` through the ancestor chain. One spike permission named `.claude/.tmp/groundwork-fixtures/<slug>/` for every fixture, and review caught that a headless arm run there would measure this repository rather than the arm, while `scripts/standards/authoring-test/run.sh` already extracts to `mktemp -d` and states the reason in a comment. Split fixture paths by who reads them: one the current session provisions and reads itself can sit in-repo, and anything an independent agent run is pointed at goes outside.
+A fixture a headless or subagent run is pointed at has to live outside the repository under `mktemp -d`, because a session started anywhere beneath the project root loads that project's `CLAUDE.md`, `.claude/rules/`, and `.claude/context/` through the ancestor chain. One spike permission named `.claude/.tmp/groundwork-fixtures/<slug>/` for every fixture, and review caught that a headless arm run there would measure this repository rather than the arm, while `scripts/standards/authoring-test/run.sh` already extracts to `mktemp -d` and states the reason in a comment. Split fixture paths by who reads them: one the current session provisions and reads itself can sit in-repo, and anything an independent agent run is pointed at goes outside.
 
 ### A format spec is not an instruction
 

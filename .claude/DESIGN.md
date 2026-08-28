@@ -1,6 +1,6 @@
 # Design
 
-Authoring guidance: `.claude/standards/design.md`.
+Authoring guidance: `standards/design.md`.
 
 Every value here is read off a surface that ships. Where a cell carries `? verify`, no source anchors it, so a reader may overturn it without checking anything. An untagged cell is a claim this record makes about a file, and `assets/hero.html` anchors most of them.
 

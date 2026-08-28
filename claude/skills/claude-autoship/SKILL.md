@@ -88,7 +88,7 @@ Behavior paths carry two spellings, the one a surface authors at and the one it 
 
 - `claude/skills/` and `.claude/skills/`
 - `governance/rules/` and `.claude/rules/`
-- `standards/` and `.claude/standards/`, which is the authoring root and this repository's generated mirror rather than an install destination, since the corpus installs into no project
+- `standards/`, which is the authoring root and reaches a reader by resolution rather than by an install, so it carries no `.claude/` spelling
 - `snippets/` and `.claude/snippets/`
 - `internal/` and `tooling/`, which hold the stack references and the seed documents a target is handed
 - `CLAUDE.md` at the repository root, named as a file because a path prefix reaches nothing that sits in no folder
