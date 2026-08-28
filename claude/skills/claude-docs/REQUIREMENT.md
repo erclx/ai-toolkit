@@ -56,5 +56,4 @@ The trigger side carries a gap of its own. "Sync the docs" names either corpus t
 - Public-facing docs, which `docs-sync` owns, apart from landing a page a promotion handoff already carries a confirmed destination for. This skill reconciles the `.claude/` planning surface, and both descriptions name their corpus in the trigger so a request saying only "sync the docs" lands on one of the pair rather than on either.
 - Deciding where a promoted page belongs, which is settled with the operator by the surface that produced the page
 - Regenerating the task index, owned by a hook
-- Redrawing diagrams, which `claude-diagram` owns. This skill flags staleness and leaves the re-run to the author.
 - Re-measuring an architecture claim to decide whether its number moved. The sweep keys on a cited path entering the diff, so a claim whose number moved with no cited path in the diff goes unflagged.
