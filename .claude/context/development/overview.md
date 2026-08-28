@@ -59,9 +59,9 @@ Widening the gate by location was the alternative, and it silences a real stale 
 
 ### A prose edit can break a test no stage in that push runs
 
-The Types and Tests stages are scoped to changed files and skip when no TypeScript changed, so a markdown-only push runs neither. The ban sets and all five checkpoints are parsed out of the standards at read time, and `src/markdown/structure.test.ts:83` asserts the parsed set against `standards/markdown.md`, so editing a standard that states a parsed number is a prose change that can fail a TypeScript test. Run `bun test src/markdown/` directly after moving one rather than reading a green `bun run check` as coverage.
+The Types and Tests stages are scoped to changed files and skip when no TypeScript changed, so a markdown-only push runs neither, and eleven `src/` test files assert over a corpus outside `src/`. `.claude/context/development/verification.md` holds the census, the bound it was taken under, and the command to run beside each corpus.
 
-The test and the running verb read one file now, since `standards/` is the first root `src/standards/read.ts` answers from and no generated copy sits in front of it. A green suite therefore does say something about what the audit measures, which is the whole gain from retiring the mirror on this surface.
+The markdown checkpoints are no longer one of them. `CHECKPOINTS` and the three ban sets ship as literals in `src/markdown/`, and `src/markdown/structure.test.ts` asserts those numbers against itself rather than reading them back off `standards/markdown.md`, which is what the parser it replaced did. Editing a standard that states one of those numbers therefore fails nothing, and the drift between the prose and the shipped value is caught by whoever edits or not at all. `.cspell/banned-spellings.txt` is the file on this surface that a `src/` test does still assert over, through `src/markdown/bans.test.ts`.
 
 ### The consumed-copies stage fails on its own regeneration
 
