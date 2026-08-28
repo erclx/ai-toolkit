@@ -551,6 +551,13 @@ function joinShared(clauses: readonly string[]): string {
  * row a later session writes under that folder, and it is legitimate whenever
  * the row does rewrite the directory, so this states the reach rather than
  * calling it a defect.
+ *
+ * The scan takes `## Run now` alone, where `checkCollisions` takes it. A cell in
+ * another group describes work nobody has planned, so it is written as a
+ * sentence and rewritten at planning time, and a claim read off one reports on
+ * prose rather than on a file set. That is the shape that teaches a reader to
+ * skip the report. A parked folder claim surfaces when the row is promoted,
+ * which is also when its cell becomes a set anything can act on.
  */
 function checkFolderClaims(
   rows: readonly BoardRow[],

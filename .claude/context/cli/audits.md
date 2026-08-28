@@ -456,6 +456,7 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - The collision message names which row contributed the containing path. `sharesPath` colliding a directory with a file inside it is the intended reading rather than a coarse one, and a message printing the shared strings alone left an over-broad cell and a genuine overlap identical. That is how a correct report read as a defect in the verb and reached two shipped surfaces.
 - A `Touches` cell naming a bare folder goes to a third array, `claims`, moving no exit code the way the untested rows do. A row rewriting a whole directory has no other way to say so, so the claim states its reach rather than reading as a defect, and a measure failing on a legitimate cell teaches a reader to skip it.
 - Folder against file is decided by asking the tree for a path that resolves, and by the extension only for a path the row has yet to create. The name alone reads a file carrying no extension, such as a hook script, as a folder claim.
+- The claims scan stops at `## Run now`, where the collision check stops, and the board carried a parked case when that was decided. A cell in another group describes unplanned work as a sentence and is rewritten once a plan exists, so a claim read off one reports on prose rather than on a file set, which is the shape that teaches a reader to skip a report.
 
 ## The record validator
 

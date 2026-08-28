@@ -173,6 +173,8 @@ A `## Run now` row whose Touches column names a bare folder lands in a third arr
 
 That claim collides with every row a later session writes under the folder, and it is legitimate whenever the row does rewrite the directory, so the array states the reach and moves no exit code. A measure failing on a cell that is right teaches a reader to skip it. Folder against file is decided by asking the tree for a path that resolves, and by the extension only for a path the row has yet to create, since the name alone reads a file carrying no extension as a folder.
 
+The scan reaches `## Run now` and stops, where the collision check stops. A cell in another group describes work nobody has planned, written as a sentence and rewritten once a plan exists, so a claim read off one reports on prose rather than on a file set. A parked folder claim surfaces when its row is promoted, which is when the cell becomes something a dispatcher can act on.
+
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 
 Columns are read from each table's own header rather than by position, so a project whose board differs from this one is reported for what it lacks. The `index`, `priority`, and `backlog` siblings are skipped, along with every pre-compaction handoff, which takes one file per session under a `session-` prefix. None of them is a task, and a handoff counted as one would be reported as a task carrying no row on every session that wrote one.
