@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.35.1](https://github.com/erclx/aitk/compare/v3.35.0...v3.35.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **markdown:** break a depth run on a colon-less section marker ([#1206](https://github.com/erclx/aitk/issues/1206)) ([ec7c1dd](https://github.com/erclx/aitk/commit/ec7c1dd6bde9edb1e0e585dab68bc5de1432888b))
+
 ## [3.35.0](https://github.com/erclx/aitk/compare/v3.34.1...v3.35.0) (2026-08-28)
 
 
