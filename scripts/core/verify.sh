@@ -36,6 +36,29 @@ GOV_EXPECTED_UNREFERENCED="260-shadcn 320-tanstack-query"
 # a reader has to be able to open, and `aitk audits run` owns writing it.
 AUDITS_BASELINE=".claude/audits/baseline.json"
 
+# The corpora a `src/` test asserts over from outside `src/`, censused in
+# `.claude/context/development/verification.md`. This array and that list are two
+# copies of one set with nothing comparing them, so a corpus joining the census
+# joins this array in the same change. The first four are directory prefixes
+# because their tests walk the tree whole, which is what reaches a rule or a
+# skill a branch adds rather than edits.
+TEST_CORPORA_PATTERNS=(
+  '^claude/skills/'
+  '^governance/rules/'
+  '^\.claude/hooks/'
+  '^tooling/claude/seeds/\.claude/hooks/'
+  '^standards/markdown\.md$'
+  '^tooling/base/reference\.md$'
+  '^tooling/web/configs/scripts/worktree-port\.sh$'
+  '^\.cspell/banned-spellings\.txt$'
+  '^scripts/lib/worktree\.sh$'
+  '^scripts/core/check-ignore-parity\.sh$'
+)
+TEST_CORPORA=$(
+  IFS='|'
+  printf '%s' "${TEST_CORPORA_PATTERNS[*]}"
+)
+
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
 }
@@ -639,11 +662,11 @@ main() {
   fi
 
   log_step "Tests"
-  if has_changed '^src/|^vitest\.config\.ts$|^tsconfig\.json$|^package\.json$'; then
+  if has_changed "^src/|^vitest\.config\.ts\$|^tsconfig\.json\$|^package\.json\$|$TEST_CORPORA"; then
     run_check "bun run test" "Tests failed"
     log_info "Tests passed"
   else
-    log_info "Skipped, no TypeScript changes"
+    log_info "Skipped, no TypeScript or asserted-corpus changes"
   fi
 
   if [ "$NESTED" = false ]; then
