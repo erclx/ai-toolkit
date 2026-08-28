@@ -154,6 +154,32 @@ describe('longestRun', () => {
     expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)
   })
 
+  it('should let a section marker on its own line break a run', () => {
+    const half = prose(30)
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Risks:**\n\n${half}\n`
+
+    expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)
+  })
+
+  it('should still report a long section two markers sit either side of', () => {
+    const source = `${FRONTMATTER}# CI\n\n**Constraints:**\n\n${prose(60)}\n\n**Risks:**\n\n${prose(2)}\n`
+
+    // The case separating this fix from one that disables the measure. Every
+    // plan in the folder cleared the checkpoint on the marker break, so without
+    // a deep run reported between two markers, a corpus reading clean says
+    // nothing about whether the checkpoint still discriminates.
+    expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+
+  it('should refuse the break to a bold phrase sharing its line with prose', () => {
+    const half = prose(30)
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Emphasis:** and the sentence carries on.\n\n${half}\n`
+
+    // Emphasis opening a sentence is not a seam, and this measure ships as
+    // package data every project reads, so the pattern demands the whole line.
+    expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+
   it('should not count a heading that is markdown inside a fenced block', () => {
     const source = `${FRONTMATTER}# CI\n\n${prose(20)}\n\n\`\`\`markdown\n## Not a real heading\n\n### Nor this\n\`\`\`\n\n${prose(20)}\n`
 

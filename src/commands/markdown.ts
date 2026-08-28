@@ -519,6 +519,9 @@ function reportDepth(
   logInfo(
     'A run that is entirely table rows is excluded too, since a heading inside a table splits the table rather than the run.',
   )
+  logInfo(
+    'A heading breaks a run and so does a bold section marker holding its own line, which is the seam a document writes where its template asked for bold.',
+  )
 
   const over = reports
     .filter((report) => report.structure.longestRun > checkpoints.run)
