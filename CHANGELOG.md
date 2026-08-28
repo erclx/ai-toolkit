@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.33.1](https://github.com/erclx/aitk/compare/v3.33.0...v3.33.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **cli:** strip git resolution vars from every gh call ([#1198](https://github.com/erclx/aitk/issues/1198)) ([f515b68](https://github.com/erclx/aitk/commit/f515b6832989808e12fa2e7abb2891a0f308665e))
+
 ## [3.33.0](https://github.com/erclx/aitk/compare/v3.32.0...v3.33.0) (2026-08-27)
 
 
