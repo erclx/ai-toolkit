@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.39.0](https://github.com/erclx/aitk/compare/v3.38.1...v3.39.0) (2026-08-28)
+
+
+### Features
+
+* **governance:** add a settings rule and state the dispatch loop cost ([#1229](https://github.com/erclx/aitk/issues/1229)) ([1264a4d](https://github.com/erclx/aitk/commit/1264a4dd56372ea4d54dac503c9fa58a718d2512))
+
 ## [3.38.1](https://github.com/erclx/aitk/compare/v3.38.0...v3.38.1) (2026-08-28)
 
 
