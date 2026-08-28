@@ -227,9 +227,13 @@ Every citation found for the remaining six outside their own folder sits in a si
 | `create-snippet`       | No. No verb creates a snippet                                       | Yes, the dual-surface write path is the exact split `ARCHITECTURE.md`'s `SyncAdapter.projectSubdir` decision exists to get right | Zero across both records, one of the four untested. A creation skill for a kind still authored                              |
 | `systematic-debugging` | No                                                                  | Yes, a four-phase methodology with a stated circuit breaker                                                                      | Zero across both records, no routing exemption, already kept once by the redundancy audit against its community counterpart |
 | `toolkit-triage`       | No                                                                  | Yes, three-way issue classification with close-out linking back to the issue                                                     | Zero across both records, no routing exemption                                                                              |
-| `git-issue`            | No                                                                  | Yes, `issue.md` formatting and the pre-publish scan before anything reaches GitHub                                               | Zero across both records, no routing exemption                                                                              |
+| `git-issue`            | No                                                                  | Yes, `issue.md` formatting and the pre-publish scan before anything reaches GitHub                                               | Zero typed. 3 tool calls across 2 project folders, 2 of them under the retired prefix. No routing exemption                 |
 
-All six keep. Removing needs the operator's own answer per `feature-skill-catalog-verdicts.md` question 2, and this pass ships verdicts rather than a removal. `systematic-debugging`, `toolkit-triage`, and `git-issue` carry the weakest question-3 evidence of the six, no sandbox arm and no seat in the four-skill set the routing corpus could not test, which is what a later removal pass should weigh first.
+All six keep. Removing needs the operator's own answer per `feature-skill-catalog-verdicts.md` question 2, and this pass ships verdicts rather than a removal. `systematic-debugging` and `toolkit-triage` carry the weakest question-3 evidence of the six, no sandbox arm and no seat in the four-skill set the routing corpus could not test, which is what a later removal pass should weigh first.
+
+The `git-issue` cell above was corrected on 2026-08-28, after the closing batch found that the plugin shipped as `toolkit:` before `aitk:` and that no batch had matched the old spelling. All six zeros were re-read under both prefixes at that point, and one moved. Two of `git-issue`'s three calls carry `"skill":"toolkit:git-issue"`, which is what the original reading could not see, and the correction takes it out of the weakest-evidence trio the paragraph above names.
+
+Four of the other five held at a flat zero. `create-snippet` reads 2 rather than 0 and its row stands unchanged, because both calls sit at `cwd` `/tmp` in an SDK-driven probe that loads the body and instructs the session not to follow it, which is the harness case the first bound already excludes. Read that pair as the bound working rather than as adoption.
 
 ### Set up a project: the first batch of the remaining fifty-one
 
@@ -400,7 +404,9 @@ A fourth correction belongs beside those three, and it is the largest of the fou
 
 This is not the case `### The rename map` handles, which folds in a skill that changed its own name. Nothing about these skills moved. The plugin around them did, so the correction applies to all 62 at once rather than to seven.
 
-Every figure below counts all three spellings. Every figure in batches one through five was taken under the narrower pattern and reads low by an amount nobody has measured per skill.
+Every figure below counts all three spellings. Every figure in batches one through five was taken under the narrower pattern and reads low by an amount that stays unmeasured for most of them.
+
+Where a zero is load-bearing the amount is worth measuring, since that is the only place a low reading moves a verdict rather than a number. The six zeros in `## The six that hold the premise` were re-read on that ground and one moved, which the note under that table records. No other batch figure is reopened, because a count that rises from 238 to some larger count changes nothing any row rests on.
 
 #### After the pull request opens
 
