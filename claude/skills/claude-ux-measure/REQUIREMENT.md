@@ -16,6 +16,8 @@ A session that does start one picks a runner on the spot. The reading then comes
 - Detect the harness the project already carries before naming any runner
 - Report a number per metric beside the threshold it is measured against and the published source of that threshold
 - Cover paint, processor, and layout cost, and name what the run left unmeasured
+- Name the elements the layout figure came from, taken off the run that produced the median so the parts sum to the figure beside them
+- Distinguish a layout figure of zero from a harness that reported no attribution, since one is a page that held still and the other is a reading that went missing
 - Report what the measurement needs and stop when no harness is detected, since that is a project without a runner rather than a failure here
 - Take several readings and report the median, since one load carries startup noise wider than the gap between two thresholds
 - Write the reading to the branch-derived path at the main worktree root, overwriting
@@ -28,7 +30,8 @@ A session that does start one picks a runner on the spot. The reading then comes
 - Invent a threshold, or move a published one to fit a reading
 - Report an observation about the source in place of a measurement
 - Suggest a fix for what it measured, which is a change with its own review
-- Measure anything past the three metrics, since every adjacent ask doubles the run
+- Measure anything past the three metrics, since every adjacent ask doubles the run. Naming which elements shifted is not a fourth metric, being the composition of the third and already present in the reading it summarizes.
+- Read the source to improve an element name the harness gave. A better selector bought that way is the source judgment this skill replaces.
 
 ## Guards
 
