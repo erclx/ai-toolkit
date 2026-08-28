@@ -191,6 +191,14 @@ Three runs on 2026-08-28 each passed at 14 asserted and 0 failed with 6 unchecke
 
 The cap stays at 30 against a 10-to-15 spread. Identical assertions across a 50 percent range in turns is what a variable path looks like, so the low end is one route through the reads rather than a floor, and this is the reading `superseded` above could not reach on a sample of one.
 
+### The submodule arm splits on a working directory the runner cannot set
+
+`scripts/sandbox/run.sh` starts every skill session at the sandbox root and its prompt carries no directory change, so an arm whose case only appears from a subdirectory cannot be verified headlessly. `claude:worktree` `submodule` is the first arm to sit on that line. Its guard fires only from inside the submodule at `vendor`, and its control case, where the same run from the superproject root derives the plan's slug and proceeds, is what a headless run reaches. The arm passed on that half at 4 asserted and 0 failed, and its `expect.toml` carries the guard as a `manual` entry naming the interactive re-test rather than leaving it unstated.
+
+A scenario staging a subdirectory read inside its own script is a different mechanism and does not close this. `infra:standards read` runs `aitk standards skill` from `install/` because the scenario body invokes the command there, which the script controls. Where the subject is the skill session's own working directory, no scenario body reaches it.
+
+The control case still earns the arm. It fails if the superproject read is ever wired onto the wrong branch of the guard, since `git rev-parse --show-superproject-working-tree` returns empty at a superproject root, measured across all four repository shapes at git 2.43.0.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
