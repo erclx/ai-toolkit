@@ -17,6 +17,7 @@ import {
 } from '@/tasks/record'
 import {
   type Finding,
+  type FolderClaim,
   type Untested,
   type ValidateOutcome,
   validateBoard,
@@ -581,6 +582,16 @@ function reportValidation(
       )
       for (const row of outcome.untested) logWarn(describeUntested(row))
     }
+
+    // A folder claim is often the correct way to say a row rewrites a whole
+    // directory, so it reports beside the findings and moves no exit code. A
+    // measure that fails on a legitimate cell trains a reader to skip it.
+    logStep('Folder claims')
+    if (outcome.claims.length === 0) {
+      logInfo('every run now row names files rather than folders')
+    } else {
+      for (const claim of outcome.claims) logWarn(describeClaim(claim))
+    }
     outro()
   }
 
@@ -594,6 +605,7 @@ function reportValidation(
         tasks: outcome.tasks,
         findings: outcome.findings,
         untested: outcome.untested,
+        claims: outcome.claims,
       })}\n`,
     )
   }
@@ -608,6 +620,10 @@ function describe(finding: Finding): string {
 
 function describeUntested(row: Untested): string {
   return `${row.group}: ${row.subject} ${row.message}`
+}
+
+function describeClaim(claim: FolderClaim): string {
+  return `${claim.group}: ${claim.subject} ${claim.message}`
 }
 
 async function runArchive(
