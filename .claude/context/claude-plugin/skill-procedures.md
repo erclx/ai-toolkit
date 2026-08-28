@@ -27,6 +27,10 @@ The destination standard is the second place the skill declines a route every si
 
 A proposal drawn from the plugin copy would hand back a shape the project never adopted, against content only the user can place, so an absent standard names itself and the install command and proposes nothing. Resolving through `appliesTo` rather than through the folder stem is what lets the four seed folders nobody has observed degrade by mechanism, since `.claude/hooks/` matches no entry and earns a decline rather than a guessed shape.
 
+### Reading the report for a precondition rather than a detection
+
+`migration-standards-drop` reads the same report for its `skew` object alone and detects from a directory read. Nothing in the report names an installed `.claude/standards/` tree: `src/sync/check.ts` registers governance alone and `ROOT_LAYOUTS` in `src/sync/layout.ts` is empty by decision, so there is no key to test for and no absent-key branch to get wrong. What the report answers instead is whether the sync the proposal names may run at all, since a binary behind the published version installs rules citing the path the move removes. The absent-key discipline above still applies to the field it does read, where an unread version reports as unknown and continues rather than as current.
+
 ### Configuration a project declares rather than a skill ships
 
 `git-pr` labels a pull request from a `[domains]` table at `.claude/aitk/pr-labels.toml`, keying a label name to the path prefixes that earn it. No domain name of this repository reaches the skill or its references, because a shipped label set is a guess about someone else's surfaces and a wrong default costs more than no label at all. A project declaring no map is labelled silently and never warned, which reads the absent-key discipline above the other way: an absent file here is an answer rather than a state to repair.
