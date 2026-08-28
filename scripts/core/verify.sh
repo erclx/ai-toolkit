@@ -278,6 +278,16 @@ main() {
   assert_no_drift "claude/skills/toolkit-cli/SKILL.md" "The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/toolkit-cli/SKILL.md."
   log_info "Tooling paths clean"
 
+  # The claude manifest is the only route a target's ignore set travels, and it
+  # is hand-maintained beside this repository's own `.gitignore` with nothing
+  # comparing the two. A drift between them reaches every target on the next
+  # `aitk tooling sync` and surfaces to nobody, which is why this gates rather
+  # than reports. It is not an `assert_no_drift`: no generator produces either
+  # list, so there is nothing to regenerate and diff.
+  log_step "Ignore parity"
+  run_check "bash $PROJECT_ROOT/scripts/core/check-ignore-parity.sh" "The ignore set a target receives disagrees with this repository's own."
+  log_info "Ignore parity clean"
+
   log_step "Skill paths"
   run_check "bash $PROJECT_ROOT/scripts/core/check-skill-paths.sh" "Shipped skills reference a repo-local path."
   log_info "Skill paths clean"
