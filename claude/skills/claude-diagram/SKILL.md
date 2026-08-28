@@ -78,7 +78,7 @@ Write `verified` as the literal `TODO: never verified` here, quoted so the colon
 
 When sources came from a code scan rather than planning prose, lead the explanation with `Source: code.` and add `Fidelity is lower than prose-driven diagrams. Verify against the project's intent.`
 
-The code paths the explanation cites are what the `claude-docs` sweep watches for staleness, so cite paths that exist and spell them exactly.
+A reader deciding whether the entry still holds starts from the code paths the explanation cites, so cite paths that exist and spell them exactly.
 
 Quote node labels containing spaces or special characters with double quotes (`A["Web shell"]`). Avoid parentheses inside labels, they break some renderers. Use `<br/>` for line breaks inside labels.
 
@@ -132,7 +132,7 @@ When a defect survives, keep the entry and name the defect in the chat output. A
 
 ### Stamp the marker
 
-Stamp every entry that passed. Set `verified` to the short SHA of `HEAD` and today's ISO date, and delete any `stale` key the `claude-docs` sweep left on it:
+Stamp every entry that passed. Set `verified` to the short SHA of `HEAD` and today's ISO date, and delete any `stale` key the entry carries:
 
 ```bash
 git rev-parse --short HEAD
