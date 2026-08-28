@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.38.0](https://github.com/erclx/aitk/compare/v3.37.1...v3.38.0) (2026-08-28)
+
+
+### Features
+
+* **tooling:** compare the ignore set a target receives against this one ([#1224](https://github.com/erclx/aitk/issues/1224)) ([3a5d3e4](https://github.com/erclx/aitk/commit/3a5d3e48d39421c2d814a8334d82de5e76d85353))
+
 ## [3.37.1](https://github.com/erclx/aitk/compare/v3.37.0...v3.37.1) (2026-08-28)
 
 
