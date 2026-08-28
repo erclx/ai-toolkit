@@ -198,9 +198,31 @@ describe('longestRun', () => {
     const source = `${FRONTMATTER}# CI\n\n${half}\n\n${sentence}\n\n${half}\n`
 
     // The half of the widening that keeps the measure reporting. A colon-less
-    // bold line is a marker or a sentence set in bold, width is the only signal
-    // separating them, and a false break shortens every run around it.
+    // bold line is a marker or a sentence set in bold, and a false break
+    // shortens every run around it until the measure stops reporting.
     expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+
+  it('should refuse the break to a bold phrase inside the ambiguous band', () => {
+    const half = prose(30)
+    const band = '**Two seeds and a behavior line**'
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n${band}\n\n${half}\n`
+
+    // 29 characters, from the 21 to 30 band the corpus cannot classify on
+    // sight. The ceiling sits under that band rather than over it, since a
+    // false break is the dearer error of the two.
+    expect(measure(source).longestRun).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+
+  it('should let a bold path label break a run past the marker width', () => {
+    const half = prose(30)
+    const path = '**`src/markdown/structure.ts`**'
+    const source = `${FRONTMATTER}# CI\n\n${half}\n\n${path}\n\n${half}\n`
+
+    // 27 characters, so width alone holds it out. `claude-pr-review` heads each
+    // file it reviews this way and those paths run to 70 characters, which is
+    // the reach the span test buys that no ceiling can.
+    expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)
   })
 
   it('should break on a section marker carrying trailing whitespace', () => {

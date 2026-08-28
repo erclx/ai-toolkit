@@ -27,27 +27,43 @@ const HEADING = /^#{1,6}\s/
  * reporting, which is the dearer of the two.
  *
  * A colon ends most markers and not all of them. `claude-pr-review` writes
- * three colon-less ones into every body it posts, so requiring the colon held a
- * real seam out. Width stands in where the colon is absent, since a marker is a
- * label and the shape it has to be told from is a sentence set in bold, and
- * nothing else on the line separates the two.
+ * three colon-less ones into every body it posts and a bold path heading for
+ * each file it reviews, so requiring the colon held a real seam out. Two
+ * signals stand in where the colon is absent, because the shape a marker has to
+ * be told from is a sentence set in bold and no one test separates both kinds
+ * of marker from it.
  *
- * `MARKER_WIDTH` is read off the corpus rather than picked. Across 1,465 bold
- * lines taking their own line in the records tree at `9960a4d7`, 1,369 of the
- * 1,373 carrying a colon sit at or under 30 visible characters and all 1,373
- * sit at or under 50, so 30 is the width this measure already trusts as a
- * label. Of the 92 colon-less lines, the 54 at or under it read as markers and
- * the 38 above it are sentences, which is what points the ceiling low.
- * Terminal punctuation separates nothing here, since 45 of the 48 colon-less
- * lines at or under 20 characters end in one.
+ * A label that is one whole code span breaks at any width. A path runs long and
+ * a sentence set in bold is never a single span, so shape settles this half
+ * where width cannot. Across 81 colon-less markers in the review bodies posted
+ * on this repository, the 30 path headings run from 20 to 70 characters, and no
+ * colon-less line in the records tree is a whole span at all, so the rule adds
+ * reach without adding a false break.
  *
- * The width governs the colon-less shape alone. A colon is its own evidence of
- * a label, and capping the colon form as well takes the break back from four
- * markers that already have it, which is a change this decision was not asked
- * to make.
+ * `MARKER_WIDTH` covers the rest and is read off the corpus rather than picked.
+ * Of the remaining 51 markers in those review bodies, 50 sit at or under 20
+ * visible characters, and so do 48 of the 94 colon-less lines in the records
+ * tree at `9960a4d7`, every one of them a label. The 21 to 30 band above it
+ * holds 8
+ * lines nobody can classify on sight, where `One change across four files.`
+ * reads as a sentence and `Rule plus a mechanical half` reads as a seam, so the
+ * ceiling sits under that band rather than over it. That is where the asymmetry
+ * above points, a false break being the dearer error. Terminal punctuation
+ * separates nothing, since 45 of the 48 shortest colon-less lines end in one.
+ *
+ * Both signals govern the colon-less shape alone. A colon is its own evidence
+ * of a label, and capping the colon form as well takes the break back from four
+ * markers between 31 and 50 characters that already have it, every one of them
+ * a genuine section marker.
+ *
+ * One marker in that review corpus is reached by neither signal, a 48-character
+ * heading a session wrote by hand rather than from the template. Widening to
+ * catch it means raising the ceiling back through the band, so it is left as
+ * the cheap error the asymmetry above already names.
  */
 const BOLD_LINE = /^\*\*([^*]+)\*\*\s*$/
-const MARKER_WIDTH = 30
+const SPAN_LABEL = /^`[^`]+`$/
+const MARKER_WIDTH = 20
 
 const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
 const TABLE_ROW = /^\s*\|/
@@ -291,20 +307,23 @@ function isTableRun(run: readonly BodyLine[]): boolean {
 /**
  * Reports whether a line is a section marker rather than emphasis.
  *
- * `BOLD_LINE` fixes the shape and `MARKER_WIDTH` the ceiling the colon-less
- * half is held to. The width reads visible text, which reduces a link to its
- * anchor text and leaves a backticked path counted whole, and it is the same
- * reading `isScannablePeerList` takes above. No marker in the measured corpus
- * carried a link, so the call costs nothing there and holds the measure to one
- * definition of length rather than two.
+ * `BOLD_LINE` fixes the shape, and a colon-less label then answers to
+ * `SPAN_LABEL` or to `MARKER_WIDTH`, per the record above. Both read visible
+ * text, which reduces a link to its anchor text and leaves a backticked path
+ * counted whole, the same reading `isScannablePeerList` takes. The reduction is
+ * what lets a linked path reach the span test at all, since the markup around
+ * it would fail the pattern the destination is still attached.
  */
 function isSectionMarker(text: string): boolean {
   const marker = text.match(BOLD_LINE)
   if (!marker) return false
 
   const label = marker[1]
+  if (label.endsWith(':')) return true
 
-  return label.endsWith(':') || visibleText(label).length <= MARKER_WIDTH
+  const visible = visibleText(label)
+
+  return SPAN_LABEL.test(visible) || visible.length <= MARKER_WIDTH
 }
 
 /**
