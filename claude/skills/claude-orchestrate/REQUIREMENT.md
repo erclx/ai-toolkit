@@ -35,6 +35,8 @@ Every one of them therefore has to ship inside the skill, the four covering the 
 
 The dispatch's return leg is unplaced for the same reason. A reply reaches this session as a message and settles a finding, corrects which session holds which branch, or names a gate a worker's edits pass through, and reading it is the whole of what happens to it. Both sessions then end, so the half that belonged on the pull request never reaches it and the half that belonged on the board is rediscovered by whoever needs it next.
 
+Cost never enters the decision to widen a wave. The rule weighing how many tracks to open measures collision and review attention, and both describe what a worker writes rather than what the loop spends. Claude Code delivers a message from another session as a fresh turn carrying the whole accumulated context, and a recurring poll bills that same window on its own interval, so a wave's spend tracks this session's context rather than the work coming back. The one setting that bounds it reads as available to whoever finds it, and the two values that would bound it break the handback the loop runs on.
+
 The session also records nothing of what it learns. Both other callers of memory capture are ship-chain skills and this one never ships, so the session taking every operator correction is the session with no moment that writes one down. Hanging that moment on the merge sweep answers it and bills the operator a capture pass per batch of merges while nothing is being built, which is a cost paid on the days shipping is fastest.
 
 ## Must
@@ -43,6 +45,7 @@ The session also records nothing of what it learns. Both other callers of memory
 - Report the state of play so the human knows what to launch, what to review, and what to merge
 - Verify a plan against the tree before handing it over, counting the sites it claims and opening the files it describes
 - List a candidate's file set against every track in flight, and serialize when the sets are not disjoint
+- State what a wave costs in inbound turns beside the collision rule, and name the control that bounds it together with the reason it stays unset, since a lever recorded without its conclusion reads as available to set
 - Place every finding a merged pull request produced against the surface that owns it
 - Place what the return leg carries by what it changes, sending an answer that settles a finding onto the pull request and one that corrects this session's model of the world to the task owning that surface, since neither becomes a record by being read
 - Keep one planned, non-conflicting task in reserve beyond what is running

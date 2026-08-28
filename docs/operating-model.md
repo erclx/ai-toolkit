@@ -154,6 +154,14 @@ above it, and stop adding once you can no longer review every output properly.
 Serialize a track sharing a wiring seam with another, and serialize one whose
 sets are disjoint when a stated reason still puts it behind another.
 
+Inbound turns cost the controlling session as well, so weigh the spend before
+widening. A message from one of your other sessions arrives as a new turn
+carrying the whole accumulated context, and a recurring poll bills that window
+again on its own interval, which means a wide wave spends against the
+orchestrator rather than against any worker. `crossSessionInbound` is the one
+control over that and stays unset here, since `hold` and `refuse` both break the
+worker handback and `accept` bounds nothing.
+
 Unit checks run freely in many worktrees at once.
 A dev server, an end-to-end run, and a screenshot run alongside each other on a
 web stack, since every worktree derives its own port. Singleton resources (one
