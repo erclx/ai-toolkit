@@ -101,7 +101,11 @@ Everything else meets the shape test, which checks the resolved file for the `**
 
 The task tier refuses three ways and each names a different repair, since one message covering all three sends the caller to the wrong file. A path under `.claude/tasks/` resolving to nothing is a typo, a task carrying no `Plan:` line is a row nobody has planned yet, and a pointer resolving to nothing is a stale citation the board should have caught. A bare slug stays a plan's under every tier, because a task slug and a plan slug collide on any similar name and a caller naming a task holds its path already.
 
-The archive refusal is the one that is not obvious. `standards/tasks.md` points a shipped task's `Plan:` line into the plans archive, and an archived plan carries `**Files to touch:**` unchanged, so the tier would re-implement merged work without it. It tests the resolved path rather than the task's outcomes, since a stale board gets its ticks wrong while the standard fixes where a shipped pointer lands, and it covers the two older spellings an unmigrated project still holds beside `.claude/plans/archive/`. Measured 2026-08-28.
+The archive refusal is the one that is not obvious. `standards/tasks.md` points a shipped task's `Plan:` line into the plans archive, and an archived plan carries `**Files to touch:**` unchanged, so the tier would re-implement merged work without it. It tests the resolved path rather than the task's outcomes, since a stale board gets its ticks wrong while the standard fixes where a shipped pointer lands, and it covers the two older spellings an unmigrated project still holds beside `.claude/plans/archive/`.
+
+What the pointer resolves against decides whether that refusal reaches anything. An archived task sits a folder deeper and the standard points its line at `../../plans/archive/feature-<slug>.md`, so a base fixed at `.claude/tasks/` lands on a repository-root `plans/archive/` that never exists, and the run answers a correct citation with the stale-citation message.
+
+That message routes the caller to repoint a good link or pass the archived plan directly, and the plan tier carries no archive test, so a fixed base costs the archive refusal exactly the population it was built for. Resolving against the directory holding the task file is what closes it, and taking a bare path beside a link target is what reaches the older tasks writing the target as a plain project-root path. Measured 2026-08-28.
 
 ### Where a run from `main` stops
 

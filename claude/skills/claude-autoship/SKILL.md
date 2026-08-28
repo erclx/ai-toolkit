@@ -45,11 +45,13 @@ If the two commands differ, the session is already in a linked worktree. Continu
 
 Resolve `<plan>` in this order, stopping at the first match:
 
-1. **Caller-supplied task.** The invocation carried a path under `.claude/tasks/`. If it does not resolve to a file, stop: `❌ No task at <path>. Path was supplied, not derived, so check it and re-run.` Read that task's first `Plan:` line and take what it names as `<plan>`, resolving the link target relative to `.claude/tasks/` per `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`.
+1. **Caller-supplied task.** The invocation carried a path under `.claude/tasks/`. If it does not resolve to a file, stop: `❌ No task at <path>. Path was supplied, not derived, so check it and re-run.` Read that task's first `Plan:` line and take what it names as `<plan>`, per `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`.
 2. **Caller-supplied plan.** The invocation carried something else. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.claude/plans/feature-<slug>.md`, and a path is taken as given from the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
 3. **Derived.** `.claude/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
 
 Only a path reaches tier 1, and a bare slug is read as a plan's throughout. The two would collide on any similar name, and a caller who means the task holds its path already, having read it off the board. One plan per task is what makes the tier 1 read unambiguous, so it takes the first `Plan:` line and never scans for a second.
+
+Read the target out of the link's parentheses, and take the rest of the line when the line carries no link, since an older task writes the target as a plain path with nothing around it. Resolve a relative target against the directory holding the task file rather than against `.claude/tasks/`, and take a project-root target from the root. The archived task is what makes that base matter, since the standard points its line at `../../plans/archive/feature-<slug>.md` once the task sits a folder deeper, and reading that from `.claude/tasks/` lands on a repository-root `plans/archive/` that never exists.
 
 ### When a tier fails
 
@@ -59,7 +61,7 @@ Tier 1 stops on three failures, and each names a different repair:
 - The pointer resolves into a plans archive. Stop: `❌ <path> points at an archived plan, which describes work that already shipped. Reopen the task against a live plan, or pass that plan directly.` Test the resolved path rather than the task's outcomes or its `Pull request:` line, since a stale board gets its ticks wrong and the standard fixes where a shipped pointer lands.
 - The pointer resolves to no file. Stop: `❌ <path> points at <target>, which does not exist. The citation is stale, so repoint the task or pass the plan path directly.`
 
-An archive is `.claude/plans/archive/` and also the two older spellings `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` leaves in place for a project that archived plans before the folder nested, written from a task as `../plans-archive/` and `../.tmp/plans-archive/`. Test all three, since a shipped pointer in a project nobody migrated lands on the older two.
+An archive is `.claude/plans/archive/` and also the two older spellings `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` leaves in place for a project that archived plans before the folder nested, written from a task as `../plans-archive/` and `../.tmp/plans-archive/`. Test all three, since a shipped pointer in a project nobody migrated lands on the older two. Run the archive test ahead of the existence test, so a pointer into an archive that no longer holds the file still refuses as shipped work rather than as a stale citation.
 
 Each tier fails for a different reason and says so. A supplied path resolving to nothing is a typo, a derived path resolving to nothing is a plan nobody wrote, and a task pointer resolving to nothing is a stale citation the board should have caught.
 
