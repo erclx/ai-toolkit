@@ -10,7 +10,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 ## The catalog
 
 - `bootstrap.sh`, run as `bun run bootstrap`: installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent and re-runnable
-- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the skill-path, plugin-boundary, seed-independence, context-citation, seed-standards, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
+- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the ignore-parity, skill-path, plugin-boundary, seed-independence, context-citation, seed-standards, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
 - `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then verify
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
 - `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context, framing entirely to stderr
@@ -22,6 +22,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
 - `check-seed-independence.sh`: walks the `.md` under every root `collect_seed_roots` discovers and fails on the literal token `aitk`, so seed prose a target reads as instruction about itself never names a binary that target may not have. The walk is scoped to `tooling/*/seeds/` alone, so a citation landing in `governance/rules/` passes CI unflagged even when the rule carries content moved out of the seed and ships to every target the same way, and a moved bullet's independence has to be checked by hand against the same standard.
 - `check-color-source.sh`: walks `scripts/` and fails when any `.sh` other than `scripts/lib/ui.sh` spells an SGR escape, so one answer sits behind every bash writer
+- `check-ignore-parity.sh`: compares the `.claude/` patterns in this repository's `.gitignore` against the `# Claude` array the claude manifest ships, so the ignore set a target receives cannot drift from the one the toolkit runs on. It holds the sanctioned divergences and the reason for each, and `.claude/context/tooling.md` carries why the comparison exists
 
 ## What the hero frame chooses and what it samples
 
@@ -64,6 +65,8 @@ The test strips every inherited `GIT_*` variable before building its fixtures. G
 ### The plugin boundary stage
 
 - `check-plugin-boundary.sh` collects violations and passes on an empty collection, so a missing `claude/` or a missing `realpath` would report the boundary clean or blame a leak for an absent tool. Both are guarded up front and exit 1 naming the cause. Anything added to that walk needs the same treatment, since a producer that fails and a tree that is clean both arrive as zero rows.
+
+`check-ignore-parity.sh` takes it on both sides of its comparison, since an unreadable `.gitignore` and an array the parse missed each arrive as an empty list that satisfies parity vacuously. Its own reason for being a standalone script rather than a function beside `assert_hero_stamp` is that a stage needing unit coverage cannot live inside `verify.sh`, which calls `main "$@"` at the bottom, so sourcing it to reach one function runs the whole check. A standalone script takes `PROJECT_ROOT` from the environment and a Vitest file points it at a fixture tree, which is the shape `src/worktree-port.test.ts` already uses against a seed script.
 
 `check-color-source.sh` takes that treatment too, exiting 1 when `scripts/lib/ui.sh` is absent rather than reporting a tree it never measured. Its walk stops at `scripts/` on purpose, since the seed scripts under `tooling/*/configs/scripts/` have to keep escapes of their own: a target that installs them has no shared library to source. It matches SGR alone, which leaves the cursor and erase sequences an interactive prompt writes legal.
 
