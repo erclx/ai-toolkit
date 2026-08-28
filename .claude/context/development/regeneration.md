@@ -17,7 +17,7 @@ Staging to clear the stage changes what the next skill in that chain measures. `
 
 `.claude/rules/` is not a whole-directory mirror, because the toolkit authors 70 rules under `governance/rules/` and consumes 55 into `.claude/rules/`, and installing the framework and ui rules here would fire a React rule on a fixture this repository writes. It resolves through `aitk gov regen` instead, which reads the stack named in `internal/governance.toml` and installs it with the same machinery `aitk gov install` uses for a target.
 
-The producer clears `.claude/rules/` before installing, so a rule dropped from the record disappears rather than lingering as an unsourced file. That is also why `internal/rules/` exists: a rule governing toolkit authoring alone needs a source somewhere outside `governance/rules/`, which ships to every target. `internal/rules/` sat outside the internal mirror's own exclusion before this branch retired that mirror entirely, so those rules land at one path now for a simpler reason: nothing under `internal/` mirrors anywhere.
+The producer clears `.claude/rules/` before installing, so a rule dropped from the record disappears rather than lingering as an unsourced file. That is also why `internal/rules/` exists: a rule governing toolkit authoring alone needs a source somewhere outside `governance/rules/`, which ships to every target. `internal/rules/` named the internal mirror's one exclusion before this branch retired that mirror entirely, so those rules land at one path now for a simpler reason: nothing under `internal/` mirrors anywhere.
 
 ## Tooling paths
 
