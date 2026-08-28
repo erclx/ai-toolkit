@@ -45,4 +45,4 @@ Decision:
 
 ## Variation by action
 
-For Hand off items, the body is a pointer to the governance target instead of a rewritten rule: `aitk-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md` in the toolkit repo, or the `create-rule` skill in a target project. For Retire items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
+For Hand off items, the body is a pointer to the governance target instead of a rewritten rule: `internal-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md` in the toolkit repo, or the `create-rule` skill in a target project. For Retire items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.

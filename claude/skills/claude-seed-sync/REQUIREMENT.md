@@ -38,7 +38,7 @@ Two failures belong to the audit rather than to the diff. A decision taken in ch
 
 ## Out of scope
 
-- Bulk install and sync of a whole domain, which `aitk <domain> install` and `aitk <domain> sync` own and `toolkit-cli` documents. Reach for this skill when the target holds edits worth keeping, and for those commands when it does not.
+- Bulk install and sync of a whole domain, which `aitk <domain> install` and `aitk <domain> sync` own and `aitk-cli` documents. Reach for this skill when the target holds edits worth keeping, and for those commands when it does not.
 - Golden configs, which overwrite by design and carry no section structure to diff
 - Governance rules: `aitk gov sync`
 - First-time scaffold of a project that has installed nothing yet: `setup-init`

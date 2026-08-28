@@ -22,7 +22,7 @@ paths = [".claude/.tmp/pr-review/body-*.md"]
 write_scope = [".claude/.tmp/pr-review/**"]
 
 # Fixed by Step 5's own output template, not chosen by the run, the same test
-# `claude:restate`'s `Cut:` pin already applies.
+# `claude:restate-plainly`'s `Cut:` pin already applies.
 reply = ["reviewer request"]
 
 # No max_turns yet. A clean pass on 2026-08-26 came in at 25 against the

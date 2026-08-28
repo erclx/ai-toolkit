@@ -146,4 +146,4 @@ git hooks, the end-to-end harness, and the shell scripts under `scripts/`, so a
 headless run carrying neither `--check` nor `--write` reports what it would
 replace and exits 1 rather than applying it. Run `--check` first to read the
 list, then `--write` to apply it. `aitk tooling sync --help` names both, and the
-full per-stack path list sits in the `toolkit-cli` skill.
+full per-stack path list sits in the `aitk-cli` skill.

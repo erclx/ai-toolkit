@@ -51,7 +51,7 @@ describe('listSkills', () => {
   it('should enumerate the shipped skills rather than the internal ones', () => {
     skill('git-commit')
     skill('claude-docs')
-    write('.claude/skills/aitk-scripts/SKILL.md', '# internal\n')
+    write('.claude/skills/internal-scripts/SKILL.md', '# internal\n')
 
     expect(listSkills(root)).toEqual(['claude-docs', 'git-commit'])
   })
@@ -83,31 +83,31 @@ describe('skillForScenario', () => {
 
 describe('parseExemptions', () => {
   it('should read a reason keyed by skill', () => {
-    const parsed = parseExemptions('[toolkit-cli]\nreason = "writes nothing"\n')
+    const parsed = parseExemptions('[aitk-cli]\nreason = "writes nothing"\n')
 
-    expect(parsed.get('toolkit-cli')).toBe('writes nothing')
+    expect(parsed.get('aitk-cli')).toBe('writes nothing')
   })
 
   it('should throw on an entry carrying no reason rather than dropping it', () => {
     expect(() =>
-      parseExemptions('[toolkit-cli]\nnote = "writes nothing"\n'),
-    ).toThrow(/toolkit-cli declares no reason/)
+      parseExemptions('[aitk-cli]\nnote = "writes nothing"\n'),
+    ).toThrow(/aitk-cli declares no reason/)
   })
 
   it('should throw on an entry whose reason is empty', () => {
-    expect(() => parseExemptions('[toolkit-cli]\nreason = ""\n')).toThrow(
+    expect(() => parseExemptions('[aitk-cli]\nreason = ""\n')).toThrow(
       /declares no reason/,
     )
   })
 
   it('should throw on a top-level key that is not a table', () => {
-    expect(() => parseExemptions('toolkit-cli = "writes nothing"\n')).toThrow(
+    expect(() => parseExemptions('aitk-cli = "writes nothing"\n')).toThrow(
       /is not a table/,
     )
   })
 
   it('should throw on malformed TOML rather than losing the exemption set', () => {
-    expect(() => parseExemptions('[toolkit-cli]\nreason = = 1\n')).toThrow()
+    expect(() => parseExemptions('[aitk-cli]\nreason = = 1\n')).toThrow()
   })
 })
 
@@ -152,8 +152,8 @@ describe('collectCensus', () => {
   })
 
   it('should report a declared exemption with its reason', () => {
-    skill('toolkit-cli')
-    exempt('toolkit-cli', 'writes nothing')
+    skill('aitk-cli')
+    exempt('aitk-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
@@ -165,10 +165,10 @@ describe('collectCensus', () => {
   })
 
   it('should rank an armed arm above a stale exemption', () => {
-    skill('toolkit-cli')
-    scenario('infra', 'toolkit-cli')
-    declaration('infra', 'toolkit-cli', '')
-    exempt('toolkit-cli', 'writes nothing')
+    skill('aitk-cli')
+    scenario('infra', 'aitk-cli')
+    declaration('infra', 'aitk-cli', '')
+    exempt('aitk-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
@@ -177,20 +177,20 @@ describe('collectCensus', () => {
   })
 
   it('should report an exemption an arm now asserts rather than dropping it', () => {
-    skill('toolkit-cli')
-    scenario('infra', 'toolkit-cli')
-    declaration('infra', 'toolkit-cli', '')
-    exempt('toolkit-cli', 'writes nothing')
+    skill('aitk-cli')
+    scenario('infra', 'aitk-cli')
+    declaration('infra', 'aitk-cli', '')
+    exempt('aitk-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
-    expect(report.supersededExemptions).toEqual(['toolkit-cli'])
+    expect(report.supersededExemptions).toEqual(['aitk-cli'])
     expect(report.staleExemptions).toEqual([])
   })
 
   it('should not report a superseded exemption for a skill no arm asserts', () => {
-    skill('toolkit-cli')
-    exempt('toolkit-cli', 'writes nothing')
+    skill('aitk-cli')
+    exempt('aitk-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
@@ -253,10 +253,10 @@ describe('collectCensus', () => {
   it('should count a partially armed catalog across the three verdicts', () => {
     skill('claude-docs')
     skill('bash-script')
-    skill('toolkit-cli')
+    skill('aitk-cli')
     scenario('claude', 'docs')
     declaration('claude', 'docs', 'drift')
-    exempt('toolkit-cli', 'writes nothing')
+    exempt('aitk-cli', 'writes nothing')
 
     const report = collectCensus(root)
 

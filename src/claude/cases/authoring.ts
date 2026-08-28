@@ -18,7 +18,7 @@ export const AUTHORING_CASES: readonly SkillCase[] = [
   {
     prompt:
       'Write me a headless automation script with no interactive prompts.',
-    expect: 'cli-script',
+    expect: 'bash-cli-script',
   },
   {
     prompt: 'Scaffold a brand-new SKILL.md for this capability.',
@@ -39,7 +39,7 @@ export const AUTHORING_CASES: readonly SkillCase[] = [
   },
   {
     prompt: 'Say what that dense answer actually means in plain terms.',
-    expect: 'restate',
+    expect: 'restate-plainly',
   },
   {
     prompt: 'This passage reads flat and robotic, give it some real cadence.',

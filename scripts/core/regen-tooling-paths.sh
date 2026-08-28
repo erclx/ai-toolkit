@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 TOOLING_DIR="$PROJECT_ROOT/tooling"
-CONTRACT="$PROJECT_ROOT/claude/skills/toolkit-cli/SKILL.md"
+CONTRACT="$PROJECT_ROOT/claude/skills/aitk-cli/SKILL.md"
 
 BEGIN="<!-- generated:tooling-paths -->"
 END="<!-- /generated:tooling-paths -->"

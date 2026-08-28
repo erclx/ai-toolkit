@@ -138,7 +138,7 @@ aitk() {
 
 - On Windows, back-to-back headless runs can briefly fail to wipe the sandbox tree with a busy-lock. Re-run or `aitk sandbox clean` first.
 - An autonomous sonnet run costs roughly $0.10 to $0.60 and tracks the turn count, measured at $0.28 for 7 turns and $0.58 for 17 on 2026-08-13. Drive one skill on demand rather than sweeping the catalog.
-- Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
+- Skills whose body forbids probing project surfaces, such as `aitk-feedback-file`, have no fixture to anchor and stay out of scope.
 - Anchor scenarios take their starting tree from a fixture, so provisioning does not depend on what the previous arm published to the remote. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
 
 ## Standing limits

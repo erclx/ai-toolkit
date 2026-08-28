@@ -1,6 +1,6 @@
 ---
 name: bash-script
-description: Generates production Bash scripts with a visual timeline UI, state-based interactive prompts, and strict error handling. Use when asked for "a human-facing shell tool", an interactive bash script, or a DevOps tool with framed terminal output. Do NOT use for a non-interactive automation, CI, or pipeline script, that is `cli-script`.
+description: Generates production Bash scripts with a visual timeline UI, state-based interactive prompts, and strict error handling. Use when asked for "a human-facing shell tool", an interactive bash script, or a DevOps tool with framed terminal output. Do NOT use for a non-interactive automation, CI, or pipeline script, that is `bash-cli-script`.
 ---
 
 # Bash script
@@ -11,7 +11,7 @@ Load `${CLAUDE_SKILL_DIR}/references/patterns.md` for the timeline lifecycle, lo
 
 ## Guards
 
-- A request for a script with no human at the terminal stops and routes to `cli-script`. CI jobs, cron entries, agent-run tasks, and any script whose output is consumed by a pipe render no timeline, so generating one costs the frame and returns nothing.
+- A request for a script with no human at the terminal stops and routes to `bash-cli-script`. CI jobs, cron entries, agent-run tasks, and any script whose output is consumed by a pipe render no timeline, so generating one costs the frame and returns nothing.
 
 ## Script setup
 

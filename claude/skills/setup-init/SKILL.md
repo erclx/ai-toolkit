@@ -16,7 +16,7 @@ Orchestrates the onboarding chain. Detects project type, resolves per-domain arg
 
 Three states reach this skill that the chain does not serve. Name the destination for each, so the refusal routes rather than ends. The first two stop the chain outright and the third runs it on a default the person may not want.
 
-- **An existing project.** Stop and hand off to `toolkit-operator`. It reads what the target already carries before it names a command, which this chain never does, so any per-domain install picked here is a guess against configs nobody read. The Scope bullet above names the same commands as the authoring alternative, and this is the destination a person takes.
+- **An existing project.** Stop and hand off to `aitk-operator`. It reads what the target already carries before it names a command, which this chain never does, so any per-domain install picked here is a guess against configs nobody read. The Scope bullet above names the same commands as the authoring alternative, and this is the destination a person takes.
 - **An install wanting the `.claude/` folder alone.** Stop. Run `aitk claude init` for the seed docs, then invoke `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. Neither needs the tooling sync this chain runs.
 - **A language the toolkit carries no stack for.** The chain still runs, on `base`, with the fallback marked in the preview. A project that wants none of what `base` carries declines there and takes `setup-gov` for the governance layer, which is language-neutral. Say so at the preview rather than resolving it here, since the fallback is a working default and only the person can say whether it fits.
 

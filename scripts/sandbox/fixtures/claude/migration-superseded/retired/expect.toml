@@ -11,7 +11,7 @@
 # and a ceiling at the cap still catches a truncated run, which reports one turn
 # past it.
 #
-# `toolkit-operator/unmigrated` derives a ceiling from one 6-turn observation and
+# `aitk-operator/unmigrated` derives a ceiling from one 6-turn observation and
 # this arm does not, because a route arm stops at the skill it names and its work
 # is fixed by that route. A proposal-only arm reads the whole staged tree and
 # resolves three retired files against three standards, so its turn count varies

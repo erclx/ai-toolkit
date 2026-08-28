@@ -298,7 +298,7 @@ main() {
 
   log_step "Tooling paths"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-tooling-paths.sh" "Tooling-path regen failed"
-  assert_no_drift "claude/skills/toolkit-cli/SKILL.md" "The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/toolkit-cli/SKILL.md."
+  assert_no_drift "claude/skills/aitk-cli/SKILL.md" "The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/aitk-cli/SKILL.md."
   log_info "Tooling paths clean"
 
   # The claude manifest is the only route a target's ignore set travels, and it

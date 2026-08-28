@@ -21,7 +21,7 @@ Cross-version sequencing rationale now has no home. A row's `Waiting on` cell in
 
 ## Asserting a routing decision
 
-A router is reviewable only through what it says. Almost every `toolkit-operator` route ends in a handoff or a report rather than a file, so the local pass and the pull request pass both read a body claiming a route and neither can tell whether the route fires. The drift report it reads shipped with three sandbox arms and was confirmed against six real targets, while the router consuming that report had never been executed by anything, and the ship report still read as though the update path were proven.
+A router is reviewable only through what it says. Almost every `aitk-operator` route ends in a handoff or a report rather than a file, so the local pass and the pull request pass both read a body claiming a route and neither can tell whether the route fires. The drift report it reads shipped with three sandbox arms and was confirmed against six real targets, while the router consuming that report had never been executed by anything, and the ship report still read as though the update path were proven.
 
 The `reply` expectation is what closes it. It reads `result` off the envelope `max_turns` already reads, so scoring a route costs nothing beyond the run, and the token worth pinning is the name of the skill or command the route hands to. Five arms were using it before the router shipped, `claude/setup-init/fresh` among them, so the mechanism was in place and the arms written for the report asserted only the file it produced.
 

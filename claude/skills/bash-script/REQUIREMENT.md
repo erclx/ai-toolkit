@@ -27,10 +27,10 @@ The visual conventions this skill fixes are otherwise arbitrary. Their value is 
 
 ## Guards
 
-- A request for a script with no human at the terminal stops and routes to `cli-script` rather than generating a timeline nothing will render
+- A request for a script with no human at the terminal stops and routes to `bash-cli-script` rather than generating a timeline nothing will render
 
 ## Out of scope
 
-- Non-interactive automation, CI, and agent-run scripts: `cli-script`, which keeps the error handling and the stdout contract and drops the timeline, the icons, and the prompts
+- Non-interactive automation, CI, and agent-run scripts: `bash-cli-script`, which keeps the error handling and the stdout contract and drops the timeline, the icons, and the prompts
 - GitHub Actions workflow files: `ci-workflow`
 - What the generated script does. This skill fixes the shape of the output and the stream it goes to, and the commands belong to the request.

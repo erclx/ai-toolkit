@@ -81,7 +81,7 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt: 'Draft me a script with beats for a screencast recording.',
-    expect: 'claude-screencast',
+    expect: 'aitk-screencast',
   },
   {
     prompt:
@@ -90,7 +90,7 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt: 'Turn this topic into a slide deck I can render.',
-    expect: 'claude-slides-draft',
+    expect: 'aitk-slides-draft',
   },
   {
     prompt:

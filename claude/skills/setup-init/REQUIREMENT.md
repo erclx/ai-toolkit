@@ -41,5 +41,5 @@ The other is the refusal that ends rather than routes. An existing project, an i
 - Provisioning Claude Code plugins: `setup-plugins`. Those install once per machine rather than into a project, so no project-scoped chain can carry them.
 - Running the verification scripts, which `setup-verify` owns and this chain invokes as its last step
 - Re-installing into a project that already has the files, which the per-domain `aitk <domain> install` and `aitk sync` commands own
-- Deciding which of those per-domain commands an existing project needs: `toolkit-operator`. That skill reads the target before naming one, which this chain never does, so it is the destination rather than a guess made here.
+- Deciding which of those per-domain commands an existing project needs: `aitk-operator`. That skill reads the target before naming one, which this chain never does, so it is the destination rather than a guess made here.
 - Seeding the `.claude/` folder without the tooling chain, which `aitk claude init` does on its own and `setup-indexes` finishes

@@ -21,7 +21,7 @@ The producer clears `.claude/rules/` before installing, so a rule dropped from t
 
 ## Tooling paths
 
-The Tooling paths stage runs `scripts/core/regen-tooling-paths.sh` and then asserts no drift on `claude/skills/toolkit-cli/SKILL.md`. The script rewrites the block between the `generated:tooling-paths` markers with every file each installable stack ships under `configs/`, which is the list a session reads before deciding whether `aitk tooling sync` is safe to run against a project.
+The Tooling paths stage runs `scripts/core/regen-tooling-paths.sh` and then asserts no drift on `claude/skills/aitk-cli/SKILL.md`. The script rewrites the block between the `generated:tooling-paths` markers with every file each installable stack ships under `configs/`, which is the list a session reads before deciding whether `aitk tooling sync` is safe to run against a project.
 
 Stack names come from `aitk tooling list --json` rather than from a walk of `tooling/`, so a stack `isStackExcluded` rejects stays out of a contract describing what the verb does. The block is the only part of the body the script owns, and a missing start marker fails the stage rather than appending a second block.
 

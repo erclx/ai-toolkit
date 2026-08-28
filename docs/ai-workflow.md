@@ -185,7 +185,7 @@ This section is the corpus the coverage claim is measured against: every name `a
 | Skill                        | When to use                                                                             |
 | ---------------------------- | --------------------------------------------------------------------------------------- |
 | `aitk:setup-init`            | On a fresh scaffold, to detect the stack and run the whole install chain in one pass    |
-| `aitk:toolkit-operator`      | On a project that already exists, to read what it carries before an install is picked   |
+| `aitk:aitk-operator`         | On a project that already exists, to read what it carries before an install is picked   |
 | `aitk:setup-gov`             | When the governance rules are wanted without the tooling chain                          |
 | `aitk:setup-indexes`         | When a markdown-heavy folder needs an `index.md` a session can browse                   |
 | `aitk:setup-plugins`         | On a new machine, to install the community and official plugins user-scoped             |
@@ -266,32 +266,32 @@ This section is the corpus the coverage claim is measured against: every name `a
 | `aitk:migration-context`        | When `docs/` holds agent-flavored files belonging in `.claude/context/`            |
 | `aitk:migration-superseded`     | When a drift report names a `.claude/` file a folder has replaced                  |
 | `aitk:migration-standards-drop` | When the project still holds an installed `.claude/standards/` tree                |
-| `aitk:toolkit-feedback`         | When something in the toolkit is broken, missing, or off                           |
-| `aitk:toolkit-triage`           | In the toolkit repo, to work through the open feedback issues                      |
+| `aitk:aitk-feedback-file`       | When something in the toolkit is broken, missing, or off                           |
+| `aitk:aitk-feedback-triage`     | In the toolkit repo, to work through the open feedback issues                      |
 
 ### Generate an artifact on demand
 
-| Skill                      | When to use                                                           |
-| -------------------------- | --------------------------------------------------------------------- |
-| `aitk:create-rule`         | For a project-specific governance rule the toolkit does not ship      |
-| `aitk:create-skill`        | For a new `SKILL.md`                                                  |
-| `aitk:create-snippet`      | For a reusable prompt                                                 |
-| `aitk:create-standard`     | For a new authoring convention                                        |
-| `aitk:bash-script`         | For an interactive, human-facing shell tool                           |
-| `aitk:cli-script`          | For a non-interactive automation, CI, or pipeline script              |
-| `aitk:ci-workflow`         | For a GitHub Actions workflow file                                    |
-| `aitk:claude-slides-draft` | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint |
-| `aitk:claude-screencast`   | For a recording script with beats and defaults already seeded         |
+| Skill                    | When to use                                                           |
+| ------------------------ | --------------------------------------------------------------------- |
+| `aitk:create-rule`       | For a project-specific governance rule the toolkit does not ship      |
+| `aitk:create-skill`      | For a new `SKILL.md`                                                  |
+| `aitk:create-snippet`    | For a reusable prompt                                                 |
+| `aitk:create-standard`   | For a new authoring convention                                        |
+| `aitk:bash-script`       | For an interactive, human-facing shell tool                           |
+| `aitk:bash-cli-script`   | For a non-interactive automation, CI, or pipeline script              |
+| `aitk:ci-workflow`       | For a GitHub Actions workflow file                                    |
+| `aitk:aitk-slides-draft` | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint |
+| `aitk:aitk-screencast`   | For a recording script with beats and defaults already seeded         |
 
 ### Answer a question at any point
 
 | Skill                      | When to use                                                                    |
 | -------------------------- | ------------------------------------------------------------------------------ |
-| `aitk:toolkit-cli`         | Before a sync or install, to learn what it overwrites, merges, or leaves alone |
+| `aitk:aitk-cli`            | Before a sync or install, to learn what it overwrites, merges, or leaves alone |
 | `aitk:youtube-transcripts` | When a video transcript is wanted in the repo as context                       |
 | `aitk:claude-teach`        | To learn a subject across sessions, in a workspace that holds the progress     |
 | `aitk:write-human`         | Before drafting or revising prose, for voice, rhythm, and density              |
-| `aitk:restate`             | When an answer or a document has to be read again in plain words               |
+| `aitk:restate-plainly`     | When an answer or a document has to be read again in plain words               |
 
 Every row answers a question rather than marking a point in a project's life, so a phase above would send a reader to the wrong group.
 

@@ -13,7 +13,7 @@ The whole feature came out of `.claude/groundwork/38-demo-recorder/`, which meas
 
 ## Layout
 
-- `src/demo/beats.ts`: reads the human-facing draft `claude-screencast` writes
+- `src/demo/beats.ts`: reads the human-facing draft `aitk-screencast` writes
 - `src/demo/compile.ts`: the plan type, the beats-to-plan transform, and validation of a plan read back off disk
 - `src/demo/pointer.ts`: cursor resource decoding, hotspot scaling, and the script injected into the page
 - `src/demo/cursors.ts`: the bundled vector artwork for the three pointer states

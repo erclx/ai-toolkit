@@ -58,7 +58,7 @@ Fix the feedback CLI so it applies the `feedback` label.
 
 ## Details
 
-`aitk feedback --github` opens an issue with no label, so `toolkit-triage` never lists it.
+`aitk feedback --github` opens an issue with no label, so `aitk-feedback-triage` never lists it.
 
 ## Context
 
