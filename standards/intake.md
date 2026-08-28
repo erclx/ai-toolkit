@@ -42,11 +42,11 @@ An intake failing these is non-conforming even when it satisfies every shape rul
 
 ## Files
 
-| File                 | Holds                                                        | Required |
-| -------------------- | ------------------------------------------------------------ | -------- |
-| `00-overview.md`     | Index: format block, cluster table, verdicts, open questions | Always   |
-| `NN-<domain>.md`     | One cluster of items, filed by the domain their fixes touch  | Always   |
-| `99-next-session.md` | What a compaction destroys that no cluster file carries      | Optional |
+| File                 | Holds                                                       | Required |
+| -------------------- | ----------------------------------------------------------- | -------- |
+| `00-overview.md`     | Index: cluster table, verdicts, open questions              | Always   |
+| `NN-<domain>.md`     | One cluster of items, filed by the domain their fixes touch | Always   |
+| `99-next-session.md` | What a compaction destroys that no cluster file carries     | Optional |
 
 `00` is the only reserved number. Everything else is read order, and the domain rides in the filename so a reader knows what `07-tooling.md` holds without opening it.
 
@@ -70,7 +70,6 @@ Date the folder once rather than every file. Twelve dated files leave eleven sta
 
 The index. It points at items and answers nothing itself.
 
-- The item format block, copied so a returning session picks the shape up from the folder
 - The answer contract stated out loud, since it inverts the plan file's
 - A cluster table of file, what it holds, item count, and open count
 - The verdict counts across the folder
@@ -167,10 +166,6 @@ date: <YYYY-MM-DD>
 # <Dump subject>
 
 <One line on what the dump covers and the commit it was measured against.>
-
-## Item format
-
-<the item format block, copied so a returning session picks the shape up here>
 
 ## The answer contract
 

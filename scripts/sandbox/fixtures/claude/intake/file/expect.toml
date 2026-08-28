@@ -69,13 +69,3 @@ pattern = '^date: \d{4}-\d{2}-\d{2}$'
 [[content]]
 path = ".claude/intake/01-cli-cleanup/00-overview.md"
 pattern = '\]\((?!00-)\d\d-[a-z][a-z0-9-]*\.md'
-
-# The item format block, copied into the index so a returning session picks the
-# shape up from the folder rather than from the skill.
-[[content]]
-path = ".claude/intake/01-cli-cleanup/00-overview.md"
-pattern = '^- \*\*Problem:\*\* '
-
-[[content]]
-path = ".claude/intake/01-cli-cleanup/00-overview.md"
-pattern = '^- \*\*You:\*\*$'
