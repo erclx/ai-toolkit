@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.38.1](https://github.com/erclx/aitk/compare/v3.38.0...v3.38.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **counts:** widen the trigger set to reach two missed figures ([#1223](https://github.com/erclx/aitk/issues/1223)) ([23e79fb](https://github.com/erclx/aitk/commit/23e79fbdab5d5a0b2f0202f3a38350c79e8b53be))
+
 ## [3.38.0](https://github.com/erclx/aitk/compare/v3.37.1...v3.38.0) (2026-08-28)
 
 
