@@ -10,12 +10,10 @@
 # halting before it would not: the completion line `claude-autoship`'s own
 # Output contract mandates.
 
-# No max_turns yet. The chain up through this completion line invokes on the
-# order of nine sub-skills (claude-worker, claude-worktree, claude-review, and
-# git-ship's own six-step sequence), the longest chain in the catalog, and no
-# run has measured it. Declare one once a real run has produced a number rather
-# than setting a ceiling from zero samples that could red a correct run for
-# running long.
+# No max_turns yet. A real pass on 2026-08-30 came in at 74 turns, well past
+# the 30 this row dropped for want of a number, which is what the drop was
+# for. One sample of a chain whose cost follows however much capture, both
+# doc syncs, and review find to do is not enough to set a ceiling from.
 
 # `git-ship`'s sequence reaches this exact line only after memory capture, both
 # doc syncs, staging, the commit, the branch rename, and the pull request have

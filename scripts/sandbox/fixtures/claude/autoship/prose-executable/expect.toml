@@ -8,12 +8,10 @@
 # skipped review here is the defect this arm exists to catch, which is the
 # mirror image of its sibling's absent assertion below.
 
-# No max_turns yet. The chain up through the completion line reply pins invokes
-# on the order of nine sub-skills (claude-worker, claude-worktree, claude-review,
-# and git-ship's own six-step sequence), the longest chain in the catalog, and
-# no run has measured it. Declare one once a real run has produced a number
-# rather than setting a ceiling from zero samples that could red a correct run
-# for running long.
+# No max_turns yet. A real pass on 2026-08-30 came in at 78 turns, well past
+# the 30 this row dropped for want of a number. One sample of a chain whose
+# cost follows whatever it finds along the way is not enough to set a ceiling
+# from.
 
 # `claude-review` writes this file when it runs. A classifier that reads the
 # markdown extension alone and skips despite the behavior path never creates
@@ -26,5 +24,12 @@ reply = ["Autoshipped (draft)"]
 manual = [
   ".claude/skills/deploy-check/SKILL.md carries the stop condition the plan describes. Judgment: the wording is the run's own, and a substring anchored to it goes red on any correct rephrasing.",
   "The pull request itself opened, and opened as a draft. Unwired: confirming the PR object needs a gh call this declaration has no channel for.",
-  "The review that ran found nothing predating this run at critical or should-fix severity, so the chain continued past Step 6 rather than stopping. Semantic: the review file's content carries that split and a positive pattern over it would pin wording the reviewing pass chooses rather than a structural fact.",
 ]
+
+# A real pass on 2026-08-30 reddened here for the first time: reply passed,
+# paths failed, since claude-review never ran despite the behavior path this
+# arm stages. The run's own recorded write list carries nothing under
+# .claude/review/, confirming the miss rather than a review that ran and
+# wrote somewhere else. That is a claude-autoship finding, filed on the task
+# this arm's plan cites rather than fixed on this branch, since the defect is
+# in what the chain does and not in what this declaration asserts.
