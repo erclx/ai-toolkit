@@ -7,16 +7,16 @@ description: The internal aitk skills loaded before editing a toolkit domain, th
 
 Internal skills live in `.claude/skills/` and are toolkit-only. They are not installed into target projects.
 
-| Skill                | Description                                                                                                   |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `aitk-ask`           | Answer a repository-knowledge question from the indexes before opening any file, user-invoked via `/aitk-ask` |
-| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or the Claude context entries                          |
-| `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                         |
-| `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                              |
-| `aitk-snippets`      | Load before editing snippets                                                                                  |
-| `aitk-standards`     | Load before editing standards or docs                                                                         |
-| `aitk-tooling`       | Load before editing tooling stacks or golden configs                                                          |
-| `aitk-sandbox-check` | Audit changed skills and scripts for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check`   |
+| Skill                    | Description                                                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `internal-ask`           | Answer a repository-knowledge question from the indexes before opening any file, user-invoked via `/internal-ask` |
+| `internal-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or the Claude context entries                              |
+| `internal-governance`    | Load before editing Cursor rules or stack definitions                                                             |
+| `internal-scripts`       | Load before editing scripts or sandbox scenarios                                                                  |
+| `internal-snippets`      | Load before editing snippets                                                                                      |
+| `internal-standards`     | Load before editing standards or docs                                                                             |
+| `internal-tooling`       | Load before editing tooling stacks or golden configs                                                              |
+| `internal-sandbox-check` | Audit changed skills and scripts for missing sandbox scenario edits, user-invoked via `/internal-sandbox-check`   |
 
 ## Requirement coverage
 
@@ -30,7 +30,7 @@ The plugin corpus under `claude/skills/` reached the same coverage across three 
 
 ## Sandbox check verification route
 
-`aitk-sandbox-check` maps changed items to scenarios and then verifies one of them. It drives `scripts/sandbox/run.sh` against the `Provisioning:` scenario, deriving the target from the scenario path and the prompt as `/aitk:<skill-name>`, and reports the verdict `run.sh` returns rather than asserting its own.
+`internal-sandbox-check` maps changed items to scenarios and then verifies one of them. It drives `scripts/sandbox/run.sh` against the `Provisioning:` scenario, deriving the target from the scenario path and the prompt as `/aitk:<skill-name>`, and reports the verdict `run.sh` returns rather than asserting its own.
 
 The arm is the third argument and roughly half the catalog requires it. `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE` only when it receives an arm, so a multi-arm scenario invoked without one falls through to `select_or_route_scenario` and its picker, which aborts on a missing TTY and blocks on input when one is attached. Either way the run dies before the skill session.
 

@@ -63,7 +63,10 @@ describe('listSkills', () => {
 
   it('should exclude internal skills that never install into a target', () => {
     skillFile('git-commit', frontmatter('git-commit', 'Writes a commit'))
-    internalSkillFile('aitk-scripts', frontmatter('aitk-scripts', 'Internal'))
+    internalSkillFile(
+      'internal-scripts',
+      frontmatter('internal-scripts', 'Internal'),
+    )
 
     expect(listSkills(root).map((entry) => entry.name)).toEqual(['git-commit'])
   })

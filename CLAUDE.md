@@ -51,7 +51,7 @@ Each rule or knowledge item lives in exactly one surface. Other surfaces point, 
 - Cross-domain behavior or design principle: `CLAUDE.md`
 - Cross-domain decision with its rejected alternative: `.claude/ARCHITECTURE.md`
 - Behavior that fires on a path being edited rather than every session: `governance/rules/`
-- Behavior triggered only when editing domain X: `.claude/skills/aitk-<X>/SKILL.md`
+- Behavior triggered only when editing domain X: `.claude/skills/internal-<X>/SKILL.md`
 - Per-domain internal narrative about domain X (structure, decisions, gotchas): `.claude/context/<X>.md`
 - Consumer-facing reference (AI workflow, target-project integration): `docs/`
 - CLI command surface or invocation contract: `docs/agents/`
@@ -64,14 +64,14 @@ The test between a canonical row and the per-domain one is how many domains read
 
 The toolkit has the following domains. Each maps to a skill. Load the skill before editing anything in that domain.
 
-| Task type                                                              | Skill to load     |
-| ---------------------------------------------------------------------- | ----------------- |
-| Modifying `src/`, `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/` | `aitk-scripts`    |
-| Modifying `tooling/`, manifests, golden configs, seeds                 | `aitk-tooling`    |
-| Modifying `standards/`, `docs/`, `.claude/context/`                    | `aitk-standards`  |
-| Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance` |
-| Modifying `snippets/`                                                  | `aitk-snippets`   |
-| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`     |
+| Task type                                                              | Skill to load         |
+| ---------------------------------------------------------------------- | --------------------- |
+| Modifying `src/`, `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/` | `internal-scripts`    |
+| Modifying `tooling/`, manifests, golden configs, seeds                 | `internal-tooling`    |
+| Modifying `standards/`, `docs/`, `.claude/context/`                    | `internal-standards`  |
+| Modifying `governance/rules/`, `governance/stacks/`                    | `internal-governance` |
+| Modifying `snippets/`                                                  | `internal-snippets`   |
+| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `internal-claude`     |
 
 The per-domain context catalog is always loaded so the entries are discoverable without a lookup. Load each entry on demand.
 

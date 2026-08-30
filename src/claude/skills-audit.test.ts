@@ -59,7 +59,7 @@ describe('auditSkills', () => {
 
   it('should measure both corpora and name each in scope', async () => {
     conformingSkill('git-commit')
-    conformingSkill('aitk-scripts', '.claude')
+    conformingSkill('internal-scripts', '.claude')
 
     const report = await auditSkills(root)
 
@@ -71,7 +71,7 @@ describe('auditSkills', () => {
   })
 
   it('should skip a corpus the project does not carry', async () => {
-    conformingSkill('aitk-scripts', '.claude')
+    conformingSkill('internal-scripts', '.claude')
 
     const report = await auditSkills(root)
 

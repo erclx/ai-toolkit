@@ -61,7 +61,7 @@ The two-branch citation those 38 replaced named an installed path first and the 
 
 A grep for the installed prefix comes back at 25 lines across 18 files outside the fixture trees, and none of them is a citation. Six classes account for every one, and a line matching none of them is a live citation the sweep missed:
 
-- A target's own stale folder, inert and safe to delete, covering `toolkit-cli`, `docs/target-projects.md`, `docs/agents/records.md`, and the gotcha below.
+- A target's own stale folder, inert and safe to delete, covering `aitk-cli`, `docs/target-projects.md`, `docs/agents/records.md`, and the gotcha below.
 - The rule forbidding the citation, covering `standards/skill.md` and `create-standard`'s requirement.
 - A dated record of a past mechanism or measurement, covering `.claude/ARCHITECTURE.md`, `destinations.md`, and `distribution.md`.
 - Fixture or test data, covering `scripts/sandbox/`, `scripts/eval/`, and every `*.test.ts`.

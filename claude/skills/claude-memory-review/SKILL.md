@@ -67,7 +67,7 @@ For each in-scope entry (see Scope), pick one action:
 - **Promote to a standards file**: the rule is an authoring reference that belongs in the project's own standards folder as `<domain>.md`.
 - **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.claude/.tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
 - **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
-  - In the toolkit repo, point the user at `aitk-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
+  - In the toolkit repo, point the user at `internal-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
   - In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`.
 - **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
 
@@ -134,7 +134,7 @@ Before applying any item, check the worktree state:
 
 If the result is `MAIN`, stop and tell the user: `❌ Apply phase mutates tracked files. Run /claude-worktree first.` Discuss and Challenge phases only touch `.claude/review/` scratch and run from anywhere.
 
-Before applying a promote to root `CLAUDE.md`, load `aitk-claude` so its seed-mirror rule fires on the edit.
+Before applying a promote to root `CLAUDE.md`, load `internal-claude` so its seed-mirror rule fires on the edit.
 
 Promotions are a separate concern from any feature in flight. Keep the promoted edits on their own commit. Do not fold a `CLAUDE.md` or skill-body change into a feature's commits, because a feature reviewer should not have to vet a change to how the agent operates.
 

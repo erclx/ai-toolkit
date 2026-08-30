@@ -11,7 +11,7 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 
 ### Reading a report rather than rediscovering
 
-`toolkit-operator` reads `aitk sync --check --json` rather than walking the tree itself, and treats an absent report key as unread rather than as an empty answer. Reading an absent key as empty is the failure a report field introduces that a folder listing never had: the run exits zero, takes the nothing-to-report branch, and reports a clean target the CLI never actually measured. An absent key and an empty array are separate states, and a current CLI reporting an empty array has looked and found nothing.
+`aitk-operator` reads `aitk sync --check --json` rather than walking the tree itself, and treats an absent report key as unread rather than as an empty answer. Reading an absent key as empty is the failure a report field introduces that a folder listing never had: the run exits zero, takes the nothing-to-report branch, and reports a clean target the CLI never actually measured. An absent key and an empty array are separate states, and a current CLI reporting an empty array has looked and found nothing.
 
 That skew is the general shape rather than one skill's problem. A skill reaches a target through whichever CLI the machine has, while the skill itself loads live from the plugin, so a body written against a field can run against a binary predating it. `ARCHITECTURE.md` carries the two-speed release as a standing risk.
 

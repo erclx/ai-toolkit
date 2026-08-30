@@ -31,7 +31,7 @@ The report is what separates a file the project edited from one the toolkit move
 
 Keep every seed regardless of state. `CLAUDE.md` is the file a project edits most, and its `drifted` verdict is the case this skill exists for.
 
-Read the `toolkit-cli` skill before naming a sync command in the output. It states which surfaces a sync overwrites, merges, or writes once.
+Read the `aitk-cli` skill before naming a sync command in the output. It states which surfaces a sync overwrites, merges, or writes once.
 
 Fall back to the appearance heuristic in step 3 when the report cannot attribute, which is `historyUnavailable` set on the relevant section or the command failing outright. Say so in the summary block, because a fallback audit reports guesses rather than facts.
 

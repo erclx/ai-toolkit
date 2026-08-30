@@ -164,7 +164,7 @@ const FIXTURE: readonly RankedSkill[] = [
       'Generates interactive bash scripts with a visual timeline and prompts.',
   },
   {
-    name: 'cli-script',
+    name: 'bash-cli-script',
     description:
       'Generates non-interactive automation scripts for CI and pipelines.',
   },
@@ -229,7 +229,7 @@ describe('measureCases', () => {
       {
         prompt: 'write me an automation pipeline script',
         expect: 'bash-script',
-        won: 'cli-script',
+        won: 'bash-cli-script',
         rank: 2,
       },
     ])

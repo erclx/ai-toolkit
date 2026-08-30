@@ -1,7 +1,7 @@
 import type { SkillCase } from '@/claude/skills-rank'
 
 /**
- * `setup-*`, `migration-*`, `toolkit-*`, and `create-rule`: scaffolding,
+ * `setup-*`, `migration-*`, `aitk-*`, and `create-rule`: scaffolding,
  * proposal-only migrations, and the toolkit's own reference and feedback
  * surfaces.
  */
@@ -53,20 +53,20 @@ export const SETUP_CASES: readonly SkillCase[] = [
   {
     prompt:
       "Before I run this sync, tell me exactly what it's going to overwrite.",
-    expect: 'toolkit-cli',
+    expect: 'aitk-cli',
   },
   {
     prompt:
       'Something about the toolkit itself is broken, write it up and send it back to the maintainers.',
-    expect: 'toolkit-feedback',
+    expect: 'aitk-feedback-file',
   },
   {
     prompt:
       "I don't know which specific toolkit skill I need, just handle it for me.",
-    expect: 'toolkit-operator',
+    expect: 'aitk-operator',
   },
   // The performing skill wins a phrase naming its operation over the front
-  // door's own routing framing, even though toolkit-operator's description
+  // door's own routing framing, even though aitk-operator's description
   // quotes a phrase near this one. See .claude/context/cli/audits.md.
   {
     prompt:
@@ -76,7 +76,7 @@ export const SETUP_CASES: readonly SkillCase[] = [
   {
     prompt:
       'Work through the open feedback issues on the toolkit repo one by one.',
-    expect: 'toolkit-triage',
+    expect: 'aitk-feedback-triage',
   },
   {
     prompt:

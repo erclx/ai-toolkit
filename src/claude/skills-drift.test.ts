@@ -94,7 +94,7 @@ describe('parseMovedBodies', () => {
   })
 
   it('should ignore a body in the internal corpus', () => {
-    const output = [FIRST, '', '.claude/skills/aitk-scripts/SKILL.md'].join(
+    const output = [FIRST, '', '.claude/skills/internal-scripts/SKILL.md'].join(
       '\n',
     )
 

@@ -41,7 +41,7 @@ Each rule below duplicated bullets the cited standard already states. The rule-a
 ### Resolved only for a plugin-holding target, now repaired
 
 - `governance/rules/core/045-memory.md` names `claude-memory-capture` and `claude-docs` bare, with no fallback. Repaired to the `aitk:` prefix plus a report-if-missing line, and tightened its vague "which your toolkit resolves by name" standard pointer to `aitk standards memory`.
-- `governance/rules/lang/120-bash.md` names `bash-script` and `cli-script` bare, with no fallback. Repaired the same way.
+- `governance/rules/lang/120-bash.md` names `bash-script` and `bash-cli-script` bare, with no fallback. Repaired the same way.
 - `governance/rules/claude/561-teach.md` and `standards/teach.md` both name `claude-teach` bare. Each already carried the report-if-missing line (the rule's own, the standard's "say so and stop"), so the only gap was the missing prefix. Repaired to `aitk:claude-teach` in both.
 - `governance/rules/claude/570-skill.md` names `create-skill` bare, twice, with the report-if-missing line already present. Repaired to `aitk:create-skill` in both places.
 - `standards/markdown.md` names `write-human` bare in the sentence explaining why cadence and rhythm are excluded from this file's scope. Unlike the "Does not govern:" bullets the Gotchas section exempts, this sentence sits in ordinary prose describing where a markdown edit routes, so it reads as a citation rather than a boundary statement. Repaired to `aitk:write-human`.
