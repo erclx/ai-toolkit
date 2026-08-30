@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.44.0](https://github.com/erclx/aitk/compare/v3.43.2...v3.44.0) (2026-08-30)
+
+
+### Features
+
+* **targets:** report the projects the toolkit installed into ([#1251](https://github.com/erclx/aitk/issues/1251)) ([f7e0de9](https://github.com/erclx/aitk/commit/f7e0de94516784480d618968f1e75d7fa15cbb0a))
+
 ## [3.43.2](https://github.com/erclx/aitk/compare/v3.43.1...v3.43.2) (2026-08-28)
 
 
