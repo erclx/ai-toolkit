@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { checkClaim, type ClaimReport } from '@/sessions/claim'
 import {
@@ -19,6 +20,7 @@ import {
 interface ListCommandOptions {
   readonly json?: boolean
   readonly branch?: string
+  readonly repository?: string
 }
 
 const REASONS: Record<string, string> = {
@@ -46,6 +48,10 @@ export function register(program: Command): void {
       '--branch <name>',
       'Report only the sessions holding this branch in this repository',
     )
+    .option(
+      '--repository <path>',
+      'Answer about this project rather than the working one',
+    )
     .addHelpText(
       'after',
       [
@@ -54,10 +60,17 @@ export function register(program: Command): void {
         '  0  the roster was read',
         '  1  refused, with the reason on stderr',
         '',
-        '--branch scopes the match to the repository the command runs in, since',
-        'a branch name identifies a branch there and nothing across a machine.',
+        '--branch scopes the match to one repository, since a branch name',
+        'identifies a branch there and nothing across a machine. That is the',
+        'repository the command runs in unless --repository names another.',
         'A bare run reports every repository and carries the repository field,',
         'so a caller filtering by hand has something that identifies one.',
+        '',
+        '--repository moves every reading to the project at that path, the',
+        'session match and the worktree and ref reads alike. The roster is',
+        'machine-wide already, so this is what lets a dispatcher in one project',
+        'see a branch a live session holds in another rather than reading it as',
+        'unclaimed and sending a second session onto it.',
         '',
         'With --branch, the JSON also carries "worktree" (the path of any',
         'worktree already checked out to it, or null), "refs" (the refs that',
@@ -94,6 +107,7 @@ export function register(program: Command): void {
         '  aitk sessions list',
         '  aitk sessions list --json',
         '  aitk sessions list --branch feat/parser --json',
+        '  aitk sessions list --branch chore/agents --repository ../caret --json',
         '',
       ].join('\n'),
     )
@@ -125,13 +139,18 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   // A branch name identifies a branch inside one repository and nothing across
   // a machine, so an unscoped match reaches a session working in a different
   // project. `main` is the name that collides on every machine running two.
-  const repository = opts.branch ? await repositoryOf(process.cwd()) : null
+  //
+  // Which repository that is is the caller's to name. The roster this filters
+  // is machine-wide already, so a dispatcher asking about another project was
+  // answered "unclaimed" about a branch a live session there was holding.
+  const at = opts.repository ? resolve(opts.repository) : process.cwd()
+  const repository = opts.branch ? await repositoryOf(at) : null
 
   if (opts.branch && repository === null) {
     intro('aitk sessions list')
     logStep('Refused')
     logWarn(
-      '--branch scopes the match to the repository this command runs in, and no repository resolved here. Run it inside one, or read the whole roster and filter on the repository field.',
+      `--branch scopes the match to one repository, and none resolved at ${at}. Run it inside one, name another with --repository, or read the whole roster and filter on the repository field.`,
     )
     outro()
 
@@ -152,10 +171,7 @@ async function runList(opts: ListCommandOptions): Promise<number> {
     : report.sessions
 
   const claim = opts.branch
-    ? await checkClaim(opts.branch, {
-        cwd: process.cwd(),
-        resolve: async () => report,
-      })
+    ? await checkClaim(opts.branch, { cwd: at, resolve: async () => report })
     : null
 
   intro('aitk sessions list')
