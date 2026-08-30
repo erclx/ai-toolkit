@@ -14,8 +14,10 @@ One wave takes one toolkit change to every target and ends with a pull request p
 
 ## Take a role before anything else
 
-- The invocation or the launch prompt names a target: worker. Skip to `## The worker role` and run no phase above it.
-- Neither names one: orchestrator. Run the three phases in order.
+- The invocation or the launch prompt names the worker role, a target path, or both: worker. Skip to `## The worker role` and run no phase above it.
+- Neither is named: orchestrator. Run the three phases in order.
+
+The role is read off the prompt because nothing else carries it. A dispatched worker starts in the target's own checkout, which is a repository like any other from the session's side, so a test on the working directory answers the same for a worker in a target and an operator who invoked this from one. Reading the role wrong in that direction starts a second wave from inside a consuming project, which is why the dispatch below names the role and the path both rather than relying on either alone.
 
 Do not invoke `aitk:claude-worker` from either role. That body states the role for a session building one branch under one plan in this repository, and it resolves session scratch against a main worktree root a target does not carry, so a rollout worker reading it hunts for a plan nobody wrote.
 
@@ -57,7 +59,7 @@ One branch name across every target is also what lets the return leg resolve. `a
 5. Dispatch one worker per target, one session each.
 
 ```bash
-cd <clone> && claude --bg --model <model> -n "rollout-<target>" "You hold the worker role of /aitk:aitk-rollout for this target. <what the wave carries>"
+cd <clone> && claude --bg --model <model> -n "rollout-<target>" "Run /aitk:aitk-rollout in the worker role against the target at <clone>. <what the wave carries>"
 ```
 
 `--bg` returns immediately, `-n` sets the name that separates a wave's worker from an operator's own launch in the roster, and `--model` overrides the inheritance that otherwise spends this session's model on every worker. Keep the `rollout-` prefix.
@@ -69,7 +71,7 @@ Report each dispatch by naming the target, the clone, the branch, the model, and
 ## Phase 2: review every pull request
 
 1. Poll. Run `aitk targets pulls --json`, naming the wave's clones as arguments to read those alone. A target comes back as `read` with a `pulls` array or as `refused` with a `reason`, and a refusal is not a target with no work. Reading a failed query as no open work reports a target as done having read nothing.
-2. Review here, in this session. Invoke `aitk:claude-pr-review` and point every read at that target's clone, naming the repository so the pass reads that project's own root file, rules, context, and board rather than this one's. This session wrote none of these diffs, so reviewing them costs nothing in independence.
+2. Review here, in this session. Invoke `aitk:claude-pr-review` and redirect every read that body takes, since it resolves a pull request from the repository the session stands in and this session stands in the toolkit. Pass `--repo <owner>/<name>` on each `gh` call and `-C <clone>` on each `git` call, and read that project's own root file, rules, and context from under the clone. A pass left to resolve for itself reviews this repository instead. This session wrote none of these diffs, so reviewing them costs nothing in independence.
 3. Dispatch a reviewer into the target when a diff is too large for this session to hold. That is the fallback rather than the default. Dispatching one per target was measured and what it saved was reading four diffs, not reading four sets of findings, and that second half reaches this session either way, since routing a finding back means composing the brief from it.
 4. Read the heading each pass posted. `aitk targets pulls` reports `review` as `open`, `closed`, or `null` when no pass has landed, and reports `reviewReadable` as `false` when the query failed, which leaves `review` covering nothing.
 
@@ -77,7 +79,7 @@ Report each dispatch by naming the target, the clone, the branch, the model, and
 
 1. Address every finding whatever its severity. A minor is a finding, and a reviewer calling one non-blocking does not close the pass that raised it.
 2. Resolve who holds the branch before dispatching anybody. Run `aitk sessions list --branch chore/agents --repository <clone> --json` and read the count rather than the first row.
-   - A live session holds it: send that session the findings and name this skill for it to run, which routes it to the address leg. Assuming the worker was gone is what one hand-driven pass got wrong. All four sessions that opened those pull requests were still alive holding their worktrees hours later, and of two fresh addressers sent over them, one refused on the worktree lock and one cut a second worktree on the same branch, which would have put two sessions pushing to one ref.
+   - A live session holds it: send that session the findings and tell it to run this skill in the worker role against its own target, naming the role the way the dispatch above does so the reader routes to the address leg rather than opening a wave of its own. Assuming the worker was gone is what one hand-driven pass got wrong. All four sessions that opened those pull requests were still alive holding their worktrees hours later, and of two fresh addressers sent over them, one refused on the worktree lock and one cut a second worktree on the same branch, which would have put two sessions pushing to one ref.
    - No live session holds it: dispatch a fresh worker into that clone and brief it with the findings, since it holds none of the reasoning behind the diff.
    - More than one row: report the ambiguity and stop rather than picking among candidates.
 3. Re-review when the answer lands, scoped to the commits added since. A worker's reply never closes a target. One fix for two minor findings closed both and introduced four more, every one of them in prose that fix added, and a loop trusting the reply merges that.
