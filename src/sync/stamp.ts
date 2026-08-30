@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join, sep } from 'node:path'
 import { execa } from 'execa'
+import { recordTarget } from '@/targets/registry'
 
 /**
  * Domains the stamp can record. Governance attributes file by file through the
@@ -209,6 +210,14 @@ async function putDomain(
   const path = stampPath(target)
   await mkdir(dirname(path), { recursive: true })
   await writeFile(path, `${JSON.stringify(stamp, null, 2)}\n`)
+
+  // Every install and sync that stamps a target passes through here, which is
+  // what makes this the one place the machine-level index can be kept without
+  // each command remembering to. Its outcome is dropped rather than reported:
+  // the stamp just written is the authoritative record of this install, the
+  // index is a cache over every such stamp, and a state folder nobody can
+  // write is not a reason to fail a sync that already landed its files.
+  recordTarget(target, now)
 }
 
 const commitCache = new Map<string, Promise<string | undefined>>()

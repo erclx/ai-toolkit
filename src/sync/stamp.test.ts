@@ -23,6 +23,7 @@ import {
   writeChainStamp,
   writeStamp,
 } from '@/sync/stamp'
+import { readTargetRegistry } from '@/targets/registry'
 
 let TARGET: string
 
@@ -257,6 +258,33 @@ describe('isLegacyStamped', () => {
     )
 
     expect(isLegacyStamped(TARGET)).toBe(false)
+  })
+})
+
+// The machine-level index is what lets a rollout enumerate the projects the
+// toolkit installed into. Writing it from here is what keeps it in step without
+// each install command remembering to, so the coupling is asserted rather than
+// left to the comment that explains it.
+describe('the machine-level target index', () => {
+  it('should gain the target on any stamp write', async () => {
+    await writeStamp(TARGET, GOVERNANCE, { 'a.md': 'sha256:aa' }, NOW)
+
+    const registry = readTargetRegistry()
+
+    expect(registry.kind).toBe('read')
+    expect(
+      registry.kind === 'read' ? registry.targets.map((row) => row.path) : [],
+    ).toContain(TARGET)
+  })
+
+  it('should gain the target on a chain stamp that records no files', async () => {
+    await writeChainStamp(TARGET, TOOLING, ['next'], NOW)
+
+    const registry = readTargetRegistry()
+
+    expect(
+      registry.kind === 'read' ? registry.targets.map((row) => row.path) : [],
+    ).toContain(TARGET)
   })
 })
 
