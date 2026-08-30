@@ -116,8 +116,8 @@ EOF
     log_info "Expect:  implements farewell fn, verify passes, review runs, PR opened as draft"
     log_info "         Step 7 invokes git-ship rather than restating the chain, so the verify"
     log_info "         runs twice and the draft marking lands before the CI watch"
-    log_info "         then captures session memory and runs Propose over the pen"
-    log_info "         receipt at .claude/review/memory/memory-review-<slug>.md; Apply is NOT run"
+    log_info "         a headless run with no interaction has nothing for capture to find, so"
+    log_info "         it typically reports Nothing worth capturing and Step 9 is skipped"
     ;;
   "prose-informational")
     cat <<'EOF' >package.json

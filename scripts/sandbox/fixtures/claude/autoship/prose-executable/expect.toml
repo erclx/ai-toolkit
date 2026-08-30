@@ -1,0 +1,25 @@
+# What a correct `/aitk:claude-autoship` run leaves behind on the
+# prose-executable arm. Read by `aitk sandbox check`. Patterns use TOML literal
+# strings so a regex needs no backslash escaping.
+
+# The diff here is all markdown, same as `prose-informational`, but
+# `.claude/skills/deploy-check/SKILL.md` sits under a behavior path, so the
+# extension half of Step 5's skip test passes and the path half fails. A
+# skipped review here is the defect this arm exists to catch, which is the
+# mirror image of its sibling's absent assertion below.
+
+max_turns = 30
+
+# `claude-review` writes this file when it runs. A classifier that reads the
+# markdown extension alone and skips despite the behavior path never creates
+# it.
+paths = [".claude/review/branch/review-tighten-deploy-check.md"]
+
+# The same Step-7 completion signal the other two autoship arms pin.
+reply = ["Autoshipped (draft)"]
+
+manual = [
+  ".claude/skills/deploy-check/SKILL.md carries the stop condition the plan describes. Judgment: the wording is the run's own, and a substring anchored to it goes red on any correct rephrasing.",
+  "The pull request itself opened, and opened as a draft. Unwired: confirming the PR object needs a gh call this declaration has no channel for.",
+  "The review that ran found nothing predating this run at critical or should-fix severity, so the chain continued past Step 6 rather than stopping. Semantic: the review file's content carries that split and a positive pattern over it would pin wording the reviewing pass chooses rather than a structural fact.",
+]

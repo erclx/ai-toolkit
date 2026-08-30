@@ -1,0 +1,28 @@
+# What a correct `/aitk:claude-autoship` run leaves behind on the
+# prose-informational arm. Read by `aitk sandbox check`. Patterns use TOML
+# literal strings so a regex needs no backslash escaping.
+
+# The scenario's own log lines already state what Step 5's classifier should
+# and should not invoke: `docs/intro.md` sits outside every behavior-path
+# spelling `claude-autoship` names, so the skip test passes on both halves and
+# `claude-review` never runs. This is the one assertion `happy-path` was told
+# not to duplicate, so it is the whole point of this arm rather than a repeat
+# of it.
+
+max_turns = 30
+
+# `claude-review` writes this file at `.claude/review/branch/review-<slug>.md`
+# when it runs at all. A run that invoked it despite the skip test leaves the
+# file behind; a correct run never creates it.
+absent = [".claude/review/branch/review-expand-intro.md"]
+
+# The same Step-7 completion signal `happy-path` pins, carried here so a
+# classifier that runs review by mistake and still ships is not read as
+# passing on the strength of this line alone.
+reply = ["Autoshipped (draft)"]
+
+manual = [
+  "docs/intro.md carries the two-paragraph replacement covering scope and structure. Judgment: the wording is the run's own, and a substring anchored to it goes red on any correct rephrasing.",
+  "The pull request itself opened, and opened as a draft. Unwired: confirming the PR object needs a gh call this declaration has no channel for.",
+  "autoship Step 5 printed the skip rationale rather than invoking claude-review. Unwired: the reasoning behind a skip is prose the reply may or may not restate, and the absent review file is what the checker can read instead.",
+]
