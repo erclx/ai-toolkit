@@ -5,7 +5,7 @@
 # The arm exists for the one failure in this skill whose damage lands in a
 # repository this toolkit has no test coverage over. A worker branching from a
 # stale base ships a diff against a tree the remote already moved past, and the
-# census behind this rule found three local clones reading as unrepaired where
+# census behind this rule found three local clones still owing the repair where
 # every one of them was behind its remote and nothing else. Picking by listing
 # order is also the shape a real repair took, which ran in one clone while the
 # count was taken against another.
@@ -55,9 +55,16 @@ write_scope = [".claude/.tmp/rollout/**"]
 # blocks below are what reach that difference.
 reply = ["kestrel-a", "kestrel-b"]
 
+# The fetch is forced by the fixture rather than asserted. Provisioning leaves
+# kestrel-a's own `origin/main` where the clone put it, so both clones read
+# level until something fetches and kestrel-a reads one commit behind only
+# afterwards. A run that reads the checkouts as they sit therefore cannot
+# separate the pair at all, which is why no entry below claims the fetch: a run
+# reaching the right answer without one reached it by guessing between two
+# clones that looked identical.
 manual = [
-  "The run fetched before deciding rather than reading the checkouts as they sat. Unwired: both clones are on disk with their remote beside them, so a run that read `git status` alone can reach the right answer here and would reach the wrong one against a remote that had moved since the last fetch.",
-  "The reason given for refusing kestrel-a is that it is behind its remote, rather than any other property that happens to separate the two. Judgment: the format the narration fixes captures the reason as free text and no pattern reads whether it is the right one.",
+  "The pick came from the fetched comparison rather than from a guess between two clones that read alike. Judgment: the content blocks below cannot be reached without fetching except by chance, so a pass is evidence the fetch ran and not proof of it.",
+  "The reason given for refusing kestrel-a is that it is behind its remote, rather than some other property that happens to separate the two. Judgment: the narration fixes the line and leaves the reason as free text, and no pattern reads whether the reason is the right one.",
   "The run treated the two directories as one target rather than as two. Semantic: the assertions below read which path was chosen and cannot tell a run that resolved a shared origin from one that picked between two projects it thought were unrelated.",
 ]
 

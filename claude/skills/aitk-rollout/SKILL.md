@@ -46,7 +46,7 @@ One branch name across every target is also what lets the return leg resolve. `a
 
 1. Pin the wave. Record the commit of this repository that the wave carries and name it in this session's own reports. Name it in no target's body.
 2. Enumerate. Run `aitk targets list --json` under `AITK_NON_INTERACTIVE=1`, adding `--sweep <root...>` to reach targets installed before the index existed. Read the `bound` object back before treating any count as the population, since it names the roots walked, the depth, where the walk stopped, and what it could not read. The bound a sweep can never state is the machine, so a target on another one sits outside every answer it gives.
-3. Pick the clone that is current. A row carries every checkout of that project under `paths` and leads with the one a sync ran in, which records where an install happened rather than what the checkout holds today. Fetch each candidate, compare it against the origin's default branch, and dispatch into one that is level. Refuse one that is behind rather than branching from a stale base, since three clones read as unrepaired in one census and every one of them was behind its remote and nothing else.
+3. Pick the clone that is current. A row carries every checkout of that project under `paths` and leads with the one a sync ran in, which records where an install happened rather than what the checkout holds today. Fetch each candidate, compare it against the origin's default branch, and dispatch into one that is level. Refuse one that is behind rather than branching from a stale base, since three clones read as still owing the repair in one census and every one of them was behind its remote and nothing else.
 
 ### Check, then dispatch
 

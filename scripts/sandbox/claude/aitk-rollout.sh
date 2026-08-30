@@ -68,6 +68,12 @@ EOF
   # `kestrel-b` moves the remote forward and `kestrel-a` is left behind by
   # exactly that commit. `kestrel-a` sorts first and is the clone a run picking
   # by listing order takes, which is the wrong answer this arm exists to catch.
+  #
+  # Nothing fetches in `kestrel-a` afterwards, so its own `origin/main` stays
+  # where the clone left it and both checkouts read level against their remote
+  # until a run fetches. That is the property the arm turns on: a run reading
+  # the pair as it sits cannot separate them at all, and the difference appears
+  # only to a run that goes to the remote first.
   echo "# Kestrel, a habit tracker" >targets/kestrel-b/README.md
   git -C targets/kestrel-b add .
   git -C targets/kestrel-b commit -q -m "docs(readme): say what the project is"

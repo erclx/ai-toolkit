@@ -78,6 +78,14 @@ export const SETUP_CASES: readonly SkillCase[] = [
       'Work through the open feedback issues on the toolkit repo one by one.',
     expect: 'aitk-feedback-triage',
   },
+  // The outbound direction is what separates this from the front door above.
+  // aitk-operator runs inside one project the session already stands in, and
+  // this reaches every project the toolkit installed into from the toolkit.
+  {
+    prompt:
+      'Take this change out to every project that installed the toolkit and get each one to a pull request.',
+    expect: 'aitk-rollout',
+  },
   {
     prompt:
       "This project needs its own coding rule that the toolkit doesn't ship.",
