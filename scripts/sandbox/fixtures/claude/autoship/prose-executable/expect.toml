@@ -8,7 +8,12 @@
 # skipped review here is the defect this arm exists to catch, which is the
 # mirror image of its sibling's absent assertion below.
 
-max_turns = 30
+# No max_turns yet. The chain up through the completion line reply pins invokes
+# on the order of nine sub-skills (claude-worker, claude-worktree, claude-review,
+# and git-ship's own six-step sequence), the longest chain in the catalog, and
+# no run has measured it. Declare one once a real run has produced a number
+# rather than setting a ceiling from zero samples that could red a correct run
+# for running long.
 
 # `claude-review` writes this file when it runs. A classifier that reads the
 # markdown extension alone and skips despite the behavior path never creates
