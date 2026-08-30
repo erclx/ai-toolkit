@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.45.0](https://github.com/erclx/aitk/compare/v3.44.0...v3.45.0) (2026-08-30)
+
+
+### Features
+
+* **claude:** add aitk-rollout, the outbound wave skill ([#1254](https://github.com/erclx/aitk/issues/1254)) ([c16f41f](https://github.com/erclx/aitk/commit/c16f41f1d6bb768322546903adee0a2b6c580878))
+
 ## [3.44.0](https://github.com/erclx/aitk/compare/v3.43.2...v3.44.0) (2026-08-30)
 
 
