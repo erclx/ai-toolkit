@@ -32,6 +32,6 @@ Reconstruction from source is the failure that reads best and is worth least. It
 
 ## Out of scope
 
-- Editing whatever the answer names, which routes to the `aitk-*` skill owning that domain
+- Editing whatever the answer names, which routes to the `internal-*` skill owning that domain
 - Reference on an externally owned tool past what `wiki/` records, which belongs to that tool's own documentation
 - Deciding when to fire. The skill is user-invoked through `disable-model-invocation`, so routing a question to it is the operator's call rather than a description match.

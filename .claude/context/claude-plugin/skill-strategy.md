@@ -39,13 +39,13 @@ Workflow skills wrap how this toolkit operates: groundwork, planning, review, sh
 
 Domain-knowledge skills encode expertise curated over many hours, such as frontend design anti-patterns, security audit patterns, and industry-specific UI rules. The wider ecosystem supplies those as `frontend-design`, `impeccable`, `ui-ux-pro-max`, `taste-skill`, and `trailofbits/skills`. Curation is the whole value of the second kind, so forking one means inheriting the cost of maintaining that curation against an upstream that keeps moving.
 
-| Location                         | Purpose                                                | Scope  |
-| -------------------------------- | ------------------------------------------------------ | ------ |
-| `claude/skills/`                 | Workflow skills, installable into target projects      | Shared |
-| `.claude/skills/`                | Toolkit-internal authoring skills, the `aitk-*` family | Local  |
-| Target project `.claude/skills/` | Per-project customization not worth upstreaming        | Local  |
-| `~/.claude/skills/`              | Global user skills active across every session         | User   |
-| Plugin marketplace               | Community and official plugins installed via `/plugin` | User   |
+| Location                         | Purpose                                                    | Scope  |
+| -------------------------------- | ---------------------------------------------------------- | ------ |
+| `claude/skills/`                 | Workflow skills, installable into target projects          | Shared |
+| `.claude/skills/`                | Toolkit-internal authoring skills, the `internal-*` family | Local  |
+| Target project `.claude/skills/` | Per-project customization not worth upstreaming            | Local  |
+| `~/.claude/skills/`              | Global user skills active across every session             | User   |
+| Plugin marketplace               | Community and official plugins installed via `/plugin`     | User   |
 
 Which location is right follows from who benefits.
 

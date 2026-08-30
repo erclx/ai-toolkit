@@ -1,7 +1,7 @@
 import type { SkillCase } from '@/claude/skills-rank'
 
 /**
- * `setup-*`, `migration-*`, `toolkit-*`, and `create-rule`: scaffolding,
+ * `setup-*`, `migration-*`, `aitk-*`, and `create-rule`: scaffolding,
  * proposal-only migrations, and the toolkit's own reference and feedback
  * surfaces.
  */
