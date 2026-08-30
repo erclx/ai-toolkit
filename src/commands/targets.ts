@@ -282,8 +282,9 @@ function reportBound(bound: SweepBound): void {
   }
 
   if (bound.symlinks.length > 0) {
+    const verb = bound.symlinks.length === 1 ? 'was' : 'were'
     logWarn(
-      `${plural(bound.symlinks.length, 'symlink')} to a directory was not followed: ${bound.symlinks.join(', ')}`,
+      `${plural(bound.symlinks.length, 'symlink')} to a directory ${verb} not followed: ${bound.symlinks.join(', ')}`,
     )
   }
 }

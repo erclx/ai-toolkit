@@ -206,6 +206,18 @@ describe('sweepTargets', () => {
     expect(report.bound.symlinks).toEqual([join(ROOT, 'link')])
     expect(report.targets.flatMap((target) => target.paths)).toEqual([real])
   })
+
+  // A symlink to a file is not a directory the walk skipped, and naming it
+  // here would read as a walk candidate that was passed over when it never
+  // was one.
+  it('should not name a symlink to a file in the bound', async () => {
+    writeFileSync(join(ROOT, 'note.txt'), 'hi')
+    symlinkSync(join(ROOT, 'note.txt'), join(ROOT, 'note-link.txt'))
+
+    const report = await sweepTargets([ROOT], { originOf: noOrigin })
+
+    expect(report.bound.symlinks).toEqual([])
+  })
 })
 
 describe('originOf', () => {

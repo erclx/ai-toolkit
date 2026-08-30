@@ -167,12 +167,16 @@ export async function sweepTargets(
         (entry) => !SKIP.has(entry.name),
       )
 
-      // A symlink is reported as neither a directory nor walked, so it is named
-      // here rather than dropped. Following one is available, since `seen`
-      // already closes the cycle, and naming it is the answer the bound asks
-      // for: what the walk did not reach, stated rather than omitted.
+      // A symlink is reported as neither a directory nor walked, so a directory
+      // symlink is named here rather than dropped. Following one is available,
+      // since `seen` already closes the cycle, and naming it is the answer the
+      // bound asks for: what the walk did not reach, stated rather than
+      // omitted. `isDirectory` follows the link, so a symlink to a file or a
+      // broken one is excluded rather than read as an unfollowed directory.
       for (const entry of listed) {
-        if (entry.isSymbolicLink()) symlinks.push(join(dir, entry.name))
+        if (!entry.isSymbolicLink()) continue
+        const full = join(dir, entry.name)
+        if (isDirectory(full)) symlinks.push(full)
       }
 
       entries = listed
