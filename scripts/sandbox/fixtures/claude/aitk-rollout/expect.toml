@@ -1,0 +1,83 @@
+# What a correct `/aitk:aitk-rollout` run leaves behind when one target is held
+# in two clones and only one of them is current. Read by `aitk sandbox check`.
+# Patterns use TOML literal strings so a regex needs no backslash escaping.
+
+# The arm exists for the one failure in this skill whose damage lands in a
+# repository this toolkit has no test coverage over. A worker branching from a
+# stale base ships a diff against a tree the remote already moved past, and the
+# census behind this rule found three local clones reading as unrepaired where
+# every one of them was behind its remote and nothing else. Picking by listing
+# order is also the shape a real repair took, which ran in one clone while the
+# count was taken against another.
+
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so an array written at the bottom parses
+# clean and asserts nothing.
+
+# The default cap, which is what `scripts/sandbox/run.sh` runs under. The run
+# reads a skill body and two git histories and then writes two lines, so its
+# cost sits in the reads.
+max_turns = 30
+
+# The control. Both clones are staged by provisioning, so these prove the arm
+# ran against the pair it claims rather than against a tree holding one.
+paths = [
+  "targets/kestrel-a/.claude/aitk/config.json",
+  "targets/kestrel-b/.claude/aitk/config.json",
+]
+
+# The narration scopes the run to a decision, so a correct one branches nothing
+# in either clone. The stale clone is the one that matters, since a branch cut
+# there is the damage the currency rule exists to prevent, and the current clone
+# is listed beside it because a run that ignored the scope and started building
+# is also a wrong run whatever it picked.
+#
+# A newly created branch in a repository this small writes a loose ref, so the
+# path is the branch. Both worktree folders are named as well, since
+# `claude-worktree` builds `.claude/worktrees/<name>/` inside the target it
+# enters and that folder is the other thing a build leaves behind.
+absent = [
+  "targets/kestrel-a/.git/refs/heads/chore/agents",
+  "targets/kestrel-b/.git/refs/heads/chore/agents",
+  "targets/kestrel-a/.claude/worktrees",
+  "targets/kestrel-b/.claude/worktrees",
+]
+
+# Scratch is the only destination a correct run has. Admitting anything under
+# `targets/**` here would pass a run that edited a consuming project during a
+# pass whose whole output is a decision.
+write_scope = [".claude/.tmp/rollout/**"]
+
+# Fixture vocabulary rather than a phrasing the run chooses. A run that never
+# read the pair names neither clone, which is what separates a wrong pick from
+# an idle session. It does not separate the two picks from each other, since a
+# correct answer names both clones and so does a wrong one. The two content
+# blocks below are what reach that difference.
+reply = ["kestrel-a", "kestrel-b"]
+
+manual = [
+  "The run fetched before deciding rather than reading the checkouts as they sat. Unwired: both clones are on disk with their remote beside them, so a run that read `git status` alone can reach the right answer here and would reach the wrong one against a remote that had moved since the last fetch.",
+  "The reason given for refusing kestrel-a is that it is behind its remote, rather than any other property that happens to separate the two. Judgment: the format the narration fixes captures the reason as free text and no pattern reads whether it is the right one.",
+  "The run treated the two directories as one target rather than as two. Semantic: the assertions below read which path was chosen and cannot tell a run that resolved a shared origin from one that picked between two projects it thought were unrelated.",
+]
+
+# The decision itself, in the shape the narration fixes. Anchored to the line
+# start under the `m` flag the checker compiles with, so the clone named on the
+# dispatch line is the assertion rather than a clone mentioned anywhere in the
+# file.
+#
+# This is the half `reply` cannot reach. A run that picks by listing order
+# writes kestrel-a here and fails, where every other assertion in this arm
+# passes for it, since picking wrong and branching nothing leaves the same tree
+# as picking right and branching nothing.
+[[content]]
+path = ".claude/.tmp/rollout/dispatch.md"
+pattern = '^Dispatch into: targets/kestrel-b'
+
+# The refusal, pinned separately from the pick. A run naming the current clone
+# and saying nothing about the stale one has answered half the question, and a
+# wave reporting only where it dispatched leaves a clone nobody knows was
+# skipped.
+[[content]]
+path = ".claude/.tmp/rollout/dispatch.md"
+pattern = '^Refused: targets/kestrel-a'

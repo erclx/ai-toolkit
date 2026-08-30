@@ -89,6 +89,18 @@ The other four arms passed on 2026-08-04, which is the first time either skill w
 
 Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both hold their ceiling at the default. `installed` holds there because a cost that moves with how far the route runs needs more than one sample before a ceiling comes down to it. `fresh` holds there because its turn count is not recorded at all, since `record_run` failed to write it and the envelope went with it.
 
+### The rollout arm is the first whose subject writes into another repository
+
+`claude/aitk-rollout.sh` is the strongest case the blast-radius rule selects, since the skill it covers is the only one in the catalog that enters a worktree in a project this repository has no test coverage over and pushes a branch there. What the arm can reach is a fixture rather than a real target, so it covers the decision taken before any dispatch rather than the dispatch itself.
+
+The fixture is three repositories rather than a directory tree. A clone's currency is a fact about its history against a remote, so the arm builds a bare origin and two clones after the outer commit, on the gitlink-avoiding pattern `infra:gov`'s `test-order` arm already runs. `kestrel-b` moves the remote forward and `kestrel-a` is left one commit behind and sorts first, which makes the wrong answer the one a run picking by listing order reaches.
+
+Two properties are load-bearing. Both clones are taken before the divergence, so currency is the single thing separating them and no other property can carry a correct pick by accident. The narration fixes the two-line format the decision is written in, the way the intake `file` arm pins its slug through the invocation, because `reply` cannot separate the two picks from each other: a correct answer names both clones and so does a wrong one, and only an anchored pattern on the dispatch line reads which was chosen.
+
+The arm asserts a decision and forbids a build, which leaves the same tree behind for a wrong pick as for a right one on every assertion but those two content blocks. That is why the pair is there rather than a reply pin alone, and why fetching before deciding sits in `manual`: both clones sit on disk beside their remote, so a run reading the checkouts as they stand reaches the right answer here and the wrong one against a remote that moved since the last fetch.
+
+The population is given in the narration rather than read. `aitk targets list` answers from the machine-level index, so a run left to enumerate for itself inside a sandbox reaches the operator's real consuming projects, and no fixture can scope a machine-wide record. The narration bounds the run to the sandbox and the arm asserts nothing outside it.
+
 ### The audits arm failed twice before the section had a route
 
 `audits` failed twice on the same two reply pins by two different paths, at 4 asserted and 2 failed each time. The first reply described the audit categories in prose and named neither `aitk context audit` nor `aitk records validate`, and its turn count and cost went unrecorded. The second took the scaffold handoff on a report showing 14 missing seeds and no installed domain and never reached the audits at all, in 6 turns at 0.24 dollars. Escapes on that run came back empty.
