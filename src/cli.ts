@@ -33,6 +33,7 @@ import { register as secrets } from '@/commands/secrets'
 import { register as deps } from '@/commands/deps'
 import { register as labels } from '@/commands/labels'
 import { register as census } from '@/commands/census'
+import { register as targets } from '@/commands/targets'
 import { register as upgrade } from '@/commands/upgrade'
 import { readInstalled, UNKNOWN_LABEL } from '@/version/installed'
 import { palette } from '@/ui'
@@ -72,6 +73,7 @@ function showHelp(): void {
     `${GREY}│${NC}    markdown [cmd]     ${GREY}# Report markdown against the attribute standards (audit)${NC}`,
     `${GREY}│${NC}    records [cmd]      ${GREY}# Session records under .claude/ (validate, size, push, pull)${NC}`,
     `${GREY}│${NC}    sessions [cmd]     ${GREY}# Resolve live sessions to worktree and branch (list)${NC}`,
+    `${GREY}│${NC}    targets [cmd]      ${GREY}# Report the projects this toolkit installed into (list, pulls)${NC}`,
     `${GREY}│${NC}    worktrees [cmd]    ${GREY}# Report which worktrees are reclaimable (list)${NC}`,
     `${GREY}│${NC}    secrets [cmd]      ${GREY}# Read the shipped tree for credential-shaped values (scan)${NC}`,
     `${GREY}│${NC}    deps [cmd]         ${GREY}# Read the resolved dependency set for advisories (audit)${NC}`,
@@ -170,6 +172,7 @@ context(program)
 markdown(program)
 records(program)
 sessions(program)
+targets(program)
 worktrees(program)
 secrets(program)
 deps(program)

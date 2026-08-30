@@ -177,6 +177,78 @@ describe('checkClaim', () => {
     expect(report.sessions).toHaveLength(0)
   })
 
+  // The roster is machine-wide and the filter is what scopes it, so pointing
+  // the read at another project is how a dispatcher in one repository learns a
+  // branch is already held in another. Reading that as unclaimed is what sent
+  // two sessions onto branches live sessions were holding.
+  it('should answer for another repository when handed its path', async () => {
+    const other = mkdtempSync(join(tmpdir(), 'aitk-claim-target-'))
+    execaSync(
+      'git',
+      ['-C', other, 'init', '--quiet', '--initial-branch=main'],
+      {
+        env: gitEnv(),
+        extendEnv: false,
+      },
+    )
+
+    try {
+      const target = await repositoryOf(other)
+
+      const report = await checkClaim('chore/toolkit-sync', {
+        cwd: other,
+        resolve: async () => ({
+          kind: 'resolved',
+          dir: '/registry',
+          confidence: 'confirmed',
+          sessions: [
+            session({ branch: 'chore/toolkit-sync', repository: target }),
+          ],
+        }),
+      })
+
+      expect(report.claimed).toBe(true)
+      expect(report.sessions).toHaveLength(1)
+    } finally {
+      rmSync(other, { recursive: true, force: true })
+    }
+  })
+
+  // The same roster read from the caller's own repository has to keep answering
+  // the way it did, or widening the reach would change every existing dispatch.
+  it('should leave the default answer unchanged for a session in another repository', async () => {
+    const other = mkdtempSync(join(tmpdir(), 'aitk-claim-target-'))
+    execaSync(
+      'git',
+      ['-C', other, 'init', '--quiet', '--initial-branch=main'],
+      {
+        env: gitEnv(),
+        extendEnv: false,
+      },
+    )
+
+    try {
+      const target = await repositoryOf(other)
+
+      const report = await checkClaim('chore/toolkit-sync', {
+        cwd: ROOT,
+        resolve: async () => ({
+          kind: 'resolved',
+          dir: '/registry',
+          confidence: 'confirmed',
+          sessions: [
+            session({ branch: 'chore/toolkit-sync', repository: target }),
+          ],
+        }),
+      })
+
+      expect(report.claimed).toBe(false)
+      expect(report.sessions).toHaveLength(0)
+    } finally {
+      rmSync(other, { recursive: true, force: true })
+    }
+  })
+
   it('should report the session roster as unreadable when the registry is absent', async () => {
     const report = await checkClaim('feat/parser', {
       cwd: ROOT,

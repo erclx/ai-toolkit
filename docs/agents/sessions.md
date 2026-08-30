@@ -13,12 +13,14 @@ description: Resolving live peer sessions to the worktree and branch each holds,
 aitk sessions list
 aitk sessions list --json
 aitk sessions list --branch feat/parser --json
+aitk sessions list --branch chore/agents --repository ../caret --json
 ```
 
-| Option            | Behavior                                     |
-| ----------------- | -------------------------------------------- |
-| `--json`          | Add a machine-readable record on stdout      |
-| `--branch <name>` | Report the sessions holding this branch here |
+| Option                | Behavior                                              |
+| --------------------- | ----------------------------------------------------- |
+| `--json`              | Add a machine-readable record on stdout               |
+| `--branch <name>`     | Report the sessions holding this branch               |
+| `--repository <path>` | Answer about this project rather than the working one |
 
 It reads and never writes. The question it answers is which session to address when work has to reach the one holding a given branch, which a session listing cannot answer on its own.
 
@@ -28,7 +30,11 @@ An exit code says nothing about a call made from a session, since a shell profil
 
 ## Scope and count
 
-`--branch` scopes the match to the repository the command runs in, and refuses outside one. A branch name identifies a branch inside a repository and nothing across a machine, so an unscoped match reaches a session working in a different project, and `main` collides on every machine running two of them.
+`--branch` scopes the match to one repository, and refuses when none resolves. A branch name identifies a branch inside a repository and nothing across a machine, so an unscoped match reaches a session working in a different project, and `main` collides on every machine running two of them.
+
+Which repository that is defaults to the one the command runs in, and `--repository <path>` names another. Every reading moves with it, the session match and the worktree and ref reads alike, because the answer is about that project rather than about where the caller stands. The roster underneath is machine-wide already, so the flag removes a filter rather than widening a search.
+
+That is what a dispatcher reaching outside its own project needs. Without it a check run from the toolkit against a branch held by a live session in a consuming project answered unclaimed, and two sessions were sent onto branches other sessions were holding. One refused on the worktree lock and one cut a second worktree on the same branch, which would have put two sessions pushing to one ref.
 
 A bare run reports every repository and carries a `repository` field on each row, holding the shared git directory that a main checkout and all its linked worktrees agree on. That is what a caller filters on when it wants a scope of its own.
 

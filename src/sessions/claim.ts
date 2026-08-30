@@ -24,6 +24,13 @@ export interface ClaimReport {
 }
 
 export interface ClaimOptions {
+  /**
+   * The repository the claim is answered about, not merely where the caller
+   * stands. Every reading below is taken against it, so handing another
+   * project's path asks about that project, which is what lets a dispatcher in
+   * one repository see a branch held in another. Defaults to the caller's own
+   * directory, so a call omitting it answers exactly as it always has.
+   */
   readonly cwd?: string
   readonly resolve?: () => Promise<SessionReport>
   readonly listWorktrees?: (cwd: string) => Promise<readonly WorktreeEntry[]>
