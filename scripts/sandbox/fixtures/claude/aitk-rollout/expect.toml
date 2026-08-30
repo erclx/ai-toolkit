@@ -14,16 +14,27 @@
 # one belongs to that table in TOML, so an array written at the bottom parses
 # clean and asserts nothing.
 
-# The default cap, which is what `scripts/sandbox/run.sh` runs under. The run
-# reads a skill body and two git histories and then writes two lines, so its
-# cost sits in the reads.
-max_turns = 30
+# Measured rather than defaulted. The first driven run took 9 turns at $0.21 on
+# sonnet, reading two histories, fetching, deciding, and writing two lines. The
+# ceiling sits above that with room for a run that reads the skill body twice,
+# and it is one sample, so a run landing near it is a signal to re-measure
+# rather than to raise it.
+max_turns = 15
 
-# The control. Both clones are staged by provisioning, so these prove the arm
-# ran against the pair it claims rather than against a tree holding one.
+# The control, and the proof that the run fetched. Both clones are staged by
+# provisioning, so the two config files prove the arm ran against the pair it
+# claims rather than against a tree holding one.
+#
+# `FETCH_HEAD` is the load-bearing entry. `git clone` does not write one, checked
+# against a provisioned tree, so the file exists in `kestrel-a` only if something
+# fetched there during the run. That is the whole decision this arm scores: the
+# clones read level until a fetch, so a run that skipped it and still answered
+# correctly guessed between two checkouts that looked identical. This entry was
+# a `manual` line until the first driven run showed the file in its write list.
 paths = [
   "targets/kestrel-a/.claude/aitk/config.json",
   "targets/kestrel-b/.claude/aitk/config.json",
+  "targets/kestrel-a/.git/FETCH_HEAD",
 ]
 
 # The narration scopes the run to a decision, so a correct one branches nothing
@@ -43,10 +54,25 @@ absent = [
   "targets/kestrel-b/.claude/worktrees",
 ]
 
-# Scratch is the only destination a correct run has. Admitting anything under
-# `targets/**` here would pass a run that edited a consuming project during a
-# pass whose whole output is a decision.
-write_scope = [".claude/.tmp/rollout/**"]
+# Two destinations, and the second is what the first driven run corrected. A
+# scope admitting scratch alone failed this arm for doing the one thing it
+# exists to require: the fetch wrote `FETCH_HEAD` in both clones plus the
+# remote-tracking ref, the log behind it, and three objects in `kestrel-a`, and
+# all seven read as escapes against a skill that had behaved correctly.
+#
+# What stays out is everything a fetch never touches. No working-tree path under
+# either clone, nothing under `targets/origin.git/`, so a push to the shared
+# remote still fails here, and no `refs/heads/**`, so a run that cuts
+# `chore/agents` fails this as well as the `absent` entry above. Remote-tracking
+# refs move on a fetch and local heads do not, which is what makes the split
+# between those two ref spaces the right place to cut.
+write_scope = [
+  ".claude/.tmp/rollout/**",
+  "targets/*/.git/FETCH_HEAD",
+  "targets/*/.git/objects/**",
+  "targets/*/.git/logs/refs/remotes/**",
+  "targets/*/.git/refs/remotes/**",
+]
 
 # Fixture vocabulary rather than a phrasing the run chooses. A run that never
 # read the pair names neither clone, which is what separates a wrong pick from
@@ -55,16 +81,8 @@ write_scope = [".claude/.tmp/rollout/**"]
 # blocks below are what reach that difference.
 reply = ["kestrel-a", "kestrel-b"]
 
-# The fetch is forced by the fixture rather than asserted. Provisioning leaves
-# kestrel-a's own `origin/main` where the clone put it, so both clones read
-# level until something fetches and kestrel-a reads one commit behind only
-# afterwards. A run that reads the checkouts as they sit therefore cannot
-# separate the pair at all, which is why no entry below claims the fetch: a run
-# reaching the right answer without one reached it by guessing between two
-# clones that looked identical.
 manual = [
-  "The pick came from the fetched comparison rather than from a guess between two clones that read alike. Judgment: the content blocks below cannot be reached without fetching except by chance, so a pass is evidence the fetch ran and not proof of it.",
-  "The reason given for refusing kestrel-a is that it is behind its remote, rather than some other property that happens to separate the two. Judgment: the narration fixes the line and leaves the reason as free text, and no pattern reads whether the reason is the right one.",
+  "The reason given for refusing kestrel-a is that it is behind its remote, rather than some other property that happens to separate the two. Judgment: the narration fixes the line and leaves the reason as free text, and no pattern reads whether the reason is the right one. The first driven run gave the right one, naming the commit count and both short SHAs.",
   "The run treated the two directories as one target rather than as two. Semantic: the assertions below read which path was chosen and cannot tell a run that resolved a shared origin from one that picked between two projects it thought were unrelated.",
 ]
 
