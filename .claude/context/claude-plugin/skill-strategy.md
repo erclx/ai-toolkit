@@ -123,6 +123,24 @@ That move is a two-member exception to `.claude/groundwork/31-skill-surface-shap
 
 The feedback pair is the one place the axis alone was not enough. `aitk-feedback-file` and `aitk-feedback-triage` share a subject and split on the act, which is the rule `## The interface pair splits on the act rather than the subject` already states, so the prefix places the family and the second word separates the producer from the consumer. Naming both for the subject would have shipped `aitk-feedback` and `aitk-triage`, which read as unrelated in a listing.
 
+## The direction axis sorts by which repository a skill writes into
+
+`aitk-rollout` is the sixty-fifth skill and the first one the four prefixes above place correctly while saying nothing about what makes it different. Every other skill in the catalog acts on the checkout the session stands in. This one starts in the toolkit and writes into the projects the toolkit installed into, so `aitk-` answers whose surface it owns and leaves its blast radius unstated.
+
+Two axes were recorded as unwritten when the sixteen-folder rename forced the prefix question, measured 2026-08-21 at `5da3214d`. The operator sorts by direction and by whether work runs once or forever, and the prefixes sort by the moment of use. This entry is the first of those two. The second stays unwritten, since no skill has turned on it yet.
+
+Direction is not a fifth prefix. A family naming it would hold one member and would contradict the ownership answer the prefix already gives, which is the fifth answer `## A prefix marks whose surface the skill owns, not where it writes` exists to prevent. What recording it here costs is an axis with no naming convention behind it, so a second outbound skill can land under a prefix that hides the fact and nothing reports it.
+
+The distinction is worth an entry because the risk moves with it. A wrong run inside this repository damages a checkout under version control with a test suite over it. A wrong run outbound enters a worktree in somebody else's project and pushes a branch there, and the sandbox arm can reach a fixture rather than a real target, so no test in this repository covers the case the axis names.
+
+### One skill rather than a family
+
+The skill carries an orchestrator role and a worker role in one body, where `claude-orchestrate` and `claude-worker` split the same pair across two. Splitting was the alternative and it puts the target census in one body and the dispatch that reads it in another, when the three phases are one loop over one target list. The operator settled it on 2026-08-28, per item 2 of `.claude/intake/49-outbound-orchestration/01-orchestration.md`, and the stated tradeoff is a body longer than either half alone.
+
+What keeps the two roles together past that answer is the three contracts both of them execute against: the fixed `chore/agents` branch and `chore(agents)` title, the ban on merging that binds every role rather than sitting as a setting on a wave, and the pull request URL every report carries. A family states each contract twice with nothing comparing the copies, which is the failure the fixed shape exists against in the first place, since four hand-driven repairs produced four titles across two scopes.
+
+The body stays whole rather than moving one role into `references/`. A role read by exactly the sessions holding it and skipped by the other is the branch that would justify the move, and it was declined because the contracts above sit ahead of the split and belong to both roles, so a reference per role either duplicates them or leaves the reader who loaded one without them. `standards/skill.md` puts the 150-line prompt on a body carrying more than procedure, and what sits above the roles here is the contract set rather than narrative.
+
 ## The teaching surface sorts by what the reader is doing
 
 `claude-teach` runs a learning workspace on one subject across sessions, and it is the sixtieth skill. It sits beside the wiki rather than against it, because the two sort on independent axes: a workspace sorts by what the reader is doing, learning rather than looking up, and the wiki test sorts by who owns the subject. A workspace on how a system measures pronunciation accuracy and a workspace on how a feature is implemented here are the same surface with different subjects, which is why the wiki test needs no amendment.

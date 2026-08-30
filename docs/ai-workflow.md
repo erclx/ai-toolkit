@@ -268,6 +268,7 @@ This section is the corpus the coverage claim is measured against: every name `a
 | `aitk:migration-standards-drop` | When the project still holds an installed `.claude/standards/` tree                |
 | `aitk:aitk-feedback-file`       | When something in the toolkit is broken, missing, or off                           |
 | `aitk:aitk-feedback-triage`     | In the toolkit repo, to work through the open feedback issues                      |
+| `aitk:aitk-rollout`             | In the toolkit repo, to take one change out to every consuming project at once     |
 
 ### Generate an artifact on demand
 
