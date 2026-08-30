@@ -9,6 +9,12 @@ description: How a skill is invoked, the split between the two task-board writer
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
+That flag blocks the `Skill` tool rather than only suppressing an auto-trigger, which decides who can delegate to a flagged body and reads as a nicety until a chain meets it. A slash command inside a `claude --bg` launch prompt reaches one, and every dispatch here relies on that, since `claude-autoship` carries the flag and is launched as `/aitk:claude-autoship`. A session acting on an inbound message does not, because a message reaches a skill through the tool and through no other route.
+
+The distinction has cost two chains and only the first reached production. `claude-autoship` Step 7 said to invoke `git-ship`, which carried the flag, and every chained run halted with the branch built and uncommitted until `#1247` removed it. That pull request recorded the gap it left open, being that a future delegation to another flagged body would fail the same way and pass every gate before it. `aitk-rollout` was that delegation: its Phase 3 told an orchestrator to message a live worker and name `aitk-rollout` itself, which would have broken the address leg on its most common branch. Review caught it before the merge, so the pattern is written here rather than met a third time.
+
+The repair shape differs by which route the caller has. `#1247` dropped the flag because the caller was a chain step inside one session. `aitk-rollout` kept its flag and renamed the callee instead, pointing the handback at `claude-address-review`, which carries none. Prefer the rename where an unflagged body already performs the step, since dropping a flag opens a body to description matching that its author closed on purpose.
+
 A harness hook is the third route and `session-map` is the only skill reached by one. A `PreCompact` hook names it in the reason it blocks a manual compaction with, which `.claude/context/development/hooks.md` covers. What separates that route from the two above is that a skill named by a hook is named in a string nothing validates, so a rename here leaves the hook pointing at a skill that no longer answers and no stage compares the two.
 
 ## The task board split
