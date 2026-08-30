@@ -106,9 +106,10 @@ const LIST_HELP = [
   'was read in that case, so a count of zero would be a confident wrong answer.',
   '',
   'The JSON carries a "bound" object whenever a sweep ran, naming the roots',
-  'walked, the depth, the folders the walk stopped at, and the roots it could',
-  'not read. A sweep cannot see another machine or a clone under a path nobody',
-  'named, so read the bound before treating the count as the population.',
+  'walked, the depth, the folders the walk stopped at, the roots it could not',
+  'read, and the directory symlinks the walk did not follow. A sweep cannot',
+  'see another machine or a clone under a path nobody named, so read the bound',
+  'before treating the count as the population.',
   '',
   'An exit code says nothing about a call made from a session, since a shell',
   'profile may wrap the binary in a function taking its status from a later',
@@ -277,6 +278,12 @@ function reportBound(bound: SweepBound): void {
   if (bound.unreadable.length > 0) {
     logWarn(
       `${plural(bound.unreadable.length, 'root')} could not be read: ${bound.unreadable.join(', ')}`,
+    )
+  }
+
+  if (bound.symlinks.length > 0) {
+    logWarn(
+      `${plural(bound.symlinks.length, 'symlink')} to a directory was not followed: ${bound.symlinks.join(', ')}`,
     )
   }
 }

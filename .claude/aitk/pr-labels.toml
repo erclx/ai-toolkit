@@ -66,7 +66,15 @@ context = [
 # Repository configuration belonging to no domain, this map included. The
 # toolkit-owned folder takes a folder prefix rather than this file's own path,
 # so a second file landing beside it is labelled without another census.
-repo = [".gitignore", ".vscode/", "cspell.json", ".cspell/", ".claude/aitk/"]
+repo = [
+  ".gitignore",
+  ".vscode/",
+  "cspell.json",
+  ".cspell/",
+  ".claude/aitk/",
+  "vitest.config.ts",
+  "vitest.setup.ts",
+]
 
 # Deliberately unlabelled, measured across the 138 commits between `3a0fd695`,
 # which shipped the map, and `190af80b`. Against the rows as they stood before

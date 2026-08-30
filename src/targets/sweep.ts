@@ -63,6 +63,15 @@ export interface SweepBound {
   readonly truncated: readonly string[]
   /** Roots that could not be listed at all, as opposed to holding nothing. */
   readonly unreadable: readonly string[]
+  /**
+   * Symlinks to directories, which the walk does not follow.
+   *
+   * `readdirSync` with `withFileTypes` answers `isDirectory()` false for one, so
+   * without this field a target reached only through a symlink is dropped
+   * before the walk and named nowhere, which is a third silent undercount
+   * beside the two this module replaces.
+   */
+  readonly symlinks: readonly string[]
 }
 
 export interface SweepReport {
@@ -91,6 +100,13 @@ function isStamped(path: string): boolean {
  * The scheme and the `.git` suffix are dropped because one project is commonly
  * cloned over ssh in one place and https in another, and a comparison keeping
  * either reports those as two projects, which is the count this exists to fix.
+ *
+ * Userinfo goes with them, and it is the component that has to. A checkout
+ * cloned as `https://x-access-token:<token>@github.com/owner/repo.git` puts the
+ * token in the key, and the key is returned on `SweptTarget.origin` and printed
+ * by `aitk targets list --json`. Dropping it also fixes the count, since
+ * `https://someuser@github.com/owner/repo.git` keyed on the user and so failed
+ * to group with the same project's ssh clone.
  */
 export async function originOf(path: string): Promise<string | null> {
   const result = await $`git -C ${path} remote get-url origin`
@@ -105,7 +121,7 @@ export async function originOf(path: string): Promise<string | null> {
 
   return raw
     .replace(/^[a-z+]+:\/\//, '')
-    .replace(/^git@/, '')
+    .replace(/^[^/@]*@/, '')
     .replace(/:/, '/')
     .replace(/\.git$/, '')
     .replace(/\/$/, '')
@@ -131,6 +147,7 @@ export async function sweepTargets(
   const found: string[] = []
   const truncated: string[] = []
   const unreadable: string[] = []
+  const symlinks: string[] = []
   const seen = new Set<string>()
 
   const walk = (dir: string, level: number): void => {
@@ -146,8 +163,20 @@ export async function sweepTargets(
 
     let entries: string[]
     try {
-      entries = readdirSync(dir, { withFileTypes: true })
-        .filter((entry) => entry.isDirectory() && !SKIP.has(entry.name))
+      const listed = readdirSync(dir, { withFileTypes: true }).filter(
+        (entry) => !SKIP.has(entry.name),
+      )
+
+      // A symlink is reported as neither a directory nor walked, so it is named
+      // here rather than dropped. Following one is available, since `seen`
+      // already closes the cycle, and naming it is the answer the bound asks
+      // for: what the walk did not reach, stated rather than omitted.
+      for (const entry of listed) {
+        if (entry.isSymbolicLink()) symlinks.push(join(dir, entry.name))
+      }
+
+      entries = listed
+        .filter((entry) => entry.isDirectory())
         .map((entry) => entry.name)
     } catch {
       unreadable.push(dir)
@@ -169,7 +198,7 @@ export async function sweepTargets(
 
   return {
     targets: await group(found.sort(), resolveOrigin),
-    bound: { roots: resolved, depth, truncated, unreadable },
+    bound: { roots: resolved, depth, truncated, unreadable, symlinks },
   }
 }
 

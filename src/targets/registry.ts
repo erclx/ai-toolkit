@@ -128,9 +128,10 @@ export type RecordOutcome = 'recorded' | 'unwritten'
  * target restores its row.
  *
  * Nothing removes a row either, so a target that was deleted or that dropped
- * the toolkit stays here and the count drifts upward. A reader meets that on
- * use rather than silently, since `aitk targets pulls` refuses a path it cannot
- * open rather than reading it as a target with no work.
+ * the toolkit stays here and the count drifts upward. `aitk targets pulls`
+ * meets that on use, since it refuses a path it cannot open rather than
+ * reading it as a target with no work, but `aitk targets list` does not: it
+ * never opens a recorded path, and the count is its whole output.
  */
 export function recordTarget(
   target: string,

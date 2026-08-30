@@ -1,8 +1,16 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { execSync } from 'node:child_process'
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { sweepTargets } from '@/targets/sweep'
+import { gitEnv } from '@/git-env'
+import { originOf, sweepTargets } from '@/targets/sweep'
 
 let ROOT: string
 
@@ -184,5 +192,67 @@ describe('sweepTargets', () => {
     })
 
     expect(report.targets).toHaveLength(1)
+  })
+
+  // `readdirSync` with `withFileTypes` answers `isDirectory()` false for a
+  // symlink, so the walk neither follows it nor reports it anywhere unless the
+  // bound names it explicitly.
+  it('should name a symlinked directory in the bound rather than walking it', async () => {
+    const real = stamp('real', 'caret')
+    symlinkSync(join(ROOT, 'real'), join(ROOT, 'link'))
+
+    const report = await sweepTargets([ROOT], { originOf: noOrigin })
+
+    expect(report.bound.symlinks).toEqual([join(ROOT, 'link')])
+    expect(report.targets.flatMap((target) => target.paths)).toEqual([real])
+  })
+})
+
+describe('originOf', () => {
+  let root: string
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'aitk-sweep-origin-'))
+    execSync('git init --quiet', { cwd: root, env: gitEnv() })
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  function withRemote(url: string): Promise<string | null> {
+    execSync(`git remote add origin ${url}`, { cwd: root, env: gitEnv() })
+    return originOf(root)
+  }
+
+  it('should normalize an ssh remote', async () => {
+    expect(await withRemote('git@github.com:owner/repo.git')).toBe(
+      'github.com/owner/repo',
+    )
+  })
+
+  it('should normalize an https remote', async () => {
+    expect(await withRemote('https://github.com/owner/repo.git')).toBe(
+      'github.com/owner/repo',
+    )
+  })
+
+  // A checkout cloned with a token puts the token in the userinfo component,
+  // and the key this returns reaches stdout on `aitk targets list --json`.
+  it('should strip a token-bearing userinfo component', async () => {
+    expect(
+      await withRemote(
+        'https://x-access-token:secret-token@github.com/owner/repo.git',
+      ),
+    ).toBe('github.com/owner/repo')
+  })
+
+  // A bare username in the userinfo component used to survive the strip and
+  // key the target under the username instead, which failed to group with
+  // the same project's ssh clone.
+  it('should strip a bare-username userinfo component', async () => {
+    expect(await withRemote('https://someuser@github.com/owner/repo.git')).toBe(
+      'github.com/owner/repo',
+    )
   })
 })

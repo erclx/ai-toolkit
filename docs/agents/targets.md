@@ -35,7 +35,7 @@ The record is the primary source and the sweep is the fallback, because they fai
 
 ## What bounds a sweep
 
-A `--sweep` run carries a `bound` object naming the roots walked, the depth, the folders the walk stopped at on reaching the cap, and the roots it could not read. Read it before treating a count as the population.
+A `--sweep` run carries a `bound` object naming the roots walked, the depth, the folders the walk stopped at on reaching the cap, the roots it could not read, and the directory symlinks it did not follow. Read it before treating a count as the population.
 
 The bound a sweep can never state is the machine. It reads this one, so a target on another machine or under a path nobody named is outside every answer it gives. That is the same limit the hand census had, and the record above is what closes it going forward rather than the sweep.
 
