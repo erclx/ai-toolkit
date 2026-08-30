@@ -66,6 +66,14 @@ absent = [
 # `chore/agents` fails this as well as the `absent` entry above. Remote-tracking
 # refs move on a fetch and local heads do not, which is what makes the split
 # between those two ref spaces the right place to cut.
+#
+# One shape passes unreported, and it is accepted rather than unseen. `objects/**`
+# is admitted because a fetch writes objects and nothing scopes that narrower, and
+# a commit writes objects too, so a run committing on a detached head clears this
+# scope and every other assertion here: it moves no local head, so the `absent`
+# entries hold, and it changes no file the `paths` entries read. Anyone widening
+# this scope for a different reason is widening it from there rather than from the
+# split above.
 write_scope = [
   ".claude/.tmp/rollout/**",
   "targets/*/.git/FETCH_HEAD",
