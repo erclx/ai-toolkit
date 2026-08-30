@@ -1,0 +1,24 @@
+# What a correct `/aitk:git-worktree` run leaves behind on the cleanup arm,
+# after `list` then `cleanup` both run in one turn. Read by `aitk sandbox
+# check`. Patterns use TOML literal strings so a regex needs no backslash
+# escaping.
+
+max_turns = 30
+
+# feat/beta is unmerged, so cleanup must leave its worktree in place.
+paths = [".claude/worktrees/beta"]
+
+# feat/alpha is merged and clean, so cleanup must remove its worktree.
+absent = [".claude/worktrees/alpha"]
+
+# The skill's own `cleanup` Output contract states this exact line, with one
+# worktree and one branch removed. It is the literal completion signal for the
+# mode, not wording the run chooses, so pinning it is what separates a run
+# that classified both rows correctly and acted on them from one that only
+# printed a preview or acted on the wrong row.
+reply = ["Removed: 1 worktrees, 1 branches pruned"]
+
+manual = [
+  "The list step reports feat/alpha as 'merged (local)' and feat/beta as 'unmerged'. Unwired: the run drives both list and cleanup in one turn, and the reply the harness captures is the session's final text, which the cleanup line may supersede.",
+  "feat/alpha itself is deleted as a local branch, not only its worktree. Unwired: a deleted branch leaves no file the sandbox tree reliably carries once refs are packed, so nothing here reads it directly, and the reply pin above is what stands in for it.",
+]

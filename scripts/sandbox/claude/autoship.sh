@@ -59,7 +59,6 @@ EOF
     git push --force origin HEAD:main
 
     git push origin --delete feat/add-farewell -q 2>/dev/null || true
-    git checkout -b feat/add-farewell -q
 
     mkdir -p .claude/plans .claude/review
 
@@ -111,13 +110,13 @@ Session facts with no owning surface, grouped by kind.
 EOF
 
     log_step "Scenario ready: autoship happy path"
-    log_info "Context: feat/add-farewell branch with approved plan and one seeded memory entry"
+    log_info "Context: main, with an approved plan staged for feat/add-farewell and one seeded memory entry"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements farewell fn, verify passes, review runs, PR opened as draft"
     log_info "         Step 7 invokes git-ship rather than restating the chain, so the verify"
     log_info "         runs twice and the draft marking lands before the CI watch"
-    log_info "         then captures session memory and runs Propose over the pen"
-    log_info "         receipt at .claude/review/memory/memory-review-<slug>.md; Apply is NOT run"
+    log_info "         a headless run with no interaction has nothing for capture to find, so"
+    log_info "         it typically reports Nothing worth capturing and Step 9 is skipped"
     ;;
   "prose-informational")
     cat <<'EOF' >package.json
@@ -159,7 +158,6 @@ EOF
     git push --force origin HEAD:main
 
     git push origin --delete feat/expand-intro -q 2>/dev/null || true
-    git checkout -b feat/expand-intro -q
 
     mkdir -p .claude/plans .claude/review
 
@@ -182,7 +180,7 @@ None identified.
 EOF
 
     log_step "Scenario ready: autoship informational prose diff"
-    log_info "Context: feat/expand-intro branch with a plan that touches only docs/intro.md"
+    log_info "Context: main, with a plan staged for feat/expand-intro touching only docs/intro.md"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements prose update, verify passes, REVIEW IS SKIPPED, PR opened as draft"
     log_info "         docs/ is outside every behavior path, so both classifier tests pass"
@@ -241,7 +239,6 @@ EOF
     git push --force origin HEAD:main
 
     git push origin --delete feat/tighten-deploy-check -q 2>/dev/null || true
-    git checkout -b feat/tighten-deploy-check -q
 
     mkdir -p .claude/plans .claude/review
 
@@ -264,7 +261,7 @@ None identified.
 EOF
 
     log_step "Scenario ready: autoship executable prose diff"
-    log_info "Context: feat/tighten-deploy-check branch with a plan touching only a SKILL.md body"
+    log_info "Context: main, with a plan staged for feat/tighten-deploy-check touching only a SKILL.md body"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements the stop condition, verify passes, REVIEW RUNS, PR opened as draft"
     log_info "         the diff is all markdown, so the extension test passes and the path test fails"

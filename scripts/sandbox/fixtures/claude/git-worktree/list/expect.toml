@@ -1,0 +1,27 @@
+# What a correct `/aitk:git-worktree` run reports on the list arm, over three
+# linked worktrees in three different states. Read by `aitk sandbox check`.
+# Patterns use TOML literal strings so a regex needs no backslash escaping.
+
+# `list` only reports, so the strongest tree assertion available is that
+# nothing it staged was touched. The verdict itself lives almost entirely in
+# the reply, the same shape `claude/orchestrate`'s declaration documents for a
+# proposal-only skill.
+
+max_turns = 30
+
+paths = [
+  ".claude/worktrees/merged",
+  ".claude/worktrees/dirty",
+  ".claude/worktrees/clean",
+]
+
+# Neither phrase is a substring of any branch name the scenario stages
+# (feat/merged, feat/dirty, feat/clean), so each one can only come from the
+# State column reading the row correctly.
+reply = ["merged (local)", "unmerged"]
+
+manual = [
+  "The dirty-titled worktree's Notes column reads 'dirty'. Judgment: the branch name feat/dirty already carries that substring in the Branch column, so a plain-text pin cannot tell whether it matched the Notes flag or the branch name.",
+  "The table carries the five columns the skill's own header names: Path, Branch, State, PR, Notes. Judgment: each header word also appears as an ordinary English word or a state value elsewhere in a correct reply, so pinning them adds nothing the state-value pins above do not already cover.",
+  "The closing hint reads 'no worktrees ready for cleanup'. Semantic: that sentence and its sibling differ by which rows are merged and clean, and telling them apart needs reading which row triggered which clause rather than matching a substring either could contain.",
+]
