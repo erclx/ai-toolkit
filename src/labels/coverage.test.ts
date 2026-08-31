@@ -111,7 +111,7 @@ release-managed = ["package.json"]
   })
 })
 
-describe('resolveCoverage against the map\'s newest rows', () => {
+describe("resolveCoverage against the map's newest rows", () => {
   function newestRowsMap() {
     const map = parseLabelMap(`
 [domains]
