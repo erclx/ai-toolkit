@@ -48,7 +48,7 @@ describe('scanPhaseLabels', () => {
     })
   })
 
-  it('should fail a phase label quoted inside a fenced block, since no escape hatch exists for quoting', () => {
+  it('should not flag a phase label quoted inside a fenced block', () => {
     const result = scanPhaseLabels({
       title: 'fix: reproduce the task row',
       body: [
@@ -58,6 +58,34 @@ describe('scanPhaseLabels', () => {
         '- v59.7: fix the gate',
         '```',
       ].join('\n'),
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+    })
+  })
+
+  it('should not flag a version-shaped token inside an inline code span', () => {
+    const result = scanPhaseLabels({
+      title: 'fix: document the fixture name',
+      body: 'The function prints `v2.0-second` for the second call in the example.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+    })
+  })
+
+  it('should still flag a phase label written as plain text beside a code span', () => {
+    const result = scanPhaseLabels({
+      title: 'fix: document the fixture name',
+      body: 'Planned under v59.7. The function prints `v2.0-second` in the example.',
       headRefName: FEATURE_HEAD,
     })
 

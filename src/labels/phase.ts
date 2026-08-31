@@ -1,3 +1,5 @@
+import { linesOutsideFences, maskCodeSpans } from '@/markdown/scan'
+
 /**
  * The two version namespaces `standards/versioning.md` keeps apart, and why a
  * pull request cannot be sorted between them by pattern alone.
@@ -52,6 +54,27 @@ function isReleasePullRequest(input: PhaseScanInput): boolean {
 }
 
 /**
+ * Drops a fenced block outright and blanks a code span inside what remains,
+ * so a token quoted rather than written is read the way a reader reads it:
+ * shown, not asserted.
+ *
+ * `aitk markdown audit` excludes a fenced block and a code span from its own
+ * ban scan over the same kind of text, and this reuses that reading rather
+ * than inventing a second one. `#1208` is the corpus case that forced it: a
+ * backticked span quoting a test fixture's own version-shaped name, which the
+ * shape-only scan below cannot tell from a leak on its own.
+ *
+ * A link destination stays unmasked, unlike the ban scan's own reading. A
+ * release-please body's real semver reference sits inside the generated
+ * compare link's URL, and masking it would empty `semverTags` on the one
+ * pull request this check exists to pass, trading the corpus's one code-span
+ * leak for a hole in every release.
+ */
+function readable(text: string): string {
+  return linesOutsideFences(text).map(maskCodeSpans).join('\n')
+}
+
+/**
  * Reads a title and a body for version-shaped tokens and sorts every one
  * found into the namespace this pull request is allowed to carry.
  *
@@ -59,12 +82,10 @@ function isReleasePullRequest(input: PhaseScanInput): boolean {
  * pull request's tokens are read as the semver references its generated body
  * legitimately carries, and every other pull request's tokens are read as
  * leaked phase labels, which is what `standards/versioning.md` names the
- * defect this exists to catch. A body quoting a label inside a fenced block
- * is not exempted: the corpus behind the plan found no genuine quoting case,
- * and an escape hatch invites the failure it would exempt.
+ * defect this exists to catch.
  */
 export function scanPhaseLabels(input: PhaseScanInput): PhaseScanResult {
-  const text = `${input.title}\n${input.body}`
+  const text = readable(`${input.title}\n${input.body}`)
   const tokens = [...new Set(text.match(VERSION_TOKEN) ?? [])]
   const cutsRelease = isReleasePullRequest(input)
 
