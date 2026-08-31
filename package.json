@@ -1,11 +1,11 @@
 {
-  "name": "@erclx/aitk",
+  "name": "@erclx/canon",
   "type": "module",
   "version": "3.57.0",
   "description": "Infrastructure and quality tooling for developer workflows",
   "license": "MIT",
   "bin": {
-    "aitk": "./src/cli.ts"
+    "canon": "./src/cli.ts"
   },
   "files": [
     "src",
@@ -40,8 +40,8 @@
     "clean": "./scripts/core/clean.sh",
     "snapshot": "./scripts/core/snapshot.sh",
     "bootstrap": "./scripts/core/bootstrap.sh",
-    "aitk:sandbox": "aitk sandbox",
-    "aitk:sandbox:reset": "aitk sandbox reset"
+    "canon:sandbox": "canon sandbox",
+    "canon:sandbox:reset": "canon sandbox reset"
   },
   "dependencies": {
     "commander": "^13.1.0",
