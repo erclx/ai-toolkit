@@ -34,10 +34,11 @@ running and re-invoking it would restart the build.
 
 ## The channel
 
-The controlling session cannot watch this one build, so two messages are owed and
-nothing else.
+The controlling session cannot watch this one build, so three messages are owed
+and nothing else.
 
 - Announce the pull request as the ship chain's pull request step returns, carrying the number, the branch, and the task it closes. That transition is the one moment only this session knows, and the controller's review poll no longer starts on a dispatch because of it.
+- Announce when an address-review pass finishes, as `claude-address-review` Step 8 returns, carrying what was addressed and the PR's new CI state. That transition is the other moment only this session knows, and it is what tells the controller to re-review rather than leaving it to poll for an answer nothing marks as landed.
 - Send a block out as a message before it becomes an interactive prompt. A session already waiting on input never reaches the tool round that drains an inbound message, so a relayed answer arrives under the open question and changes nothing.
 - Send nothing on progress. A worker reporting progress rebuilds, on this side of the channel, the poll the announcement retired on the other.
 
