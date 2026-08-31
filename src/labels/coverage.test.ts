@@ -116,6 +116,8 @@ describe("resolveCoverage against the map's newest rows", () => {
     const map = parseLabelMap(`
 [domains]
 ci = [".github/", "scripts/core/", ".husky/", ".claude/hooks/", ".claude/settings.json"]
+
+[declined]
 formatting = [".prettierignore"]
 `)
     if (map.kind !== 'map') throw new Error('fixture map did not parse')
@@ -129,10 +131,12 @@ formatting = [".prettierignore"]
     expect(coverage.uncovered).toEqual([])
   })
 
-  it('should match .prettierignore against the prefix added for it', () => {
+  it('should match .prettierignore against the declined prefix added for it', () => {
     const coverage = resolveCoverage(newestRowsMap(), ['.prettierignore'])
 
-    expect(coverage.labels).toEqual(['formatting'])
+    expect(coverage.declined).toEqual([
+      { path: '.prettierignore', reason: 'formatting' },
+    ])
     expect(coverage.uncovered).toEqual([])
   })
 
