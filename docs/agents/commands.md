@@ -61,6 +61,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk labels audit`        | Report the labels a changed set earns from the pull request label map and the paths no row reaches (`--json`)                                                         |
 | `aitk labels scan`         | Fail a pull request whose title or body carries a phase label, sorting a release pull request's tokens as semver rather than as a leak (`--event`, `--json`)          |
 | `aitk autoship classify`   | Decide whether a changed set needs the review pass, naming the file and the test that decided it (`--json`)                                                           |
+| `aitk pr key-changes`      | Compare the files a pull request body's Key Changes names against its own diff, in both directions (`--body`, `--base`, `--json`)                                     |
 | `aitk census [path]`       | Report tracked file count, a breakdown by extension, and a line total that skips whatever reads as binary (`--json`)                                                  |
 | `aitk audits run`          | Run every audit as one set, report per check under one verdict, and compare each count to the recorded baseline (`--json`, `--record`)                                |
 | `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                                             |
