@@ -37,6 +37,8 @@ function session(fields: Partial<ResolvedSession>): ResolvedSession {
     kind: 'interactive',
     status: 'idle',
     startedAt: null,
+    statusUpdatedAt: null,
+    statusDwellMs: null,
     repository: null,
     worktree: null,
     branch: null,

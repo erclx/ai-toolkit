@@ -24,6 +24,25 @@ export interface ResolvedSession {
   readonly status: string
   readonly startedAt: string | null
   /**
+   * The stamp the record carries beside `status`, kept alongside the dwell it
+   * computes below for a caller comparing two sessions rather than reading the
+   * age of one.
+   */
+  readonly statusUpdatedAt: string | null
+  /**
+   * Elapsed milliseconds since `statusUpdatedAt`, falling back to the coarser
+   * `updatedAt` when the record predates the narrower field, computed once at
+   * read time so three callers do not each convert the raw stamp and each get
+   * the clock-skew case wrong. The one record ever measured carrying
+   * `status: "waiting"` has exactly this shape: no `statusUpdatedAt`, an
+   * `updatedAt` beside it, so a caller reading this field alone would report
+   * the single real instance as unmeasured rather than as stalled.
+   * Clamped at zero rather than reported negative: a record stamped
+   * by a clock running ahead of this one is a skew to absorb, not a session
+   * that has not started waiting yet.
+   */
+  readonly statusDwellMs: number | null
+  /**
    * The shared git directory every worktree of one repository resolves to,
    * which is what identifies the repository a row belongs to. A branch name is
    * unique inside one and says nothing across a machine.
@@ -52,6 +71,8 @@ export interface ResolveOptions {
   readonly dir?: string
   readonly probes?: LivenessProbes
   readonly locate?: (cwd: string) => Promise<Located>
+  /** The instant the dwell is computed against. Defaults to `Date.now`. */
+  readonly now?: () => number
 }
 
 export interface Located {
@@ -124,6 +145,17 @@ export async function repositoryOf(cwd: string): Promise<string | null> {
 }
 
 /**
+ * Falls back to `updatedAt` when `statusUpdatedAt` is absent, since the
+ * narrower field is the newer of the two and a record predating it still
+ * carries the coarser one. The one record measured with `status: "waiting"`
+ * takes exactly this path: no `statusUpdatedAt`, an `updatedAt` beside it.
+ */
+function dwellMs(record: SessionRecord, now: number): number | null {
+  const stamp = record.statusUpdatedAt ?? record.updatedAt
+  return stamp === undefined ? null : Math.max(0, now - stamp)
+}
+
+/**
  * An absent field is rendered as an absence rather than as a value.
  *
  * A missing start time formatted from zero reads as a session launched in 1970
@@ -131,7 +163,11 @@ export async function repositoryOf(cwd: string): Promise<string | null> {
  * for data. Null says the record did not carry it, which is the same
  * distinction the registry draws between an absent folder and an empty one.
  */
-function present(record: SessionRecord, located: Located): ResolvedSession {
+function present(
+  record: SessionRecord,
+  located: Located,
+  now: number,
+): ResolvedSession {
   return {
     name: record.name,
     pid: record.pid,
@@ -143,6 +179,11 @@ function present(record: SessionRecord, located: Located): ResolvedSession {
       record.startedAt === undefined
         ? null
         : new Date(record.startedAt).toISOString(),
+    statusUpdatedAt:
+      record.statusUpdatedAt === undefined
+        ? null
+        : new Date(record.statusUpdatedAt).toISOString(),
+    statusDwellMs: dwellMs(record, now),
     repository: located.repository,
     worktree: located.worktree,
     branch: located.branch,
@@ -167,6 +208,7 @@ export async function resolveSessions(
 ): Promise<SessionReport> {
   const probes = opts.probes ?? SYSTEM_PROBES
   const find = opts.locate ?? locate
+  const now = opts.now?.() ?? Date.now()
   const registry = readRegistry(opts.dir)
 
   if (registry.kind === 'absent') return { kind: 'absent', dir: registry.dir }
@@ -182,7 +224,7 @@ export async function resolveSessions(
   }
 
   const sessions = await Promise.all(
-    live.map(async (record) => present(record, await find(record.cwd))),
+    live.map(async (record) => present(record, await find(record.cwd), now)),
   )
 
   return { kind: 'resolved', dir: registry.dir, confidence, sessions }

@@ -10,6 +10,8 @@ function record(fields: Partial<SessionRecord> = {}): SessionRecord {
     name: 'aitk-aa',
     kind: 'interactive',
     status: 'idle',
+    statusUpdatedAt: undefined,
+    updatedAt: undefined,
     startedAt: 1,
     procStart: '5000',
     ...fields,
