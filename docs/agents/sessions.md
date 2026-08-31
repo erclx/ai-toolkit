@@ -1,6 +1,6 @@
 ---
 title: Sessions
-description: Resolving live peer sessions to the worktree and branch each holds, the liveness confidence field, the unresolved reasons, and what the read depends on
+description: Resolving live peer sessions to the worktree and branch each holds, reading which row is the caller, the liveness confidence field, and what each session surface can see
 ---
 
 # Sessions
@@ -14,6 +14,7 @@ aitk sessions list
 aitk sessions list --json
 aitk sessions list --branch feat/parser --json
 aitk sessions list --branch chore/agents --repository ../caret --json
+aitk sessions list --self --json
 ```
 
 | Option                | Behavior                                              |
@@ -21,10 +22,11 @@ aitk sessions list --branch chore/agents --repository ../caret --json
 | `--json`              | Add a machine-readable record on stdout               |
 | `--branch <name>`     | Report the sessions holding this branch               |
 | `--repository <path>` | Answer about this project rather than the working one |
+| `--self`              | Report the caller's own row                           |
 
 It reads and never writes. The question it answers is which session to address when work has to reach the one holding a given branch, which a session listing cannot answer on its own.
 
-Exit codes: `0` the roster was read, `1` refused. The refusal carries a `reason` of `no-registry` or `no-repository`.
+Exit codes: `0` the roster was read, `1` refused. The refusal carries a `reason` of `no-registry`, `no-repository`, `no-self-identity`, or `no-self-row`.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `reason` rather than the exit when a skill consumes this.
 
@@ -51,6 +53,27 @@ The ref read covers the local head and the remote-tracking ref, which means it s
 `worktree`, `refs`, and `claimed` are `null` on a bare run with no `--branch`, since none of the three questions has a branch to answer about. A refusal (`no-registry` or `no-repository`) carries none of the keys at all, which a caller should read as unverified rather than as clear.
 
 Two flags say which reading came up short. `sessionsReadable` is `false` when the session roster could not be read, and `refsReadable` is `false` when the ref read failed. Either one leaves `claimed` covering the readings around it alone, so a `false` there is a report that ran short of evidence rather than a report that the branch is clear. They stay separate fields because a caller told the roster failed goes and looks at the roster, and folding both into one flag would send it to the wrong place.
+
+## Which row is the caller
+
+`--self` narrows the report to the row belonging to the session making the call. A dispatcher reads it to learn the `sessionId` it carries into a launch, because the roster returns every field on every row and marks none of them as the caller.
+
+Three identifier namespaces reach a session and two of them join to a row. Four variables spell them:
+
+- `CLAUDE_CODE_SESSION_ID` holds the roster's own `sessionId`, and is read first because it survives a rename.
+- `CLAUDE_PID` holds the caller's process id, which every row already carries as `pid`.
+- `CLAUDE_CODE_MESSAGING_SOCKET` spells that same pid in its basename. It is read last, since the spelling is a client convention rather than a published interface and a client that moves the socket drops this rung alone.
+- `CLAUDE_CODE_HOST_SESSION_ID` is never read. It carries a `local_`-prefixed value from the harness namespace that matches no row, and it is the variable a reader searching the environment for a session id finds first.
+
+The read refuses rather than returning an empty roster, on the same ground as `no-registry`. A `no-self-identity` refusal means the environment stated none of the three, which is a client identifying its sessions some other way. A `no-self-row` refusal means it stated one and no live row carries it, which is what a session running outside a local process gets.
+
+## What each surface can see
+
+The roster this verb reads and the channel a session sends messages on enumerate different populations, and neither contains the other. Read at one moment, `aitk sessions list` returned 6 rows against the 13 peers plus caller the agent listing reported. The roster held a background session at confirmed confidence on two reads a minute apart that the listing never carried, so a live session sat here with no way to reach it. Nine Remote Control sessions ran the other way, reachable there with no row here at all, since they leave no local process for the registry to record.
+
+That bounds what a carried identifier buys. Resolving a `sessionId` to a name here can produce a name the send channel rejects, and `--self` answers nothing for a controller driving from Remote Control, which is the operator working from their phone rather than an edge case. A caller that cannot resolve an addressee reports the failed resolution instead of falling back to a guess.
+
+The `name` field is what both surfaces agree on, and that agreement is what makes the resolution work. `SendMessage` takes a name and carries no identifier parameter, so the carry runs id to name to send rather than sending an id anywhere.
 
 ## Why the verb exists
 

@@ -2,10 +2,13 @@ import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { checkClaim, type ClaimReport } from '@/sessions/claim'
 import {
+  callerIdentity,
   repositoryOf,
   type ResolvedSession,
   resolveSessions,
+  type SelfReport,
   type SessionReport,
+  selfOf,
 } from '@/sessions/resolve'
 import {
   intro,
@@ -21,6 +24,7 @@ interface ListCommandOptions {
   readonly json?: boolean
   readonly branch?: string
   readonly repository?: string
+  readonly self?: boolean
 }
 
 const REASONS: Record<string, string> = {
@@ -51,6 +55,10 @@ export function register(program: Command): void {
     .option(
       '--repository <path>',
       'Answer about this project rather than the working one',
+    )
+    .option(
+      '--self',
+      "Report the caller's own row, and refuse where the roster holds none",
     )
     .addHelpText(
       'after',
@@ -93,6 +101,19 @@ export function register(program: Command): void {
         'The match can return more than one session. Read the count rather than',
         'the first row, since two sessions can hold one branch.',
         '',
+        "--self narrows the report to the caller's own row, which is what a",
+        'dispatcher reads to learn the sessionId it carries into a launch. It',
+        'joins on CLAUDE_CODE_SESSION_ID first, falls back to CLAUDE_PID, and',
+        'falls back again to the pid the messaging socket path spells. It never',
+        'reads CLAUDE_CODE_HOST_SESSION_ID, which holds a value from another',
+        'namespace that matches no row.',
+        '',
+        'It refuses with reason "no-self-identity" when the environment states',
+        'none of the three, and "no-self-row" when it states one and no live',
+        'row carries it. The second is the ordinary answer for a session',
+        'driving from Remote Control, which is addressable on the message',
+        'channel and holds no local process record for the roster to report.',
+        '',
         'Each session writes its own working directory beside its own name, so a',
         'name from a session listing joins to a branch by an exact match rather',
         'than by ordering the roster on start time.',
@@ -108,6 +129,7 @@ export function register(program: Command): void {
         '  aitk sessions list --json',
         '  aitk sessions list --branch feat/parser --json',
         '  aitk sessions list --branch chore/agents --repository ../caret --json',
+        '  aitk sessions list --self --json',
         '',
       ].join('\n'),
     )
@@ -135,6 +157,34 @@ async function runList(opts: ListCommandOptions): Promise<number> {
 
     return 1
   }
+
+  // The roster read returns every row and marks none of them as the caller, so
+  // the join runs here, ahead of any scope. Resolving it after the branch
+  // filter would answer "no row" for a caller whose row was merely filtered
+  // out, which is a different failure wearing the same reason.
+  const own = opts.self ? selfOf(report.sessions, callerIdentity()) : null
+
+  if (own?.kind === 'unresolved') {
+    intro('aitk sessions list')
+    logStep('Refused')
+    logWarn(selfRefusal(own))
+    outro()
+
+    if (opts.json) {
+      process.stdout.write(
+        `${JSON.stringify({
+          dir: report.dir,
+          reason:
+            own.reason === 'no-identity' ? 'no-self-identity' : 'no-self-row',
+          sessions: [],
+        })}\n`,
+      )
+    }
+
+    return 1
+  }
+
+  const pool = own === null ? report.sessions : [own.session]
 
   // A branch name identifies a branch inside one repository and nothing across
   // a machine, so an unscoped match reaches a session working in a different
@@ -164,11 +214,11 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   }
 
   const shown = opts.branch
-    ? report.sessions.filter(
+    ? pool.filter(
         (session) =>
           session.branch === opts.branch && session.repository === repository,
       )
-    : report.sessions
+    : pool
 
   const claim = opts.branch
     ? await checkClaim(opts.branch, { cwd: at, resolve: async () => report })
@@ -176,7 +226,7 @@ async function runList(opts: ListCommandOptions): Promise<number> {
 
   intro('aitk sessions list')
   reportConfidence(report)
-  reportSessions(shown, opts.branch, repository)
+  reportSessions(shown, opts.branch, repository, own !== null)
   if (claim) reportClaim(claim)
   outro()
 
@@ -198,6 +248,22 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   }
 
   return 0
+}
+
+/**
+ * Separates a client that states no identity from a roster holding no row for
+ * one it does state, since the two send a reader to different places.
+ */
+function selfRefusal(own: Extract<SelfReport, { kind: 'unresolved' }>): string {
+  if (own.reason === 'no-identity') {
+    return 'Nothing in the environment identifies this session, so --self has nothing to match against. A client setting none of CLAUDE_CODE_SESSION_ID, CLAUDE_PID, or CLAUDE_CODE_MESSAGING_SOCKET cannot be located on the roster at all.'
+  }
+
+  const held =
+    own.identity.sessionId ??
+    (own.identity.pid === null ? 'nothing' : `pid ${own.identity.pid}`)
+
+  return `The environment identifies this session as ${held}, and no live row carries it. The roster holds local process records alone, so a session driving through Remote Control never appears here, and a record whose session has ended is dropped ahead of the match.`
 }
 
 /**
@@ -239,6 +305,7 @@ function reportSessions(
   sessions: readonly ResolvedSession[],
   branch: string | undefined,
   repository: string | null,
+  scoped: boolean,
 ): void {
   logStep('Sessions')
 
@@ -248,11 +315,21 @@ function reportSessions(
     )
   }
 
+  // An empty result under --self says nothing about the roster, since the pool
+  // was narrowed to one row before the branch filter ran. Reporting the wider
+  // answer there would claim a reading this run never took.
   if (sessions.length === 0) {
+    if (branch) {
+      logInfo(
+        scoped
+          ? `This session does not hold ${branch}.`
+          : `No live session in this repository holds ${branch}.`,
+      )
+      return
+    }
+
     logInfo(
-      branch
-        ? `No live session in this repository holds ${branch}.`
-        : 'No live session. Every record in the registry belongs to a session that has ended.',
+      'No live session. Every record in the registry belongs to a session that has ended.',
     )
     return
   }

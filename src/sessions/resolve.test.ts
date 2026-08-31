@@ -3,7 +3,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { LivenessProbes } from '@/sessions/live'
-import { type Located, resolveSessions } from '@/sessions/resolve'
+import {
+  callerIdentity,
+  type Located,
+  type ResolvedSession,
+  resolveSessions,
+  selfOf,
+} from '@/sessions/resolve'
 
 let DIR: string
 
@@ -202,5 +208,114 @@ describe('resolveSessions', () => {
     })
 
     expect(report.kind === 'resolved' && report.sessions).toHaveLength(0)
+  })
+})
+
+/** A resolved row, which the self read matches against rather than a record. */
+function row(pid: number, sessionId: string | null): ResolvedSession {
+  return {
+    name: `aitk-${pid}`,
+    pid,
+    sessionId,
+    cwd: `/repo/worktrees/w${pid}`,
+    kind: 'interactive',
+    status: 'idle',
+    startedAt: null,
+    repository: '/repo/.git',
+    worktree: `/repo/worktrees/w${pid}`,
+    branch: 'feat/parser',
+    unresolved: null,
+  }
+}
+
+describe('callerIdentity', () => {
+  it('should take the session identifier the environment states outright', () => {
+    const identity = callerIdentity({
+      CLAUDE_CODE_SESSION_ID: 'id-100',
+      CLAUDE_PID: '100',
+    })
+
+    expect(identity.sessionId).toBe('id-100')
+  })
+
+  it('should ignore the host session identifier, which spells another namespace', () => {
+    const identity = callerIdentity({
+      CLAUDE_CODE_HOST_SESSION_ID: 'local_e718444b-11a0-4301-a383-bfb3500bd33a',
+    })
+
+    expect(identity.sessionId).toBeNull()
+  })
+
+  it('should read the pid off the messaging socket where none is stated', () => {
+    const identity = callerIdentity({
+      CLAUDE_CODE_MESSAGING_SOCKET: '/run/user/1000/cc-socks/100.sock',
+    })
+
+    expect(identity.pid).toBe(100)
+  })
+
+  it('should prefer the stated pid over the one the socket path spells', () => {
+    const identity = callerIdentity({
+      CLAUDE_PID: '100',
+      CLAUDE_CODE_MESSAGING_SOCKET: '/run/user/1000/cc-socks/200.sock',
+    })
+
+    expect(identity.pid).toBe(100)
+  })
+
+  it('should report a socket basename that is not a pid as no pid at all', () => {
+    const identity = callerIdentity({
+      CLAUDE_CODE_MESSAGING_SOCKET: '/run/user/1000/cc-socks/peer.sock',
+    })
+
+    expect(identity.pid).toBeNull()
+  })
+
+  it('should report an environment carrying nothing as carrying no identity', () => {
+    expect(callerIdentity({})).toEqual({ sessionId: null, pid: null })
+  })
+})
+
+describe('selfOf', () => {
+  it('should name the row the session identifier matches', () => {
+    const report = selfOf([row(100, 'id-100'), row(200, 'id-200')], {
+      sessionId: 'id-200',
+      pid: null,
+    })
+
+    expect(report.kind === 'self' && report.session.pid).toBe(200)
+  })
+
+  it('should name the row the pid matches where no identifier is carried', () => {
+    const report = selfOf([row(100, 'id-100'), row(200, 'id-200')], {
+      sessionId: null,
+      pid: 100,
+    })
+
+    expect(report.kind === 'self' && report.session.pid).toBe(100)
+  })
+
+  it('should prefer the identifier match over a row carrying the same pid', () => {
+    const report = selfOf([row(100, 'id-100'), row(200, 'id-200')], {
+      sessionId: 'id-200',
+      pid: 100,
+    })
+
+    expect(report.kind === 'self' && report.session.sessionId).toBe('id-200')
+  })
+
+  it('should refuse with a named reason where the environment carries no identity', () => {
+    const report = selfOf([row(100, 'id-100')], { sessionId: null, pid: null })
+
+    expect(report.kind === 'unresolved' && report.reason).toBe('no-identity')
+  })
+
+  it('should refuse with a named reason where no live row carries the caller', () => {
+    const report = selfOf([row(100, 'id-100')], {
+      sessionId: 'id-900',
+      pid: 900,
+    })
+
+    expect(report.kind === 'unresolved' && report.reason).toBe('no-row')
   })
 })
