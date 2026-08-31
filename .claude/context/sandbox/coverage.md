@@ -111,6 +111,14 @@ Two arms cannot share one sandbox. The first attempt at this run was void: anoth
 
 The population is given in the narration rather than read. `aitk targets list` answers from the machine-level index, so a run left to enumerate for itself inside a sandbox reaches the operator's real consuming projects, and no fixture can scope a machine-wide record. The narration bounds the run to the sandbox and the arm asserts nothing outside it.
 
+### What the arm's escape scope proves and what it does not
+
+The arm declares `escape_scope = []`, the first declaration of that key in the catalog, and `.claude/context/sandbox/overview.md` states the mechanism. What follows is what a reader takes from a pass or a fail once the arm actually runs.
+
+A pass says the run touched none of the eight destinations `escape_roots` and `ESCAPE_SCRATCH_DIRS` name, which is the property the declared narration already asks for, now checked by the harness rather than trusted from the reply. A fail names an unbounded write against a scope this arm has no legitimate reason to leave, since its only tested path is the refusal.
+
+Neither reaches the write a real dispatch would make. The declared scope is empty because no run in this catalog drives the dispatch, so a pass proves the refusal path stayed clean and says nothing about what a worker's own worktree entry, commit, or session record would touch once one does. It also proves nothing about a destination `escape_roots` never watches at all, being a home directory, a sibling worktree, or the machine-level target and session registries a live `claude --bg` genuinely reaches, and nothing about whether a write it did catch was this run's rather than a concurrent session's, since attribution stays unsolved on both sides of the scope.
+
 ### The audits arm failed twice before the section had a route
 
 `audits` failed twice on the same two reply pins by two different paths, at 4 asserted and 2 failed each time. The first reply described the audit categories in prose and named neither `aitk context audit` nor `aitk records validate`, and its turn count and cost went unrecorded. The second took the scaffold handoff on a report showing 14 missing seeds and no installed domain and never reached the audits at all, in 6 turns at 0.24 dollars. Escapes on that run came back empty.

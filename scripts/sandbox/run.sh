@@ -97,6 +97,26 @@ escape_roots() {
 # destination the failure reaches.
 ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
 
+# The scope stated for an arm author rather than left to infer from the name
+# above. `escape_roots` times two, `ESCAPE_SCRATCH_DIRS` times four: this watch
+# reaches nothing past those eight destinations, so a nested run's own escape,
+# such as a live session record `aitk sandbox check` cannot see, is invisible
+# here whether or not an arm declares `escape_scope`.
+#
+# An arm whose skill is meant to reach past the sandbox tree declares
+# `escape_scope` in its `expect.toml`, a set of globs matched against this
+# watch's own findings the way `write_scope` matches the write list. A declared
+# scope turns what was an unattributed warning into a mechanical result: a
+# write matching a glob passes as expected, anything else fails, and `claude:
+# aitk-rollout` is the first arm to declare one, at an empty list, since its
+# only tested path is the refusal that must leave this watch's roots untouched.
+#
+# It bounds a legitimate write, not the run. Nothing here stops a session from
+# writing outside these eight destinations, and nothing separates this run's
+# writes from a sibling's within them, so a scoped pass says the declared
+# destinations held and nothing more. Read `.claude/context/sandbox/overview.md`
+# and `.claude/context/sandbox/coverage.md` before writing a claim past that.
+
 snapshot_root() {
   local dir="$1"
   local manifest="$2"
@@ -260,7 +280,7 @@ main() {
   # expectations would otherwise have passed, never pass one on its own.
   local verdict_code=0 verdict_json
   verdict_json="$(bun "$PROJECT_ROOT/src/cli.ts" sandbox check "$target" "$scenario" \
-    --envelope "$envelope" --writes "$writes" --json)" || verdict_code=$?
+    --envelope "$envelope" --writes "$writes" --escapes "$escapes" --json)" || verdict_code=$?
 
   # The envelope stays on stdout so existing readers keep working, with the
   # verdict merged in. An agent reads the verdict here rather than parsing the

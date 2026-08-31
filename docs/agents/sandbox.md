@@ -25,16 +25,19 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 aitk sandbox check claude:docs drift --json
 ```
 
-| Flag                | Effect                                                     |
-| ------------------- | ---------------------------------------------------------- |
-| `--envelope <file>` | Read `is_error`, `num_turns`, denials, and the reply text  |
-| `--writes <file>`   | Newline-delimited paths the session wrote, for write scope |
-| `--json`            | Emit the verdict record on stdout                          |
-| `--strict`          | Exit 1 on `unchecked` instead of 0                         |
+| Flag                | Effect                                                                      |
+| ------------------- | --------------------------------------------------------------------------- |
+| `--envelope <file>` | Read `is_error`, `num_turns`, denials, and the reply text                   |
+| `--writes <file>`   | Newline-delimited paths the session wrote, for write scope                  |
+| `--escapes <file>`  | Newline-delimited paths written to a watched toolkit root, for escape scope |
+| `--json`            | Emit the verdict record on stdout                                           |
+| `--strict`          | Exit 1 on `unchecked` instead of 0                                          |
 
 The verdict `state` is `pass`, `fail`, or `unchecked`. An arm with no `expect.toml` is `unchecked` and exits 0, so the harness stays usable while expectations roll out. A declaration that exists but asserts nothing is a failure, since an expectation file that asserts nothing passes every run.
 
-Omitting `--writes` or `--envelope` does not silently drop the assertion kinds that need them. Write scope, the turn ceiling, and the reply assertion report as unchecked and appear in the count, so the standalone command cannot claim more coverage than it had. A verdict never reports `pass` with zero assertions.
+Omitting `--writes`, `--escapes`, or `--envelope` does not silently drop the assertion kinds that need them. Write scope, escape scope, the turn ceiling, and the reply assertion report as unchecked and appear in the count, so the standalone command cannot claim more coverage than it had. A verdict never reports `pass` with zero assertions.
+
+An arm declaring `escape_scope` asserts a bound on `run.sh`'s own escape watch rather than on the sandbox tree. `write_scope` skips when the run wrote nothing, since a required output missing is itself a finding, but `escape_scope` passes on zero escapes outright, since a clean run producing none is the expected outcome for a destination nothing requires a skill to touch. Declaring `escape_scope = []` asserts that a correct run reaches none of the watched destinations at all. `.claude/context/sandbox/overview.md` names what the watch reaches and what it cannot.
 
 An envelope that parses but carries no `result` field skips the reply assertion the same way an absent file does. An envelope carrying an empty `result` fails it, since a run that returned no text is a finding rather than a gap in the input.
 

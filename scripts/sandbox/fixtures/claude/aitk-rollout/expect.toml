@@ -82,6 +82,15 @@ write_scope = [
   "targets/*/.git/refs/remotes/**",
 ]
 
+# Empty rather than absent, because this arm's only tested path is the refusal:
+# the narration tells the run to dispatch no worker, so a correct run reaches
+# neither clone's own checkout and touches nothing `run.sh` watches. Declaring
+# the bound at zero turns a run that reached the toolkit's own scratch anyway
+# into a mechanical failure instead of the unattributed warning `escape_roots`
+# alone produces. A future arm actually driving the dispatch widens this from a
+# measured run rather than from a guess at what a worker touches.
+escape_scope = []
+
 # Fixture vocabulary rather than a phrasing the run chooses. A run that never
 # read the pair names neither clone, which is what separates a wrong pick from
 # an idle session. It does not separate the two picks from each other, since a
