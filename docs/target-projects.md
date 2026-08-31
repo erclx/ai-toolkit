@@ -21,6 +21,14 @@ claude plugin install canon@canon
 
 The URL form clones over HTTPS. The `erclx/canon` shorthand resolves to SSH and fails on a machine with no key configured.
 
+A machine that installed the plugin under its previous name re-registers by hand, once. The marketplace and the plugin both moved, so the old `enabledPlugins` entry and the old marketplace key name things that no longer resolve, and the plugin stops loading without reporting anything. `canon migrate rename` does not reach this: it takes a `--root` and rewrites inside one project, where the plugin registration is machine-level state outside every project.
+
+```bash
+claude plugin marketplace remove aitk
+claude plugin marketplace add https://github.com/erclx/canon
+claude plugin install canon@canon
+```
+
 The `canon` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so it installs from the registry as its own step.
 
 ```bash
