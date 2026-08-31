@@ -39,7 +39,7 @@ async function seed(slug: string, files: Record<string, string>) {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-teach-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-teach-'))
 })
 
 afterEach(() => {

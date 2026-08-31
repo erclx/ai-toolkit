@@ -126,7 +126,7 @@ The intended workflow is prose-first:
 3. Call `generate_screen_from_text` with a prompt that references the system by name.
 4. Iterate with `edit_screens` or `generate_variants` as needed.
 
-A planned `aitk design` CLI surface will wrap these calls. Until it exists, drive the MCP calls directly from a Claude Code session.
+A planned `canon design` CLI surface will wrap these calls. Until it exists, drive the MCP calls directly from a Claude Code session.
 
 ## When to use Stitch
 

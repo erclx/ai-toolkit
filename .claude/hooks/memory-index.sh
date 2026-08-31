@@ -4,7 +4,7 @@
 #
 # The memory folder is gitignored, so the whole-repo walk in `bun run check`
 # drops it and never regenerates this index. Naming the file as a positional
-# argument to `aitk indexes regen` below bypasses that filter, which makes this
+# argument to `canon indexes regen` below bypasses that filter, which makes this
 # hook the only trigger that reaches the folder.
 
 # Claude Code sends a payload and closes stdin. A bare read with nothing feeding
@@ -37,8 +37,8 @@ esac
 # Report a missing CLI rather than exiting quietly. The path guard above already
 # scopes this to a memory-file edit, so the message only fires where the stale
 # index it warns about is the actual outcome.
-if ! command -v aitk >/dev/null 2>&1; then
-  jq -nc --arg msg 'aitk is not on PATH, so .claude/memory/index.md was not regenerated and is now stale. Install the toolkit CLI or run aitk indexes regen by hand.' \
+if ! command -v canon >/dev/null 2>&1; then
+  jq -nc --arg msg 'canon is not on PATH, so .claude/memory/index.md was not regenerated and is now stale. Install the toolkit CLI or run canon indexes regen by hand.' \
     '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'
   exit 0
 fi
@@ -53,7 +53,7 @@ root="${file_path%/.claude/memory/*}"
 # `--no-stage` because a hook has no business touching the index. On a project
 # whose memory folder is not gitignored, the default auto-stage would silently
 # add memory files to whatever commit is being assembled.
-output=$(aitk indexes regen --no-stage --root "$root" "$file_path" 2>&1) && exit 0
+output=$(canon indexes regen --no-stage --root "$root" "$file_path" 2>&1) && exit 0
 
 # Regen failed, which on this folder means a memory file is missing `title` or
 # `description`. Report it. Nothing else can: the folder is gitignored, so the

@@ -10,7 +10,7 @@ describe('resolveMarkdown', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-markdown-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-markdown-'))
     // A git hook exports GIT_DIR into every process it runs, and it takes
     // precedence over `cwd`, so an inherited environment initializes the
     // repository somewhere other than the fixture and every case reads empty.
@@ -70,7 +70,7 @@ describe('resolveMarkdown', () => {
   })
 
   it('should report git being unable to answer as distinct from an empty scope', async () => {
-    const outside = mkdtempSync(join(tmpdir(), 'aitk-untracked-'))
+    const outside = mkdtempSync(join(tmpdir(), 'canon-untracked-'))
 
     try {
       expect(await resolveMarkdown(outside, [])).toEqual({

@@ -14,19 +14,19 @@ source "$PROJECT_ROOT/scripts/lib/sandbox-path.sh"
 # spawns, so the guard has to reach that environment and not only provisioning.
 export GIT_TERMINAL_PROMPT=0
 
-MODEL="${AITK_SKILL_TEST_MODEL:-sonnet}"
-ALLOWED_TOOLS="${AITK_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
+MODEL="${CANON_SKILL_TEST_MODEL:-sonnet}"
+ALLOWED_TOOLS="${CANON_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
 # The only budget. `max_turns` in an arm's `expect.toml` is a ceiling asserted
 # after the run, not a cap enforced during it, so a declaration cannot raise what
 # it runs under. An arm needing more than this truncates, and a truncated run
 # fails the same assertions a reasoning miss does with nothing to separate them.
-MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-30}"
+MAX_TURNS="${CANON_SKILL_TEST_MAX_TURNS:-30}"
 
 # `bypassPermissions` is the only mode that lets a run write under `.claude/`,
 # which most arms need. The scoping the permission layer would have given comes
 # from `write_scope` instead, asserted after the run rather than enforced during
 # it, so a skill that writes where it should not still wrote there.
-PERMISSION_MODE="${AITK_SKILL_TEST_PERMISSION_MODE:-bypassPermissions}"
+PERMISSION_MODE="${CANON_SKILL_TEST_PERMISSION_MODE:-bypassPermissions}"
 
 # Records `hash<TAB>path` per file so the post-run comparison can name what the
 # session wrote. A diff against `refs/sandbox/baseline` cannot stand in for this:
@@ -100,7 +100,7 @@ ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
 # The scope stated for an arm author rather than left to infer from the name
 # above. `escape_roots` times two, `ESCAPE_SCRATCH_DIRS` times four: this watch
 # reaches nothing past those eight destinations, so a nested run's own escape,
-# such as a live session record `aitk sandbox check` cannot see, is invisible
+# such as a live session record `canon sandbox check` cannot see, is invisible
 # here whether or not an arm declares `escape_scope`.
 #
 # An arm whose skill is meant to reach past the sandbox tree declares
@@ -108,7 +108,7 @@ ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
 # watch's own findings the way `write_scope` matches the write list. A declared
 # scope turns what was an unattributed warning into a mechanical result: a
 # write matching a glob passes as expected, anything else fails, and `claude:
-# aitk-rollout` is the first arm to declare one, at an empty list, since its
+# canon-rollout` is the first arm to declare one, at an empty list, since its
 # only tested path is the refusal that must leave this watch's roots untouched.
 #
 # It bounds a legitimate write, not the run. Nothing here stops a session from
@@ -142,7 +142,7 @@ snapshot_root() {
     sed "s|\./||" | sort -k2 >"$manifest"
 }
 
-# Keeps what re-scoring needs. `aitk sandbox check` recovers the tree assertions
+# Keeps what re-scoring needs. `canon sandbox check` recovers the tree assertions
 # from surviving sandbox state, but `max_turns` reads the envelope and
 # `write_scope` reads the writes list, both of which die with the temp files.
 #
@@ -180,18 +180,18 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    cat:cmd   ${GREY}# Scenario to provision (e.g. git:commit)${NC}"
-  echo -e "${GREY}│${NC}    prompt    ${GREY}# Skill invocation (e.g. \"/aitk:git-commit\")${NC}"
+  echo -e "${GREY}│${NC}    prompt    ${GREY}# Skill invocation (e.g. \"/canon:git-commit\")${NC}"
   echo -e "${GREY}│${NC}    scenario  ${GREY}# Optional named scenario arm${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Env overrides:${NC}"
-  echo -e "${GREY}│${NC}    AITK_SKILL_TEST_MODEL      ${GREY}# default sonnet${NC}"
-  echo -e "${GREY}│${NC}    AITK_SKILL_TEST_TOOLS      ${GREY}# default Bash,Read,Glob,Grep,Edit,Write${NC}"
-  echo -e "${GREY}│${NC}    AITK_SKILL_TEST_MAX_TURNS  ${GREY}# default 30${NC}"
-  echo -e "${GREY}│${NC}    AITK_SKILL_TEST_PERMISSION_MODE ${GREY}# default bypassPermissions${NC}"
+  echo -e "${GREY}│${NC}    CANON_SKILL_TEST_MODEL      ${GREY}# default sonnet${NC}"
+  echo -e "${GREY}│${NC}    CANON_SKILL_TEST_TOOLS      ${GREY}# default Bash,Read,Glob,Grep,Edit,Write${NC}"
+  echo -e "${GREY}│${NC}    CANON_SKILL_TEST_MAX_TURNS  ${GREY}# default 30${NC}"
+  echo -e "${GREY}│${NC}    CANON_SKILL_TEST_PERMISSION_MODE ${GREY}# default bypassPermissions${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
-  echo -e "${GREY}│${NC}    run.sh git:commit \"/aitk:git-commit\""
-  echo -e "${GREY}│${NC}    run.sh claude:feature \"/aitk:claude-feature add a widget\" small"
+  echo -e "${GREY}│${NC}    run.sh git:commit \"/canon:git-commit\""
+  echo -e "${GREY}│${NC}    run.sh claude:feature \"/canon:claude-feature add a widget\" small"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -201,7 +201,7 @@ main() {
     show_help
   fi
 
-  open_timeline "aitk skill-test"
+  open_timeline "canon skill-test"
   trap close_timeline EXIT
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
@@ -214,7 +214,7 @@ main() {
   local scenario="${3:-}"
 
   [[ "$target" != *":"* ]] && log_error "Invalid target. Use <category>:<command>, e.g. git:commit."
-  [ -z "$prompt" ] && log_error "Missing prompt. Pass the skill invocation, e.g. \"/aitk:git-commit\"."
+  [ -z "$prompt" ] && log_error "Missing prompt. Pass the skill invocation, e.g. \"/canon:git-commit\"."
 
   # Minted here, in this shell rather than inside a `$(...)` capture, so the
   # export survives into the two children below: manage-sandbox.sh resolves
@@ -271,7 +271,7 @@ main() {
   writes_between "$before" "$after" >"$writes"
   printf '%s' "$out" >"$envelope"
 
-  # Taken before the verdict runs, since `aitk sandbox check` and `record_run`
+  # Taken before the verdict runs, since `canon sandbox check` and `record_run`
   # both write under a watched root themselves.
   local index=0 after_manifest
   : >"$escapes"

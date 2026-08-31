@@ -39,7 +39,7 @@ describe('auditLabels', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-label-audit-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-label-audit-'))
   })
 
   afterEach(() => {

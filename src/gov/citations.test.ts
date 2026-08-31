@@ -89,7 +89,7 @@ function withStatus(
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-gov-citations-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-gov-citations-'))
   git('init', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -219,7 +219,7 @@ describe('readCitations', () => {
     write('standards/teach.md', '# Teach')
     writeRule(
       'claude/561-teach.md',
-      '- Read it with `aitk standards teach`. It is the single source.',
+      '- Read it with `canon standards teach`. It is the single source.',
     )
     git('add', '--all')
 
@@ -229,13 +229,13 @@ describe('readCitations', () => {
   })
 
   it('should name a standard only the internal corpus carries, which the verb cannot reach', async () => {
-    // `aitk standards <name>` reads standards/ and then the package corpus, and
+    // `canon standards <name>` reads standards/ and then the package corpus, and
     // never internal/standards/, so a citation resolving only there refuses for
     // the session that opens it. Admitting that root here would pass it.
     write('internal/standards/tooling-reference.md', '# Tooling reference')
     writeRule(
       'claude/598-authoring-layout.md',
-      '- Read it with `aitk standards tooling-reference`.',
+      '- Read it with `canon standards tooling-reference`.',
     )
     git('add', '--all')
 
@@ -247,7 +247,7 @@ describe('readCitations', () => {
   it('should name a standard the verb cites that neither root carries', async () => {
     writeRule(
       'claude/561-teach.md',
-      '- Read it with `aitk standards glossary`.',
+      '- Read it with `canon standards glossary`.',
     )
     git('add', '--all')
 
@@ -259,7 +259,7 @@ describe('readCitations', () => {
   it('should decline the line teaching the verb form rather than calling it', async () => {
     writeRule(
       'claude/598-authoring-layout.md',
-      '- Call `aitk standards <name>` from a rule or a seed.',
+      '- Call `canon standards <name>` from a rule or a seed.',
     )
     git('add', '--all')
 
@@ -334,7 +334,7 @@ describe('readCitations', () => {
   it('should exempt a line carrying the marker with a reason', async () => {
     writeRule(
       'claude/561-teach.md',
-      '- Open `references/glossary.md` <!-- aitk-allow-citation: the skill ships this, not the toolkit -->',
+      '- Open `references/glossary.md` <!-- canon-allow-citation: the skill ships this, not the toolkit -->',
     )
     git('add', '--all')
 
@@ -347,7 +347,7 @@ describe('readCitations', () => {
   it('should ignore a bare marker carrying no reason', async () => {
     writeRule(
       'claude/561-teach.md',
-      '- Open `references/glossary.md` <!-- aitk-allow-citation -->',
+      '- Open `references/glossary.md` <!-- canon-allow-citation -->',
     )
     git('add', '--all')
 

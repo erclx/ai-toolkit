@@ -108,7 +108,7 @@ describe('linesOutsideFences', () => {
     // A caller reading this asks only whether a line is fenced, so the block
     // index has to leave it returning exactly what it returned before.
     const kept = linesOutsideFences(
-      'Before.\n```ts\nconst x = 1\n```\n```sh\naitk\n```\nAfter.\n',
+      'Before.\n```ts\nconst x = 1\n```\n```sh\ncanon\n```\nAfter.\n',
     )
 
     expect(kept.filter((line) => line !== '')).toEqual(['Before.', 'After.'])
@@ -165,8 +165,8 @@ describe('visibleText', () => {
   })
 
   it('should still drop a link that sits after a code span', () => {
-    expect(visibleText('Run `aitk` then [the entry](docs/a.md) next.')).toBe(
-      'Run `aitk` then the entry next.',
+    expect(visibleText('Run `canon` then [the entry](docs/a.md) next.')).toBe(
+      'Run `canon` then the entry next.',
     )
   })
 
@@ -241,11 +241,11 @@ describe('scanBans', () => {
   })
 
   it('should report nothing inside either of two adjacent blocks', () => {
-    // The ban half of `aitk markdown audit` fails a push, so the exclusion this
+    // The ban half of `canon markdown audit` fails a push, so the exclusion this
     // scan walks around has to survive the walker learning about blocks.
     expect(
       terms(
-        '# H\n\n```ts\nconst a = 1; // simply\n```\n```sh\naitk --colour\n```\n',
+        '# H\n\n```ts\nconst a = 1; // simply\n```\n```sh\ncanon --colour\n```\n',
       ),
     ).toEqual([])
   })

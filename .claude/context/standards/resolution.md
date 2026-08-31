@@ -9,7 +9,7 @@ No standard installs into a project. A reader resolves one instead, and everythi
 
 ## The two roots
 
-`standardRoots` in `src/standards/read.ts` returns `standards/` at the caller's working directory, then the corpus inside the aitk package. The first is this repository's authoring root and a project's own folder anywhere else, so a repository that writes standards governs its own copy. The second answers everywhere else, which is every target.
+`standardRoots` in `src/standards/read.ts` returns `standards/` at the caller's working directory, then the corpus inside the canon package. The first is this repository's authoring root and a project's own folder anywhere else, so a repository that writes standards governs its own copy. The second answers everywhere else, which is every target.
 
 `.claude/standards/` is not a root and no longer exists anywhere. In a target it is a stale artifact an older toolkit left. Here it was the generated mirror `regen-claude-copies.sh` wrote and `bun run check` asserted, 28 tracked files rebuilt on every run, and it is gone.
 
@@ -21,11 +21,11 @@ The mirror existed so a rule, a skill, or a seed could cite one path resolving h
 
 Removing it took the `mirror_dir` call for `standards/` out of `scripts/core/regen-claude-copies.sh`, dropped `.claude/standards` from the drift assertion the merge gate runs, and deleted the 28 files. The `paths:` glob on `591-standard-authoring` lost its mirrored entry, so a target holding an old installed copy stops matching that rule. That is the intended outcome rather than a regression, since the rule governs authoring and such a copy is not authored.
 
-What it costs is that one citation form no longer answers everywhere. A body under `claude/` cites the plugin root, a rule and a seed call `aitk standards <name>`, and a file staying in this repository cites `standards/<name>.md`, which `internal/rules/claude/598-authoring-layout.md` now states as one case apiece rather than as a single spelling. A reader has to know which surface they are on, and nothing checks that they got it right: `DEFAULT_FOLDERS` in `src/context/folders.ts` covers `context`, `diagrams`, and `wireframes`, so the citation gate never resolved a `.claude/standards/` path and would not have reported one left behind. The sweep that moved them was a grep rather than a check. Measured at `7374bb51` on 2026-08-28.
+What it costs is that one citation form no longer answers everywhere. A body under `claude/` cites the plugin root, a rule and a seed call `canon standards <name>`, and a file staying in this repository cites `standards/<name>.md`, which `internal/rules/claude/598-authoring-layout.md` now states as one case apiece rather than as a single spelling. A reader has to know which surface they are on, and nothing checks that they got it right: `DEFAULT_FOLDERS` in `src/context/folders.ts` covers `context`, `diagrams`, and `wireframes`, so the citation gate never resolved a `.claude/standards/` path and would not have reported one left behind. The sweep that moved them was a grep rather than a check. Measured at `7374bb51` on 2026-08-28.
 
 ## What closing the install channel removed
 
-`aitk standards install` copied the flat root into a target and `aitk standards sync` reconciled it afterward. Both are gone, with `src/standards/install.ts`, `src/standards/adapter.ts`, `src/standards/index-refresh.ts`, and `src/standards/closure.ts`. The domain left `SCANNED_DOMAINS`, `SYNC_DOMAINS`, `STAMP_DOMAINS`, and the root layouts `detectUnmigrated` walks, and `aitk init` lost its `Standards` step and its `--standards` flag.
+`canon standards install` copied the flat root into a target and `canon standards sync` reconciled it afterward. Both are gone, with `src/standards/install.ts`, `src/standards/adapter.ts`, `src/standards/index-refresh.ts`, and `src/standards/closure.ts`. The domain left `SCANNED_DOMAINS`, `SYNC_DOMAINS`, `STAMP_DOMAINS`, and the root layouts `detectUnmigrated` walks, and `canon init` lost its `Standards` step and its `--standards` flag.
 
 Every copy was a file sync had to reconcile forever, and a filed issue measured what that cost when the source layout moved: five standards relocated into a subfolder were skipped as not in toolkit source and sat 12 to 45 lines behind, with no command able to refresh them.
 
@@ -49,28 +49,28 @@ The reference is deleted rather than left beside the standard, since publishing 
 
 Both govern a gitignored folder no check reaches, which puts them in one class with the plan and memory standards rather than leaving each to find its own answer. `.claude/hooks/standards-audit.sh` exits early on the scratch paths and the audit skill reads changed files from git, which never lists a gitignored one, so all four were enforced by a session reading them and by nothing else.
 
-The precedent extended is `aitk tasks validate`, which reports against the board without writing, and reporting is what makes a verb safe over a folder with no history to recover from. `aitk records validate <kind>` now covers all four, `memory` having landed with its standard rather than as a second command.
+The precedent extended is `canon tasks validate`, which reports against the board without writing, and reporting is what makes a verb safe over a folder with no history to recover from. `canon records validate <kind>` now covers all four, `memory` having landed with its standard rather than as a second command.
 
 A fifth kind reads this corpus rather than a gitignored folder, and it keeps the reporting discipline on the opposite reason. A standard is tracked and cited by bare filename across the tree, so the risk a write carries is a rename reaching further than the file it moved rather than a repair nothing can undo. `.claude/context/cli/audits.md` holds the check and its two roots.
 
 ## Which route a reader actually takes
 
-A shipped body names one path for a standard, and the command route is what nearly none takes. Of the 62 shipped bodies, 40 name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` and 7 call `aitk standards` where a resolved root rather than a named file is what they want. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`. Measured on 2026-08-25.
+A shipped body names one path for a standard, and the command route is what nearly none takes. Of the 62 shipped bodies, 40 name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` and 7 call `canon standards` where a resolved root rather than a named file is what they want. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`. Measured on 2026-08-25.
 
 The two-branch citation those 38 replaced named an installed path first and the plugin root behind it. Both branches resolved while the corpus still installed, which is what hid a partial sweep, so the collapse ran as one pass rather than riding along with each skill's next edit.
 
 A grep for the installed prefix comes back at 25 lines across 18 files outside the fixture trees, and none of them is a citation. Six classes account for every one, and a line matching none of them is a live citation the sweep missed:
 
-- A target's own stale folder, inert and safe to delete, covering `aitk-cli`, `docs/target-projects.md`, `docs/agents/records.md`, and the gotcha below.
+- A target's own stale folder, inert and safe to delete, covering `canon-cli`, `docs/target-projects.md`, `docs/agents/records.md`, and the gotcha below.
 - The rule forbidding the citation, covering `standards/skill.md` and `create-standard`'s requirement.
 - A dated record of a past mechanism or measurement, covering `.claude/ARCHITECTURE.md`, `destinations.md`, and `distribution.md`.
 - Fixture or test data, covering `scripts/sandbox/`, `scripts/eval/`, and every `*.test.ts`.
 - A marker-syntax illustration, covering `src/context/citations.ts`.
-- The label-map prefix kept so a diff deleting the folder stays covered, covering `.claude/aitk/pr-labels.toml`.
+- The label-map prefix kept so a diff deleting the folder stays covered, covering `.claude/canon/pr-labels.toml`.
 
 Run that classification rather than a bare grep. The first sweep moved 64 citations and left three lines stating the mirror as live, in `orchestration.md`, `sandbox/overview.md`, and `scripts/eval.md`, each of which reads as prose about a folder until the rule is applied to it. Nothing here is checkable, so the classification is the whole of the discipline.
 
-The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its second root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in any target. `<aitk>` is how a resolve from that root spells itself, since the other label is project-relative and a report could join it to a root.
+The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its second root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in any target. `<canon>` is how a resolve from that root spells itself, since the other label is project-relative and a report could join it to a root.
 
 `infra:standards read` is the arm that covers it, and `.claude/context/sandbox/coverage.md` records what the arm reaches and what it leaves to the plugin-root route. Measured on 2026-08-20.
 
@@ -81,8 +81,8 @@ The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped 
 - Do not hand-edit `standards/index.md` here. `regen-indexes.sh` rewrites it from the frontmatter of whatever is present, and a standard missing `title` or `description` fails that regen.
 - `bun run check` no longer regenerates anything for this corpus, and the Consumed copies stage names `.claude/rules` alone. Editing `standards/<name>.md` needs no second file staged behind it. There is no skill-reference fan-out either, since a `references/` file is skill-local now and edited in place.
 - A grep for `standards install` or `standards sync` in a skill body or a doc is a stale citation, not a verb. Neither exists.
-- The two read routes return different bytes. `aitk standards <name>` runs its file through `stripFrontmatter` at `src/standards/read.ts:99`, so stdout opens at the H1, while the `content` field of `aitk standards list --json` carries the source whole. Anything comparing a target's leftover copy against the corpus reads the catalog, since an install copied the source file whole and the verb's output differs from it by the frontmatter block. Measured 2026-08-28: the catalog's `content` for `slug` is byte-identical to `standards/slug.md`.
+- The two read routes return different bytes. `canon standards <name>` runs its file through `stripFrontmatter` at `src/standards/read.ts:99`, so stdout opens at the H1, while the `content` field of `canon standards list --json` carries the source whole. Anything comparing a target's leftover copy against the corpus reads the catalog, since an install copied the source file whole and the verb's output differs from it by the frontmatter block. Measured 2026-08-28: the catalog's `content` for `slug` is byte-identical to `standards/slug.md`.
 - A standard citing a `docs/agents/` page resolves as a path here and nowhere else, since neither root carries a `docs/` tree. `standards/tasks.md` carries the first such pointer.
-- `aitk docs` answers in a target and stops one level short of that page. It prints a split domain's `index.md`, so `aitk docs agents` reaches the catalog and nothing names `tasks.md`, which `docs/agents/docs.md` records. Widening the verb to name a sub-area file is what would give the pointer above a spelling a target can run.
+- `canon docs` answers in a target and stops one level short of that page. It prints a split domain's `index.md`, so `canon docs agents` reaches the catalog and nothing names `tasks.md`, which `docs/agents/docs.md` records. Widening the verb to name a sub-area file is what would give the pointer above a spelling a target can run.
 
 A plan's measured claim that nothing covers an artifact can be false when the covering file sits in a source subfolder the mirror and the index both exclude, since every catalog read then reports it missing. One plan measured `standards/` at twelve files and concluded nothing governed a standard, while `standards/bundled/standard.md` already carried the overview, frontmatter, structure, rule, success-criterion, and example sections. `mirror_dir` excluded `*/bundled/*` and `standards/index.md` never listed it, so the listing the plan trusted was accurate and the conclusion drawn from it was not. Writing the planned new file would have duplicated it near-wholesale. The specific exclusion closed with the fan-out, since `standard.md` sits at the flat root now and every catalog read reaches it, but the general failure did not: glob a domain root recursively rather than reading its `index.md`, and where a match turns up in a subfolder a mirror or index excludes, the change is usually a promotion plus the one missing rule.

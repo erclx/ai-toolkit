@@ -7,7 +7,7 @@ import { readShipEntries, selectShipped } from '@/secrets/shipped'
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-shipped-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-shipped-'))
 })
 
 afterEach(() => {

@@ -119,7 +119,7 @@ function runDrift(overrides: Partial<CheckInput> = {}): Verdict {
 }
 
 beforeEach(() => {
-  sandbox = mkdtempSync(join(tmpdir(), 'aitk-expect-'))
+  sandbox = mkdtempSync(join(tmpdir(), 'canon-expect-'))
 })
 
 afterEach(() => {

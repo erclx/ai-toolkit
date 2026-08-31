@@ -1,5 +1,5 @@
 # What a correct `/claude-teach` run leaves behind on the resume arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The seeded workspace already holds a mission, a glossary, one reference page,
@@ -15,7 +15,7 @@
 # prompt this arm now carries. 40 is that count with room for a reply that runs
 # longer without the skill having changed.
 #
-# Run this arm with `AITK_SKILL_TEST_MAX_TURNS=60`. `scripts/sandbox/run.sh`
+# Run this arm with `CANON_SKILL_TEST_MAX_TURNS=60`. `scripts/sandbox/run.sh`
 # states the rule at its own `MAX_TURNS` default: this key is a ceiling asserted
 # after the run rather than a cap enforced during it, so a declaration cannot
 # raise what the arm runs under, and an arm needing more than the cap fails the
@@ -60,7 +60,7 @@ manual = [
   "The reply reports progress against the mission's four success lines. Semantic: the count sits in prose, and a pattern over it either pins one phrasing or matches any digit in the message.",
   "The new learning record names the wrong answer itself rather than a count of errors. Unwired: the record is written at the end of a session the harness does not drive to completion, so a run cut short leaves it absent and the assertion cannot separate that from a run that wrote a tally.",
   "A run whose invocation leaves the retrieval unanswered asks the two questions and stops. Unwired: that is Step 3 working, and it writes nothing, so it satisfies no assertion here. Measured twice on 2026-08-19 before the prompt carried the answers, at 17 turns writing nothing and at 32 turns writing the artifacts ahead of the answer. Two defensible readings of the same step, which is why the prompt settles it rather than the assertions.",
-  "The glossary and resources writes went through `aitk teach glossary` and `aitk teach resource` rather than being edited by hand. Unwired: the claim is about which commands were invoked, which the envelope does not carry, so a run that rewrote either file itself passes every assertion above. The verbs are the only route to those two files from a linked worktree, since the file-editing tools refuse the destination and the stream editors are banned, so the arm reaching neither is what leaves the route untested.",
+  "The glossary and resources writes went through `canon teach glossary` and `canon teach resource` rather than being edited by hand. Unwired: the claim is about which commands were invoked, which the envelope does not carry, so a run that rewrote either file itself passes every assertion above. The verbs are the only route to those two files from a linked worktree, since the file-editing tools refuse the destination and the stream editors are banned, so the arm reaching neither is what leaves the route untested.",
 ]
 
 # The seeded mission is not rewritten. A resume reads it and reports against it,

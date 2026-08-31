@@ -76,10 +76,10 @@ export function register(program: Command): void {
         '  2  at least one changed path is reached by no row',
         '',
         'Examples:',
-        '  aitk labels audit',
-        '  aitk labels audit --json',
-        '  aitk labels audit --base origin/main',
-        '  aitk labels audit src/cli.ts docs/index.md --json',
+        '  canon labels audit',
+        '  canon labels audit --json',
+        '  canon labels audit --base origin/main',
+        '  canon labels audit src/cli.ts docs/index.md --json',
         '',
       ].join('\n'),
     )
@@ -105,7 +105,7 @@ export function register(program: Command): void {
       'after',
       [
         '',
-        'Reads aitk standards versioning for the two namespaces and sorts every',
+        'Reads canon standards versioning for the two namespaces and sorts every',
         'version-shaped token this pull request carries into the one the pull',
         'request is allowed to hold. A release-please pull request, read off its',
         'own fixed head branch and title, may carry semver references. Every',
@@ -118,8 +118,8 @@ export function register(program: Command): void {
         '  2  the title or body carries a phase label',
         '',
         'Examples:',
-        '  aitk labels scan --event "$GITHUB_EVENT_PATH"',
-        '  aitk labels scan --title "feat: x" --body "planned under v68.5" --head feat/x',
+        '  canon labels scan --event "$GITHUB_EVENT_PATH"',
+        '  canon labels scan --title "feat: x" --body "planned under v68.5" --head feat/x',
         '',
       ].join('\n'),
     )
@@ -137,7 +137,7 @@ async function runAudit(paths: string[], opts: AuditOptions): Promise<number> {
     ...(paths.length > 0 && { paths }),
   })
 
-  intro('aitk labels audit')
+  intro('canon labels audit')
 
   // The frame renders on stderr in both modes and the record goes to stdout
   // alone, so an operator reading the terminal sees the refusal rather than a
@@ -309,7 +309,7 @@ function resolveScanInput(opts: ScanOptions): ResolvedScanInput {
 async function runScan(opts: ScanOptions): Promise<number> {
   const emitJson = opts.json ?? false
 
-  intro('aitk labels scan')
+  intro('canon labels scan')
 
   const resolved = resolveScanInput(opts)
 

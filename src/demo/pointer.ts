@@ -107,7 +107,7 @@ export function pointerSource(cursors: CursorSet, size: number): string {
 
   return `(() => {
   const CONFIG = ${config};
-  const ID = '__aitk_demo_pointer__';
+  const ID = '__canon_demo_pointer__';
   if (window[ID]) return;
   window[ID] = true;
 

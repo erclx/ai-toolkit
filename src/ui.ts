@@ -136,12 +136,12 @@ export function frameSuccess(command: string, target: string): void {
 }
 
 export function isNonInteractive(): boolean {
-  return process.env.AITK_NON_INTERACTIVE === '1'
+  return process.env.CANON_NON_INTERACTIVE === '1'
 }
 
 /**
  * `nonInteractiveDefault` opts a prompt into the `select_option` behavior from
- * `scripts/lib/ui.sh`, where `AITK_NON_INTERACTIVE=1` resolves to the first
+ * `scripts/lib/ui.sh`, where `CANON_NON_INTERACTIVE=1` resolves to the first
  * option instead of failing. Callers that would rather fail loudly than pick
  * for the user leave it off.
  */
@@ -183,7 +183,7 @@ export async function select<Value>(opts: {
   return new Promise<Value>((resolve) => {
     if (!process.stdin.isTTY) {
       process.stderr.write(
-        `${GREY}│${NC} ${RED}✗${NC} ${message} requires a TTY. Pass an argument or set AITK_NON_INTERACTIVE=1.\n${GREY}└${NC}\n`,
+        `${GREY}│${NC} ${RED}✗${NC} ${message} requires a TTY. Pass an argument or set CANON_NON_INTERACTIVE=1.\n${GREY}└${NC}\n`,
       )
       process.exit(1)
     }

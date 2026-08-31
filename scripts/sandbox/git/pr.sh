@@ -36,7 +36,7 @@ EOF
 
     log_step "Scenario ready: feature branch"
     log_info "Context: branch 'feature/string-utils' with un-pushed commits"
-    log_info "Action:  /aitk:git-pr"
+    log_info "Action:  /canon:git-pr"
     log_info "Expect:  agent renames branch -> pushes -> opens PR"
     ;;
   "reused-name")
@@ -94,7 +94,7 @@ EOF
 
     log_step "Scenario ready: branch name reused after a non-open PR"
     log_info "Context: PR #$stale_pr sits closed on 'feat/slugify', the name now carries unrelated truncate() work"
-    log_info "Action:  /aitk:git-pr"
+    log_info "Action:  /canon:git-pr"
     log_info "Expect:  agent opens a NEW pull request. PR #$stale_pr keeps its original title and body"
     ;;
   "draft-guard")
@@ -106,7 +106,7 @@ EOF
 
     log_step "Scenario ready: draft/init guard"
     log_info "Context: user forgot to run /git:branch before /git:pr"
-    log_info "Action:  /aitk:git-pr"
+    log_info "Action:  /canon:git-pr"
     log_info "Expect:  guard warning. Branch looks unset, run /git:branch first"
     ;;
   *)

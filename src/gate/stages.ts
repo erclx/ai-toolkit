@@ -189,7 +189,7 @@ export const STAGES: readonly Stage[] = [
         kind: 'drift',
         pathspec: 'assets/hero.html',
         failure:
-          'Hero counts drifted. Run bun run check, then aitk capture assets/hero.html, and commit assets/hero.html with assets/hero.png and assets/hero.stamp.',
+          'Hero counts drifted. Run bun run check, then canon capture assets/hero.html, and commit assets/hero.html with assets/hero.png and assets/hero.stamp.',
       },
       { kind: 'measure', measure: heroStamp },
     ],
@@ -202,9 +202,9 @@ export const STAGES: readonly Stage[] = [
       script('regen-tooling-paths.sh', 'Tooling-path regen failed'),
       {
         kind: 'drift',
-        pathspec: 'claude/skills/aitk-cli/SKILL.md',
+        pathspec: 'claude/skills/canon-cli/SKILL.md',
         failure:
-          'The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/aitk-cli/SKILL.md.',
+          'The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/canon-cli/SKILL.md.',
       },
     ],
     success: 'Tooling paths clean',
@@ -213,7 +213,7 @@ export const STAGES: readonly Stage[] = [
     // The claude manifest is the only route a target's ignore set travels, and
     // it is hand-maintained beside this repository's own `.gitignore` with
     // nothing comparing the two. A drift between them reaches every target on
-    // the next `aitk tooling sync` and surfaces to nobody, which is why this
+    // the next `canon tooling sync` and surfaces to nobody, which is why this
     // gates rather than reports. It is not a drift assert: no generator
     // produces either list, so there is nothing to regenerate and diff.
     id: 'ignore-parity',
@@ -265,7 +265,7 @@ export const STAGES: readonly Stage[] = [
     // A stack entry naming a rule folder takes every rule in it, which is what
     // stops a new rule from needing a second edit to reach a target. The
     // failure it leaves open is a rule authored into a folder no stack names,
-    // which `aitk gov install` never reaches on its own.
+    // which `canon gov install` never reaches on its own.
     id: 'unreferenced-rules',
     label: 'Unreferenced rules',
     checks: [{ kind: 'measure', measure: unreferencedRules }],

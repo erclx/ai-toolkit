@@ -1,5 +1,5 @@
 # What a correct `/claude-orchestrate` run reports against the staged board.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The skill reads a board and reports state, writing nothing, so the reply
@@ -65,7 +65,7 @@ absent = [
 # substrings and a regex over prose goes red on any rewording.
 #
 # The surviving route is spelled without a leading slash. A session invoking
-# through the plugin writes `/aitk:claude-autoship`, which carries the bare name
+# through the plugin writes `/canon:claude-autoship`, which carries the bare name
 # and not the slashed one, so the shorter token survives either spelling.
 #
 # `Next:` is the output contract's last slot. It asserts the slot rather than the

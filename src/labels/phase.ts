@@ -29,8 +29,8 @@ const VERSION_TOKEN = /\bv\d+(?:\.\d+){1,2}\b/g
 /**
  * The head branch release-please opens every release pull request under.
  *
- * `release-please-config.json` names the package `aitk`, so the observed
- * branch is `release-please--branches--main--components--aitk`. The prefix
+ * `release-please-config.json` names the package `canon`, so the observed
+ * branch is `release-please--branches--main--components--canon`. The prefix
  * stops short of the component segment, since that segment moves with the
  * package name and the branch segment does not.
  */
@@ -58,7 +58,7 @@ function isReleasePullRequest(input: PhaseScanInput): boolean {
  * so a token quoted rather than written is read the way a reader reads it:
  * shown, not asserted.
  *
- * `aitk markdown audit` excludes a fenced block and a code span from its own
+ * `canon markdown audit` excludes a fenced block and a code span from its own
  * ban scan over the same kind of text, and this reuses that reading rather
  * than inventing a second one. `#1208` is the corpus case that forced it: a
  * backticked span quoting a test fixture's own version-shaped name, which the

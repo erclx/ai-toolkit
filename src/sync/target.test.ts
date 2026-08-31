@@ -13,7 +13,7 @@ import {
 const dirs: string[] = []
 
 async function makeTarget(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'aitk-sync-target-'))
+  const dir = await mkdtemp(join(tmpdir(), 'canon-sync-target-'))
   dirs.push(dir)
   return dir
 }

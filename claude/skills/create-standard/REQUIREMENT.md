@@ -32,4 +32,4 @@ A standard written and left there is the third. The index entry and the context 
 - Editing a standard that already exists
 - A snippet, which `create-snippet` owns
 - A path-scoped coding rule, which `create-rule` owns
-- Reading a standard the toolkit ships, which `aitk standards <name>` owns
+- Reading a standard the toolkit ships, which `canon standards <name>` owns

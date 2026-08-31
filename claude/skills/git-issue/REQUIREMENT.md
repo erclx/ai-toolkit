@@ -33,6 +33,6 @@ Without this skill, an issue takes the shape of whatever the session was saying.
 
 ## Out of scope
 
-- Reporting a toolkit defect from a target project, which `aitk-feedback-file` owns. That path writes into the toolkit rather than the current repository.
-- Triaging issues already filed, which `aitk-feedback-triage` owns
+- Reporting a toolkit defect from a target project, which `canon-feedback-file` owns. That path writes into the toolkit rather than the current repository.
+- Triaging issues already filed, which `canon-feedback-triage` owns
 - Opening a pull request, which `git-pr` owns

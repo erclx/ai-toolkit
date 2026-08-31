@@ -12,10 +12,10 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` before writing any file. It 
 ## Guards
 
 - Resolve the board at the main worktree root, not `pwd`. Run `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` outside a git repo. Every read and write below resolves against that root. The board is gitignored scratch shared across worktrees, so a linked worktree writing to its own `pwd` creates a second board nothing else reads.
-- From a linked worktree the file-editing tools refuse that root, so a new task file goes out through `Bash` as a plain single command carrying a heredoc. Archiving already runs through `aitk tasks archive`, which resolves the root in-process. Marking an outcome shipped is `claude-docs` and runs through `aitk tasks outcome`. See Worktrees in `CLAUDE.md`.
-- If `.claude/tasks/` does not exist at that root, stop: `❌ No .claude/tasks/ board. Run aitk claude init to set it up.`
+- From a linked worktree the file-editing tools refuse that root, so a new task file goes out through `Bash` as a plain single command carrying a heredoc. Archiving already runs through `canon tasks archive`, which resolves the root in-process. Marking an outcome shipped is `claude-docs` and runs through `canon tasks outcome`. See Worktrees in `CLAUDE.md`.
+- If `.claude/tasks/` does not exist at that root, stop: `❌ No .claude/tasks/ board. Run canon claude init to set it up.`
 - Route on the request rather than on a flag. Creating names work that does not exist yet, archiving names a task file already on the board. If the request fits neither, stop: `❌ Ambiguous. Say whether to create a task or archive one.`
-- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter after a write. Do not run the regen command directly, except after a shell write from a linked worktree: the hook matches `Write|Edit|MultiEdit` and nothing fires on `Bash`, so that one case regenerates explicitly with `aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/tasks/index.md`.
+- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter after a write. Do not run the regen command directly, except after a shell write from a linked worktree: the hook matches `Write|Edit|MultiEdit` and nothing fires on `Bash`, so that one case regenerates explicitly with `canon indexes regen --no-stage --root <main-root> <main-root>/.claude/tasks/index.md`.
 
 ## Create
 
@@ -57,7 +57,7 @@ Scan for work that has been decided and would otherwise be forgotten. Three orig
 
 List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
 
-Read the dumps through `aitk intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/tasks/archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
+Read the dumps through `canon intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/tasks/archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
 
 A dump is the stronger case for this scan rather than the weaker one. A track holds one question and stays visible, while a dump holds dozens of items whose verdicts were reached and then left with nothing carrying them forward.
 
@@ -80,7 +80,7 @@ Say the origins were read even when nothing comes back, which is the ordinary re
 
 The `post-merge` git hook archives the task a merge closed, so a request arriving here is usually one the hook could not resolve on its own. Run the steps below against whatever the hook left in place.
 
-Do not move the file, edit `priority.md`, or regenerate the index by hand. `aitk tasks archive` owns all three as one unit and the hook calls the same command, so a hand-rolled move here drifts from the unattended path.
+Do not move the file, edit `priority.md`, or regenerate the index by hand. `canon tasks archive` owns all three as one unit and the hook calls the same command, so a hand-rolled move here drifts from the unattended path.
 
 ### Step 1: confirm the work reached main
 
@@ -99,10 +99,10 @@ The board is gitignored, so an archived task has no history behind it and nothin
 Pass the task's filename stem, or the pull request number when the request names one:
 
 ```bash
-aitk tasks archive <stem> --json
+canon tasks archive <stem> --json
 ```
 
-The command refuses rather than reports, and the refusal reaches this skill through the record rather than through the exit. Branch on `ok`, then on `reason`. An operator's shell profile may wrap `aitk` in a function that runs the binary and then a second command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
+The command refuses rather than reports, and the refusal reaches this skill through the record rather than through the exit. Branch on `ok`, then on `reason`. An operator's shell profile may wrap `canon` in a function that runs the binary and then a second command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
 
 On success the record carries `from`, `to`, `priorityRowRemoved`, and `indexRegenerated`, which is what moved, what row it cleared, and whether the index changed.
 

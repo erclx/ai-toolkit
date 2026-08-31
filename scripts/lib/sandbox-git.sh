@@ -93,8 +93,8 @@ ensure_sandbox_anchor_repo() {
   # performed, and provisioning stages a fixture rather than cloning while every
   # scenario force-pushes to main, so a repository created here would carry all
   # nine to a pass against something that is not the anchor. Refusing is the safe
-  # default and creating is the opt-in, the shape `aitk tooling sync --write`
-  # already sets. `aitk records push` refuses outright for the reason
+  # default and creating is the opt-in, the shape `canon tooling sync --write`
+  # already sets. `canon records push` refuses outright for the reason
   # `.claude/context/development/scratch.md` records, so the two still differ.
   # The sibling SANDBOX_ flags are presence tests, so any non-empty value turns
   # them on. This one allowlists instead, because a presence test would have

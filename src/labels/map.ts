@@ -8,7 +8,7 @@ import { join } from 'node:path'
  * across four surfaces. Nothing in code spells it anywhere else, so the next
  * move is one edit here rather than a sweep.
  */
-export const MAP_REL = join('.claude', 'aitk', 'pr-labels.toml')
+export const MAP_REL = join('.claude', 'canon', 'pr-labels.toml')
 
 /** A label name and the path prefixes that earn it, in the map's own order. */
 export interface DomainRow {

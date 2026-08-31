@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow the requirements standard for what belongs in the problem, goals, non-goals, MVP features, tech stack, and constraints. It is the single source. Read it with `aitk standards requirements`.
+- Follow the requirements standard for what belongs in the problem, goals, non-goals, MVP features, tech stack, and constraints. It is the single source. Read it with `canon standards requirements`.

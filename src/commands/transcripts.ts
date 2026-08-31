@@ -21,7 +21,7 @@ export function register(program: Command): void {
       const outDir = resolve(process.cwd(), opts.out)
       const { GREEN, GREY, NC, RED, WHITE } = palette(process.stderr)
       process.stderr.write(
-        `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}aitk transcripts${NC}\n`,
+        `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}canon transcripts${NC}\n`,
       )
       try {
         ensureYtDlp()

@@ -54,7 +54,7 @@ export type AuditStatus =
 export interface AuditSpec {
   readonly id: string
   readonly label: string
-  /** Arguments after `aitk`, always ending in `--json`. */
+  /** Arguments after `canon`, always ending in `--json`. */
   readonly argv: readonly string[]
   /**
    * Exit codes this verb sets on a finding that is a fact.
@@ -270,7 +270,7 @@ function markdownCounts(record: unknown): Record<string, number> | undefined {
   return { bans, heavyBullets, heavyParagraphs, filesPastDepth, flatParagraphs }
 }
 
-/** The finding arrays `aitk claude skills audit` publishes, in its own order. */
+/** The finding arrays `canon claude skills audit` publishes, in its own order. */
 const SKILL_FINDINGS = [
   'missingRequirement',
   'nameMismatch',
@@ -456,7 +456,7 @@ function testOrderCounts(record: unknown): Record<string, number> | undefined {
   })
 }
 
-/** The record kinds `aitk records validate` takes, and the corpus each reads. */
+/** The record kinds `canon records validate` takes, and the corpus each reads. */
 const RECORD_KINDS: readonly (readonly [string, Corpus])[] = [
   ['plans', 'per-machine'],
   ['groundwork', 'per-machine'],
@@ -572,7 +572,7 @@ export const AUDITS: readonly AuditSpec[] = [
     corpus,
     // `standards` is the one tracked kind here, so it takes none of the
     // per-machine default the other five inherit from their corpus. A target
-    // reads standards through `aitk standards` rather than a copy in its own
+    // reads standards through `canon standards` rather than a copy in its own
     // tree, so carrying no standards folder at all is the
     // ordinary state of every project but this repository.
     ...(kind === 'standards' && {

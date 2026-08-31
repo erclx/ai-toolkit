@@ -83,8 +83,8 @@ EOF
   log_info "  so review-user-batch.md is evidence the fallback resolved"
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
-  log_info "Action:  /aitk:claude-review"
+  log_info "Action:  /canon:claude-review"
   log_info "Expect:  declared in fixtures/claude/review/expect.toml"
-  log_info "         Check it with: aitk sandbox check claude:review"
+  log_info "         Check it with: canon sandbox check claude:review"
   log_info "         One assertion is mechanical. Four claims need a reader."
 }

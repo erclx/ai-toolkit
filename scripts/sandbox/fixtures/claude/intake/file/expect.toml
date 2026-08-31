@@ -1,5 +1,5 @@
 # What a correct `/claude-intake` run leaves behind on the file arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The folder is gitignored in every target, so nothing in the repository checks

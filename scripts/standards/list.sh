@@ -12,7 +12,7 @@ STANDARDS_DIR="$PROJECT_ROOT/standards"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk standards list [options]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} canon standards list [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --json       ${GREY}# Emit machine-readable JSON${NC}"
@@ -61,7 +61,7 @@ list_text() {
 
 # No `target` field. It named where a standard installed, and nothing installs
 # one now, so every value it could carry is either a path only this repository
-# has or a duplicate of what `aitk standards <name>` reports. `content` already
+# has or a duplicate of what `canon standards <name>` reports. `content` already
 # carries the document, which is what a consumer wanted the path for.
 list_json() {
   local first=1

@@ -81,13 +81,13 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk tooling sync base',
-        '  aitk tooling sync base --check',
-        '  AITK_NON_INTERACTIVE=1 aitk tooling sync base --write',
+        '  canon tooling sync base',
+        '  canon tooling sync base --check',
+        '  CANON_NON_INTERACTIVE=1 canon tooling sync base --write',
         '',
         'To gate CI on tooling drift, run headlessly with neither flag. That',
         'exits 1 when a file would be replaced and 0 when none would, which is',
-        'what `aitk sync --check --exit-code` spells with a flag. Pass --check',
+        'what `canon sync --check --exit-code` spells with a flag. Pass --check',
         'to report the same list and always exit 0.',
         '',
       ].join('\n'),
@@ -143,12 +143,12 @@ export function register(program: Command): void {
       [
         '',
         'A stack resolves under tooling/ at the working root, then the corpus',
-        'inside the aitk package. No reference installs into a project, so the',
+        'inside the canon package. No reference installs into a project, so the',
         'package corpus is what answers there. The frame names the copy it read.',
         '',
         'Examples:',
-        '  aitk tooling reference base',
-        '  aitk tooling reference vite-react',
+        '  canon tooling reference base',
+        '  canon tooling reference vite-react',
         '',
       ].join('\n'),
     )
@@ -187,7 +187,7 @@ function runList(opts: ListOptions): number {
     return 0
   }
 
-  intro('aitk tooling list')
+  intro('canon tooling list')
   logStep('Stacks')
   for (const summary of stacks) logInfo(describeStack(summary))
   outro()
@@ -200,7 +200,7 @@ function runList(opts: ListOptions): number {
  * `print` in `src/commands/standards.ts`.
  */
 function printReference(stack: string): number {
-  intro('aitk tooling reference')
+  intro('canon tooling reference')
 
   const root = process.cwd()
   const resolved = resolveReference(root, stack)
@@ -209,7 +209,7 @@ function printReference(stack: string): number {
     logWarn(`Unknown stack: ${stack}`)
     logStep('Available stacks')
     for (const each of listStacks(PROJECT_ROOT)) logInfo(each)
-    logError("Run 'aitk tooling list' for descriptions.")
+    logError("Run 'canon tooling list' for descriptions.")
     outro()
     return 1
   }
@@ -225,7 +225,7 @@ function printReference(stack: string): number {
  * stack name fails before anything touches the target.
  *
  * The excluded-stack guard is deliberately not here. It lived in the sync
- * entry point, so `aitk claude` can still drive injection for the `claude`
+ * entry point, so `canon claude` can still drive injection for the `claude`
  * stack the way it drove `merge_gitignore` before.
  */
 function prepare(stack: string, target: string, skip?: string): Prepared {
@@ -266,7 +266,7 @@ async function runSync(
   target: string,
   opts: SyncOptions,
 ): Promise<number> {
-  intro('aitk tooling sync')
+  intro('canon tooling sync')
 
   if (opts.check === true && opts.write === true) {
     logWarn('Pass --check or --write, not both.')
@@ -283,7 +283,7 @@ async function runSync(
 
   if (isStackExcluded(selected)) {
     logWarn(
-      'Claude is managed by `aitk claude`, not `aitk tooling`. Run `aitk claude sync` instead.',
+      'Claude is managed by `canon claude`, not `canon tooling`. Run `canon claude sync` instead.',
     )
     outro()
     return 1
@@ -412,7 +412,7 @@ async function runInject(
   opts: InjectOptions,
 ): Promise<number> {
   const framed = opts.nested !== true
-  if (framed) intro('aitk tooling inject')
+  if (framed) intro('canon tooling inject')
 
   const prepared = prepare(stack, target)
   if (!prepared.ok) {
@@ -439,7 +439,7 @@ async function runInject(
   // Only a whole-stack inject records the chain. A flag-scoped run installs one
   // category, and a chain recorded from it would send the report scanning for
   // configs and deps the caller never asked to install. The claude stack is
-  // excluded here rather than in `prepare`, which is what keeps `aitk claude`
+  // excluded here rather than in `prepare`, which is what keeps `canon claude`
   // able to drive injection while its stack stays out of the tooling record.
   if (applyAll && !isStackExcluded(stack)) {
     await stampChain(prepared.chain, prepared.target)
@@ -459,7 +459,7 @@ async function runPrune(
   opts: PruneOptions,
 ): Promise<number> {
   const framed = opts.nested !== true
-  if (framed) intro('aitk tooling prune-gitignore')
+  if (framed) intro('canon tooling prune-gitignore')
 
   const prepared = prepare(stack, target)
   if (!prepared.ok) {

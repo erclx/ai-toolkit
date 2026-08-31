@@ -166,7 +166,7 @@ describe('the framed writers', () => {
     withEnv(undefined, () => {
       asTerminal(() => {
         const output = captureStderr(() => {
-          frameSuccess('aitk sync', '../my-app')
+          frameSuccess('canon sync', '../my-app')
         })
         expect(output).toMatch(SGR)
       })
@@ -177,10 +177,10 @@ describe('the framed writers', () => {
     withEnv('1', () => {
       asTerminal(() => {
         const output = captureStderr(() => {
-          frameSuccess('aitk sync', '../my-app')
+          frameSuccess('canon sync', '../my-app')
         })
         expect(output).not.toMatch(SGR)
-        expect(output).toContain('aitk sync')
+        expect(output).toContain('canon sync')
       })
     })
   })

@@ -132,7 +132,7 @@ EOF
   log_info "  .claude/diagrams/ has no entries and .claude/DIAGRAMS.md exists → this is a migration pass"
   log_info "  Three H2 sections map to components, request flow, and deployment"
   log_info "  No section maps to system context, so that kind stays absent this pass"
-  log_info "Action: /aitk:claude-diagram"
+  log_info "Action: /canon:claude-diagram"
   log_info "Expect: three entries under .claude/diagrams/, one per H2 section"
   log_info "  Named by the standard: components.md, request-flow.md, deployment.md"
   log_info "Expect: each mermaid body carried across unchanged, not redrawn"

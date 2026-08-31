@@ -20,7 +20,7 @@ export type FileScope =
   | { readonly kind: 'unavailable' }
 
 /**
- * Every reason `aitk markdown audit` refuses for.
+ * Every reason `canon markdown audit` refuses for.
  *
  * None is an ordinary absence. `no-git` is a broken checkout the way it is
  * for the secret scan, and a tree tracked by git carrying no markdown file at

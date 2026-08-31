@@ -55,8 +55,8 @@ export function register(program: Command): void {
         'install tree and is refused rather than reinstalled over.',
         '',
         'Examples:',
-        '  aitk upgrade',
-        '  aitk upgrade --json',
+        '  canon upgrade',
+        '  canon upgrade --json',
         '',
       ].join('\n'),
     )
@@ -74,7 +74,7 @@ async function runUpgrade(opts: UpgradeOptions): Promise<number> {
   const installed = readInstalled()
   const before = installed.version ?? UNKNOWN_LABEL
 
-  intro('aitk upgrade')
+  intro('canon upgrade')
   logStep('Installed')
   logInfo(`${installed.name ?? UNKNOWN_LABEL} ${before}`)
   logInfo(PROJECT_ROOT)

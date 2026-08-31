@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-worker` run leaves behind when the plan in hand
-# carries a question the session may not answer. Read by `aitk sandbox check`.
+# What a correct `/canon:claude-worker` run leaves behind when the plan in hand
+# carries a question the session may not answer. Read by `canon sandbox check`.
 # Patterns use TOML literal strings so a regex needs no backslash escaping.
 
 # The arm exists for two measured runs on 2026-08-28. Both workers correctly

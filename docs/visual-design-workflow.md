@@ -22,7 +22,7 @@ Claude Code reads both and writes the implementation. Works for CLI tools, inter
 
 The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template with a starting set of roles, and `standards/design.md` carries the same tables under `## Template` with placeholder rows. The column headers are what the renderer parses, so they stay verbatim in either, while the rows and values are the project's own.
 
-The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
+The `canon:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `canon design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
 
 A cell no source anchors ends in `? verify`, and the preview shows that marker beside the value rather than folding it in, so a swatch and a font sample stay built from the value alone. A confidence line above the sections names how many cells are anchored against how many are tagged, which is what tells a reader whether they are looking at a record of the code or a proposal about it. It reads the columns a source could anchor and leaves out the row names, so the ratio is not diluted by cells no tag could ever reach. The proposal path tags nearly all of them, so that count reads low on day one by design.
 
@@ -33,10 +33,10 @@ A cell no source anchors ends in `? verify`, and the preview shows that marker b
 
 ### Skills
 
-- `aitk:claude-design-extract` to draft `.claude/DESIGN.md`, from existing project signals or from requirements alone on day one
-- `aitk:claude-ui-test` for e2e test generation after UI changes
-- `aitk:claude-ux-audit` for UX gap detection on existing surfaces
-- `aitk:claude-ux-measure` for what a running surface costs to paint, read against published thresholds
+- `canon:claude-design-extract` to draft `.claude/DESIGN.md`, from existing project signals or from requirements alone on day one
+- `canon:claude-ui-test` for e2e test generation after UI changes
+- `canon:claude-ux-audit` for UX gap detection on existing surfaces
+- `canon:claude-ux-measure` for what a running surface costs to paint, read against published thresholds
 - Anthropic's `frontend-design` plugin optional for light visual steering
 
 ### When to pick

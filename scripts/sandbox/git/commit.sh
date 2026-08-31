@@ -18,6 +18,6 @@ stage_setup() {
 
   log_step "Scenario ready: staged changes (config update)"
   log_info "Context: modified 'config.js' (MAX_CONNECTIONS string -> number)"
-  log_info "Action:  /aitk:git-commit"
+  log_info "Action:  /canon:git-commit"
   log_info "Expect:  generates conventional commit message"
 }

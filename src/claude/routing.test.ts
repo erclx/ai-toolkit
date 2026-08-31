@@ -19,7 +19,7 @@ function write(rel: string, text: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-routing-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-routing-'))
 })
 
 afterEach(() => {
@@ -41,7 +41,7 @@ describe('namedPaths', () => {
 
   it('should reject a flag, a bare word, and a version string', () => {
     expect(
-      namedPaths('- Pass `--json` to `aitk`, released as `3.6.0`.'),
+      namedPaths('- Pass `--json` to `canon`, released as `3.6.0`.'),
     ).toEqual([])
   })
 

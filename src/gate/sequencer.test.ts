@@ -359,7 +359,7 @@ describe('assertStampField', () => {
   let stamp: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-gate-stamp-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-gate-stamp-'))
     source = join(root, 'hero.html')
     stamp = join(root, 'hero.stamp')
     writeFileSync(source, '<p>frame</p>')

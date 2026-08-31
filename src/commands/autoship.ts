@@ -59,8 +59,8 @@ export function register(program: Command): void {
         '  2  review is needed, with the file and the test it failed named',
         '',
         'Examples:',
-        '  aitk autoship classify docs/index.md README.md',
-        '  aitk autoship classify --json .claude/skills/deploy-check/SKILL.md',
+        '  canon autoship classify docs/index.md README.md',
+        '  canon autoship classify --json .claude/skills/deploy-check/SKILL.md',
         '',
       ].join('\n'),
     )
@@ -73,7 +73,7 @@ function runClassify(paths: string[], opts: ClassifyOptions): number {
   const emitJson = opts.json ?? false
   const result = classifyChanges(paths)
 
-  intro('aitk autoship classify')
+  intro('canon autoship classify')
 
   // The frame renders on stderr in both modes and the record goes to stdout
   // alone, so an operator reading the terminal sees the refusal rather than a

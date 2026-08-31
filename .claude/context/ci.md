@@ -43,11 +43,11 @@ The push trigger exists to give the README's CI badge a default-branch run to re
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In the stage table it sits before the tests for the same reason, since it reports in about a second and the suite does not.
 
-`phase-label-gate.yml` runs `aitk labels scan` against `$GITHUB_EVENT_PATH`, since a pull request body is the one thing no stage in `bun run check` can see. It sits outside `verify.yml` rather than as a second job there, and the split turns on `types:` rather than on cost: this check exists to catch a title or body edited with no new commit, which needs `edited` on the trigger, and adding that to the shared trigger would re-run the whole Static Checks job on every such edit.
+`phase-label-gate.yml` runs `canon labels scan` against `$GITHUB_EVENT_PATH`, since a pull request body is the one thing no stage in `bun run check` can see. It sits outside `verify.yml` rather than as a second job there, and the split turns on `types:` rather than on cost: this check exists to catch a title or body edited with no new commit, which needs `edited` on the trigger, and adding that to the shared trigger would re-run the whole Static Checks job on every such edit.
 
 It tells a release-please pull request apart from an ordinary one by two fixed signals rather than a label: the head branch prefix `release-please--branches--main` and the title prefix `chore(main): release `. Either alone is a string an ordinary pull request could reproduce to slip a leaked phase label past the check, so both have to hold together.
 
-The scan reads a title and a body with every fenced block dropped and every inline code span blanked first, the same two exclusions `aitk markdown audit` takes from its own ban scan over the same kind of text. A link destination stays unmasked, unlike the ban scan's reading, because a release-please body's real semver reference sits inside its generated compare link and masking it would empty the record on the one pull request the check exists to pass.
+The scan reads a title and a body with every fenced block dropped and every inline code span blanked first, the same two exclusions `canon markdown audit` takes from its own ban scan over the same kind of text. A link destination stays unmasked, unlike the ban scan's reading, because a release-please body's real semver reference sits inside its generated compare link and masking it would empty the record on the one pull request the check exists to pass.
 
 `#1208` is the corpus case that forced the code-span exclusion: a backticked span quoting a test fixture's own version-shaped name, found by driving the scan against all 48 merged feature pull requests rather than reading them.
 
@@ -71,7 +71,7 @@ Read `no checks reported on the '<branch>' branch` as a possible merge conflict 
 
 A shields.io badge URL returns HTTP 200 whether or not the query resolves, so verifying a badge by status code alone passes one that renders `no status`. `verify.yml` triggers on `pull_request` and `workflow_dispatch` only, so the CI badge written as `?branch=main` had no run to report and rendered `build: no status` behind a 200, and dropping the branch filter gave `build: passing`. Curl the URL and grep the rendered `<title>` for the value it reports, since a branch-filtered workflow-status badge needs the workflow to actually trigger on that branch.
 
-An exit-code flag may count only states some documented action can drive to zero, since a permanent condition makes the gate unpassable rather than informative. `aitk sync --check --exit-code` counted `orphaned`, so a single local rule in `.claude/rules/` returned 1 on every run with no remedy, verified against a fresh install. For each state a gate counts, name the action that clears it, and where there is none, exclude it and report it separately.
+An exit-code flag may count only states some documented action can drive to zero, since a permanent condition makes the gate unpassable rather than informative. `canon sync --check --exit-code` counted `orphaned`, so a single local rule in `.claude/rules/` returned 1 on every run with no remedy, verified against a fresh install. For each state a gate counts, name the action that clears it, and where there is none, exclude it and report it separately.
 
 The runner installs no browser binary, so a test needing one skips rather than fails and a green pipeline is not evidence that test ran. `src/demo/drive.e2e.test.ts` is the first test in this shape and guards itself with a launch probe, reporting the skip in its own header. Adding the install would slow every run for one suite, so the gap is recorded rather than closed, and a change to the demo driver is verified locally. The plugin CLI install above is the precedent for closing it if the count of such tests grows.
 
@@ -95,7 +95,7 @@ The tool writes four files, and prettier disagrees with its serialization of two
 
 ### The publish job
 
-A `publish` job on the same workflow ships the package to the registry as `@erclx/aitk`. It is gated on the `release_created` output rather than on the push, so it fires once per release rather than on every commit that lands on `main`, and it checks out `tag_name` so the tarball matches the tag rather than whatever `main` moved to afterward. It publishes with `--ignore-scripts`, because `npm publish` runs `prepare` before packing and `prepare` is `husky`, which a job that installs nothing cannot resolve. The registry credential is an `NPM_TOKEN` repository secret, the one piece of the release path that is not in version control.
+A `publish` job on the same workflow ships the package to the registry as `@erclx/canon`. It is gated on the `release_created` output rather than on the push, so it fires once per release rather than on every commit that lands on `main`, and it checks out `tag_name` so the tarball matches the tag rather than whatever `main` moved to afterward. It publishes with `--ignore-scripts`, because `npm publish` runs `prepare` before packing and `prepare` is `husky`, which a job that installs nothing cannot resolve. The registry credential is an `NPM_TOKEN` repository secret, the one piece of the release path that is not in version control.
 
 This job carries no `concurrency` group of its own. A push landing while it is mid-`npm publish` must never cancel it, since a cancelled publish leaves a tag and a GitHub release with no package behind them, so the cancel above stops at `release-please` and never reaches here.
 
@@ -127,7 +127,7 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 ## Checks
 
-Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `aitk gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the table marks each.
+Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `canon gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the table marks each.
 
 | Stage                     | Command                                                  | What it asserts                                                                             |
 | ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------- |

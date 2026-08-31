@@ -1,5 +1,5 @@
 # What a correct `/claude-docs` run leaves behind on the drift arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # Compared against the envelope's `num_turns`, which is not the same unit as the

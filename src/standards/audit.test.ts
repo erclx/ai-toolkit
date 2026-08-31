@@ -61,7 +61,7 @@ describe('auditStandards', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-standards-audit-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-standards-audit-'))
   })
 
   afterEach(() => {

@@ -13,7 +13,7 @@ interface GovStack {
 let target: string
 
 beforeEach(() => {
-  target = mkdtempSync(join(tmpdir(), 'aitk-verbs-'))
+  target = mkdtempSync(join(tmpdir(), 'canon-verbs-'))
 })
 
 afterEach(() => {

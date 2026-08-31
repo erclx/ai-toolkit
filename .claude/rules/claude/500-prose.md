@@ -8,7 +8,7 @@ paths:
 
 ## Authority
 
-- Load the `aitk:write-human` skill for voice, rhythm, sentence construction, and information density. It is the single source for all four.
+- Load the `canon:write-human` skill for voice, rhythm, sentence construction, and information density. It is the single source for all four.
 - Load it before drafting a passage, not after revising one.
 - Report it rather than proceeding silently when the skill does not resolve.
 - Do not work these rules from memory.

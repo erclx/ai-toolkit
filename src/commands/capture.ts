@@ -33,7 +33,7 @@ export function register(program: Command): void {
         const renderer = await loadRenderer()
         if (!renderer) {
           frameError(
-            'capture is toolkit-only and is absent from an installed aitk',
+            'capture is toolkit-only and is absent from an installed canon',
           )
           process.exitCode = 1
           return

@@ -1,11 +1,11 @@
 ---
 title: Indexes
-description: Flags, exit codes, and JSON shape for aitk indexes regen, plus when it auto-stages what it rewrote
+description: Flags, exit codes, and JSON shape for canon indexes regen, plus when it auto-stages what it rewrote
 ---
 
 # Indexes
 
-`aitk indexes regen` rewrites `index.md` files from sibling frontmatter. With no positional paths, it walks the current directory. With paths, each resolves by walking up to the nearest indexed ancestor, bounded by `--root`.
+`canon indexes regen` rewrites `index.md` files from sibling frontmatter. With no positional paths, it walks the current directory. With paths, each resolves by walking up to the nearest indexed ancestor, bounded by `--root`.
 
 Duplicates dedupe. The whole-repo walk prunes `.git`, `node_modules`, and anything `.gitignore` covers via `git check-ignore`.
 
@@ -29,7 +29,7 @@ When positional paths are passed inside a git repo, modified `index.md` files ar
 Skills can parse drift without branching on exit code:
 
 ```bash
-aitk indexes regen --dry-run --json | jq '.results[] | select(.action == "would-write")'
+canon indexes regen --dry-run --json | jq '.results[] | select(.action == "would-write")'
 ```
 
 For the system rationale, frontmatter contract, when to adopt, and bootstrap path, see `.claude/context/indexes.md`.

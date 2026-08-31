@@ -13,7 +13,7 @@ import {
 const dirs: string[] = []
 
 async function makeDir(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'aitk-seeds-'))
+  const dir = await mkdtemp(join(tmpdir(), 'canon-seeds-'))
   dirs.push(dir)
   return dir
 }

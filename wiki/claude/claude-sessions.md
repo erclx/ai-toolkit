@@ -25,7 +25,7 @@ The record each session writes for itself carries more than the listing renders,
 
 A consumer that has built the read marks a row it could not settle rather than dropping it. A session holding no branch and a session the read never reached are different answers, and rendering both as an absence hides the second behind the first. Liveness carries the same obligation, since the registry is not pruned and a process identifier can be reused, so a record outliving its session reads as live to anything that only probes the identifier.
 
-A branch name identifies a branch inside one repository rather than across a machine, so a consumer matching on one scopes the match or reaches a session working elsewhere. `aitk sessions list --branch` is one consumer's answer of this shape, and any consumer can build its own.
+A branch name identifies a branch inside one repository rather than across a machine, so a consumer matching on one scopes the match or reaches a session working elsewhere. `canon sessions list --branch` is one consumer's answer of this shape, and any consumer can build its own.
 
 ## Addressing a session
 

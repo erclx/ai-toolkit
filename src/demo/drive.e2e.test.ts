@@ -118,7 +118,7 @@ describe.skipIf(!hasBrowser)('drive against a served application', () => {
   let root: string
 
   beforeAll(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-demo-e2e-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-demo-e2e-'))
     const served = Bun.serve({
       port: 0,
       fetch: () =>
@@ -195,7 +195,7 @@ describe.skipIf(!hasBrowser)('drive against a served application', () => {
       await page.goto('about:blank')
 
       await page.evaluate((text) => {
-        window.__aitk_demo_caption__?.(text)
+        window.__canon_demo_caption__?.(text)
       }, 'Name the card')
 
       const shown = await page.evaluate(

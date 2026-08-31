@@ -20,13 +20,13 @@ An absent repository reports separately and refuses, naming both repairs, and `S
 ## Running
 
 ```bash
-aitk sandbox                        # interactive category + command picker
-aitk sandbox infra:gov install      # run a specific scenario non-interactively
-aitk sandbox reset                  # restore sandbox to baseline
-aitk sandbox clean                  # wipe sandbox entirely
+canon sandbox                        # interactive category + command picker
+canon sandbox infra:gov install      # run a specific scenario non-interactively
+canon sandbox reset                  # restore sandbox to baseline
+canon sandbox clean                  # wipe sandbox entirely
 ```
 
-When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Multi-scenario scripts call `select_or_route_scenario` from `lib/ui.sh`, which reads `SANDBOX_SCENARIO` and skips the picker when set.
+When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `CANON_NON_INTERACTIVE=1` automatically. Multi-scenario scripts call `select_or_route_scenario` from `lib/ui.sh`, which reads `SANDBOX_SCENARIO` and skips the picker when set.
 
 The `internal-sandbox-check` skill maps changed plugin skills and changed `scripts/` files on a feature branch to their matching scenarios, so an e2e gap on a script edit surfaces the same way it does on a skill edit.
 
@@ -36,23 +36,23 @@ The `internal-sandbox-check` skill maps changed plugin skills and changed `scrip
 
 ```bash
 scripts/sandbox/run.sh <cat:cmd> "<prompt>" [scenario]
-scripts/sandbox/run.sh git:commit "/aitk:git-commit"
-scripts/sandbox/run.sh claude:feature "/aitk:claude-feature add a widget" small
+scripts/sandbox/run.sh git:commit "/canon:git-commit"
+scripts/sandbox/run.sh claude:feature "/canon:claude-feature add a widget" small
 ```
 
-The prompt is the explicit skill invocation. Use the `/aitk:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
+The prompt is the explicit skill invocation. Use the `/canon:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
 
-Carry the arguments the arm needs. A skill guarding on a missing argument answers the bare form with its own refusal and never reaches the behavior under test, so every assertion fails against a skill that is working correctly. `claude:intake/file` states its invocation on the scenario's own `Action:` line and returns the no-dump refusal without it, failing nine assertions bare and passing fifteen with the documented prompt. The arm has since dropped its two item-format assertions, so a documented-prompt run passes thirteen, measured 2026-08-28 on the branch that dropped them, and the bare figure has not been re-read. Read the `Action:` line before composing the prompt, since it is where an arm records what it expects to be handed. A caller following `internal-sandbox-check`, which fixes the prompt at `/aitk:<skill-name>` with no arguments, hits this on any such arm and should report the mismatch rather than reading it as a defect in the skill.
+Carry the arguments the arm needs. A skill guarding on a missing argument answers the bare form with its own refusal and never reaches the behavior under test, so every assertion fails against a skill that is working correctly. `claude:intake/file` states its invocation on the scenario's own `Action:` line and returns the no-dump refusal without it, failing nine assertions bare and passing fifteen with the documented prompt. The arm has since dropped its two item-format assertions, so a documented-prompt run passes thirteen, measured 2026-08-28 on the branch that dropped them, and the bare figure has not been re-read. Read the `Action:` line before composing the prompt, since it is where an arm records what it expects to be handed. A caller following `internal-sandbox-check`, which fixes the prompt at `/canon:<skill-name>` with no arguments, hits this on any such arm and should report the mismatch rather than reading it as a defect in the skill.
 
-A sandbox session resolves `aitk` off the machine's PATH, and the harness manages neither the binary nor the variable. An arm exercising a verb the branch adds therefore runs against whatever is installed globally, and a released binary predating the verb produces a session that refuses and writes nothing, failing every assertion for a reason the arm is not about. The `claude:teach` arms met a global install at `0.98.0` carrying no `teach` command at all, against a repository at `0.102.0`. Put the branch's own CLI ahead on PATH for that one run rather than reading the failure as a defect in the skill, and never repair it by installing over the operator's global.
+A sandbox session resolves `canon` off the machine's PATH, and the harness manages neither the binary nor the variable. An arm exercising a verb the branch adds therefore runs against whatever is installed globally, and a released binary predating the verb produces a session that refuses and writes nothing, failing every assertion for a reason the arm is not about. The `claude:teach` arms met a global install at `0.98.0` carrying no `teach` command at all, against a repository at `0.102.0`. Put the branch's own CLI ahead on PATH for that one run rather than reading the failure as a defect in the skill, and never repair it by installing over the operator's global.
 
-The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`, plus a `verdict` object holding `state`, `asserted`, `failed`, and `unchecked`. Override the model, allowed tools, turn cap, or permission mode with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, `AITK_SKILL_TEST_MAX_TURNS`, and `AITK_SKILL_TEST_PERMISSION_MODE`.
+The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`, plus a `verdict` object holding `state`, `asserted`, `failed`, and `unchecked`. Override the model, allowed tools, turn cap, or permission mode with `CANON_SKILL_TEST_MODEL`, `CANON_SKILL_TEST_TOOLS`, `CANON_SKILL_TEST_MAX_TURNS`, and `CANON_SKILL_TEST_PERMISSION_MODE`.
 
-The envelope alone decides nothing. An arm can return `error=false` having written nothing and meeting none of its scenario's stated expectations, so a suite scoring on the envelope would count it as a pass. `run.sh` snapshots the tree before the session, diffs it after, and hands the result to `aitk sandbox check`, whose exit code becomes the run's outcome.
+The envelope alone decides nothing. An arm can return `error=false` having written nothing and meeting none of its scenario's stated expectations, so a suite scoring on the envelope would count it as a pass. `run.sh` snapshots the tree before the session, diffs it after, and hands the result to `canon sandbox check`, whose exit code becomes the run's outcome.
 
 ### A tree of its own, minted per run
 
-The sandbox tree resolves from `$XDG_STATE_HOME/aitk/sandbox-<run-id>`, defaulting to `~/.local/state/aitk/sandbox-<run-id>`, with `AITK_SANDBOX_DIR` overriding the whole path and a path back inside the repository refused. It sat at `<worktree>/.sandbox` before that, which put the toolkit's own `CLAUDE.md` on the ancestor chain of the session `run.sh` spawned and sent a skill's shared session scratch into the toolkit on roughly one run in two.
+The sandbox tree resolves from `$XDG_STATE_HOME/canon/sandbox-<run-id>`, defaulting to `~/.local/state/canon/sandbox-<run-id>`, with `CANON_SANDBOX_DIR` overriding the whole path and a path back inside the repository refused. It sat at `<worktree>/.sandbox` before that, which put the toolkit's own `CLAUDE.md` on the ancestor chain of the session `run.sh` spawned and sent a skill's shared session scratch into the toolkit on roughly one run in two.
 
 Moving it outside the repository fixed that but left every run resolving to one shared tree per machine, so two sessions running arms at once provisioned over each other. The second session's provisioning landed between the first's session and its verdict, and the first was scored against a fixture it never staged. The reply half of a verdict still passed, since the reply comes off the envelope the run itself produced, while every path, absence, and content assertion read whichever tree provisioned last, so the arm reported a mixed verdict that looked like a skill defect rather than a collision.
 
@@ -60,15 +60,15 @@ One run was lost this way on 2026-08-04, reporting five failures against a tree 
 
 `<run-id>` is what closed it: a short random suffix `resolve_sandbox_dir` and `sandboxTree` mint the first time a process asks for the default, so two sessions provisioning at once land on two different trees rather than one. `.claude/context/sandbox/overview.md` carries how the id is minted and held.
 
-A caller resolving the tree standalone, apart from the provisioning that populated it, no longer finds it this way. `aitk sandbox check <target>` run as its own command after a separate `aitk sandbox <target>`, and `aitk sandbox reset` or `aitk sandbox clean` run alone, each mint a fresh id and miss the tree the earlier command minted. Pin one with `AITK_SANDBOX_DIR` across the whole sequence to keep iterating against a single tree, the same override a session already sets to run arms of its own while another session has the sandbox open.
+A caller resolving the tree standalone, apart from the provisioning that populated it, no longer finds it this way. `canon sandbox check <target>` run as its own command after a separate `canon sandbox <target>`, and `canon sandbox reset` or `canon sandbox clean` run alone, each mint a fresh id and miss the tree the earlier command minted. Pin one with `CANON_SANDBOX_DIR` across the whole sequence to keep iterating against a single tree, the same override a session already sets to run arms of its own while another session has the sandbox open.
 
-An escape list covering the whole tree, or a failure count far past what the arm declares, still reads as a collision rather than a finding. A stale `aitk` predating this fix, or two commands sharing one hand-set `AITK_SANDBOX_DIR` by mistake, both put two sessions back on a tree neither has a reason to be told about. The `escapes` array reports the sibling case: it names any file that changed under the toolkit roots during the run, so a concurrent session writing shared session scratch at the main root appears there as an escape the sandbox session never made.
+An escape list covering the whole tree, or a failure count far past what the arm declares, still reads as a collision rather than a finding. A stale `canon` predating this fix, or two commands sharing one hand-set `CANON_SANDBOX_DIR` by mistake, both put two sessions back on a tree neither has a reason to be told about. The `escapes` array reports the sibling case: it names any file that changed under the toolkit roots during the run, so a concurrent session writing shared session scratch at the main root appears there as an escape the sandbox session never made.
 
 ### The run record
 
-Every run also lands at `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `aitk sandbox check` recovers the tree-based assertions from surviving sandbox state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
+Every run also lands at `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `canon sandbox check` recovers the tree-based assertions from surviving sandbox state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
 
-The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. What that costs is the turn count, which is recoverable from nowhere else once the run's temp files are deleted, so an arm whose record failed to write cannot have its ceiling calibrated without paying for the run twice. `claude:aitk-operator/fresh` is declared at the cap for that reason rather than from an observation.
+The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. What that costs is the turn count, which is recoverable from nowhere else once the run's temp files are deleted, so an arm whose record failed to write cannot have its ceiling calibrated without paying for the run twice. `claude:canon-operator/fresh` is declared at the cap for that reason rather than from an observation.
 
 The warning sits on stderr among the framing, where a caller reading the tail of a passing run does not see it. Nothing prunes the folder, which makes it a scratch-lifecycle question rather than an oversight. It belongs with the other scratch catalogs whenever that track settles when a folder's contents expire.
 
@@ -78,7 +78,7 @@ The default turn cap is 30. A clean `claude/docs` `drift` run takes 29 turns, an
 
 Declare an arm's ceiling at the default and correct it from an observation. A ceiling under the cap catches truncation the same way an equal one does, since a truncated run reports one turn past the cap and any declaration at or under the cap sits below that number. What a corrected ceiling buys over the default is that it asserts something the runner does not already enforce, which is what `anchor-sweep` carries at 26 against three runs of 16, 17, and 18.
 
-Correct from a cost that holds rather than from one sample of a variable one. A cost holds when the arm's work has a fixed extent, which one observation bounds: a route-only arm that resolves off one read with nothing to execute behind it can take its ceiling from a single run. A cost varies when the work follows whatever the run finds, so that arm needs several runs and a ceiling above the widest, which is what `anchor-sweep` carries. The worked example this paragraph illustrated, `aitk-operator/unmigrated`, retired with the routing it scored. Replace it the next time a route-only arm gets its first run.
+Correct from a cost that holds rather than from one sample of a variable one. A cost holds when the arm's work has a fixed extent, which one observation bounds: a route-only arm that resolves off one read with nothing to execute behind it can take its ceiling from a single run. A cost varies when the work follows whatever the run finds, so that arm needs several runs and a ceiling above the widest, which is what `anchor-sweep` carries. The worked example this paragraph illustrated, `canon-operator/unmigrated`, retired with the routing it scored. Replace it the next time a route-only arm gets its first run.
 
 `migration-superseded/retired` stays at the default on a single 17-turn pass for that reason, since a proposal-only arm resolves several files against several standards and its count moves with how a run orders those reads. Sample count is the consequence rather than the test, and reading it as the test puts a ceiling on any arm that has been run twice. A ceiling derived from one path through a variable cost trades a ceiling that never fires for one that fires on a correct run.
 
@@ -86,7 +86,7 @@ Never declare a ceiling above the cap. A truncated run reports one turn past the
 
 Estimate an arm's cost from what it reads rather than from what it writes. `board-sweep` was projected to need a raised cap because it marks one more outcome and moves one more plan than `drift`, and it came in at 28 against `drift`'s 29. The extra mutations are a few edits, while the turns go to reading the board and reasoning about it, which both arms do once. A projected budget is worth nothing next to one real run.
 
-`AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates.
+`CANON_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates.
 
 Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
 
@@ -94,7 +94,7 @@ Dollar cost spreads wider than the turn count, and the range `internal-sandbox-c
 
 ## Expectations
 
-An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `aitk sandbox check <category>:<command> [arm]` reads it, asserts against the sandbox tree, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
+An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `canon sandbox check <category>:<command> [arm]` reads it, asserts against the sandbox tree, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
 
 - `paths`: files that must exist after the run, as an exact path or as a glob
 - `absent`: files that must not exist, as an exact path or as a glob

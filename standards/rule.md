@@ -45,7 +45,7 @@ A project-authored rule takes `900-999`, one sequence across every subdirectory 
 
 The cost is that a project-authored rule's leading digit stops naming its domain. Its subdirectory names it instead, and install preserves that either way. What a shared band costs is worse: a session that loads two rules reading as one number, with nothing in the folder to say which is which.
 
-`aitk gov sync` reports a rule it finds no toolkit source for, outside `.claude/rules/project/`, and offers the path under it. The offer is conditional on the project having authored the rule, because a rule the toolkit shipped and later renamed looks identical from the outside and moving one there would mark it the project's for good. Nothing is moved either way, since a rule's installed path is one the project's own rules, skills, and docs may cite.
+`canon gov sync` reports a rule it finds no toolkit source for, outside `.claude/rules/project/`, and offers the path under it. The offer is conditional on the project having authored the rule, because a rule the toolkit shipped and later renamed looks identical from the outside and moving one there would mark it the project's for good. Nothing is moved either way, since a rule's installed path is one the project's own rules, skills, and docs may cite.
 
 ## Two sources numbering into one folder
 

@@ -79,8 +79,8 @@ export function register(program: Command): void {
         'file that needs fixing.',
         '',
         'Examples:',
-        '  aitk intake list',
-        '  aitk intake list toolkit-overview --unread --json',
+        '  canon intake list',
+        '  canon intake list toolkit-overview --unread --json',
         '',
       ].join('\n'),
     )
@@ -118,8 +118,8 @@ export function register(program: Command): void {
         'A filled slot is a decision already made.',
         '',
         'Examples:',
-        '  aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok',
-        '  aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok --set 4="not worth it" --json',
+        '  canon intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok',
+        '  canon intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok --set 4="not worth it" --json',
         '',
       ].join('\n'),
     )
@@ -164,7 +164,7 @@ async function runAnswer(
 
   if (!opts.cluster) {
     return reportRefusal(
-      'aitk intake answer',
+      'canon intake answer',
       {
         ok: false,
         reason: 'bad-input',
@@ -180,7 +180,7 @@ async function runAnswer(
 
   if (raw.length === 0) {
     return reportRefusal(
-      'aitk intake answer',
+      'canon intake answer',
       {
         ok: false,
         reason: 'bad-input',
@@ -209,7 +209,7 @@ async function runAnswer(
 
   if (invalid.length > 0) {
     return reportRefusal(
-      'aitk intake answer',
+      'canon intake answer',
       {
         ok: false,
         reason: 'bad-input',
@@ -227,7 +227,7 @@ async function runAnswer(
 
   if (duplicated.length > 0) {
     return reportRefusal(
-      'aitk intake answer',
+      'canon intake answer',
       {
         ok: false,
         reason: 'bad-input',
@@ -283,7 +283,7 @@ function reportList(
   unreadOnly: boolean,
 ): number {
   if (!outcome.ok) {
-    return reportRefusal('aitk intake list', outcome, emitJson, root)
+    return reportRefusal('canon intake list', outcome, emitJson, root)
   }
 
   // Malformed items are counted over every folder rather than the filtered
@@ -301,7 +301,7 @@ function reportList(
     return 0
   }
 
-  intro('aitk intake list')
+  intro('canon intake list')
   logStep(listed.length > 0 ? 'Folders' : 'No folders')
 
   for (const folder of listed) {
@@ -333,7 +333,7 @@ function reportFolder(
   unreadOnly: boolean,
 ): number {
   if (!outcome.ok) {
-    return reportRefusal('aitk intake list', outcome, emitJson, root)
+    return reportRefusal('canon intake list', outcome, emitJson, root)
   }
 
   const clusters = outcome.clusters
@@ -350,7 +350,7 @@ function reportFolder(
     return 0
   }
 
-  intro('aitk intake list')
+  intro('canon intake list')
 
   for (const cluster of clusters) {
     logStep(cluster.cluster)
@@ -375,7 +375,7 @@ function reportAnswer(
   root: string,
 ): number {
   if (!outcome.ok) {
-    return reportRefusal('aitk intake answer', outcome, emitJson, root)
+    return reportRefusal('canon intake answer', outcome, emitJson, root)
   }
 
   if (emitJson) {
@@ -392,7 +392,7 @@ function reportAnswer(
     return 0
   }
 
-  intro('aitk intake answer')
+  intro('canon intake answer')
   logStep('Answered')
 
   for (const entry of outcome.answered) {

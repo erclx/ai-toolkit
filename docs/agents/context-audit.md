@@ -5,17 +5,17 @@ description: Running the audit, its flags and folder scope, the exit codes, the 
 
 # Context audit
 
-`aitk context audit [path]` reports the structural state of the folders following the index-plus-entry contract, meaning a generated `index.md` beside entries carrying frontmatter, and it measures `.claude/ARCHITECTURE.md` beside them. It reads and reports. Fixing what it finds is separate work. What each finding means is in `context-audit-checks.md`.
+`canon context audit [path]` reports the structural state of the folders following the index-plus-entry contract, meaning a generated `index.md` beside entries carrying frontmatter, and it measures `.claude/ARCHITECTURE.md` beside them. It reads and reports. Fixing what it finds is separate work. What each finding means is in `context-audit-checks.md`.
 
-Findings stated over every markdown file rather than over a context entry are measured by `aitk markdown audit`, described in `markdown-audit.md`. That command resolves no folder, so it reaches trees this one refuses.
+Findings stated over every markdown file rather than over a context entry are measured by `canon markdown audit`, described in `markdown-audit.md`. That command resolves no folder, so it reaches trees this one refuses.
 
 ```bash
-aitk context audit
-aitk context audit --json
-aitk context audit --citations-only
-aitk context audit --folder context,diagrams
-aitk context audit --folder docs
-aitk context audit tooling/base/seeds --gate
+canon context audit
+canon context audit --json
+canon context audit --citations-only
+canon context audit --folder context,diagrams
+canon context audit --folder docs
+canon context audit tooling/base/seeds --gate
 ```
 
 | Option             | Behavior                                                             |

@@ -16,21 +16,21 @@ stage_setup() {
     mkdir -p .claude/standards .claude/hooks .claude/rules/project .claude/skills/house-review
 
     # The two toolkit copies come out of the package rather than out of this
-    # repository's own `standards/`. The arm runs against whatever `aitk` is on
+    # repository's own `standards/`. The arm runs against whatever `canon` is on
     # PATH, and the skill compares each file against that binary's corpus, so a
     # copy taken from here would read as drifted the moment the two diverge and
     # the unchanged branch would never be exercised.
     #
-    # The catalog rather than `aitk standards <name>`, which strips frontmatter
+    # The catalog rather than `canon standards <name>`, which strips frontmatter
     # on its way to stdout while the catalog's `content` carries it. An install
     # copied the source file whole, so the catalog is the field the skill
     # compares against and the one a fixture has to match byte for byte.
     # `jq -j` rather than `-r`, since a trailing newline appended to content
     # that already ends in one is a one-byte drift the arm would score.
     local catalog
-    catalog=$(AITK_NON_INTERACTIVE=1 aitk standards list --json 2>/dev/null) || true
+    catalog=$(CANON_NON_INTERACTIVE=1 canon standards list --json 2>/dev/null) || true
     if [ -z "$catalog" ]; then
-      log_error "aitk standards list returned nothing. The arm would stage a tree with no toolkit copy in it."
+      log_error "canon standards list returned nothing. The arm would stage a tree with no toolkit copy in it."
       return 1
     fi
 
@@ -161,11 +161,11 @@ EOF
     # below. Captured whole rather than piped, since `pipefail` turns a matcher's
     # early exit into a SIGPIPE the guard would read as a missing field.
     local report
-    report=$(AITK_NON_INTERACTIVE=1 aitk sync --check . --json 2>/dev/null) || true
+    report=$(CANON_NON_INTERACTIVE=1 canon sync --check . --json 2>/dev/null) || true
 
     case "$report" in
     *'"state":"behind"'* | *'"state": "behind"'*)
-      log_error "The aitk on PATH is behind the published version. Update it, or the arm scores the skew refusal."
+      log_error "The canon on PATH is behind the published version. Update it, or the arm scores the skew refusal."
       return 1
       ;;
     esac
@@ -176,9 +176,9 @@ EOF
     log_info "  prose.md names a standard that no longer resolves, billing.md is the project's own"
     log_info "  .claude/hooks/standards-audit.sh parses prose.md at run time rather than citing it"
     log_info "  CLAUDE.md, a project rule, and a project-local skill each cite the tree"
-    log_info "Action:  /aitk:migration-standards-drop"
+    log_info "Action:  /canon:migration-standards-drop"
     log_info "Expect:  splits the tree three ways, names the reader ahead of the drop, gives every"
-    log_info "         citation aitk standards <name>, orders sync then drop then sweep, writes nothing"
+    log_info "         citation canon standards <name>, orders sync then drop then sweep, writes nothing"
     log_info "Assert:  declared in fixtures/claude/migration-standards-drop/installed/expect.toml"
     ;;
   *)

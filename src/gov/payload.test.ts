@@ -15,7 +15,7 @@ function writeRule(relToRoot: string, content: string): string {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-gov-payload-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-gov-payload-'))
   RULES = join(ROOT, '.claude', 'rules')
   mkdirSync(RULES, { recursive: true })
 })

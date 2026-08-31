@@ -305,7 +305,7 @@ strip_seed_section() {
 
 # The fixture must live outside the repo. A fixture under the repo would load
 # this project's CLAUDE.md through the ancestor chain and contaminate the run.
-workdir="$(mktemp -d "${TMPDIR:-/tmp}/aitk-eval-XXXXXX")"
+workdir="$(mktemp -d "${TMPDIR:-/tmp}/canon-eval-XXXXXX")"
 trap 'rm -rf "$workdir"' EXIT
 
 tar -xzf "$SCRIPT_DIR/fixture.tar.gz" -C "$workdir"
@@ -317,22 +317,22 @@ if [ "$arm" = seed ]; then
   # hooks and the settings.json merge that registers them. Copying the seed
   # folder would skip both and test a state no project is ever in.
   #
-  # Invoke the CLI by path, never the globally linked `aitk`. PROJECT_ROOT
+  # Invoke the CLI by path, never the globally linked `canon`. PROJECT_ROOT
   # resolves from the CLI's own source directory, so a global binary would
   # install the main checkout's seed and silently ignore the edits under test.
   cli=("bun" "run" "$REPO_ROOT/src/cli.ts")
 
-  # `aitk claude init` seeds .claude/ and CLAUDE.md and installs no standards,
-  # which is the whole shape now. The base stack's rules cite `aitk standards
+  # `canon claude init` seeds .claude/ and CLAUDE.md and installs no standards,
+  # which is the whole shape now. The base stack's rules cite `canon standards
   # <name>` rather than a path, and that verb answers from the corpus inside the
   # package, so there is no second call and no half-installed state to avoid.
-  AITK_NON_INTERACTIVE=1 "${cli[@]}" claude init "$fixture" >&2
+  CANON_NON_INTERACTIVE=1 "${cli[@]}" claude init "$fixture" >&2
 
   # Governance is not optional for this arm. The seed routes markdown, context,
   # and task edits through rules in the base stack rather than carrying its own
   # copies, so a fixture without them measures a project that no longer exists.
   # The first run omitted this and its prose finding was confounded as a result.
-  AITK_NON_INTERACTIVE=1 "${cli[@]}" gov install base "$fixture" >&2
+  CANON_NON_INTERACTIVE=1 "${cli[@]}" gov install base "$fixture" >&2
 
   # Strip after every installer has run, since each one may write CLAUDE.md and
   # a strip before the last would be overwritten without a word.

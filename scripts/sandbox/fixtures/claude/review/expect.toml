@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-review` run leaves behind on the default arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# What a correct `/canon:claude-review` run leaves behind on the default arm.
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 #
 # The report is shared session scratch and used to escape the sandbox, which

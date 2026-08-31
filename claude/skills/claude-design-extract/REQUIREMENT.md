@@ -31,12 +31,12 @@ The greenfield case is the one that fails quietly. A project with no UI code sti
 ## Guards
 
 - `.claude/DESIGN.md` already populated: stop rather than mutating it
-- `aitk` not on PATH: stop, since the seed template and the render both need it
+- `canon` not on PATH: stop, since the seed template and the render both need it
 - Greenfield path with no `.claude/REQUIREMENTS.md` or no `## Personality` section: stop, because there is nothing to propose against. Evaluate this only after Step 1 picks the path.
 
 ## Out of scope
 
 - Mutating an existing design system, which is a direct edit of the file rather than a skill
-- Producing the HTML and CSS preview, which `aitk design render` owns
+- Producing the HTML and CSS preview, which `canon design render` owns
 - Auditing the implemented UI against the tokens, which `claude-ux-audit` owns
 - Architecture and flow diagrams, which `claude-diagram` owns

@@ -18,32 +18,32 @@ let FILE: string
  * folder. Restoring it is what keeps that true: deleting the key instead would
  * leave the rest of the file resolving to the home directory.
  */
-const SETUP_STATE_DIR = process.env.AITK_STATE_DIR
+const SETUP_STATE_DIR = process.env.CANON_STATE_DIR
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-targets-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-targets-'))
   FILE = join(ROOT, 'targets.json')
 })
 
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
-  process.env.AITK_STATE_DIR = SETUP_STATE_DIR
+  process.env.CANON_STATE_DIR = SETUP_STATE_DIR
   delete process.env.XDG_STATE_HOME
 })
 
 describe('stateDir', () => {
   it('should prefer the explicit override over every other source', () => {
-    process.env.AITK_STATE_DIR = '/explicit'
+    process.env.CANON_STATE_DIR = '/explicit'
     process.env.XDG_STATE_HOME = '/xdg'
 
     expect(stateDir()).toBe('/explicit')
   })
 
   it('should fall back to the XDG state home when no override is set', () => {
-    delete process.env.AITK_STATE_DIR
+    delete process.env.CANON_STATE_DIR
     process.env.XDG_STATE_HOME = '/xdg'
 
-    expect(registryPath()).toBe(join('/xdg', 'aitk', 'targets.json'))
+    expect(registryPath()).toBe(join('/xdg', 'canon', 'targets.json'))
   })
 })
 
@@ -111,7 +111,7 @@ describe('readTargetRegistry', () => {
 
 describe('recordTarget', () => {
   it('should create the file and its folder on the first target recorded', () => {
-    const nested = join(ROOT, 'state', 'aitk', 'targets.json')
+    const nested = join(ROOT, 'state', 'canon', 'targets.json')
 
     expect(recordTarget('/repos/caret', new Date('2026-08-30'), nested)).toBe(
       'recorded',

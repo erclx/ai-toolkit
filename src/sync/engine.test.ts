@@ -33,7 +33,7 @@ function writeFixture(path: string, content: string): void {
 
 function createAdapter(overrides: Partial<SyncAdapter> = {}): SyncAdapter {
   return {
-    banner: 'aitk test sync',
+    banner: 'canon test sync',
     label: 'rules',
     missingMessage: 'Nothing installed',
     unit: 'changes',
@@ -48,7 +48,7 @@ function writeStampFixture(
   hashes: Record<string, string>,
 ): void {
   writeFixture(
-    join(TARGET, '.claude/aitk/config.json'),
+    join(TARGET, '.claude/canon/config.json'),
     JSON.stringify({
       covers: [domain],
       domains: {
@@ -67,19 +67,19 @@ const STAMPED_RULE = '.claude/rules/core/000-const.md'
 let PREVIOUS_NON_INTERACTIVE: string | undefined
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-engine-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-engine-'))
   SOURCE = join(ROOT, 'source')
   TARGET = join(ROOT, 'target')
-  PREVIOUS_NON_INTERACTIVE = process.env.AITK_NON_INTERACTIVE
-  process.env.AITK_NON_INTERACTIVE = '1'
+  PREVIOUS_NON_INTERACTIVE = process.env.CANON_NON_INTERACTIVE
+  process.env.CANON_NON_INTERACTIVE = '1'
 })
 
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
   if (PREVIOUS_NON_INTERACTIVE === undefined) {
-    delete process.env.AITK_NON_INTERACTIVE
+    delete process.env.CANON_NON_INTERACTIVE
   } else {
-    process.env.AITK_NON_INTERACTIVE = PREVIOUS_NON_INTERACTIVE
+    process.env.CANON_NON_INTERACTIVE = PREVIOUS_NON_INTERACTIVE
   }
 })
 

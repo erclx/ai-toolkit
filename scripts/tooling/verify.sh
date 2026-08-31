@@ -10,7 +10,7 @@ source "$PROJECT_ROOT/scripts/lib/tooling.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk tooling verify <stack> [options]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} canon tooling verify <stack> [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --keep       ${GREY}# Keep tmp dir after run for inspection${NC}"
@@ -97,7 +97,7 @@ main() {
   local prepare
   prepare=$(read_manifest_field "$manifest" "verify" "prepare")
 
-  open_timeline "aitk tooling verify $stack"
+  open_timeline "canon tooling verify $stack"
   trap close_timeline EXIT
 
   local tmp_root="$PROJECT_ROOT/.claude/.tmp"
@@ -129,7 +129,7 @@ main() {
     run_phase "Prepare" bash -c "cd '$tmp_dir' && $prepare"
   fi
 
-  run_phase "Sync" bash -c "cd '$tmp_dir' && AITK_NON_INTERACTIVE=1 aitk tooling sync $stack . --write"
+  run_phase "Sync" bash -c "cd '$tmp_dir' && CANON_NON_INTERACTIVE=1 canon tooling sync $stack . --write"
 
   if [ -f "$tmp_dir/package.json" ]; then
     run_phase "lint:fix" bash -c "cd '$tmp_dir' && bun run lint:fix"

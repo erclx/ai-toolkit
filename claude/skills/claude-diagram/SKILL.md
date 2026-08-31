@@ -89,12 +89,12 @@ Nothing enforces the ban inside the diagram. The standards-audit hook toggles on
 ## Step 4: regenerate the catalog
 
 ```bash
-aitk indexes regen
+canon indexes regen
 ```
 
 Run it after the last entry is written. It rebuilds `.claude/diagrams/index.md` from sibling frontmatter and groups entries under their `category`. Never hand-edit that file.
 
-When `aitk` is not on PATH, say so in Step 7 and name `.claude/diagrams/index.md` as stale rather than writing it by hand.
+When `canon` is not on PATH, say so in Step 7 and name `.claude/diagrams/index.md` as stale rather than writing it by hand.
 
 Scaffold `.claude/diagrams/index.md` with `title` and `subtitle` frontmatter before the first regen when the folder is new and the seed did not provide one. The subtitle routes a first-time reader to the system context entry, since the catalog sorts categories alphabetically rather than in narrative order.
 

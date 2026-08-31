@@ -70,14 +70,14 @@ let hookPath: string
 let readOnlyRoot: string
 let acting: Record<string, ActingCase>
 
-// `aitk indexes regen` succeeds on the index hooks where the CLI is installed
+// `canon indexes regen` succeeds on the index hooks where the CLI is installed
 // and is absent on a CI runner, so the acting output would differ by machine.
 // Removing it from PATH pins both to the branch that reports a stale index,
 // which fires only after the payload parsed and the path guard matched.
-const pathWithoutAitk = (): string =>
+const pathWithoutCanon = (): string =>
   (process.env.PATH ?? '')
     .split(delimiter)
-    .filter((dir) => dir !== '' && !existsSync(join(dir, 'aitk')))
+    .filter((dir) => dir !== '' && !existsSync(join(dir, 'canon')))
     .join(delimiter)
 
 /** First match on the caller's PATH, which the fixture links rather than copies. */
@@ -128,7 +128,7 @@ const payloadFor = (fields: Record<string, unknown>): string =>
 
 beforeAll(() => {
   fixture = mkdtempSync(join(tmpdir(), 'hooks-guard-'))
-  hookPath = pathWithoutAitk()
+  hookPath = pathWithoutCanon()
 
   const project = join(fixture, 'project')
   for (const dir of [
@@ -173,13 +173,13 @@ beforeAll(() => {
   // stripped from PATH. Stubbing both runners pins the output to the fixture
   // rather than to whichever build the machine carries, which is the reason
   // the strip exists. The seed copy of the same hook reads the same record and
-  // resolves the `aitk` stub alone, since it looks for no checkout source.
+  // resolves the `canon` stub alone, since it looks for no checkout source.
   //
   // Each stub reports a `kind` naming itself, which is what lets a test read
   // the runner the hook resolved rather than assume it. The hook prints that
   // field verbatim, and no real record carries either value.
   for (const [name, kind] of [
-    ['aitk', 'via-aitk'],
+    ['canon', 'via-canon'],
     ['bun', 'via-bun'],
   ] as const) {
     const stub = join(fixture, 'bin', name)
@@ -191,10 +191,10 @@ beforeAll(() => {
   }
 
   // A record carrying no ban and a set the verb shipped empty, which is the
-  // narrowed check the hook reports rather than passing. It stubs `aitk` alone,
+  // narrowed check the hook reports rather than passing. It stubs `canon` alone,
   // so a root without `src/cli.ts` is what routes the toolkit hook to it, and
   // the seed hook resolves no other branch.
-  const narrowed = join(fixture, 'bin-empty-set/aitk')
+  const narrowed = join(fixture, 'bin-empty-set/canon')
   writeFileSync(
     narrowed,
     `#!/usr/bin/env bash\nprintf '%s\\n' '{"entries":[],"bans":{"emptySets":["words"]}}'\n`,
@@ -204,7 +204,7 @@ beforeAll(() => {
   // A verb that declined to measure writes no record at all, which is what it
   // does outside a git repository. Reading the findings alone reports that as a
   // clean file, so the stub writes nothing and the hooks answer emptiness.
-  const silent = join(fixture, 'bin-no-record/aitk')
+  const silent = join(fixture, 'bin-no-record/canon')
   writeFileSync(silent, '#!/usr/bin/env bash\nexit 1\n')
   chmodSync(silent, 0o755)
 
@@ -280,7 +280,7 @@ beforeAll(() => {
     },
     'precompact-handoff.sh': {
       code: 2,
-      expect: 'Run the aitk:session-map skill',
+      expect: 'Run the canon:session-map skill',
       payload: (nonce) =>
         payloadFor({
           hook_event_name: 'PreCompact',
@@ -495,7 +495,7 @@ describe('.claude/hooks/standards-audit.sh runner', () => {
 
       const result = await run(hook, payload(), withStubs(), root)
 
-      expect(result.stdout).toContain('via-aitk')
+      expect(result.stdout).toContain('via-canon')
       expect(result.code).toBe(0)
     },
   )
@@ -576,14 +576,14 @@ describe('seeds standards-audit.sh runner', () => {
   it.concurrent(
     'should read its findings out of the installed binary',
     async ({ expect }) => {
-      // The seed resolves no checkout source, so the `aitk` stub is the only
-      // branch it can take and `via-aitk` is what proves it took one rather
+      // The seed resolves no checkout source, so the `canon` stub is the only
+      // branch it can take and `via-canon` is what proves it took one rather
       // than reaching a verdict some other way.
       const path = [join(fixture, 'bin'), hookPath].join(delimiter)
 
       const result = await run(hook, payload(), path)
 
-      expect(result.stdout).toContain('via-aitk')
+      expect(result.stdout).toContain('via-canon')
       expect(result.code).toBe(0)
     },
   )
@@ -684,7 +684,7 @@ describe('.claude/hooks/precompact-handoff.sh', () => {
       // so it takes the manual path and asks.
       const result = await run(hook, payload({ session_id: 'precompact-bare' }))
 
-      expect(result.stderr).toContain('Run the aitk:session-map skill')
+      expect(result.stderr).toContain('Run the canon:session-map skill')
       expect(result.code).toBe(2)
     },
   )
@@ -700,7 +700,7 @@ describe('.claude/hooks/precompact-handoff.sh', () => {
       const first = await run(hook, once)
       const second = await run(hook, once)
 
-      expect(first.stderr).toContain('Run the aitk:session-map skill')
+      expect(first.stderr).toContain('Run the canon:session-map skill')
       expect(first.code).toBe(2)
       expect(second.stderr).toBe('')
       expect(second.code).toBe(0)

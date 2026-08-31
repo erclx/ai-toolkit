@@ -1,5 +1,5 @@
-# What a correct `/aitk:migration-superseded` run leaves behind on a target
-# holding three retired `.claude/` files. Read by `aitk sandbox check`. Patterns
+# What a correct `/canon:migration-superseded` run leaves behind on a target
+# holding three retired `.claude/` files. Read by `canon sandbox check`. Patterns
 # use TOML literal strings so a regex needs no backslash escaping.
 #
 # The skill proposes and writes nothing, so the tree assertions carry the whole
@@ -11,7 +11,7 @@
 # and a ceiling at the cap still catches a truncated run, which reports one turn
 # past it.
 #
-# `aitk-operator/unmigrated` derives a ceiling from one 6-turn observation and
+# `canon-operator/unmigrated` derives a ceiling from one 6-turn observation and
 # this arm does not, because a route arm stops at the skill it names and its work
 # is fixed by that route. A proposal-only arm reads the whole staged tree and
 # resolves three retired files against three standards, so its turn count varies
@@ -27,13 +27,13 @@ max_turns = 30
 # fails the other.
 #
 # The verb rather than a path, since no corpus installs into a target and
-# `aitk standards <name>` is the only route the skill has to either shape.
+# `canon standards <name>` is the only route the skill has to either shape.
 #
 # `git rm --cached` is the third. One of the three retired files is tracked while
 # ignored, and the untrack is the half of that pair a user gets wrong.
 reply = [
-  "aitk standards tasks",
-  "aitk standards diagrams",
+  "canon standards tasks",
+  "canon standards diagrams",
   "git rm --cached",
 ]
 

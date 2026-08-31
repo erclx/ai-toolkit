@@ -29,7 +29,7 @@ describe('convertToMp4', () => {
       let webmPath: string
 
       beforeAll(async () => {
-        root = mkdtempSync(join(tmpdir(), 'aitk-demo-container-'))
+        root = mkdtempSync(join(tmpdir(), 'canon-demo-container-'))
         webmPath = join(root, 'clip.webm')
         await execa('ffmpeg', [
           '-y',

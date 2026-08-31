@@ -6,14 +6,14 @@ import { listRepositoryFiles } from '@/git-files'
 
 /**
  * The inline token exempting one line from this sweep, shaped on the
- * `aitk-allow-secret` precedent and read by the same two-line rule.
+ * `canon-allow-secret` precedent and read by the same two-line rule.
  *
  * A declaration disagreeing with a convention for a stated reason is the case
  * question 3 of the plan settled against gating on, and the marker is where
  * that reason goes. A bare token names nothing a later reader can weigh, so it
  * mutes nothing.
  */
-export const SUPERSEDED_MARKER = 'aitk-allow-superseded'
+export const SUPERSEDED_MARKER = 'canon-allow-superseded'
 
 /**
  * What matched at one column.
@@ -36,7 +36,7 @@ export interface SupersededHit {
    * The nearest heading above the hit in a markdown file, absent elsewhere and
    * above the first heading.
    *
-   * A line reads differently under the section holding it. `Use the aitk-*
+   * A line reads differently under the section holding it. `Use the canon-*
    * prefix on an internal skill` is a prohibition under `## Must not` and an
    * instruction anywhere else, and a reviewer reading the line alone made
    * exactly that misreading against this tree.
@@ -105,7 +105,7 @@ const PREVIEW_LIMIT = 200
 const SEGMENT_SEPARATOR = '-'
 
 /**
- * A character that continues a name, so `aitk-` inside `aitk-cli` is read as
+ * A character that continues a name, so `canon-` inside `canon-cli` is read as
  * one name rather than as the family prefix written bare.
  */
 const NAME_CHARACTER = /[A-Za-z0-9]/
@@ -115,7 +115,7 @@ const NAME_CHARACTER = /[A-Za-z0-9]/
  * a stem is only read where a name starts.
  *
  * The separator is here and not in `NAME_CHARACTER` because it decides one side
- * only. `aitk-check-toolkit-` is a temp-directory prefix and matched the stem
+ * only. `canon-check-toolkit-` is a temp-directory prefix and matched the stem
  * `toolkit` on four fixtures before this, where `claude/skills/toolkit-*` is a
  * path and has to keep matching.
  */
@@ -134,12 +134,12 @@ const FENCE = /^\s*(?:```|~~~)/
  * The segment the two values differ on, carried with everything they share
  * ahead of it.
  *
- * The shared prefix alone is what this exists against. `aitk-cli` and
- * `aitk-feedback-file` share `aitk`, so a stem cut there matches every sibling
+ * The shared prefix alone is what this exists against. `canon-cli` and
+ * `canon-feedback-file` share `canon`, so a stem cut there matches every sibling
  * and reports the whole family on a rename of one folder. Including the
  * differing segment bounds the net to what actually changed, which leaves
- * `aitk-cli` to `aitk-shell` matching neither sibling and `toolkit-operator` to
- * `aitk-operator` matching the family prefix that did move.
+ * `canon-cli` to `canon-shell` matching neither sibling and `toolkit-operator` to
+ * `canon-operator` matching the family prefix that did move.
  *
  * An empty replacement yields nothing. Retiring a value outright leaves no
  * second value to diverge from, so every stem would run to the first segment
@@ -215,7 +215,7 @@ function classifyStem(
  * carrying its replacement there says the opposite of what happened.
  *
  * A templated hit reads the stem pair instead, since the line repairing
- * `toolkit-*` carries `aitk-*` and never the full name either value spells.
+ * `toolkit-*` carries `canon-*` and never the full name either value spells.
  */
 function carriesReplacement(
   line: string,

@@ -30,21 +30,21 @@ EOF
 
   case "$SELECTED_OPTION" in
   "init")
-    log_step "Running: aitk claude init"
+    log_step "Running: canon claude init"
     exec bun "$PROJECT_ROOT/src/cli.ts" claude init .
     ;;
   "seeds-list")
-    log_step "Running: aitk claude seeds list --json"
+    log_step "Running: canon claude seeds list --json"
     exec bun "$PROJECT_ROOT/src/cli.ts" claude seeds list --json
     ;;
   "sync")
-    log_step "Running: aitk claude sync"
+    log_step "Running: canon claude sync"
     exec bun "$PROJECT_ROOT/src/cli.ts" claude sync .
     ;;
   "setup")
     # Aimed at a sandbox-local directory. The verb defaults to $HOME/.claude,
     # and a scenario that took the default would edit the operator's own config.
-    log_step "Running: aitk claude setup ./home/.claude"
+    log_step "Running: canon claude setup ./home/.claude"
     exec bun "$PROJECT_ROOT/src/cli.ts" claude setup "$PWD/home/.claude"
     ;;
   *)

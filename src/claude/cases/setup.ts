@@ -1,7 +1,7 @@
 import type { SkillCase } from '@/claude/skills-rank'
 
 /**
- * `setup-*`, `migration-*`, `aitk-*`, and `create-rule`: scaffolding,
+ * `setup-*`, `migration-*`, `canon-*`, and `create-rule`: scaffolding,
  * proposal-only migrations, and the toolkit's own reference and feedback
  * surfaces.
  */
@@ -53,20 +53,20 @@ export const SETUP_CASES: readonly SkillCase[] = [
   {
     prompt:
       "Before I run this sync, tell me exactly what it's going to overwrite.",
-    expect: 'aitk-cli',
+    expect: 'canon-cli',
   },
   {
     prompt:
       'Something about the toolkit itself is broken, write it up and send it back to the maintainers.',
-    expect: 'aitk-feedback-file',
+    expect: 'canon-feedback-file',
   },
   {
     prompt:
       "I don't know which specific toolkit skill I need, just handle it for me.",
-    expect: 'aitk-operator',
+    expect: 'canon-operator',
   },
   // The performing skill wins a phrase naming its operation over the front
-  // door's own routing framing, even though aitk-operator's description
+  // door's own routing framing, even though canon-operator's description
   // quotes a phrase near this one. See .claude/context/cli/audits.md.
   {
     prompt:
@@ -76,15 +76,15 @@ export const SETUP_CASES: readonly SkillCase[] = [
   {
     prompt:
       'Work through the open feedback issues on the toolkit repo one by one.',
-    expect: 'aitk-feedback-triage',
+    expect: 'canon-feedback-triage',
   },
   // The outbound direction is what separates this from the front door above.
-  // aitk-operator runs inside one project the session already stands in, and
+  // canon-operator runs inside one project the session already stands in, and
   // this reaches every project the toolkit installed into from the toolkit.
   {
     prompt:
       'Take this change out to every project that installed the toolkit and get each one to a pull request.',
-    expect: 'aitk-rollout',
+    expect: 'canon-rollout',
   },
   {
     prompt:

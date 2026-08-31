@@ -1,5 +1,5 @@
-# What a correct `/aitk:session-map` run leaves behind.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# What a correct `/canon:session-map` run leaves behind.
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The arm exists for a failure a review pass cannot reach. Both defects ever

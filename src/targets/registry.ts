@@ -48,7 +48,7 @@ const VERSION = 1
  * into the home directory of whoever runs it.
  */
 export function stateDir(): string {
-  const override = process.env.AITK_STATE_DIR
+  const override = process.env.CANON_STATE_DIR
   if (override !== undefined && override !== '') return override
 
   const state = process.env.XDG_STATE_HOME
@@ -57,7 +57,7 @@ export function stateDir(): string {
       ? state
       : join(homedir(), '.local', 'state')
 
-  return join(base, 'aitk')
+  return join(base, 'canon')
 }
 
 export function registryPath(): string {
@@ -128,9 +128,9 @@ export type RecordOutcome = 'recorded' | 'unwritten'
  * target restores its row.
  *
  * Nothing removes a row either, so a target that was deleted or that dropped
- * the toolkit stays here and the count drifts upward. `aitk targets pulls`
+ * the toolkit stays here and the count drifts upward. `canon targets pulls`
  * meets that on use, since it refuses a path it cannot open rather than
- * reading it as a target with no work, but `aitk targets list` does not: it
+ * reading it as a target with no work, but `canon targets list` does not: it
  * never opens a recorded path, and the count is its whole output.
  */
 export function recordTarget(

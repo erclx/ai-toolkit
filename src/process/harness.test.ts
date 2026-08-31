@@ -7,7 +7,7 @@ import { detectStateLeak, runCli, snapshotStateDir } from '@/process/harness'
 let cwd: string
 
 beforeEach(() => {
-  cwd = mkdtempSync(join(tmpdir(), 'aitk-harness-'))
+  cwd = mkdtempSync(join(tmpdir(), 'canon-harness-'))
 })
 
 afterEach(() => {

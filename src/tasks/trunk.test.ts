@@ -22,7 +22,7 @@ function commit(message: string): void {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-tasks-trunk-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-tasks-trunk-'))
 })
 
 afterEach(() => {

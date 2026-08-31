@@ -12,7 +12,7 @@ SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk snippets create"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} canon snippets create"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Creates a new snippet: prompts for category and name, writes the file."
   echo -e "${GREY}│${NC}"

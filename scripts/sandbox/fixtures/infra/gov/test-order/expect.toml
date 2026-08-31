@@ -1,5 +1,5 @@
-# What `aitk gov test-order` leaves behind when it reads a history carrying one
-# module per verdict. Read by `aitk sandbox check`. Patterns use TOML literal
+# What `canon gov test-order` leaves behind when it reads a history carrying one
+# module per verdict. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 #
 # `src/gov/test-order.test.ts` already covers the classification against fixture

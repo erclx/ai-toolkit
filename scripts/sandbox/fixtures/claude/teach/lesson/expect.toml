@@ -1,5 +1,5 @@
 # What a correct `/claude-teach` run leaves behind on the lesson arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The seeded workspace matches the resume arm's with one difference: `assets/` is
@@ -23,7 +23,7 @@
 # assertion goes green on exactly the truncation it exists to catch. A
 # declaration at or under the cap sits below that number and fires.
 #
-# The run needs an `aitk` on PATH carrying the `teach` verbs. A first attempt
+# The run needs an `canon` on PATH carrying the `teach` verbs. A first attempt
 # reached the machine's global install at 0.98.0, which has none of them, and the
 # session refused and wrote nothing, failing every assertion for a reason the arm
 # is not about.
@@ -64,7 +64,7 @@ reply = [".claude/teach/01-regex/", "0002"]
 manual = [
   "The lesson restates no styles of its own beside the link. Semantic: an assertion can say the link is there and cannot say a style block is not, since a regex asserting absence over a whole file has no anchor to sit at. A run that links the shared file and also restates its styles inline passes every assertion above.",
   "The stylesheet carries the values the lesson needs rather than a host project's tokens. Unwired: the seeded project carries no design record at all, so there is nothing here for a lesson to inherit and the inheriting path cannot be reached by this arm.",
-  "The quiz option order came from `aitk teach lesson` rather than from the run's own judgment. Unwired: the claim is about which commands were invoked, which the envelope does not carry, and the order the verb draws is uniform, so no single run's output separates a taken order from a chosen one. Position bias is a property over many runs and this arm sees one.",
+  "The quiz option order came from `canon teach lesson` rather than from the run's own judgment. Unwired: the claim is about which commands were invoked, which the envelope does not carry, and the order the verb draws is uniform, so no single run's output separates a taken order from a chosen one. Position bias is a property over many runs and this arm sees one.",
   "Every option in a question is the same length. Semantic: length is a property of the prose in each option, and a pattern over the markup counts no characters.",
   "Each wrong option names a misconception someone holds rather than an obviously wrong answer. Semantic: both are options in the same markup, and the difference is whether the distractor is believable.",
   "Feedback arrives after the attempt rather than beside the question. Unwired: the ordering is a property of the page's own behavior when a learner clicks, and the checker reads the file rather than running it.",

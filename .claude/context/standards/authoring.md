@@ -49,7 +49,7 @@ A standard then changes on a failure rather than on a finding. A finding is that
 
 Running outside the repo is the load-bearing part: a fixture under the repo loads this project's `CLAUDE.md` through the ancestor chain, and the session under test arrives already knowing what the test is trying to measure. Writes under `.claude/` stay blocked even with `--permission-mode acceptEdits`, so the artifact comes back in the final message and stdout is what gets judged.
 
-`aitk standards audit` reads the corpus at `standards/` and reports every filename carrying the section against every one that does not. `--arrivals-only` narrows the exit code to a standard new on the current branch, wired into `src/gate/stages.ts` beside the skill-requirement gate whose shape it copies.
+`canon standards audit` reads the corpus at `standards/` and reports every filename carrying the section against every one that does not. `--arrivals-only` narrows the exit code to a standard new on the current branch, wired into `src/gate/stages.ts` beside the skill-requirement gate whose shape it copies.
 
 Gating the standards already short the section would fail every push until someone closed them all, which is the sweep `standards/standard.md` forbids. Only an arrival missing the section fails.
 
@@ -63,7 +63,7 @@ The failure is invisible to every check the repository runs. Both sentences are 
 
 ## The parser that read a standard as input
 
-`markdown.md` and the retired `prose.md` had a code reader behind them, which no other standard in the corpus ever did. `src/markdown/bans.ts` anchored on `## Language` and `## Punctuation`, then harvested the single lowercase backticked words and the single non-alphanumeric backticked characters out of every `- Do not use ` bullet under them, and the seeded audit hook parsed the same shape in every target. The sets now ship as data in that file and both readers call `aitk markdown audit` instead, so a wording edit changes what a reader is told and nothing else. Both `## Language` and `## Punctuation` sit in `markdown.md` since the retirement, which is what put every ban a command measures under one heading pair in one file.
+`markdown.md` and the retired `prose.md` had a code reader behind them, which no other standard in the corpus ever did. `src/markdown/bans.ts` anchored on `## Language` and `## Punctuation`, then harvested the single lowercase backticked words and the single non-alphanumeric backticked characters out of every `- Do not use ` bullet under them, and the seeded audit hook parsed the same shape in every target. The sets now ship as data in that file and both readers call `canon markdown audit` instead, so a wording edit changes what a reader is told and nothing else. Both `## Language` and `## Punctuation` sit in `markdown.md` since the retirement, which is what put every ban a command measures under one heading pair in one file.
 
 The constraint below is kept rather than retired, because it holds the moment anything parses a standard again and the cost of relearning it was an intake pass.
 

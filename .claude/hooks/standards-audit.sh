@@ -54,8 +54,8 @@ unread=""
 record=""
 if [ -f "$root/src/cli.ts" ] && command -v bun >/dev/null 2>&1; then
   record=$(cd "$root" 2>/dev/null && bun src/cli.ts markdown audit "$file" --json 2>/dev/null) || true
-elif command -v aitk >/dev/null 2>&1; then
-  record=$(cd "$root" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
+elif command -v canon >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && canon markdown audit "$file" --json 2>/dev/null) || true
 else
   unread="runner"
 fi
@@ -81,7 +81,7 @@ nl=$'\n'
 msg=""
 
 if [ "$unread" = "runner" ]; then
-  msg=$(printf 'Standards-audit: nothing checked in %s. Resolved neither the checkout CLI at %s/src/cli.ts nor an installed `aitk` binary. Install one with `bun add -g @erclx/aitk`.' "$file" "$root")
+  msg=$(printf 'Standards-audit: nothing checked in %s. Resolved neither the checkout CLI at %s/src/cli.ts nor an installed `canon` binary. Install one with `bun add -g @erclx/canon`.' "$file" "$root")
 elif [ "$unread" = "record" ]; then
   msg=$(printf 'Standards-audit: nothing checked in %s. The audit returned no record, which it does when it declines to measure. It needs a git repository to build its corpus.' "$file")
 elif [ -n "$empty" ]; then

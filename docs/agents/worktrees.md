@@ -7,11 +7,11 @@ description: Reporting which worktrees are reclaimable, why the reading keys on 
 
 ## List
 
-`aitk worktrees list` reports every worktree of the current repository with a reclaim verdict and the reason behind it.
+`canon worktrees list` reports every worktree of the current repository with a reclaim verdict and the reason behind it.
 
 ```bash
-aitk worktrees list
-aitk worktrees list --json
+canon worktrees list
+canon worktrees list --json
 ```
 
 | Option   | Behavior                                |

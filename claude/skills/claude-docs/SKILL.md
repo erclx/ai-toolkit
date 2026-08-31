@@ -7,7 +7,7 @@ description: Updates `.claude/` planning docs to reflect decisions made during t
 
 ## Guards
 
-- If no `.claude/` directory exists, stop: `❌ No .claude/ directory found. Run aitk claude init to set up the workflow.`
+- If no `.claude/` directory exists, stop: `❌ No .claude/ directory found. Run canon claude init to set up the workflow.`
 
 The skip for a session that changed nothing lives at the end of Step 2, because it needs the diff to decide. It drops the doc rewrite alone. The diff-driven sweeps in Steps 4 and 5 still run.
 
@@ -95,7 +95,7 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 
 **`.claude/tasks/`**
 
-- Mark completed outcomes `[x]` in the task's own file through `aitk tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. Do not move or archive the file.
+- Mark completed outcomes `[x]` in the task's own file through `canon tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. Do not move or archive the file.
 - Write a newly identified task as its own file, following `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` for the filename and frontmatter.
 - Do not touch task files this session did not change.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it.
@@ -183,7 +183,7 @@ Add a line naming the handoff when one was consumed:
 
 `🧹 Folded: .claude/.tmp/memory-routing/<slug>.md`
 
-The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
+The base lint-staged config runs `canon indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
 ## Step 8: fold promoted pages
 
@@ -230,9 +230,9 @@ A board carrying one task written `../plans/x.md` and another written `.claude/p
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
-`aitk tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `aitk` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.claude/plans/archive/`.
+`canon tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `canon` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.claude/plans/archive/`.
 
-Nothing in the exit code reports that. Branch on the record's `ok` and `reason` fields and never on the exit, which is the rule every task verb already carries: an operator's shell profile may wrap `aitk` in a function that runs the binary and then another command, taking its status from the second, and one measured here masks every non-zero exit rather than only an absent verb. The binary itself exits 1 for an unknown subcommand and 1 for an ordinary refusal alike. Switching this body to the verb needs a release that carries it and a read of the record rather than the exit, which together retire the duplication.
+Nothing in the exit code reports that. Branch on the record's `ok` and `reason` fields and never on the exit, which is the rule every task verb already carries: an operator's shell profile may wrap `canon` in a function that runs the binary and then another command, taking its status from the second, and one measured here masks every non-zero exit rather than only an absent verb. The binary itself exits 1 for an unknown subcommand and 1 for an ordinary refusal alike. Switching this body to the verb needs a release that carries it and a read of the record rather than the exit, which together retire the duplication.
 
 A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.claude/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
 

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { primaryFontFamily, resolveCaptureSources } from '@/capture/sources'
 
 function fixture(names: string[]): string {
-  const dir = mkdtempSync(join(tmpdir(), 'aitk-capture-'))
+  const dir = mkdtempSync(join(tmpdir(), 'canon-capture-'))
   for (const name of names) writeFileSync(join(dir, name), '')
   return dir
 }

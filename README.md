@@ -1,12 +1,12 @@
-# aitk
+# canon
 
-[![npm version](https://img.shields.io/npm/v/@erclx/aitk)](https://www.npmjs.com/package/@erclx/aitk)
-[![CI status](https://img.shields.io/github/actions/workflow/status/erclx/aitk/verify.yml?branch=main)](https://github.com/erclx/aitk/actions/workflows/verify.yml)
-[![License MIT](https://img.shields.io/npm/l/@erclx/aitk)](LICENSE)
+[![npm version](https://img.shields.io/npm/v/@erclx/canon)](https://www.npmjs.com/package/@erclx/canon)
+[![CI status](https://img.shields.io/github/actions/workflow/status/erclx/canon/verify.yml?branch=main)](https://github.com/erclx/canon/actions/workflows/verify.yml)
+[![License MIT](https://img.shields.io/npm/l/@erclx/canon)](LICENSE)
 
 One source for your repos' AI conventions. Install once, sync everywhere.
 
-![The aitk catalog, listing skills, governance rules, and standards with the count each ships, the workflow skills named, and a sample of the rule and standard names](assets/hero.png)
+![The canon catalog, listing skills, governance rules, and standards with the count each ships, the workflow skills named, and a sample of the rule and standard names](assets/hero.png)
 
 If you work across more than one repository and your AI setup has started to drift between them, this is for you. The counts above are read from the catalogs when the image is built, so they're what the repo actually ships today.
 
@@ -15,39 +15,39 @@ If you work across more than one repository and your AI setup has started to dri
 Add the marketplace, then install the Claude Code plugin.
 
 ```bash
-claude plugin marketplace add https://github.com/erclx/aitk
-claude plugin install aitk@aitk
+claude plugin marketplace add https://github.com/erclx/canon
+claude plugin install canon@canon
 ```
 
-![Adding the aitk marketplace and installing the plugin in Claude Code](assets/install.png)
+![Adding the canon marketplace and installing the plugin in Claude Code](assets/install.png)
 
-The skills land as `/aitk:<name>`. If your session was already open, run `/reload-plugins` to pick them up.
+The skills land as `/canon:<name>`. If your session was already open, run `/reload-plugins` to pick them up.
 
-Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin doesn't put it on your path. Install it from the registry.
+Several skills call the `canon` CLI to read catalogs and run installs, and the plugin doesn't put it on your path. Install it from the registry.
 
 ```bash
-bun install --global @erclx/aitk
+bun install --global @erclx/canon
 ```
 
-[Bun](https://bun.sh) is the CLI runtime and has to be on your path first. Confirm the install by resolving `aitk --help`.
+[Bun](https://bun.sh) is the CLI runtime and has to be on your path first. Confirm the install by resolving `canon --help`.
 
 ## Update
 
 Nothing refreshes on its own. Claude Code ships auto-update off for third-party marketplaces, so an installed copy serves whatever version it was installed at until you refresh it.
 
 ```bash
-claude plugin marketplace update aitk
-claude plugin update aitk@aitk
-aitk upgrade
+claude plugin marketplace update canon
+claude plugin update canon@canon
+canon upgrade
 ```
 
 The first two update the skills, the third updates the CLI, and they move independently. Restart Claude Code, or run `/reload-plugins`, to pick the skills up.
 
-`aitk upgrade` reads the package manager off its own install path and reinstalls with that one, so you don't have to remember which put it there. It names what it detected before it runs anything, and it refuses a source checkout rather than reinstalling over your clone.
+`canon upgrade` reads the package manager off its own install path and reinstalls with that one, so you don't have to remember which put it there. It names what it detected before it runs anything, and it refuses a source checkout rather than reinstalling over your clone.
 
-You don't have to wait until something breaks to find out you're behind. `aitk sync --check` and `aitk claude skills drift` both report the installed version against the newest published one, and neither changes its exit code over it, so an offline machine reads unknown rather than red.
+You don't have to wait until something breaks to find out you're behind. `canon sync --check` and `canon claude skills drift` both report the installed version against the newest published one, and neither changes its exit code over it, so an offline machine reads unknown rather than red.
 
-To stop doing this by hand, turn auto-update on once under `/plugin` in the Marketplaces tab. Confirm what you are running with `aitk --version` and `claude plugin list`.
+To stop doing this by hand, turn auto-update on once under `/plugin` in the Marketplaces tab. Confirm what you are running with `canon --version` and `claude plugin list`.
 
 ## Why
 
@@ -72,7 +72,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
 - [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill and its two paths, render command
 - [Slides](.claude/context/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
-- [Transcripts](.claude/context/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
+- [Transcripts](.claude/context/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `canon transcripts`
 - [Sandbox](.claude/context/sandbox/index.md): scenario-based scaffolds for verifying each domain flow
 
 ## Documentation
@@ -100,23 +100,23 @@ Working on the toolkit starts from a clone. Running the CLI doesn't, since it in
 Clone the repo, then run the bootstrap script. It installs dependencies, links the CLI globally, and adds the Claude Code shell aliases to your `~/.zshrc`.
 
 ```bash
-git clone https://github.com/erclx/aitk.git
-cd aitk
+git clone https://github.com/erclx/canon.git
+cd canon
 bun install
 bun run bootstrap
 ```
 
-The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. It confirms the install by resolving `aitk --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does.
+The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. It confirms the install by resolving `canon --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does.
 
 With the CLI linked, scaffold a fresh project.
 
 ```bash
 mkdir ~/my-project && cd ~/my-project
 git init
-aitk init
+canon init
 ```
 
-`aitk init` installs base tooling configs, Claude seeds, and governance rules in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/`. Each rule names the standard it answers to and reads it with `aitk standards <name>`, so no corpus is copied into your project. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. A snippet resolves the same way, reached at its `@` reference through the plugin's live `claude/snippets` symlink rather than a copy. Run `aitk tooling list --json` to see the catalog.
+`canon init` installs base tooling configs, Claude seeds, and governance rules in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/`. Each rule names the standard it answers to and reads it with `canon standards <name>`, so no corpus is copied into your project. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. A snippet resolves the same way, reached at its `@` reference through the plugin's live `claude/snippets` symlink rather than a copy. Run `canon tooling list --json` to see the catalog.
 
 For the full journey from scaffold through adding a domain later to syncing upstream drift, see [target projects](docs/target-projects.md).
 

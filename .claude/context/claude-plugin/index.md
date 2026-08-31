@@ -1,14 +1,14 @@
 ---
 title: Claude plugin
-subtitle: Plugin skills shipped to target projects, the aitk claude CLI, and overlap with built-in Claude Code features. Start with overview.
+subtitle: Plugin skills shipped to target projects, the canon claude CLI, and overlap with built-in Claude Code features. Start with overview.
 ---
 
 # Claude plugin
 
-Plugin skills shipped to target projects, the aitk claude CLI, and overlap with built-in Claude Code features. Start with overview.
+Plugin skills shipped to target projects, the canon claude CLI, and overlap with built-in Claude Code features. Start with overview.
 
 - [Boundaries](boundaries.md): Where built-in Claude Code features overlap toolkit skills and how the two compose
-- [CLI](cli.md): The aitk claude command surface and what each verb writes into a target project
+- [CLI](cli.md): The canon claude command surface and what each verb writes into a target project
 - [Distribution](distribution.md): The marketplace entry, the install-shape traps it avoids, and the release wiring for the plugin manifest
 - [Overview](overview.md): What the plugin domain owns, where its boundary sits, and the layout of the plugin root
 - [Skill archiving on merge](skill-archiving.md): The post-merge hook that closes a shipped task, how a pull request number reaches the board, and where the archive gates live

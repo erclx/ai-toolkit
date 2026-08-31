@@ -12,7 +12,7 @@
 # does not. Matching on it is what separates a shipped task from an abandoned
 # one, which a blind sweep of every all-`[x]` task cannot do.
 #
-# The hook extracts the number and nothing else. `aitk tasks archive` owns every
+# The hook extracts the number and nothing else. `canon tasks archive` owns every
 # gate, because the skill calls the same command and two callers gating in two
 # places drift into archiving differently. Each gate refuses with a non-zero
 # exit rather than reporting, since nobody is watching this run.
@@ -30,7 +30,7 @@ root=$(git worktree list --porcelain 2>/dev/null | grep -m 1 '^worktree ' | cut 
 board="$root/.claude/tasks"
 [ -d "$board" ] || exit 0
 
-if ! command -v aitk >/dev/null 2>&1; then
+if ! command -v canon >/dev/null 2>&1; then
   exit 0
 fi
 
@@ -56,7 +56,7 @@ if [ -n "$numbers" ]; then
 
     # `--json` keeps the record on stdout parseable and every refusal reason
     # with it. A refusal is ordinary here, since most merges close no task.
-    if record=$(aitk tasks archive --pull-request "$number" --root "$root" --json 2>/dev/null); then
+    if record=$(canon tasks archive --pull-request "$number" --root "$root" --json 2>/dev/null); then
       task=$(printf '%s' "$record" | sed -n 's/.*"task":"\([^"]*\)".*/\1/p')
       printf '\n📦 Archived %s, closed by #%s.\n\n' "$task" "$number"
       continue
@@ -83,7 +83,7 @@ fi
 #
 # It sits last so a slow or unreachable remote delays no archiving, and inside
 # an `if` so a push failing offline still leaves this hook exiting zero.
-if backup=$(aitk records push --root "$root" --json 2>/dev/null); then
+if backup=$(canon records push --root "$root" --json 2>/dev/null); then
   changed=$(printf '%s' "$backup" | sed -n 's/.*"changed":\([0-9][0-9]*\).*/\1/p')
   if [ -n "$changed" ] && [ "$changed" != "0" ]; then
     printf '\n🗄️  Backed up %s record path(s).\n\n' "$changed"
@@ -95,6 +95,6 @@ else
   # the one-time setup. Nothing to report.
   if [ "$reason" != "no-repository" ]; then
     printf '\n🗄️  Records not backed up: %s\n' "${reason:-unknown}"
-    printf 'Run aitk records push when the remote is reachable.\n\n'
+    printf 'Run canon records push when the remote is reachable.\n\n'
   fi
 fi

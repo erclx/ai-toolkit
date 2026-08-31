@@ -12,7 +12,7 @@ trap close_timeline EXIT
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Tooling create usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling create [stack]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} canon tooling create [stack]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Creates a new stack with stub manifest, reference, configs, and seeds."
   echo -e "${GREY}│${NC}"
@@ -33,7 +33,7 @@ main() {
   local stack="$1"
 
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk tooling create${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}canon tooling create${NC}"
 
   if [ -z "$stack" ]; then
     ask "Stack name?" "stack"
@@ -44,7 +44,7 @@ main() {
   fi
 
   if is_tooling_stack_excluded "$stack"; then
-    log_error "Reserved name: $stack. Managed by \`aitk claude\`, not \`aitk tooling\`."
+    log_error "Reserved name: $stack. Managed by \`canon claude\`, not \`canon tooling\`."
   fi
 
   local dest="$PROJECT_ROOT/tooling/$stack"

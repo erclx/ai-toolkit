@@ -34,14 +34,14 @@ stage_setup() {
     # `authored/standards/`, and a reader checking the premise by eye would have
     # to know the resolve never walks upward to tell the two apart.
     #
-    # Both streams land on disk because `aitk sandbox check` reads the tree and
+    # Both streams land on disk because `canon sandbox check` reads the tree and
     # nothing else. The frame carries the root that answered and the body carries
     # the document, so splitting them is what lets the arm assert the resolve
     # separately from the read.
     # The status is held rather than left to `set -e`. A miss writes its warning
     # and the whole catalog to the log file, so an abort here would kill the
     # scenario with the one diagnostic the command produced sitting unread.
-    log_step "Running: aitk standards skill (from install/, which holds none)"
+    log_step "Running: canon standards skill (from install/, which holds none)"
     local read_status=0
     (
       cd install
@@ -53,12 +53,12 @@ stage_setup() {
     log_info "install/read-frame.log names the root that answered"
     log_info "install/read-body.md  is the document that root returned"
     log_info "Expect: declared in fixtures/infra/standards/read/expect.toml"
-    log_info "        Check it with: aitk sandbox check infra:standards read"
+    log_info "        Check it with: canon sandbox check infra:standards read"
     ;;
   "list")
-    log_step "Running: aitk standards list"
+    log_step "Running: canon standards list"
     "$PROJECT_ROOT/scripts/standards/list.sh"
-    log_step "Running: aitk standards list --json | jq '.standards[0] | keys'"
+    log_step "Running: canon standards list --json | jq '.standards[0] | keys'"
     "$PROJECT_ROOT/scripts/standards/list.sh" --json | jq '.standards[0] | keys'
     log_info "Expect keys: appliesTo, content, description, name"
     ;;

@@ -5,13 +5,13 @@ description: Running every health check as one set, what the single verdict mean
 
 # Audits
 
-`aitk audits run` runs every audit this repository owns, reports each one under a single verdict, and compares each count to the floor the last recorded run left behind. Nothing here is a new measure. Every number it prints comes from a verb that already published it, which is what makes the command cheap and what separates it from writing another check.
+`canon audits run` runs every audit this repository owns, reports each one under a single verdict, and compares each count to the floor the last recorded run left behind. Nothing here is a new measure. Every number it prints comes from a verb that already published it, which is what makes the command cheap and what separates it from writing another check.
 
 ```bash
-aitk audits run
-aitk audits run --json
-aitk audits run --record
-aitk audits list --json
+canon audits run
+canon audits run --json
+canon audits run --record
+canon audits list --json
 ```
 
 | Option          | Behavior                                                          |
@@ -22,19 +22,19 @@ aitk audits list --json
 
 ## What it runs
 
-Nineteen verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
+Nineteen verbs, listed by `canon audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
 
-The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `aitk deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
+The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `canon deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
 
 Sixteen of the nineteen read a tree on this disk, the one added by `restated.md` and the one added by `census.md` among them, since the first reads four such trees against each other and the second counts every file in one. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction, and the one added by `label-coverage.md` reads a branch range against a map the project declares.
 
-Each is invoked as the CLI the caller is running rather than as a global `aitk`. A globally installed binary resolves to the main checkout no matter which worktree is executing, so the aggregate would measure a tree the branch never touched and report a pass over it.
+Each is invoked as the CLI the caller is running rather than as a global `canon`. A globally installed binary resolves to the main checkout no matter which worktree is executing, so the aggregate would measure a tree the branch never touched and report a pass over it.
 
 ## What gates and what reports
 
 Four findings fail the run: an unresolved context citation, a banned character, word, or spelling, a skill folder carrying no `REQUIREMENT.md`, and a credential-shaped value in the tree the package ships. Each is a fact with no false-positive class behind it.
 
-Three of the four are the ones `aitk gate run` already fails a push on. The secret scan is the one entry gating without a stage behind it, added on that same fact-or-judgment test rather than as a side effect of registering a measure, and the architecture record already ranks content leaving the repository above content that stays.
+Three of the four are the ones `canon gate run` already fails a push on. The secret scan is the one entry gating without a stage behind it, added on that same fact-or-judgment test rather than as a side effect of registering a measure, and the architecture record already ranks content leaving the repository above content that stays.
 
 Everything else reports. A heavy bullet, a long entry, a board row nothing resolves, a degradation term in a comment, and an implementation reaching history ahead of its test are judgments a reader settles. A push failing on one of those teaches contributors to route around the stage, which is the split recorded across every audit here and the one this command inherits rather than moves.
 
@@ -69,7 +69,7 @@ Every run states how many corpora it measured against how many it skipped, inclu
 
 ### What a shallow checkout changes
 
-`aitk gov test-order` scopes its range against the trunk and falls back to the root commit when no trunk ref resolves. A depth-1 checkout has neither, so the range is empty and the verb reports zero of everything rather than refusing. The numbers are real for the history present, which means a shallow run under-reports against a baseline taken from a full clone and shows as shrinkage. That is the safe direction, and it is the reason a `test-order` delta is worth reading only from a clone carrying the history.
+`canon gov test-order` scopes its range against the trunk and falls back to the root commit when no trunk ref resolves. A depth-1 checkout has neither, so the range is empty and the verb reports zero of everything rather than refusing. The numbers are real for the history present, which means a shallow run under-reports against a baseline taken from a full clone and shows as shrinkage. That is the safe direction, and it is the reason a `test-order` delta is worth reading only from a clone carrying the history.
 
 ## The retained baseline
 

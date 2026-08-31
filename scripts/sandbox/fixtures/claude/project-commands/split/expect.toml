@@ -1,5 +1,5 @@
-# What a correct `/aitk:project-commands` run leaves behind on the split arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# What a correct `/canon:project-commands` run leaves behind on the split arm.
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # One service rather than the documented arm's two, so this sits below that

@@ -52,7 +52,7 @@ function buildReport(
     reverse: emptyReverseReport(),
     skew: {
       state: 'current',
-      name: '@erclx/aitk',
+      name: '@erclx/canon',
       installed: '0.0.0',
       latest: '0.0.0',
     },
@@ -76,7 +76,7 @@ function unmeasuredTooling(): ToolingReport {
 }
 
 beforeEach(() => {
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-check-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-check-'))
 })
 
 afterEach(() => {
@@ -112,7 +112,7 @@ describe('buildToolingReport', () => {
   }
 
   beforeEach(() => {
-    TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-check-toolkit-'))
+    TOOLKIT = mkdtempSync(join(tmpdir(), 'canon-check-toolkit-'))
   })
 
   afterEach(() => {
@@ -335,7 +335,7 @@ describe('hasDrift', () => {
     const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
       skew: {
         state: 'behind',
-        name: '@erclx/aitk',
+        name: '@erclx/canon',
         installed: '0.109.0',
         latest: '0.110.0',
       },
@@ -348,7 +348,7 @@ describe('hasDrift', () => {
     const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
       skew: {
         state: 'unknown',
-        name: '@erclx/aitk',
+        name: '@erclx/canon',
         installed: '0.110.0',
         reason: 'Registry lookup failed: offline',
       },
@@ -615,7 +615,7 @@ describe('readNewRules', () => {
   }
 
   beforeEach(() => {
-    TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-check-rules-'))
+    TOOLKIT = mkdtempSync(join(tmpdir(), 'canon-check-rules-'))
     git('init', '--initial-branch=main')
     git('config', 'user.email', 'test@example.com')
     git('config', 'user.name', 'Test')
@@ -776,7 +776,7 @@ describe('baseBands', () => {
   }
 
   beforeEach(() => {
-    TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-check-bands-'))
+    TOOLKIT = mkdtempSync(join(tmpdir(), 'canon-check-bands-'))
   })
 
   afterEach(() => {

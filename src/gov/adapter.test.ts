@@ -31,7 +31,7 @@ function installedFile(relToRoot: string): InstalledFile {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-gov-adapter-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-gov-adapter-'))
   TOOLKIT = join(ROOT, 'toolkit')
   TARGET = join(ROOT, 'target')
 })
@@ -164,7 +164,7 @@ describe('createGovAdapter', () => {
         {
           path: join(TARGET, '.claude', 'rules', 'ui', '440-capture.md'),
           rel: join('.claude', 'rules', 'ui', '440-capture.md'),
-          notice: `${join('.claude', 'rules', 'ui', '440-capture.md')} (listed by astro, not installed. Run aitk gov install astro to add it.)`,
+          notice: `${join('.claude', 'rules', 'ui', '440-capture.md')} (listed by astro, not installed. Run canon gov install astro to add it.)`,
         },
       ])
     })

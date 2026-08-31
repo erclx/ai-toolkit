@@ -17,7 +17,7 @@ Every one of these returns without complaint. A stale pairing reports nothing be
 
 - Pair every changed skill and script to a scenario or to an explicit opt-out, and print a status for each so an unpaired item is visible rather than absent
 - Resolve the arm and the gate before the report prints, since the report states both and the later steps decide whether to run on them
-- Invoke the worktree-local script, because the globally installed `aitk` resolves to the main checkout and would run main's scenarios against this branch
+- Invoke the worktree-local script, because the globally installed `canon` resolves to the main checkout and would run main's scenarios against this branch
 - Provision one scenario and queue the rest, since a single directory per root means the second provision destroys the first
 - Name exactly one gate when an item ships without a live run, so an affordable run and an impossible one do not read the same
 - Read the skill census before asking, so a recorded verdict is reported rather than re-decided, and reach it through the worktree-local entry point for the reason the provisioning command is worktree-local
@@ -43,5 +43,5 @@ Every one of these returns without complaint. A stale pairing reports nothing be
 ## Out of scope
 
 - Authoring a scenario, extending one with a new arm, and running one during development: `internal-scripts`. This skill reports whether the pairing held.
-- Which skills earn a mechanical assertion at all, which `aitk sandbox coverage` reports and the sandbox coverage entry rules on by blast radius
+- Which skills earn a mechanical assertion at all, which `canon sandbox coverage` reports and the sandbox coverage entry rules on by blast radius
 - Verifying the change itself. A green verdict says the scenario ran, and whether the behavior is correct is the review's question.

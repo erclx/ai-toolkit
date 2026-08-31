@@ -5,12 +5,12 @@ description: Comment density by language and kind, the two structural exclusions
 
 # Comments
 
-`aitk comments scan [path]` reports comment density for a tree, split by language and by comment kind. It is the only command that parses the target's own source, so its scope stays deliberately narrow: TypeScript and bash, line-oriented, no AST.
+`canon comments scan [path]` reports comment density for a tree, split by language and by comment kind. It is the only command that parses the target's own source, so its scope stays deliberately narrow: TypeScript and bash, line-oriented, no AST.
 
 ```bash
-aitk comments scan
-aitk comments scan src --json
-aitk comments scan --since v0.5.0
+canon comments scan
+canon comments scan src --json
+canon comments scan --since v0.5.0
 ```
 
 | Option               | Behavior                                                        |

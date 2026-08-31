@@ -5,12 +5,12 @@ description: Measuring both skill corpora against standards/skill.md, the checks
 
 # Skill audit
 
-`aitk claude skills audit [path]` reports both skill corpora against the rules `standards/skill.md` states mechanically. It reads and reports. Fixing what it finds is separate work.
+`canon claude skills audit [path]` reports both skill corpora against the rules `standards/skill.md` states mechanically. It reads and reports. Fixing what it finds is separate work.
 
 ```bash
-aitk claude skills audit
-aitk claude skills audit --json
-aitk claude skills audit --requirements-only
+canon claude skills audit
+canon claude skills audit --json
+canon claude skills audit --requirements-only
 ```
 
 | Option                | Behavior                                                             |
@@ -22,7 +22,7 @@ aitk claude skills audit --requirements-only
 
 Both trees are measured. `claude/skills/` installs into a target and `.claude/skills/` stays in the toolkit, the standard governs each, so a run reading one reports a pass over half its subject. A tree the project does not carry is skipped, which puts a target holding `.claude/skills/` alone in scope. A run where neither resolves refuses, since a clean exit over nothing measured is the outcome the command exists to prevent.
 
-The audit reads the directory it is pointed at, defaulting to the cwd. `aitk claude skills list` resolves the shipped corpus from its own install root instead, so a dev-linked binary reports `main` no matter which worktree runs it. Auditing a branch needs the cwd reading, which is why the two commands resolve their root differently.
+The audit reads the directory it is pointed at, defaulting to the cwd. `canon claude skills list` resolves the shipped corpus from its own install root instead, so a dev-linked binary reports `main` no matter which worktree runs it. Auditing a branch needs the cwd reading, which is why the two commands resolve their root differently.
 
 ## What it measures
 
@@ -56,11 +56,11 @@ The check is preventive rather than diagnostic. Every mechanical rule passed acr
 
 ## Drift since a ref
 
-`aitk claude skills drift <ref>` names the shipped skill bodies rewritten between that commit and the current `HEAD`.
+`canon claude skills drift <ref>` names the shipped skill bodies rewritten between that commit and the current `HEAD`.
 
 ```bash
-aitk claude skills drift HEAD~20
-aitk claude skills drift 02d7b265 --json
+canon claude skills drift HEAD~20
+canon claude skills drift 02d7b265 --json
 ```
 
 | Option   | Behavior                                                   |

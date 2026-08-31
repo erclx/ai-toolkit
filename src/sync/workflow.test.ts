@@ -60,7 +60,7 @@ function makeOpener(calls: string[]): PullRequestOpener {
 }
 
 async function makeRepo(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'aitk-sync-workflow-'))
+  const dir = await mkdtemp(join(tmpdir(), 'canon-sync-workflow-'))
   dirs.push(dir)
   await mkdir(join(dir, '.git'), { recursive: true })
   return dir
@@ -121,7 +121,7 @@ describe('collectChanges', () => {
 
 describe('runGitWorkflow', () => {
   it('should do nothing when the target is not a git root', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'aitk-sync-workflow-'))
+    const dir = await mkdtemp(join(tmpdir(), 'canon-sync-workflow-'))
     dirs.push(dir)
     const git = makeGit({ status: DRIFTED_GOVERNANCE })
 
@@ -181,7 +181,7 @@ describe('runGitWorkflow', () => {
     expect(git.calls).toEqual([])
   })
 
-  it('should refuse the git workflow entirely under AITK_NON_INTERACTIVE', async () => {
+  it('should refuse the git workflow entirely under CANON_NON_INTERACTIVE', async () => {
     const target = await makeRepo()
     const git = makeGit({ status: DRIFTED_GOVERNANCE })
     const prCalls: string[] = []
@@ -297,7 +297,7 @@ describe('runGitWorkflow staging', () => {
     })
 
     expect(git.calls).toEqual([
-      'createBranch chore/aitk-sync-20260729-1242',
+      'createBranch chore/canon-sync-20260729-1242',
       'stage .claude/rules/core/010-testing.md',
       'commit chore(sync): update governance from toolkit',
     ])
@@ -353,10 +353,10 @@ describe('runGitWorkflow staging', () => {
 
     expect(code).toBe(0)
     expect(git.calls).toEqual([
-      'createBranch chore/aitk-sync-20260729-1242',
+      'createBranch chore/canon-sync-20260729-1242',
       'stage .claude/rules/core/010-testing.md',
       'commit chore(sync): update governance from toolkit',
-      'push chore/aitk-sync-20260729-1242',
+      'push chore/canon-sync-20260729-1242',
     ])
     expect(prCalls).toEqual(['pr chore(sync): update governance from toolkit'])
   })

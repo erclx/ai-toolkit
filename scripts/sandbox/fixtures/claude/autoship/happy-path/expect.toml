@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-autoship` run leaves behind on the happy-path
-# arm, once Step 7 and what follows it have run. Read by `aitk sandbox check`.
+# What a correct `/canon:claude-autoship` run leaves behind on the happy-path
+# arm, once Step 7 and what follows it have run. Read by `canon sandbox check`.
 # Patterns use TOML literal strings so a regex needs no backslash escaping.
 
 # `#1242` routed Step 7 through a body carrying `disable-model-invocation`,

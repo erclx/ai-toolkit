@@ -22,7 +22,7 @@ export function registerPassThroughVerbs(
       .passThroughOptions()
       .helpOption(false)
       .action(async (_opts: unknown, cmd: Command) => {
-        if (!isHelpRequest(cmd.args)) intro(`aitk ${domain}`)
+        if (!isHelpRequest(cmd.args)) intro(`canon ${domain}`)
         await execScript(`${domain}/${verb}.sh`, cmd.args)
       })
   }

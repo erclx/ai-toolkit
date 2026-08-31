@@ -53,7 +53,7 @@ Decide from what the entry says the command does, not from its name. When the en
 
 If a command fails or never comes up, report the failure and the last output. Do not retry with a different command, and do not abandon the others.
 
-An exit status here is part of the report rather than the basis for one. Step 3 confirms a service came up against what it printed, so the number is passed through to the reader and decides nothing. A documented command reaching `aitk` is the case worth naming, since an operator's shell profile may wrap the binary in a function that takes its status from a later command, and judging that run by its exit would call a refusal a success.
+An exit status here is part of the report rather than the basis for one. Step 3 confirms a service came up against what it printed, so the number is passed through to the reader and decides nothing. A documented command reaching `canon` is the case worth naming, since an operator's shell profile may wrap the binary in a function that takes its status from a later command, and judging that run by its exit would call a refusal a success.
 
 ## Step 4: stop
 

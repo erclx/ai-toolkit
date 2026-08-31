@@ -1,5 +1,5 @@
 # What a correct `/claude-tasks` run leaves behind on the archive arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The arm asserts the successful move and nothing about the refusals.
@@ -45,7 +45,7 @@ write_scope = [".claude/tasks/**"]
 reply = [".claude/tasks/archive/v01.0-rate-limit.md"]
 
 manual = [
-  "The run reached the archive through `aitk tasks archive` rather than moving the file by hand. Semantic: both leave the same tree, so no assertion over the tree separates them.",
+  "The run reached the archive through `canon tasks archive` rather than moving the file by hand. Semantic: both leave the same tree, so no assertion over the tree separates them.",
   "The board resolves at the main worktree root rather than at pwd. Unwired: a standalone sandbox repository has no linked worktree, so the two roots are the same path and no run can tell them apart.",
 ]
 

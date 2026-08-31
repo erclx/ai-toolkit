@@ -15,7 +15,7 @@ extends = ""
 const dirs: string[] = []
 
 async function makeDir(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'aitk-claude-gi-'))
+  const dir = await mkdtemp(join(tmpdir(), 'canon-claude-gi-'))
   dirs.push(dir)
   return dir
 }

@@ -34,8 +34,8 @@ function installRule(folder: string, name: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-gov-stacks-'))
-  target = mkdtempSync(join(tmpdir(), 'aitk-gov-stacks-target-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-gov-stacks-'))
+  target = mkdtempSync(join(tmpdir(), 'canon-gov-stacks-target-'))
 })
 
 afterEach(() => {

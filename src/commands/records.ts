@@ -91,10 +91,10 @@ export function register(program: Command): void {
         'is installed and cited everywhere, so a rename is larger than a file move.',
         '',
         'Examples:',
-        '  aitk records validate plans',
-        '  aitk records validate memory',
-        '  aitk records validate standards',
-        '  aitk records validate intake --json',
+        '  canon records validate plans',
+        '  canon records validate memory',
+        '  canon records validate standards',
+        '  canon records validate intake --json',
         '',
       ].join('\n'),
     )
@@ -124,15 +124,15 @@ export function register(program: Command): void {
         '     some of them',
         '  2  a record carries a known transform and --write was not passed',
         '',
-        'It reports and never writes without --write, matching aitk records',
+        'It reports and never writes without --write, matching canon records',
         'validate: a session record has no history to undo a wrong repair from.',
         'A transform is only offered where the old value is recoverable from the',
         'file itself, so a finding with no transform is left for a session to fix.',
         '',
         'Examples:',
-        '  aitk records migrate memory',
-        '  aitk records migrate memory --write',
-        '  aitk records migrate memory --json',
+        '  canon records migrate memory',
+        '  canon records migrate memory --write',
+        '  canon records migrate memory --json',
         '',
       ].join('\n'),
     )
@@ -166,8 +166,8 @@ export function register(program: Command): void {
         'and a machine restored by records pull reads its whole tree as one week old.',
         '',
         'Examples:',
-        '  aitk records size',
-        '  aitk records size --json',
+        '  canon records size',
+        '  canon records size --json',
         '',
       ].join('\n'),
     )
@@ -231,8 +231,8 @@ function backupHelp(verb: 'push' | 'pull'): string {
     'when it is absent, and refuse when its origin is also a remote of this project.',
     '',
     'Examples:',
-    `  aitk records ${verb}`,
-    `  aitk records ${verb} --json`,
+    `  canon records ${verb}`,
+    `  canon records ${verb} --json`,
     '',
   ].join('\n')
 }
@@ -242,7 +242,7 @@ async function runSize(opts: BackupCommandOptions): Promise<number> {
   const outcome = await sizeRecords(root)
 
   if (!outcome.ok)
-    return reportRefusal('aitk records size', outcome, opts.json ?? false)
+    return reportRefusal('canon records size', outcome, opts.json ?? false)
 
   if (opts.json ?? false) {
     process.stdout.write(`${JSON.stringify(outcome)}\n`)
@@ -284,7 +284,7 @@ function reportSize(outcome: Extract<SizeOutcome, { ok: true }>): void {
     .filter((entry) => !entry.present)
     .map((entry) => entry.folder)
 
-  intro('aitk records size')
+  intro('canon records size')
   logStep('Folders')
 
   if (present.length === 0) {
@@ -335,14 +335,14 @@ async function runPush(opts: BackupCommandOptions): Promise<number> {
   const outcome = await pushRecords(root)
 
   if (!outcome.ok)
-    return reportRefusal('aitk records push', outcome, opts.json ?? false)
+    return reportRefusal('canon records push', outcome, opts.json ?? false)
 
   if (opts.json ?? false) {
     process.stdout.write(`${JSON.stringify(outcome)}\n`)
     return 0
   }
 
-  intro('aitk records push')
+  intro('canon records push')
   logStep('Staged')
   logInfo(
     `${outcome.folders.length} folder(s), ${outcome.changed} path(s) changed`,
@@ -362,14 +362,14 @@ async function runPull(opts: BackupCommandOptions): Promise<number> {
   const outcome = await pullRecords(root)
 
   if (!outcome.ok)
-    return reportRefusal('aitk records pull', outcome, opts.json ?? false)
+    return reportRefusal('canon records pull', outcome, opts.json ?? false)
 
   if (opts.json ?? false) {
     process.stdout.write(`${JSON.stringify(outcome)}\n`)
     return 0
   }
 
-  intro('aitk records pull')
+  intro('canon records pull')
   logStep('Fetched')
   logInfo(`records at ${outcome.commit}`)
   logStep('Written')
@@ -468,7 +468,7 @@ function report(
       return 1
     }
 
-    intro('aitk records validate')
+    intro('canon records validate')
     logStep('Refused')
     logError(outcome.message)
     outro()
@@ -486,7 +486,7 @@ function report(
       })}\n`,
     )
   } else {
-    intro('aitk records validate')
+    intro('canon records validate')
     logStep(outcome.kind)
     logInfo(`${outcome.records} record(s) read`)
 
@@ -616,7 +616,7 @@ async function runMigrate(
 
   if (!isRecordKind(kind)) {
     return reportRefusal(
-      'aitk records migrate',
+      'canon records migrate',
       {
         reason: 'unknown-kind',
         message: `Not a record kind: ${kind}. Expected one of: ${RECORD_KINDS.join(', ')}.`,
@@ -629,7 +629,7 @@ async function runMigrate(
   const outcome = await validateRecords(root, kind)
 
   if (!outcome.ok) {
-    return reportRefusal('aitk records migrate', outcome, emitJson)
+    return reportRefusal('canon records migrate', outcome, emitJson)
   }
 
   const write = opts.write ?? false
@@ -676,7 +676,7 @@ function reportMigrate(
       })}\n`,
     )
   } else {
-    intro('aitk records migrate')
+    intro('canon records migrate')
 
     if (total === 0) {
       logStep('Clean')

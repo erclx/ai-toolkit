@@ -5,13 +5,13 @@ description: Reading a changed set against the pull request label map, the two t
 
 # Label coverage
 
-`aitk labels audit` resolves the paths a branch changed against the label map a project declares, reports the labels the set earns, and names every path no row reaches. It closes a gap the map's own comment had predicted since the map shipped: nothing detected a surface added after the rows were written, so such a branch merged carrying no label and nobody heard about it.
+`canon labels audit` resolves the paths a branch changed against the label map a project declares, reports the labels the set earns, and names every path no row reaches. It closes a gap the map's own comment had predicted since the map shipped: nothing detected a surface added after the rows were written, so such a branch merged carrying no label and nobody heard about it.
 
 ```bash
-aitk labels audit
-aitk labels audit --json
-aitk labels audit --base origin/main
-aitk labels audit src/cli.ts docs/index.md --json
+canon labels audit
+canon labels audit --json
+canon labels audit --base origin/main
+canon labels audit src/cli.ts docs/index.md --json
 ```
 
 | Option          | Behavior                                                          |
@@ -26,7 +26,7 @@ Under `--json` the record holds stdout alone and the frame still renders on stde
 
 ## The map it reads
 
-The map sits at `.claude/aitk/pr-labels.toml` and carries two tables. `[domains]` keys a label name to the path prefixes that earn it, and `[declined]` keys a reason to the prefixes that earn no label on purpose.
+The map sits at `.claude/canon/pr-labels.toml` and carries two tables. `[domains]` keys a label name to the path prefixes that earn it, and `[declined]` keys a reason to the prefixes that earn no label on purpose.
 
 ```toml
 [domains]
@@ -66,7 +66,7 @@ Reading the working tree is what lets the check run before the branch commits, w
 
 It reports and never gates. Whether an uncovered surface deserves a label is a judgment only whoever owns that surface can make, and a push failing on one teaches a contributor to route around the check while nothing about the surface has changed.
 
-A project declaring no map refuses with `no-map`, which is an answer rather than a fault. Such a project is labelled silently by design, and treating the absence as a break would make the map mandatory for every target. `aitk audits run` reads that one reason as an expected absence and every other refusal as a measure that did not run.
+A project declaring no map refuses with `no-map`, which is an answer rather than a fault. Such a project is labelled silently by design, and treating the absence as a break would make the map mandatory for every target. `canon audits run` reads that one reason as an expected absence and every other refusal as a measure that did not run.
 
 ## What it does not measure
 

@@ -267,7 +267,7 @@ describe('coverage across the classified entries', () => {
   it('should not count an unverifiable entry naming a check as covered', () => {
     const report = makeReport({
       decisions: [
-        makeDecision({ claim: 'neither', checks: ['aitk markdown audit'] }),
+        makeDecision({ claim: 'neither', checks: ['canon markdown audit'] }),
       ],
     })
 

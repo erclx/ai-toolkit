@@ -26,7 +26,7 @@ export interface RunCliOptions {
  * Thrown when a case reaches past its declared temporary directory into this
  * machine's real toolkit state. `stateDir()` in `src/targets/registry.ts`
  * holds both the target registry `gov install` and `gov sync` record into and
- * the sandbox tree `aitk sandbox` provisions into, so a case that inherits the
+ * the sandbox tree `canon sandbox` provisions into, so a case that inherits the
  * real `HOME` unmodified writes into whichever of the two a verb touches, and
  * nothing but this check would ever say so.
  */
@@ -93,17 +93,17 @@ export function snapshotStateDir(): string {
  * builds, so every spawn drops the `GIT_` prefix before adding the headless
  * flag every case needs to avoid a picker blocking on stdin.
  *
- * `AITK_STATE_DIR` and `AITK_SANDBOX_DIR` get the same treatment as `GIT_DIR`,
+ * `CANON_STATE_DIR` and `CANON_SANDBOX_DIR` get the same treatment as `GIT_DIR`,
  * each pointed at a folder under the case's own `cwd` rather than dropped,
  * since dropping either alone would still resolve through the inherited
- * `HOME` to this machine's real `~/.local/state/aitk`. `stateDir()` and
+ * `HOME` to this machine's real `~/.local/state/canon`. `stateDir()` and
  * `sandboxTree()` resolve the same three ways and share that parent, so both
  * overrides move together. A case explicitly passing its own value through
- * `options.env` still wins, matching `AITK_NON_INTERACTIVE` below.
+ * `options.env` still wins, matching `CANON_NON_INTERACTIVE` below.
  *
  * The `stateDir()` snapshot before and after the spawn is what actually
  * catches an escape past that redirection, since a default can be wrong in a
- * way a case never asserts on its own, and it is what `AITK_SANDBOX_DIR`
+ * way a case never asserts on its own, and it is what `CANON_SANDBOX_DIR`
  * rides for free: the sandbox tree already sits under `stateDir()`, so
  * walking the whole directory catches a leak there with no override of its
  * own to add. `ContainmentViolation` fails loud rather than leaving a dead
@@ -125,9 +125,9 @@ export function runCli(
     timeout: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     env: {
       ...inherited,
-      AITK_NON_INTERACTIVE: '1',
-      AITK_STATE_DIR: join(options.cwd, '.aitk-state'),
-      AITK_SANDBOX_DIR: join(options.cwd, '.aitk-state', 'sandbox'),
+      CANON_NON_INTERACTIVE: '1',
+      CANON_STATE_DIR: join(options.cwd, '.canon-state'),
+      CANON_SANDBOX_DIR: join(options.cwd, '.canon-state', 'sandbox'),
       ...options.env,
     },
   })

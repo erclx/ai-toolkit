@@ -116,9 +116,9 @@ const LIST_HELP = [
   'command. Read the record rather than the exit when a skill consumes this.',
   '',
   'Examples:',
-  '  aitk targets list',
-  '  aitk targets list --json',
-  '  aitk targets list --sweep ~/repos --json',
+  '  canon targets list',
+  '  canon targets list --json',
+  '  canon targets list --sweep ~/repos --json',
   '',
 ].join('\n')
 
@@ -126,7 +126,7 @@ const PULLS_HELP = [
   '',
   'Reads, per target, every open pull request with its checks and the heading',
   'its newest review pass carries. Naming paths reads those and looks up',
-  'nothing; naming none reads every target `aitk targets list` reports.',
+  'nothing; naming none reads every target `canon targets list` reports.',
   '',
   'Exit codes:',
   '  0  at least one target was read',
@@ -143,13 +143,13 @@ const PULLS_HELP = [
   'leaves "review" covering nothing.',
   '',
   'Examples:',
-  '  aitk targets pulls',
-  '  aitk targets pulls ../caret ../stackr --json',
+  '  canon targets pulls',
+  '  canon targets pulls ../caret ../stackr --json',
   '',
 ].join('\n')
 
 async function runList(opts: ListOptions): Promise<number> {
-  intro('aitk targets list')
+  intro('canon targets list')
 
   const depth = readDepth(opts.depth)
 
@@ -176,7 +176,7 @@ async function runList(opts: ListOptions): Promise<number> {
 }
 
 async function runPulls(paths: string[], opts: PullsOptions): Promise<number> {
-  intro('aitk targets pulls')
+  intro('canon targets pulls')
 
   const depth = readDepth(opts.depth)
 

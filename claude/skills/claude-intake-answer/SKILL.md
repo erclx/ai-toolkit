@@ -14,7 +14,7 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/intake.md` before writing anything. It
 
 ## Guards
 
-- If `aitk intake list --json` reports no folder, stop: `❌ No intake to answer. Run /claude-intake to file a dump first.`
+- If `canon intake list --json` reports no folder, stop: `❌ No intake to answer. Run /claude-intake to file a dump first.`
 - If the named folder has no unread item, stop: `❌ Every item in <slug> carries an answer. Nothing to ask.`
 - Never fill a slot the operator did not answer. An abandoned batch leaves every unreached item unread, which is what the empty slot already means.
 - Never infer an answer from the conversation having happened. A selection reaches the file through the verb or not at all.
@@ -22,13 +22,13 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/intake.md` before writing anything. It
 
 ## Step 1: pick the folder
 
-Run `aitk intake list --json` and read the per-folder counts. With one folder carrying unread items, take it. With several, put the folders as one question carrying each slug and its unread count, and let the operator pick.
+Run `canon intake list --json` and read the per-folder counts. With one folder carrying unread items, take it. With several, put the folders as one question carrying each slug and its unread count, and let the operator pick.
 
 Never guess from the topic of the conversation. A session resuming against the wrong folder answers items nobody asked about.
 
 ## Step 2: collect one cluster
 
-Run `aitk intake list <slug> --unread --json`. It returns the unread items grouped by the cluster file holding them, each carrying its label, title, open question, and suggestion.
+Run `canon intake list <slug> --unread --json`. It returns the unread items grouped by the cluster file holding them, each carrying its label, title, open question, and suggestion.
 
 Work one cluster at a time, in the order the folder numbers them. A dump of six clusters holding five items each is thirty questions, and a surface putting all of them at once is unusable. The cluster boundary is also where an operator who runs out of attention stops cleanly, leaving whole clusters unread rather than one file half answered.
 
@@ -53,7 +53,7 @@ Send the whole batch in one turn. When the session runs on a surface carrying a 
 Land every answered item in the cluster with one call:
 
 ```bash
-aitk intake answer <slug> --cluster <file> --set <label>=<answer> --set <label>=<answer>
+canon intake answer <slug> --cluster <file> --set <label>=<answer> --set <label>=<answer>
 ```
 
 One call per cluster, never one per item. Items are labeled per cluster file, so the label alone does not identify an item and the cluster travels with it. Four separate calls against one file also race on the read and drop every answer but the last.

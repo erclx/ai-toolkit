@@ -12,22 +12,22 @@ This doc stays at the narrative layer. For command flags and JSON shapes, see [a
 
 ## Getting the skills
 
-The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and the installed copy stays at the version it was installed at. Claude Code ships auto-update off for third-party marketplaces, so neither a push nor a release reaches that copy until someone refreshes it with `claude plugin marketplace update aitk` followed by `claude plugin update aitk@aitk`, or turns auto-update on once under `/plugin`. The `aitk` CLI moves on its own schedule through the registry, so a machine can hold current skills against a stale CLI or the reverse.
+The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and the installed copy stays at the version it was installed at. Claude Code ships auto-update off for third-party marketplaces, so neither a push nor a release reaches that copy until someone refreshes it with `claude plugin marketplace update canon` followed by `claude plugin update canon@canon`, or turns auto-update on once under `/plugin`. The `canon` CLI moves on its own schedule through the registry, so a machine can hold current skills against a stale CLI or the reverse.
 
 ```bash
-claude plugin marketplace add https://github.com/erclx/aitk
-claude plugin install aitk@aitk
+claude plugin marketplace add https://github.com/erclx/canon
+claude plugin install canon@canon
 ```
 
-The URL form clones over HTTPS. The `erclx/aitk` shorthand resolves to SSH and fails on a machine with no key configured.
+The URL form clones over HTTPS. The `erclx/canon` shorthand resolves to SSH and fails on a machine with no key configured.
 
-The `aitk` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so it installs from the registry as its own step.
+The `canon` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so it installs from the registry as its own step.
 
 ```bash
-bun install --global @erclx/aitk
+bun install --global @erclx/canon
 ```
 
-The package ships the catalogs the CLI reads, not only `src/`, so `aitk init` resolves governance, tooling, and the seeds from wherever the package landed, and `aitk standards <name>` reads the corpus from there too.
+The package ships the catalogs the CLI reads, not only `src/`, so `canon init` resolves governance, tooling, and the seeds from wherever the package landed, and `canon standards <name>` reads the corpus from there too.
 
 Pointing Claude Code at a checkout stays the development path, where a local skill edit overrides the installed copy for that session.
 
@@ -40,16 +40,16 @@ claude --plugin-dir <toolkit>/claude
 Two steps, in order:
 
 1. Run the framework's own scaffold if the project needs one, such as `bun init`, `npm create vite`, or `npm create astro`. The toolkit does not wrap framework scaffolding.
-2. Invoke `aitk:setup-init` in Claude Code. The skill detects the stack, resolves flags, previews the full chain, and runs it end-to-end.
+2. Invoke `canon:setup-init` in Claude Code. The skill detects the stack, resolves flags, previews the full chain, and runs it end-to-end.
 
 The chain is:
 
-- `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
-- `aitk tooling sync <stack> --write` adds stack-specific deps, scripts, and gitignore entries
-- The agent reads `aitk tooling reference <stack>` (plus parents) as its audit context, follows it to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections <!-- audit-ignore-citations: .claude/context/development.md -->
+- `canon init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
+- `canon tooling sync <stack> --write` adds stack-specific deps, scripts, and gitignore entries
+- The agent reads `canon tooling reference <stack>` (plus parents) as its audit context, follows it to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections <!-- audit-ignore-citations: .claude/context/development.md -->
 - `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
-The chain serves a fresh scaffold and names a destination for the three states it does not. An existing project goes to `aitk:aitk-operator`, which reads what the project already carries before naming a per-domain command. An install wanting the Claude layer without the tooling chain runs `aitk claude init` for the seed docs and then `aitk:setup-indexes` for the index system. A language the toolkit ships no stack for is the one of the three the chain still runs for, on `base`, with the fallback marked in the preview so it can be declined there.
+The chain serves a fresh scaffold and names a destination for the three states it does not. An existing project goes to `canon:canon-operator`, which reads what the project already carries before naming a per-domain command. An install wanting the Claude layer without the tooling chain runs `canon claude init` for the seed docs and then `canon:setup-indexes` for the index system. A language the toolkit ships no stack for is the one of the three the chain still runs for, on `base`, with the fallback marked in the preview so it can be declined there.
 
 Keep the `## Scripts` table in `.claude/context/development.md` current as scripts are added. Base tooling seeds that entry with the commands it installs, and each stack reference extends the table. `project-commands` reads it to start the app or run a check on request, so a command missing from the table cannot be run that way. A project whose entry outgrew one file and split into `.claude/context/development/` keeps the table in `overview.md`, which is where the skill looks next. <!-- audit-ignore-citations: .claude/context/development.md -->
 
@@ -58,54 +58,54 @@ Keep the `## Scripts` table in `.claude/context/development.md` current as scrip
 Scaffold installs tooling and seeds. It does not fill the planning docs or the design system. Complete those before the first feature session:
 
 1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
-2. For a UI project, invoke `aitk:claude-design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
-3. Optionally invoke `aitk:claude-diagram` to draft entries under `.claude/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
+2. For a UI project, invoke `canon:claude-design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
+3. Optionally invoke `canon:claude-diagram` to draft entries under `.claude/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
 4. Start the feature loop. See [AI workflow](ai-workflow.md) for the per-feature sequence.
 
 A machine without a renderer still gets the diagrams and is told which check was skipped.
 
-Each diagram entry records the commit and date it was last verified against, and nothing maintains that record for you. The folder is redrawn on demand rather than swept on every ship, so `verified` carries the whole signal: an entry whose date sits far behind your branch is due a read, and no pass will name which one. Run `aitk:claude-diagram` again when the code a kind is drawn from moves.
+Each diagram entry records the commit and date it was last verified against, and nothing maintains that record for you. The folder is redrawn on demand rather than swept on every ship, so `verified` carries the whole signal: an entry whose date sits far behind your branch is due a read, and no pass will name which one. Run `canon:claude-diagram` again when the code a kind is drawn from moves.
 
-`.claude/ARCHITECTURE.md` carries the same mechanism on the same ship. `aitk:claude-docs` anchors a decision it amends to the paths that decision cites, and reports an anchored decision whose cited path the branch touched.
+`.claude/ARCHITECTURE.md` carries the same mechanism on the same ship. `canon:claude-docs` anchors a decision it amends to the paths that decision cites, and reports an anchored decision whose cited path the branch touched.
 
 ### Stack decision
 
-The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, and governance core rules, and scaffolds an empty `.claude/wiki/`. Most projects need nothing more.
+The default path is `base`. `canon init` on `base` installs base tooling configs, Claude seeds, and governance core rules, and scaffolds an empty `.claude/wiki/`. Most projects need nothing more.
 
 Escalate only for real web apps. The `setup-init` skill reads `package.json` and root configs, then picks the matching tooling stack (`vite-react` today) and the matching governance stack (`react`, `astro`, `node`).
 
-`node-server` is named rather than detected. It carries the server-side security and persistence rules for a project writing request handlers or a persistence layer in TypeScript, and the detect step matches a runtime or a framework against stack names, so nothing there marks a project as a backend. Pass it deliberately with `aitk init --stack node-server` or `aitk gov install node-server <target>`.
+`node-server` is named rather than detected. It carries the server-side security and persistence rules for a project writing request handlers or a persistence layer in TypeScript, and the detect step matches a runtime or a framework against stack names, so nothing there marks a project as a backend. Pass it deliberately with `canon init --stack node-server` or `canon gov install node-server <target>`.
 
 Markdown-heavy projects, CLI tools, docs sites, research notebooks, and scripting repos stay on `base`. Escalation is a ceiling move, not a default.
 
-A project the toolkit ships no stack for lands on `base` the same way, and the skill marks that resolution as a fallback in its preview rather than reporting it as a match. Configs, seeds, and gitignore entries land either way, and the JavaScript development dependencies, scripts, and hook activation land only where a `package.json` exists to carry them. A project outside that ecosystem declines at the preview and takes `aitk:setup-gov` for the governance layer alone, which is language-neutral.
+A project the toolkit ships no stack for lands on `base` the same way, and the skill marks that resolution as a fallback in its preview rather than reporting it as a match. Configs, seeds, and gitignore entries land either way, and the JavaScript development dependencies, scripts, and hook activation land only where a `package.json` exists to carry them. A project outside that ecosystem declines at the preview and takes `canon:setup-gov` for the governance layer alone, which is language-neutral.
 
-Run `aitk tooling list --json` and `aitk gov list --json` to see the current catalogs. Never hardcode stack names.
+Run `canon tooling list --json` and `canon gov list --json` to see the current catalogs. Never hardcode stack names.
 
 ### Core domains and skips
 
-`aitk init` installs base tooling, Claude workflow, and governance, and scaffolds `.claude/wiki/`. Governance defaults to the `base` stack, so a bare init carries the rules that route a project. Pass `--stack <name>` to install a framework stack instead.
+`canon init` installs base tooling, Claude workflow, and governance, and scaffolds `.claude/wiki/`. Governance defaults to the `base` stack, so a bare init carries the rules that route a project. Pass `--stack <name>` to install a framework stack instead.
 
-No standard is written into the project. Each governance rule's authority line names `aitk standards <name>`, which answers from the corpus inside the CLI's own package, and every toolkit skill names the copy in its own plugin root. `aitk markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data.
+No standard is written into the project. Each governance rule's authority line names `canon standards <name>`, which answers from the corpus inside the CLI's own package, and every toolkit skill names the copy in its own plugin root. `canon markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data.
 
 No snippet is written into the project either. `claude/snippets` in the plugin cache symlinks to the toolkit's own `snippets/`, so a session reaches one at its `@` reference with no install step, the same live resolution `claude/standards` gives a rule's authority line.
 
 `governance` and `wiki` are skippable:
 
-- `--skip governance`: leave `.claude/rules/` empty, so no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
+- `--skip governance`: leave `.claude/rules/` empty, so no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `canon gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
 The plugin corpus carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.
 
 ## Add a domain later
 
-When a new need appears after scaffold, install the one domain without re-running `aitk init`.
+When a new need appears after scaffold, install the one domain without re-running `canon init`.
 
-- Governance rule for a newly adopted library: invoke `aitk:setup-gov`, or run `aitk gov install <stack> --add <rule> <path>`
-- Project-specific rule the toolkit does not ship: invoke `aitk:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
-- Index.md system for a markdown-heavy folder that emerged: invoke `aitk:setup-indexes`
+- Governance rule for a newly adopted library: invoke `canon:setup-gov`, or run `canon gov install <stack> --add <rule> <path>`
+- Project-specific rule the toolkit does not ship: invoke `canon:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `canon gov sync` leaves it untouched.
+- Index.md system for a markdown-heavy folder that emerged: invoke `canon:setup-indexes`
 
-Standards and snippets are not on that list, and there is nothing to add for either. Neither installs into a project, by default or by flag, so a session reads a standard with `aitk standards <name>` and a snippet through its `@` reference off the live plugin symlink, both resolving against the toolkit rather than a project copy. A project holding a `.claude/standards/` or `.claude/snippets/` folder from an older toolkit is carrying a stale artifact nothing reads, and deleting it is safe.
+Standards and snippets are not on that list, and there is nothing to add for either. Neither installs into a project, by default or by flag, so a session reads a standard with `canon standards <name>` and a snippet through its `@` reference off the live plugin symlink, both resolving against the toolkit rather than a project copy. A project holding a `.claude/standards/` or `.claude/snippets/` folder from an older toolkit is carrying a stale artifact nothing reads, and deleting it is safe.
 
 Per-domain mechanics live in the corresponding `docs/<domain>.md`. The skill body in `claude/skills/<skill>/SKILL.md` covers detection and preview.
 
@@ -115,33 +115,33 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 ### Check first
 
-`aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.
+`canon sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.
 
 #### The binary first
 
-The report opens by naming the binary running it. The installed version reads against the newest published one, and a version behind that points you at `aitk upgrade`, since every section under it is a reading taken by whichever toolkit you happen to have. An unreachable registry reports unknown with its reason rather than failing, so `--exit-code` still gates on the drift the check measured locally and an offline machine stays green.
+The report opens by naming the binary running it. The installed version reads against the newest published one, and a version behind that points you at `canon upgrade`, since every section under it is a reading taken by whichever toolkit you happen to have. An unreachable registry reports unknown with its reason rather than failing, so `--exit-code` still gates on the drift the check measured locally and an offline machine stays green.
 
 #### Then the causes
 
-A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `aitk:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is a relocation the report names but no command runs.
+A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `canon:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is a relocation the report names but no command runs.
 
-That attribution comes from `.claude/aitk/config.json`, a stamp every install and sync writes. A target stamped before that path shipped is read from the retired `.claude/aitk.json` instead, reported rather than migrated. Governance records a hash per installed file, plus the stack `aitk gov install` was given, and tooling records the stack chain it resolved instead of any file hash, since its install runs no per-file walk to attribute.
+That attribution comes from `.claude/canon/config.json`, a stamp every install and sync writes. A target stamped before that path shipped is read from the retired `.claude/canon.json` instead, reported rather than migrated. Governance records a hash per installed file, plus the stack `canon gov install` was given, and tooling records the stack chain it resolved instead of any file hash, since its install runs no per-file walk to attribute.
 
 Each domain holds its own toolkit commit, so syncing governance today does not move the revision tooling measures against, and each domain reports the upstream commits touching its own source path. Running any sync stamps that domain, and the report names the ones still unstamped.
 
 A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
-Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `aitk:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated`, and no command moves it either. The project moves the content itself.
+Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `canon:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated`, and no command moves it either. The project moves the content itself.
 
 `unmigrated` currently names no domain, since standards and snippets are the two the toolkit ever installed at the project root and both closed their install channel. A target still holding a root `standards/` or `snippets/` folder from an older toolkit is carrying its own authoring surface now, not an unfinished install, and nothing proposes moving either.
 
 #### Rules you never received
 
-A sync refreshes the files you already hold and adds none, so your rule set is frozen at the date you installed governance while every file in it reports as current. `newRules` names a rule you could receive that your tree does not hold, which is the one section that reads your absence rather than your contents. `aitk gov sync` reports the same rules per file, marked `missing`, so you see them either way you check.
+A sync refreshes the files you already hold and adds none, so your rule set is frozen at the date you installed governance while every file in it reports as current. `newRules` names a rule you could receive that your tree does not hold, which is the one section that reads your absence rather than your contents. `canon gov sync` reports the same rules per file, marked `missing`, so you see them either way you check.
 
-Take a clean section as reporting rather than as delivering. Nothing here installs, and it counts toward nothing, so pick the rules up with `aitk gov install <stack>` or take one with `--add <rule>`. That separation is deliberate: adopting a rule changes what your project is governed by, which is a choice a sync has no business making for you.
+Take a clean section as reporting rather than as delivering. Nothing here installs, and it counts toward nothing, so pick the rules up with `canon gov install <stack>` or take one with `--add <rule>`. That separation is deliberate: adopting a rule changes what your project is governed by, which is a choice a sync has no business making for you.
 
-Since `aitk gov install` records the stack you gave it, the list is read by comparing that stack's current rules against what you hold right now, with no date involved at all. That is what lets it name a rule the toolkit shipped before you last synced: nothing here depends on when you installed. A target stamped before this recording shipped falls back to the older read below.
+Since `canon gov install` records the stack you gave it, the list is read by comparing that stack's current rules against what you hold right now, with no date involved at all. That is what lets it name a rule the toolkit shipped before you last synced: nothing here depends on when you installed. A target stamped before this recording shipped falls back to the older read below.
 
 The fallback filters to what your stack can receive, read off the rule folders you already carry plus the folders the base stack takes whole. A rule under `lang/` or `ui/` belongs to some stacks and not others, so an unfiltered list would name rules you can never install. A target with neither a recorded stack nor a governance anchor reports nothing at all, since there is no date to measure against either.
 
@@ -161,29 +161,29 @@ Each entry carries a verdict, since a dropped folder and one the project wrote a
 
 Nothing acts on any of them, and the verdict is what makes the list safe to read.
 
-The same field names a proposal-only skill with a live case here under `migrations`, which is how `aitk:migration-claude-md` and `aitk:migration-context` become reachable. Each entry carries the measurement behind the proposal rather than the proposal alone.
+The same field names a proposal-only skill with a live case here under `migrations`, which is how `canon:migration-claude-md` and `canon:migration-context` become reachable. Each entry carries the measurement behind the proposal rather than the proposal alone.
 
 Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code, and neither do superseded artifacts, seed drift, tooling, or anything the reverse walk reports, since each names content the project is expected to edit or place itself. An unmigrated domain does count, because running the relocation closes it.
 
 Tooling reports under a section of its own, and `measured` there says whether the target ever recorded a chain. One that never ran a tooling sync reports unmeasured rather than clean, which is what separates tooling nobody has looked at from tooling that is current. A workspace root records nothing either way, since each package resolves its own chain.
 
-Reconcile the configs with `aitk tooling sync <stack> <path> --check` to read which files differ, then re-run it with `--write` to apply them. The drift report counts categories and the sync names paths, which is the difference worth knowing before a golden config the project edited is replaced.
+Reconcile the configs with `canon tooling sync <stack> <path> --check` to read which files differ, then re-run it with `--write` to apply them. The drift report counts categories and the sync names paths, which is the difference worth knowing before a golden config the project edited is replaced.
 
 ### Catch-all
 
-`aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence.
+`canon sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence.
 
 It never touches user-owned seed files. Governance rules in `.claude/rules/` and tooling configs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
-Standards take no part in that run. Nothing installed them, so there is no copy to reconcile and no `aitk standards sync` to reach for.
+Standards take no part in that run. Nothing installed them, so there is no copy to reconcile and no `canon standards sync` to reach for.
 
 ### Targeted
 
-- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `aitk:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
-- Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules. A rule your recorded stack lists reports as `missing` instead.
-- Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
-- Reference docs for a stack: `aitk tooling reference <stack>` reads and never writes, so there is nothing to sync
-- Index regeneration after markdown edits: `aitk indexes regen`
+- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `canon:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
+- Governance rules already installed: `canon gov sync <path>` diffs and applies, and never adds new rules. A rule your recorded stack lists reports as `missing` instead.
+- Tooling configs and seeds: `canon tooling <stack> <path>` overwrites golden configs and merges seeds
+- Reference docs for a stack: `canon tooling reference <stack>` reads and never writes, so there is nothing to sync
+- Index regeneration after markdown edits: `canon indexes regen`
 
 Use a targeted entry point when only one surface moved upstream. Use the catch-all when the toolkit lands a bundled release.
 
@@ -200,9 +200,9 @@ cd <your-project>
 claude
 ```
 
-In the session, invoke `aitk:setup-init`. The skill detects no framework and resolves tooling to `base` and governance to `base`. The preview marks both stacks as fallbacks, since neither came from a match, then the chain runs `aitk init`.
+In the session, invoke `canon:setup-init`. The skill detects no framework and resolves tooling to `base` and governance to `base`. The preview marks both stacks as fallbacks, since neither came from a match, then the chain runs `canon init`.
 
-Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `aitk:claude-seed-sync` for seed drift or `aitk sync .` for a catch-all refresh.
+Ongoing: run `canon sync --check .` to see what has drifted, then invoke `canon:claude-seed-sync` for seed drift or `canon sync .` for a catch-all refresh.
 
 ### Web application
 
@@ -211,33 +211,33 @@ bun create vite my-app && cd my-app
 claude
 ```
 
-Invoke `aitk:setup-init`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.
+Invoke `canon:setup-init`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `canon init` with the resolved flags.
 
 Ongoing maintenance:
 
-- What has drifted: `aitk sync --check .`
-- Seed drift: invoke `aitk:claude-seed-sync`
-- Catch-all sync: `aitk sync .`
-- Governance rule refresh only: `aitk gov sync .`
-- Layer a new rule on top, for example `260-shadcn` after adopting shadcn: `aitk gov install react --add 260-shadcn .`
+- What has drifted: `canon sync --check .`
+- Seed drift: invoke `canon:claude-seed-sync`
+- Catch-all sync: `canon sync .`
+- Governance rule refresh only: `canon gov sync .`
+- Layer a new rule on top, for example `260-shadcn` after adopting shadcn: `canon gov install react --add 260-shadcn .`
 
 ### Monorepo with multiple language roots
 
 The repo root owns the shared `base` layer, and each language lives in its own subfolder.
 
 ```bash
-aitk init --stack react .
-aitk tooling sync vite-react ./frontend --skip base --write
-aitk tooling sync python ./backend --skip base --write
+canon init --stack react .
+canon tooling sync vite-react ./frontend --skip base --write
+canon tooling sync python ./backend --skip base --write
 ```
 
-`--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite), and its own stack reference reads through `aitk tooling reference <stack>`.
+`--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite), and its own stack reference reads through `canon tooling reference <stack>`.
 
 ## Running sync from an agent session
 
-`aitk sync .` applies every installed domain sync, then offers to commit the result and open a pull request. That last step needs a terminal. Under `AITK_NON_INTERACTIVE=1`, which is how an agent runs it, the domain syncs still apply and the git workflow is refused: the command reports the branch and commit it would have created, writes nothing to git, and exits 0. Review the working tree and commit it yourself, or rerun interactively to reach the commit and pull request options.
+`canon sync .` applies every installed domain sync, then offers to commit the result and open a pull request. That last step needs a terminal. Under `CANON_NON_INTERACTIVE=1`, which is how an agent runs it, the domain syncs still apply and the git workflow is refused: the command reports the branch and commit it would have created, writes nothing to git, and exits 0. Review the working tree and commit it yourself, or rerun interactively to reach the commit and pull request options.
 
-Sync also refuses a target whose working tree is dirty, so commit or stash before running it. `aitk sync --check .` has neither restriction, since it writes nothing.
+Sync also refuses a target whose working tree is dirty, so commit or stash before running it. `canon sync --check .` has neither restriction, since it writes nothing.
 
 ## Related
 

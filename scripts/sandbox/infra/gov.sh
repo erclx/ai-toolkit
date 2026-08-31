@@ -114,23 +114,23 @@ RULE
 
   case "$SELECTED_OPTION" in
   "install")
-    log_step "Running: aitk gov install astro --add 200-react install/"
+    log_step "Running: canon gov install astro --add 200-react install/"
     exec bun "$PROJECT_ROOT/src/cli.ts" gov install astro --add 200-react install/
     ;;
   "sync")
-    log_step "Running: aitk gov sync"
+    log_step "Running: canon gov sync"
     exec bun "$PROJECT_ROOT/src/cli.ts" gov sync sync/
     ;;
   "build")
-    log_step "Running: aitk gov build"
+    log_step "Running: canon gov build"
     exec bun "$PROJECT_ROOT/src/cli.ts" gov build build/
     ;;
   "list")
-    log_step "Running: aitk gov list"
+    log_step "Running: canon gov list"
     exec bun "$PROJECT_ROOT/src/cli.ts" gov list
     ;;
   "regen")
-    log_step "Running: aitk gov regen --root regen/"
+    log_step "Running: canon gov regen --root regen/"
     # The command prints nothing on success, so the tree after it is the whole
     # result. Listed rather than exec'd for that reason.
     bun "$PROJECT_ROOT/src/cli.ts" gov regen --root regen/
@@ -139,7 +139,7 @@ RULE
     log_info "599-sandbox-local.md present, 999-orphan.md gone, 000-constitution.md restored"
     ;;
   "test-order")
-    # Both streams and the status land on disk, because `aitk sandbox check`
+    # Both streams and the status land on disk, because `canon sandbox check`
     # reads the tree and nothing else. The record carries a verdict per module
     # and the status carries the exit, so the arm asserts the classification
     # separately from the code a finding is meant to produce.
@@ -147,7 +147,7 @@ RULE
     # The status is held rather than left to `set -e`. A finding exits 2 by
     # design, so an abort would kill the scenario on the outcome the arm exists
     # to observe. The five arms above `exec` and leave theirs on the terminal.
-    log_step "Running: aitk gov test-order --root test-order"
+    log_step "Running: canon gov test-order --root test-order"
     local order_status=0
     bun "$PROJECT_ROOT/src/cli.ts" gov test-order --root test-order --json \
       >test-order-record.json 2>test-order-frame.log || order_status=$?
@@ -156,7 +156,7 @@ RULE
     log_info "test-order-record.json carries a verdict per module"
     log_info "test-order-status.txt  carries the exit the run produced"
     log_info "Expect: declared in fixtures/infra/gov/test-order/expect.toml"
-    log_info "        Check it with: aitk sandbox check infra:gov test-order"
+    log_info "        Check it with: canon sandbox check infra:gov test-order"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

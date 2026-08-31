@@ -5,14 +5,14 @@ description: Running the audit over any markdown path, where its bans and checkp
 
 # Markdown audit
 
-`aitk markdown audit [path...]` reports any markdown file against the attribute standard `markdown.md`. An attribute standard governs a file rather than a folder, so this resolves no folder and requires no `index.md`, which is what puts `.claude/rules/`, `governance/`, and `snippets/` in reach. Folder-shaped findings stay in `aitk context audit`, described in `context-audit.md`.
+`canon markdown audit [path...]` reports any markdown file against the attribute standard `markdown.md`. An attribute standard governs a file rather than a folder, so this resolves no folder and requires no `index.md`, which is what puts `.claude/rules/`, `governance/`, and `snippets/` in reach. Folder-shaped findings stay in `canon context audit`, described in `context-audit.md`.
 
 ```bash
-aitk markdown audit
-aitk markdown audit --json
-aitk markdown audit .claude/rules governance
-aitk markdown audit docs/agents/commands.md
-aitk markdown audit 'snippets/**/*.md'
+canon markdown audit
+canon markdown audit --json
+canon markdown audit .claude/rules governance
+canon markdown audit docs/agents/commands.md
+canon markdown audit 'snippets/**/*.md'
 ```
 
 | Option   | Behavior                                                   |
@@ -27,7 +27,7 @@ A bare run measures every markdown file git lists, tracked plus untracked-and-no
 
 ## Where the rules come from
 
-The three ban sets and all nine checkpoints ship with the `aitk` package as data, in `src/markdown/bans.ts` and `src/markdown/structure.ts`. Every project is measured against the same sets whether or not it installed any standards, and no file has to resolve for a run to mean something.
+The three ban sets and all nine checkpoints ship with the `canon` package as data, in `src/markdown/bans.ts` and `src/markdown/structure.ts`. Every project is measured against the same sets whether or not it installed any standards, and no file has to resolve for a run to mean something.
 
 Six of the nine are stated in `markdown.md` and the three cadence numbers are stated in the `write-human` skill. That split is the content boundary rather than an accident: `markdown.md` carries the enforced rules a scan can decide, and the skill carries the rhythm rules a ban list cannot express. A cadence number moved in the skill and left in the code drifts the same way, so move both.
 
@@ -41,7 +41,7 @@ Freezing the spellings gave up a property worth naming. They were derived by app
 
 A set shipped empty is reported rather than passed. It finds nothing and would exit clean, which reports a corpus nobody checked as a corpus carrying no violation, so the run names the empty set and exits `1`. The sets ship with the package, so a defect in the build is the only cause left.
 
-`aitk standards <name>` still resolves a standard at the authoring root, then the package corpus, and prints it, so the human catalog reads without a project copy on disk.
+`canon standards <name>` still resolves a standard at the authoring root, then the package corpus, and prints it, so the human catalog reads without a project copy on disk.
 
 ## What each check reports
 
@@ -61,7 +61,7 @@ Two ban shapes stay unmeasured and the report says so on every run. A multi-word
 
 ### Bullets, paragraphs, and depth
 
-Bullet weight and depth are the checks that moved off `aitk context audit`, carrying what they measured at the time. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run reports past roughly 40 rendered lines, measured at 80 columns, where a heading breaks one and so does a bold section marker taking the whole line at column zero, either ending in a colon, or holding one whole code span at any width, or running to 20 characters or fewer, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows. Each file reports its longest run alone, so a second run past the checkpoint in the same file is never named.
+Bullet weight and depth are the checks that moved off `canon context audit`, carrying what they measured at the time. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run reports past roughly 40 rendered lines, measured at 80 columns, where a heading breaks one and so does a bold section marker taking the whole line at column zero, either ending in a colon, or holding one whole code span at any width, or running to 20 characters or fewer, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows. Each file reports its longest run alone, so a second run past the checkpoint in the same file is never named.
 
 Every weight and depth measure counts the text a reader is shown. A link reduces to its anchor text and an autolink drops whole, since no reader is shown either destination. A backticked path stays counted, which is where these measures part from the ban scan above: that one blanks a code span so a standard quoting its own banned character does not report itself, and discounting the same span here would under-report a paragraph carrying several. One file holds both span sets and each answers its own question.
 
@@ -126,9 +126,9 @@ The condition on that was something identifying a finite verb rather than guessi
 
 Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, and cadence is a distribution whose healthy range moves with the surface, so all four report under every code.
 
-`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `aitk gate run` is right to report it as unmeasured rather than as a pass. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
+`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `canon gate run` is right to report it as unmeasured rather than as a pass. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
 
-`2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `aitk context audit` and the gate's own seed stage already draw between the same two codes.
+`2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `canon context audit` and the gate's own seed stage already draw between the same two codes.
 
 A banned character is a fact rather than a judgment, which is the test that admits it to a gate. What held it back was that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order was to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change, and the gate is the last of the four.
 
@@ -148,9 +148,9 @@ A hit the closed set cannot separate from correct prose is the case with no thir
 
 ### Where the rules are enforced
 
-Four surfaces apply the ban sets and three of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, the seed copy a project installs does the same, and the `Markdown bans` stage in `aitk gate run` runs it across the whole corpus before a push. Each hook parsed its own copy of the word bans in awk before that, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
+Four surfaces apply the ban sets and three of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, the seed copy a project installs does the same, and the `Markdown bans` stage in `canon gate run` runs it across the whole corpus before a push. Each hook parsed its own copy of the word bans in awk before that, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
 
-The seed copy moved onto the verb when the sets became data, since its awk had nothing left to parse. It resolves one runner where the toolkit copy resolves two, looking for no checkout source, and a machine carrying no `aitk` gets a report naming the binary to install rather than a silent pass. `scripts/core/check-seed-independence.sh` scopes its walk to markdown and leaves the seed hooks outside it, which its own comment records as deliberate.
+The seed copy moved onto the verb when the sets became data, since its awk had nothing left to parse. It resolves one runner where the toolkit copy resolves two, looking for no checkout source, and a machine carrying no `canon` gets a report naming the binary to install rather than a silent pass. `scripts/core/check-seed-independence.sh` scopes its walk to markdown and leaves the seed hooks outside it, which its own comment records as deliberate.
 
 The fourth surface reads the standards directly and is not a consolidation left half done. `claude/skills/claude-standards-audit/SKILL.md` greps the banned tokens agent-side, which is a session reading prose rather than a process it can shell out to, and it ships to every target. It is the likeliest place for the next drift, since nothing compares it against the verb.
 

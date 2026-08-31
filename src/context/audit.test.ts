@@ -54,7 +54,7 @@ function table(rows: string[]): string {
 function catalogRows(count: number): string[] {
   return Array.from(
     { length: count },
-    (_, index) => `| \`aitk cmd-${index}\` | Does a thing |`,
+    (_, index) => `| \`canon cmd-${index}\` | Does a thing |`,
   )
 }
 
@@ -150,7 +150,7 @@ describe('measureEntry', () => {
   })
 
   it('should leave a version pinned inside a fenced block unreported', () => {
-    const source = `${FRONTMATTER}# CI\n\n\`\`\`bash\nbunx -y aitk@v1.2.3 --since 2026-01-01\n\`\`\`\n`
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`bash\nbunx -y canon@v1.2.3 --since 2026-01-01\n\`\`\`\n`
 
     expect(measureEntry('ci.md', source).provenance).toEqual([])
   })
@@ -297,13 +297,13 @@ describe('measureEntry', () => {
   it('should end the run at an unindented fence between two bullets', () => {
     // CommonMark reads a fence at column zero as interrupting the list, so the
     // bullets around it are two lists and the second has no antecedent above.
-    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n\`\`\`bash\naitk context audit\n\`\`\`\n\n- This was 20, which the longest run overshot.\n`
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n\`\`\`bash\ncanon context audit\n\`\`\`\n\n- This was 20, which the longest run overshot.\n`
 
     expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
   })
 
   it('should keep the run across a fence indented under its bullet', () => {
-    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  aitk context audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  canon context audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
 
     expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
       { line: 14, pronoun: 'This', verb: 'was' },
@@ -313,7 +313,7 @@ describe('measureEntry', () => {
   it('should keep the run across an indented fence holding a blank line', () => {
     // A blank line inside a fence has no indentation to read, so testing each
     // fenced line rather than the opening delimiter ends the run on it.
-    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  aitk context audit\n\n  aitk markdown audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  canon context audit\n\n  canon markdown audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
 
     expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
       { line: 16, pronoun: 'This', verb: 'was' },
@@ -323,7 +323,7 @@ describe('measureEntry', () => {
   it('should end the run at an unindented block written behind an indented one', () => {
     // Nothing sits between the two blocks, so the fenced mark alone reads them
     // as one run and the block index is the only thing separating them.
-    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  aitk context audit\n  \`\`\`\n\`\`\`bash\naitk markdown audit\n\`\`\`\n\n- This was 20, which the longest run overshot.\n`
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  canon context audit\n  \`\`\`\n\`\`\`bash\ncanon markdown audit\n\`\`\`\n\n- This was 20, which the longest run overshot.\n`
 
     expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
   })
@@ -331,7 +331,7 @@ describe('measureEntry', () => {
   it('should leave the run ended when an indented block follows an unindented one', () => {
     // The indented block is inside a list item and would keep a run standing,
     // so the answer has to stay with the unindented block that ended it.
-    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n\`\`\`bash\naitk context audit\n\`\`\`\n  \`\`\`bash\n  aitk markdown audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n\`\`\`bash\ncanon context audit\n\`\`\`\n  \`\`\`bash\n  canon markdown audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
 
     expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
   })
@@ -339,7 +339,7 @@ describe('measureEntry', () => {
   it('should keep the run when indented fence content sits at column zero', () => {
     // CommonMark strips the fence's own indentation and nothing more, so a
     // content line may sit at column zero inside an indented block.
-    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\naitk context audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\ncanon context audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
 
     expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
       { line: 14, pronoun: 'This', verb: 'was' },
@@ -522,7 +522,7 @@ describe('measureFolders', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-audit-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-audit-'))
   })
 
   afterEach(() => {
@@ -578,7 +578,7 @@ describe('measureFolders', () => {
     const [entry] = await measureFolders(root, folders)
 
     // Provenance is the context standard's own rule and stops at its folder.
-    // The attribute-tier measures reach `docs/` through `aitk markdown audit`,
+    // The attribute-tier measures reach `docs/` through `canon markdown audit`,
     // which needs no folder to resolve at all.
     expect(entry.rel).toBe('docs/agents.md')
     expect(entry.provenance).toEqual([])
@@ -600,7 +600,7 @@ describe('bareReferences', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-references-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-references-'))
   })
 
   afterEach(() => {
@@ -736,7 +736,7 @@ describe('missingSections', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-sections-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-sections-'))
   })
 
   afterEach(() => {

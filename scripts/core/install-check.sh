@@ -24,7 +24,7 @@ Verifies the README install path end to end:
   2. Runs bun install in the clone
   3. Runs the CLI with --help to confirm it executes
   4. Scaffolds a fresh project in .claude/.tmp/install-check/target
-  5. Runs aitk init and asserts a scaffold landed
+  5. Runs canon init and asserts a scaffold landed
 
 Flags:
   --keep    Keep the tmp tree on exit for inspection
@@ -58,26 +58,26 @@ log_step "Install dependencies"
 log_info "Dependencies installed"
 
 log_step "Confirm CLI runs"
-(cd "$CLONE_DIR" && bun run src/cli.ts --help >/dev/null) || log_error "aitk --help failed"
-log_info "aitk --help ran clean"
+(cd "$CLONE_DIR" && bun run src/cli.ts --help >/dev/null) || log_error "canon --help failed"
+log_info "canon --help ran clean"
 
 log_step "Scaffold fresh project"
 mkdir -p "$TARGET_DIR"
 (cd "$TARGET_DIR" && git init --quiet)
 log_info "Initialized git in $TARGET_DIR"
 
-log_step "Run aitk init"
-(cd "$TARGET_DIR" && AITK_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "aitk init failed"
-log_info "aitk init completed"
+log_step "Run canon init"
+(cd "$TARGET_DIR" && CANON_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "canon init failed"
+log_info "canon init completed"
 
 log_step "Assert scaffold"
-# Every domain aitk init installs needs at least one path here. A domain with
+# Every domain canon init installs needs at least one path here. A domain with
 # no assertion can truncate silently: init still exits 0 because run_domain
 # catches a failed domain, and the gate stays green while the target is
 # missing everything that domain provides.
 #
 # Standards and snippets name no path because neither corpus installs into a
-# target. A scaffold reads a standard through `aitk standards <name>` and a
+# target. A scaffold reads a standard through `canon standards <name>` and a
 # snippet through the plugin's live `claude/snippets` symlink, both resolving
 # against the toolkit rather than a copy this gate could assert on. The
 # `@`-reference convention rule is the one snippets-domain file that still
@@ -87,15 +87,15 @@ for path in "CLAUDE.md" ".claude/wiki/index.md" ".claude" ".claude/context/index
   ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
   ".claude/rules/core/000-constitution.md" ".claude/rules/snippets/505-at-references.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then
-    log_error "Missing after aitk init: $path"
+    log_error "Missing after canon init: $path"
   fi
   log_info "Found: $path"
 done
 
 if [ ! -x "$TARGET_DIR/scripts/verify.sh" ]; then
-  log_error "Not executable after aitk init: scripts/verify.sh"
+  log_error "Not executable after canon init: scripts/verify.sh"
 fi
 log_info "Executable: scripts/verify.sh"
 
 log_step "Verification passed"
-log_info "Manual check still needed: bun link and global aitk invocation"
+log_info "Manual check still needed: bun link and global canon invocation"

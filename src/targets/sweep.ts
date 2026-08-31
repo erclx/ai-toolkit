@@ -104,7 +104,7 @@ function isStamped(path: string): boolean {
  * Userinfo goes with them, and it is the component that has to. A checkout
  * cloned as `https://x-access-token:<token>@github.com/owner/repo.git` puts the
  * token in the key, and the key is returned on `SweptTarget.origin` and printed
- * by `aitk targets list --json`. Dropping it also fixes the count, since
+ * by `canon targets list --json`. Dropping it also fixes the count, since
  * `https://someuser@github.com/owner/repo.git` keyed on the user and so failed
  * to group with the same project's ssh clone.
  */

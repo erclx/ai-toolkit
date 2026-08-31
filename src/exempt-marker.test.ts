@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { isMarked } from '@/exempt-marker'
 
-const TOKEN = 'aitk-allow-example'
+const TOKEN = 'canon-allow-example'
 
 describe('isMarked', () => {
   it('should read a marker naming a reason on the line itself', () => {

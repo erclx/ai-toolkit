@@ -90,18 +90,18 @@ export function register(program: Command): void {
         'where the token is genuinely an identifier under discussion, which is',
         'what markdown.md reserves the span for.',
         '',
-        'Bans and checkpoints ship with the aitk package rather than being read',
+        'Bans and checkpoints ship with the canon package rather than being read',
         'out of a standards file, so a project that installed no standards is',
         'measured the same as one that did. markdown.md still states every rule',
         'for a reader. No folder has to resolve and no index.md has',
         'to exist, so .claude/rules/, governance/, and snippets/ are in reach.',
         '',
         'Examples:',
-        '  aitk markdown audit',
-        '  aitk markdown audit --json',
-        '  aitk markdown audit .claude/rules governance',
-        '  aitk markdown audit docs/agents/commands.md',
-        "  aitk markdown audit 'snippets/**/*.md'",
+        '  canon markdown audit',
+        '  canon markdown audit --json',
+        '  canon markdown audit .claude/rules governance',
+        '  canon markdown audit docs/agents/commands.md',
+        "  canon markdown audit 'snippets/**/*.md'",
         '',
       ].join('\n'),
     )
@@ -152,7 +152,7 @@ async function runAudit(
     }),
   )
 
-  intro('aitk markdown audit')
+  intro('canon markdown audit')
   reportScope(scope.files, scope.unmatched)
   reportBans(reports, bans, empty)
   reportBullets(reports, checkpoints)
@@ -215,7 +215,7 @@ function refuse(
   root: string,
   emitJson: boolean,
 ): number {
-  intro('aitk markdown audit')
+  intro('canon markdown audit')
   logStep('Refused')
   logWarn(message)
   outro()
@@ -256,13 +256,13 @@ function reportBans(
 
   if (empty.length > 0) {
     logWarn(
-      `Not measured. The shipped set is empty for: ${empty.join(', ')}. The sets ship with the aitk package, so an empty one is a defect in the build rather than a missing install.`,
+      `Not measured. The shipped set is empty for: ${empty.join(', ')}. The sets ship with the canon package, so an empty one is a defect in the build rather than a missing install.`,
     )
     return
   }
 
   logInfo(
-    `${plural(bans.characters.length, 'character')}, ${plural(bans.words.length, 'word')}, and ${plural(bans.spellings.length, 'spelling')} shipped with the aitk package`,
+    `${plural(bans.characters.length, 'character')}, ${plural(bans.words.length, 'word')}, and ${plural(bans.spellings.length, 'spelling')} shipped with the canon package`,
   )
   logInfo(
     'Frontmatter, fenced blocks, code spans, and link destinations are excluded.',

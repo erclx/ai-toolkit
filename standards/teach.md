@@ -97,7 +97,7 @@ Record the wrong answer rather than the fact of an error. A wrong answer names t
 
 ## GLOSSARY.md
 
-Required in every workspace, holding one entry per term the subject defines. The glossary reference the `aitk:claude-teach` skill carries fixes what an entry looks like, how the file orders and groups them, and which terms it carries, so this standard states only that the file exists and sits at the workspace root. That reference ships with the plugin rather than installing here, because a promoted glossary keeps its shape wherever it lands and no project folder covers every destination. Say so and stop rather than working the shape from memory when the project has no plugin to read it from.
+Required in every workspace, holding one entry per term the subject defines. The glossary reference the `canon:claude-teach` skill carries fixes what an entry looks like, how the file orders and groups them, and which terms it carries, so this standard states only that the file exists and sits at the workspace root. That reference ships with the plugin rather than installing here, because a promoted glossary keeps its shape wherever it lands and no project folder covers every destination. Say so and stop rather than working the shape from memory when the project has no plugin to read it from.
 
 Name the lesson or reference page a term first appears in as that reference requires. A workspace is the case it was written for, so a glossary here has a first appearance to name.
 

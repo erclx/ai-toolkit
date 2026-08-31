@@ -57,7 +57,7 @@ export function parseVocabulary(markdown: string): string[] | undefined {
  *
  * Reading the list out of the rule rather than hardcoding it is what keeps one
  * definition when the rule installs into a target, the same way
- * `aitk markdown audit` owns one copy of the ban sets for every caller.
+ * `canon markdown audit` owns one copy of the ban sets for every caller.
  */
 export async function loadVocabulary(root: string): Promise<Vocabulary> {
   for (const ruleRoot of RULE_ROOTS) {

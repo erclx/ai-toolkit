@@ -39,7 +39,7 @@ function at(records: readonly { file: string; line: number }[]): string[] {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-gov-superseded-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-gov-superseded-'))
   git('init', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -83,7 +83,7 @@ describe('readSuperseded', () => {
     write(
       'fixtures/legacy.sh',
       [
-        '# aitk-allow-superseded: this arm pins the pre-transform spelling',
+        '# canon-allow-superseded: this arm pins the pre-transform spelling',
         'echo feature-feat-add-farewell.md',
       ].join('\n'),
     )
@@ -103,7 +103,7 @@ describe('readSuperseded', () => {
   it('should report a bare marker naming no reason as a finding', async () => {
     write(
       'fixtures/bare.sh',
-      ['# aitk-allow-superseded:', 'echo feature-feat-add-farewell.md'].join(
+      ['# canon-allow-superseded:', 'echo feature-feat-add-farewell.md'].join(
         '\n',
       ),
     )
@@ -240,7 +240,7 @@ describe('readSuperseded', () => {
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -264,7 +264,7 @@ describe('readSuperseded', () => {
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -275,7 +275,7 @@ describe('readSuperseded', () => {
   it('should read past a stem sitting mid-name and still reach one starting after a path separator', async () => {
     write(
       'src/check.test.ts',
-      "const root = mkdtempSync(join(tmpdir(), 'aitk-check-toolkit-'))",
+      "const root = mkdtempSync(join(tmpdir(), 'canon-check-toolkit-'))",
     )
     write('docs/path.md', 'Bodies live under `claude/skills/toolkit-*`.')
     git('add', '--all')
@@ -283,7 +283,7 @@ describe('readSuperseded', () => {
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -292,19 +292,19 @@ describe('readSuperseded', () => {
   })
 
   it('should leave a family pattern alone when only the last segment moved', async () => {
-    write('docs/family.md', 'Plugin skills take the `aitk-*` prefix.')
+    write('docs/family.md', 'Plugin skills take the `canon-*` prefix.')
     git('add', '--all')
 
     const report = measured(
       await readSuperseded(ROOT, {
-        superseded: 'aitk-cli',
-        replacement: 'aitk-shell',
+        superseded: 'canon-cli',
+        replacement: 'canon-shell',
       }),
     )
 
     expect(report.stems).toEqual({
-      superseded: 'aitk-cli',
-      replacement: 'aitk-shell',
+      superseded: 'canon-cli',
+      replacement: 'canon-shell',
     })
     expect(report.findings).toEqual([])
   })
@@ -312,13 +312,13 @@ describe('readSuperseded', () => {
   it('should report a temp-directory prefix sharing the stem, which is the false positive the rate allows', async () => {
     write(
       'src/read.test.ts',
-      "const root = mkdtempSync(join(tmpdir(), 'aitk-<domain>-'))",
+      "const root = mkdtempSync(join(tmpdir(), 'canon-<domain>-'))",
     )
     git('add', '--all')
 
     const report = measured(
       await readSuperseded(ROOT, {
-        superseded: 'aitk-operator',
+        superseded: 'canon-operator',
         replacement: 'toolkit-operator',
       }),
     )
@@ -358,7 +358,7 @@ describe('readSuperseded', () => {
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -383,7 +383,7 @@ describe('readSuperseded', () => {
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -397,7 +397,7 @@ describe('readSuperseded', () => {
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -405,13 +405,13 @@ describe('readSuperseded', () => {
   })
 
   it('should mark a templated hit whose line already carries the new family', async () => {
-    write('docs/change.md', 'The `toolkit-*` family is now `aitk-*`.')
+    write('docs/change.md', 'The `toolkit-*` family is now `canon-*`.')
     git('add', '--all')
 
     const report = measured(
       await readSuperseded(ROOT, {
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
     )
 
@@ -453,7 +453,7 @@ describe('readSuperseded', () => {
   })
 
   it('should refuse when git cannot list the corpus', async () => {
-    const outside = mkdtempSync(join(tmpdir(), 'aitk-gov-superseded-bare-'))
+    const outside = mkdtempSync(join(tmpdir(), 'canon-gov-superseded-bare-'))
 
     const report = await readSuperseded(outside, {
       superseded: 'feature-feat-',
@@ -470,15 +470,15 @@ describe('deriveStems', () => {
     expect(
       deriveStems({
         superseded: 'toolkit-operator',
-        replacement: 'aitk-operator',
+        replacement: 'canon-operator',
       }),
-    ).toEqual({ superseded: 'toolkit', replacement: 'aitk' })
+    ).toEqual({ superseded: 'toolkit', replacement: 'canon' })
   })
 
   it('should keep the shared segments ahead of the one that moved', () => {
     expect(
-      deriveStems({ superseded: 'aitk-cli', replacement: 'aitk-shell' }),
-    ).toEqual({ superseded: 'aitk-cli', replacement: 'aitk-shell' })
+      deriveStems({ superseded: 'canon-cli', replacement: 'canon-shell' }),
+    ).toEqual({ superseded: 'canon-cli', replacement: 'canon-shell' })
   })
 
   it('should drop a separator the split leaves trailing', () => {
@@ -489,8 +489,8 @@ describe('deriveStems', () => {
 
   it('should take the whole value when one is a prefix of the other', () => {
     expect(
-      deriveStems({ superseded: 'aitk-cli', replacement: 'aitk-cli-two' }),
-    ).toEqual({ superseded: 'aitk-cli', replacement: 'aitk-cli-two' })
+      deriveStems({ superseded: 'canon-cli', replacement: 'canon-cli-two' }),
+    ).toEqual({ superseded: 'canon-cli', replacement: 'canon-cli-two' })
   })
 
   it('should derive nothing from an empty replacement', () => {

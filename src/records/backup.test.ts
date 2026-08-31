@@ -41,7 +41,7 @@ function recordsGit(root: string, args: string[]): Promise<string> {
  * read fails, so a bare directory exercises the refusal rather than the flow.
  */
 async function makeProject(): Promise<string> {
-  const root = mkdtempSync(join(tmpdir(), 'aitk-backup-'))
+  const root = mkdtempSync(join(tmpdir(), 'canon-backup-'))
   for (const folder of BACKED_FOLDERS) {
     mkdirSync(join(root, '.claude', folder), { recursive: true })
     writeFileSync(join(root, '.claude', folder, 'entry.md'), `# ${folder}\n`)
@@ -87,7 +87,7 @@ async function fromInsideWorkTree<T>(
 
 beforeEach(async () => {
   ROOT = await makeProject()
-  ORIGIN = mkdtempSync(join(tmpdir(), 'aitk-backup-origin-'))
+  ORIGIN = mkdtempSync(join(tmpdir(), 'canon-backup-origin-'))
   await git(['init', '--bare', ORIGIN])
 })
 
@@ -154,7 +154,7 @@ describe('pushRecords', () => {
   })
 
   it('should refuse when the project remotes cannot be read', async () => {
-    const bare = mkdtempSync(join(tmpdir(), 'aitk-backup-bare-'))
+    const bare = mkdtempSync(join(tmpdir(), 'canon-backup-bare-'))
     mkdirSync(join(bare, '.claude'), { recursive: true })
     await makeRecordsRepo(bare, ORIGIN)
 
@@ -472,7 +472,7 @@ describe('pullRecords', () => {
     await makeRecordsRepo(ROOT, ORIGIN)
     await pushRecords(ROOT)
 
-    const fresh = mkdtempSync(join(tmpdir(), 'aitk-backup-fresh-'))
+    const fresh = mkdtempSync(join(tmpdir(), 'canon-backup-fresh-'))
     mkdirSync(join(fresh, '.claude'), { recursive: true })
     await git(['init', '--quiet', fresh])
     await makeRecordsRepo(fresh, ORIGIN)

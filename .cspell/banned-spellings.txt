@@ -1,4 +1,4 @@
-# British spellings `aitk markdown audit` reports as findings.
+# British spellings `canon markdown audit` reports as findings.
 #
 # These are not approved project vocabulary. The list covers every such spelling
 # appearing in the files the `overrides` entry scopes it to, which is the closed

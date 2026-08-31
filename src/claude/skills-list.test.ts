@@ -29,7 +29,7 @@ function frontmatter(name: string, description: string): string {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-skills-list-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-skills-list-'))
 })
 
 afterEach(() => {

@@ -31,7 +31,7 @@ export type Spawn = (spec: AuditSpec) => Promise<SpawnResult>
 /**
  * Runs each verb out of the checkout this CLI is executing from.
  *
- * `process.execPath` and the resolved `cli.ts` rather than a bare `aitk`, for
+ * `process.execPath` and the resolved `cli.ts` rather than a bare `canon`, for
  * the reason `cliRunner` in `src/gate/sequencer.ts` already names: a globally
  * installed binary resolves to
  * the main checkout no matter which worktree is running, so the aggregate would
@@ -52,7 +52,7 @@ export function spawnAudit(root: string): Spawn {
       // extending it. Spreading `process.env` alongside would put back the very
       // variables it strips, and a hook's `GIT_DIR` would then point every
       // history-reading verb at a repository nobody asked about.
-      env: { ...gitEnv(), AITK_NON_INTERACTIVE: '1' },
+      env: { ...gitEnv(), CANON_NON_INTERACTIVE: '1' },
       extendEnv: false,
     })
 

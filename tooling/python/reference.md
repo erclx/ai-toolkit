@@ -12,8 +12,8 @@ Configs ship as sidecar files (`ruff.toml`, `mypy.ini`, `pytest.ini`, `.coverage
 
 1. Scaffold with `uv init --app <name>`. This creates `pyproject.toml`, `.python-version` pinned to 3.14, `src/<name>/`, and a starter `main.py`. `uv init` defaults `requires-python` to `>=3.14`, which matches the `.python-version` pin this stack ships.
 2. Seed `package.json` so the base layer's bun-side tools (husky, prettier, cspell, commitlint) have a target to install into: `bun init -y`. Without this the sync drops base configs but skips the dep install, since `resolve_missing_deps` short-circuits when `package.json` is absent.
-3. Install base tooling: `aitk tooling sync base . --write`
-4. Install python tooling: `aitk tooling sync python . --write`
+3. Install base tooling: `canon tooling sync base . --write`
+4. Install python tooling: `canon tooling sync python . --write`
 5. Install Python tooling deps: `uv add --dev ruff mypy pytest pytest-cov`. v1 of this stack does not declare these in `[dependencies.dev]` because manifest injection hardcodes `bun add -D`, which can not install Python packages. Until the injector branches on `runtime`, this step is manual.
 6. Sync the lockfile and create the venv: `uv sync`.
 7. Annotate `main()` in the scaffold-generated `main.py` with `-> None`. `uv init --app` ships an unannotated `main()` that fails strict mypy on the first run.
@@ -40,7 +40,7 @@ The manifest declares no `[dependencies.dev]`. Manifest injection currently call
 
 ## Verify command
 
-`aitk tooling verify <stack>` currently runs `bun run lint:fix` and `bun run check` against any stack with a `package.json`. Since base ships a `package.json`, those run for python too. Python's verify.sh wraps the package.json `lint`/`typecheck`/`test:run` scripts that delegate to `uv run`, so the verify path works end-to-end as long as `uv` is installed in the verify environment. The end-to-end test and screenshot phases are gated on `package.json` script keys that python does not declare, so they cleanly skip.
+`canon tooling verify <stack>` currently runs `bun run lint:fix` and `bun run check` against any stack with a `package.json`. Since base ships a `package.json`, those run for python too. Python's verify.sh wraps the package.json `lint`/`typecheck`/`test:run` scripts that delegate to `uv run`, so the verify path works end-to-end as long as `uv` is installed in the verify environment. The end-to-end test and screenshot phases are gated on `package.json` script keys that python does not declare, so they cleanly skip.
 
 ## Anti-patterns
 

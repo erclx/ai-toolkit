@@ -51,7 +51,7 @@ function table(rows: string[]): string {
 function catalogRows(count: number): string[] {
   return Array.from(
     { length: count },
-    (_, index) => `| \`aitk cmd-${index}\` | Does a thing |`,
+    (_, index) => `| \`canon cmd-${index}\` | Does a thing |`,
   )
 }
 
@@ -482,10 +482,10 @@ describe('heavyParagraphs', () => {
   it('should close a sentence where the next one opens on a code span', () => {
     const paragraph = [
       'The verb reads the standard.',
-      '`aitk markdown audit` reports the count.',
-      '`aitk records push` carries the folders.',
-      '`aitk indexes regen` rewrites the file.',
-      '`aitk claude sync` installs the skills.',
+      '`canon markdown audit` reports the count.',
+      '`canon records push` carries the folders.',
+      '`canon indexes regen` rewrites the file.',
+      '`canon claude sync` installs the skills.',
     ].join(' ')
     const source = `${FRONTMATTER}# CI\n\n${paragraph}\n`
 
@@ -551,12 +551,12 @@ describe('measureCadence', () => {
   })
 
   it('should read an opener through the code span that carries it', () => {
-    const openers = ['`aitk`', '`aitk`', '`aitk`']
+    const openers = ['`canon`', '`canon`', '`canon`']
     const source = `${FRONTMATTER}# CI\n\n${passage([4, 12, 22], openers)}\n`
 
     // A sentence opening on a command name repeats as plainly as one opening on
     // a word, and the backticks are punctuation a reader does not hear.
-    expect(measure(source).cadence.mostRepeated?.opener).toBe('aitk')
+    expect(measure(source).cadence.mostRepeated?.opener).toBe('canon')
   })
 
   it('should leave a paragraph under the sentence floor unmeasured', () => {
@@ -617,7 +617,7 @@ describe('measureCadence', () => {
   })
 
   it('should keep a table cell out of the paragraphs either side of it', () => {
-    const rows = table(['| `aitk one` | Facts before opinion |'])
+    const rows = table(['| `canon one` | Facts before opinion |'])
     const source = `${FRONTMATTER}# CI\n\n${passage([10, 10, 10])}\n\n${rows}\n\n${passage([9, 9, 9])}\n`
 
     // A cell is written as a fragment by design. Both paragraphs measure, and

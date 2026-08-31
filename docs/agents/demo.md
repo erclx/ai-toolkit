@@ -5,21 +5,21 @@ description: Compiling a screencast draft into a runnable plan, driving a served
 
 # Demo
 
-`aitk demo` drives a project's running application and writes a recording of what it did, plus a still frame of the same run. It exists so a project card and a short demo stop depending on someone sitting down to record one by hand.
+`canon demo` drives a project's running application and writes a recording of what it did, plus a still frame of the same run. It exists so a project card and a short demo stop depending on someone sitting down to record one by hand.
 
 Two verbs, and they are separate because the artifact between them is edited.
 
 ```bash
-aitk demo compile .claude/.tmp/screencast/inline-edit.md
-aitk demo run demos/inline-edit.json
-aitk demo run demos/inline-edit.json --cursor ~/cursors/theme --out assets
+canon demo compile .claude/.tmp/screencast/inline-edit.md
+canon demo run demos/inline-edit.json
+canon demo run demos/inline-edit.json --cursor ~/cursors/theme --out assets
 ```
 
 ## The draft and the plan are different files
 
-`aitk-screencast` drafts beats for a person. A beat carries what is on screen, one verb, what to watch for, an emphasis, and a caption, and none of that names a selector, a URL, a wait condition, or a timing. Those four are what an executor needs and what would ruin the draft, since the format is pre-seeded so the operator edits down rather than fills blanks.
+`canon-screencast` drafts beats for a person. A beat carries what is on screen, one verb, what to watch for, an emphasis, and a caption, and none of that names a selector, a URL, a wait condition, or a timing. Those four are what an executor needs and what would ruin the draft, since the format is pre-seeded so the operator edits down rather than fills blanks.
 
-So `aitk demo compile` writes a second artifact rather than adding fields to a beat. It maps each beat's verb to a step, seeds the timing, marks which beat the still comes from, and leaves the target and the URL empty for a person to fill. The report names every field it could not supply.
+So `canon demo compile` writes a second artifact rather than adding fields to a beat. It maps each beat's verb to a step, seeds the timing, marks which beat the still comes from, and leaves the target and the URL empty for a person to fill. The report names every field it could not supply.
 
 The plan is committed, not scratch. Its timing is a starting point tuned by watching a recording, and the draft cannot reproduce a tuned value, so a recompile over an existing plan refuses and names `--force`.
 
@@ -32,7 +32,7 @@ The plan is committed, not scratch. Its timing is a starting point tuned by watc
 
 ## What a run does
 
-`aitk demo run` reads the plan, refuses if a field is still empty, and drives the application the plan's URL names. It records the whole run to `webm` and writes the still from the beat the draft calls the hero, falling back to the last beat, since a demo's final state is the payoff and a cold open is usually an empty screen.
+`canon demo run` reads the plan, refuses if a field is still empty, and drives the application the plan's URL names. It records the whole run to `webm` and writes the still from the beat the draft calls the hero, falling back to the last beat, since a demo's final state is the payoff and a cold open is usually an empty screen.
 
 A step's caption from the draft renders as an overlay while its hold plays, so the narration a person wrote is what shows on screen rather than the name of the action the engine performed.
 
@@ -75,7 +75,7 @@ Every refusal exits 1 and names its reason in the `--json` record, so a skill br
 
 ## The browser reaches every target
 
-Unlike `aitk capture`, this command ships. Capture is toolkit-only because it regenerates images committed to this repository, and that reason does not transfer to a command whose whole purpose is running in someone else's project.
+Unlike `canon capture`, this command ships. Capture is toolkit-only because it regenerates images committed to this repository, and that reason does not transfer to a command whose whole purpose is running in someone else's project.
 
 The cost is stated rather than hidden: the browser binary installs separately, so a target runs `bunx playwright install chromium` once before a recording works at all. A run that cannot launch reports that command inside the frame and exits 1.
 

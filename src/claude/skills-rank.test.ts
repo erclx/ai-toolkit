@@ -40,7 +40,7 @@ function writeCases(name: string, text: string): string {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-skills-rank-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-skills-rank-'))
 })
 
 afterEach(() => {

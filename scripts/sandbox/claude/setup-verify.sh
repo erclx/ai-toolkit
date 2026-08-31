@@ -31,7 +31,7 @@ EOF
 
     log_step "Scenario ready: setup-verify happy path"
     log_info "Context: package.json with lint:fix, typecheck, check, test:run, build all echoing ok"
-    log_info "Action:  /aitk:setup-verify"
+    log_info "Action:  /canon:setup-verify"
     log_info "Expect:  five green checks, summary 'Scaffold verified'"
     ;;
   "fail")
@@ -55,7 +55,7 @@ EOF
 
     log_step "Scenario ready: setup-verify fail path"
     log_info "Context: package.json with typecheck that exits non-zero"
-    log_info "Action:  /aitk:setup-verify"
+    log_info "Action:  /canon:setup-verify"
     log_info "Expect:  lint passes, typecheck fails, run stops before check/test/build, failing output surfaced"
     ;;
   *)

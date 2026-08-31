@@ -27,7 +27,7 @@ function seedRule(relPath: string, body: string): void {
 }
 
 beforeEach(() => {
-  const base = mkdtempSync(join(tmpdir(), 'aitk-gov-install-'))
+  const base = mkdtempSync(join(tmpdir(), 'canon-gov-install-'))
   root = join(base, 'toolkit')
   target = join(base, 'target')
   mkdirSync(root, { recursive: true })

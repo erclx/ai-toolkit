@@ -15,7 +15,7 @@ The filename and its type prefix, the frontmatter, the body shape each type carr
 
 - All `.claude/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 - From a linked worktree the file-editing tools refuse every path below, so each write in this skill goes out through `Bash` as a plain single command. A memory entry holds one fact and this session has read it, so an update rewrites the whole file with a heredoc rather than editing a line inside it.
-- If `.claude/memory/` does not exist at the main worktree root, create it, along with an `index.md` carrying `title` and `subtitle` frontmatter. `aitk claude init` seeds both, and a project predating that seed has neither. Regeneration errors without the index, so the first write into a bare folder would report a frontmatter failure against a file that is fine.
+- If `.claude/memory/` does not exist at the main worktree root, create it, along with an `index.md` carrying `title` and `subtitle` frontmatter. `canon claude init` seeds both, and a project predating that seed has neither. Regeneration errors without the index, so the first write into a bare folder would report a frontmatter failure against a file that is fine.
 - If the session produced no user corrections, confirmations, or context disclosures worth persisting, stop: `✅ Nothing worth capturing.`
 - Routing edits a tracked file, so it runs only where the caller commits. When the session is in the main worktree, or the caller states it does not commit, skip Step 3 and write every candidate as a memory file. `claude-orchestrate` is the caller this covers.
 
@@ -71,10 +71,10 @@ Do not edit the index. `.claude/memory/index.md` is generated from sibling front
 The hook matches `Write|Edit|MultiEdit`, so nothing fires on the shell writes a linked worktree makes. Regenerate the index once after the last write when the entries went out through `Bash`:
 
 ```bash
-aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
+canon indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
 ```
 
-Run `aitk records validate memory` when the writes are done and fix what it names. It reads the whole pen rather than this session's writes, so treat a finding on a carried entry as one to fix in place rather than as a reason to stop.
+Run `canon records validate memory` when the writes are done and fix what it names. It reads the whole pen rather than this session's writes, so treat a finding on a carried entry as one to fix in place rather than as a reason to stop.
 
 ## Output
 

@@ -13,7 +13,7 @@ Help output is the exception. It prints to stdout so it can be piped and grepped
 
 ```plaintext
 ┌
-│ aitk <domain>
+│ canon <domain>
 │
 ├ Section
 │ ✓ item
@@ -24,7 +24,7 @@ Help output is the exception. It prints to stdout so it can be piped and grepped
 Rules:
 
 - `┌` opens the frame on stderr
-- `│ aitk <domain>` is the command banner, one per invocation
+- `│ canon <domain>` is the command banner, one per invocation
 - `├ Section` headers introduce groups of items. `log_step` produces the blank `│` spacer before each.
 - `└` closes the frame on stderr, wired via `trap close_timeline EXIT`
 - Errors render as `│ ✗ message` inside the same frame. Never emit a lone error line without a frame.
@@ -33,7 +33,7 @@ Rules:
 
 ```plaintext
 ┌
-├ Usage: aitk <domain> [command]
+├ Usage: canon <domain> [command]
 │
 │  Commands:
 │    ...

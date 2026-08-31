@@ -8,7 +8,7 @@ description: Audits changed markdown files against every authoring standard that
 ## Guards
 
 - Resolve the base ref first, per Diff baseline below, then scope the file list exactly as Step 1 does, fallback included. If no markdown files changed, stop: `✅ No markdown changes to audit.` A guard that reads bare local `main`, or that skips the unusable-baseline fallback, passes the skill clean on a branch it never read.
-- If `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` is not present, stop: `❌ markdown.md standard not found. Reinstall the aitk plugin.` Test the file rather than the directory, since a plugin cache built before a given file existed keeps the directory without ever receiving that file.
+- If `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` is not present, stop: `❌ markdown.md standard not found. Reinstall the canon plugin.` Test the file rather than the directory, since a plugin cache built before a given file existed keeps the directory without ever receiving that file.
 - `markdown.md` is the one standard testable before the mapping runs, since its scope statement declares an attribute and every changed markdown file therefore maps to it. Every other standard is tested in Step 3, where the mapping has named which ones the run needs.
 
 ## Diff baseline
@@ -51,7 +51,7 @@ It takes both halves. A generator copies frontmatter verbatim, so the field alon
 Read the mapping rather than holding it here. Every standard declares the paths it governs, so a standard added later joins this audit with no edit to this body:
 
 ```bash
-aitk standards list --json
+canon standards list --json
 ```
 
 Each entry carries `appliesTo`, the paths its `## Scope` statement declares. Match every changed file against every entry:
@@ -60,7 +60,7 @@ Each entry carries `appliesTo`, the paths its `## Scope` statement declares. Mat
 - An entry ending in `/` matches when the file path contains it at a path-segment boundary
 - Any other entry matches when the file path ends with it at a path-segment boundary
 
-Add any standard the catalog did not list, reading `${CLAUDE_SKILL_DIR}/../../standards/` and whatever folder the project authors its own standards in, and derive every declaration the same way when `aitk` is unavailable: the backticked paths in the first sentence under `## Scope`, or `*` when that sentence says the standard governs an attribute. Skip `index.md`, which is generated from the others and declares nothing.
+Add any standard the catalog did not list, reading `${CLAUDE_SKILL_DIR}/../../standards/` and whatever folder the project authors its own standards in, and derive every declaration the same way when `canon` is unavailable: the backticked paths in the first sentence under `## Scope`, or `*` when that sentence says the standard governs an attribute. Skip `index.md`, which is generated from the others and declares nothing.
 
 An entry whose `appliesTo` is empty declared nothing this can read. Report it as a finding against that standard's own file in Step 4 and audit the rest. A standard dropped in silence is the same miss this mapping exists to remove, one level up.
 

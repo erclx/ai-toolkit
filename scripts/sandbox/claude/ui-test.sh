@@ -146,7 +146,7 @@ EOF
   log_info "run reported, and a correct run says the scaffold is missing rather"
   log_info "than building a Vite app to get green."
   log_info ""
-  log_info "Action:  /aitk:claude-ui-test I added a filter input and an empty state to TaskList, and restyled its spacing"
+  log_info "Action:  /canon:claude-ui-test I added a filter input and an empty state to TaskList, and restyled its spacing"
   log_info "Expect:  declared in fixtures/claude/ui-test/expect.toml"
-  log_info "         Check it with: aitk sandbox check claude:ui-test"
+  log_info "         Check it with: canon sandbox check claude:ui-test"
 }

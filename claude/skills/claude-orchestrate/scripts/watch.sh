@@ -73,7 +73,7 @@ BASE_BRANCH="${BASE_REF#origin/}"
 # and check runnable commands (3)` among them, and splitting on whitespace
 # took that one apart into a wrong name, branch, status, and dwell.
 read_workers() {
-  aitk sessions list --json 2>/dev/null | tail -1 | jq -r \
+  canon sessions list --json 2>/dev/null | tail -1 | jq -r \
     --arg repository "$REPOSITORY" --arg base "$BASE_BRANCH" '
       .sessions[]?
       | select(.repository == $repository)

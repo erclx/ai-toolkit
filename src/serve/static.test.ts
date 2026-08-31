@@ -69,7 +69,7 @@ function start(
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-serve-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-serve-'))
 })
 
 afterEach(async () => {
@@ -266,7 +266,7 @@ describe('startServer', () => {
    * `claude/snippets` are symlinks out of `claude/`.
    */
   it('should refuse a file reached through a symlink out of the root', async () => {
-    const outside = mkdtempSync(join(tmpdir(), 'aitk-serve-outside-'))
+    const outside = mkdtempSync(join(tmpdir(), 'canon-serve-outside-'))
     writeFileSync(join(outside, 'private.txt'), 'secret')
     symlinkSync(outside, join(ROOT, 'escape'), 'dir')
     const server = start(ROOT, { port: 0 })
@@ -286,7 +286,7 @@ describe('startServer', () => {
    * reason, rather than beside the path that produced it.
    */
   it('should refuse a directory whose index is a symlink out of the root', async () => {
-    const outside = mkdtempSync(join(tmpdir(), 'aitk-serve-outside-'))
+    const outside = mkdtempSync(join(tmpdir(), 'canon-serve-outside-'))
     writeFileSync(join(outside, 'secret.html'), '<h1>outside</h1>')
     mkdirSync(join(ROOT, 'folder'), { recursive: true })
     symlinkSync(
@@ -310,7 +310,7 @@ describe('startServer', () => {
    * that a reader there should not be able to read.
    */
   it('should refuse an out-of-root directory rather than redirecting to it', async () => {
-    const outside = mkdtempSync(join(tmpdir(), 'aitk-serve-outside-'))
+    const outside = mkdtempSync(join(tmpdir(), 'canon-serve-outside-'))
     mkdirSync(join(outside, 'pages'), { recursive: true })
     symlinkSync(join(outside, 'pages'), join(ROOT, 'escape'), 'dir')
     const server = start(ROOT, { port: 0 })

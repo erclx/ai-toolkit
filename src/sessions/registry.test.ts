@@ -7,7 +7,7 @@ import { readRegistry } from '@/sessions/registry'
 let DIR: string
 
 beforeEach(() => {
-  DIR = mkdtempSync(join(tmpdir(), 'aitk-sessions-'))
+  DIR = mkdtempSync(join(tmpdir(), 'canon-sessions-'))
 })
 
 afterEach(() => {
@@ -21,7 +21,7 @@ function seed(pid: number, fields: Record<string, unknown> = {}): void {
       pid,
       sessionId: `id-${pid}`,
       cwd: `/repo/worktrees/w${pid}`,
-      name: `aitk-${pid}`,
+      name: `canon-${pid}`,
       kind: 'interactive',
       status: 'idle',
       startedAt: pid,

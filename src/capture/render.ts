@@ -20,8 +20,8 @@ import { formatStamp, hashSource, stampPath } from '@/capture/stamp'
 
 const DEVICE_SCALE_FACTOR = 2
 const FONT_PROBE_SIZE = 72
-const FONT_PROBE_TEXT = 'aitk capture 0123456789'
-const ABSENT_FAMILY = '__aitk_absent_family__'
+const FONT_PROBE_TEXT = 'canon capture 0123456789'
+const ABSENT_FAMILY = '__canon_absent_family__'
 
 export interface CaptureOptions {
   selector: string

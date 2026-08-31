@@ -1,11 +1,11 @@
 ---
 name: setup-gov
-description: Detects a project's stack from its files and installs matching toolkit governance rules into `.claude/rules/`. Use after scaffolding a new project, when asked to "install gov rules", "install governance", "set up governance", or when a target project has no `.claude/rules/` yet. Assumes the `aitk` CLI is on PATH.
+description: Detects a project's stack from its files and installs matching toolkit governance rules into `.claude/rules/`. Use after scaffolding a new project, when asked to "install gov rules", "install governance", "set up governance", or when a target project has no `.claude/rules/` yet. Assumes the `canon` CLI is on PATH.
 ---
 
 # Gov install
 
-Automates `aitk gov install` by inferring the stack and extras from the current project, then shelling out to the CLI with the resolved arguments.
+Automates `canon gov install` by inferring the stack and extras from the current project, then shelling out to the CLI with the resolved arguments.
 
 ## Scope
 
@@ -17,7 +17,7 @@ Automates `aitk gov install` by inferring the stack and extras from the current 
 Run this first to load the current stacks and rules. Never hardcode names. The catalog is the source of truth.
 
 ```bash
-aitk gov list --json 2>/dev/null
+canon gov list --json 2>/dev/null
 ```
 
 ## Detect the stack
@@ -62,10 +62,10 @@ Before executing, output:
 
 ## Execute
 
-Run with `AITK_NON_INTERACTIVE=1` so no CLI picker prompts appear. Claude Code's tool permission dialog is the confirmation gate.
+Run with `CANON_NON_INTERACTIVE=1` so no CLI picker prompts appear. Claude Code's tool permission dialog is the confirmation gate.
 
 ```bash
-AITK_NON_INTERACTIVE=1 aitk gov install <stack> --add <extras> <target>
+CANON_NON_INTERACTIVE=1 canon gov install <stack> --add <extras> <target>
 ```
 
 ## Response

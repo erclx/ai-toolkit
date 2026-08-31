@@ -117,7 +117,7 @@ seed_tables() {
     printf -- '---\ntitle: Tables\ndescription: A growing catalog beside a fixed table\n---\n\n'
     printf '# Tables\n\n## Catalog\n\n'
     printf '| Command | Purpose |\n| --- | --- |\n'
-    for i in $(seq 1 8); do printf '| `aitk thing-%s` | Does a thing |\n' "$i"; done
+    for i in $(seq 1 8); do printf '| `canon thing-%s` | Does a thing |\n' "$i"; done
     printf '\n## Comparison\n\n'
     printf '| Concern | Tradeoff |\n| --- | --- |\n'
     for i in $(seq 1 8); do printf '| Concern %s | Some prose about it |\n' "$i"; done
@@ -250,7 +250,7 @@ stage_setup() {
     seed_repo
     seed_folder
     seed_citation
-    log_step "Running: aitk context audit"
+    log_step "Running: canon context audit"
     run_audit
     log_info "Expect: 2 entries, every cited path resolves, exit 0"
     log_info "Expect: no section, length, depth, table, or drift finding"
@@ -259,7 +259,7 @@ stage_setup() {
     seed_repo
     seed_folder
     seed_stale_citation
-    log_step "Running: aitk context audit --citations-only"
+    log_step "Running: canon context audit --citations-only"
     run_audit --citations-only
     log_info "Expect: docs/onboarding.md flagged for retrieval.md, exit 2"
     log_info "Expect: the gate prints only the finding, with no frame above it"
@@ -268,7 +268,7 @@ stage_setup() {
     seed_repo
     seed_folder
     seed_illustrations
-    log_step "Running: aitk context audit --citations-only"
+    log_step "Running: canon context audit --citations-only"
     run_audit --citations-only
     log_info "Expect: silence and exit 0, since all three are illustrations"
     log_info "Expect: the fenced pair, the marked line, and the fixture excluded"
@@ -276,7 +276,7 @@ stage_setup() {
   "sections")
     seed_repo
     seed_short_sections
-    log_step "Running: aitk context audit"
+    log_step "Running: canon context audit"
     run_audit
     log_info "Expect: short.md alone reported, missing Overview and Layout"
     log_info "Expect: ci.md beside it answers for itself and does not cover short.md"
@@ -287,7 +287,7 @@ stage_setup() {
     seed_repo
     seed_folder
     seed_deep_entry
-    log_step "Running: aitk context audit"
+    log_step "Running: canon context audit"
     run_audit
     log_info "Expect: deep.md reports one run past the 40-line checkpoint"
     log_info "Expect: the 60-item peer list below it reports nothing"
@@ -296,7 +296,7 @@ stage_setup() {
     seed_repo
     seed_folder
     seed_tables
-    log_step "Running: aitk context audit"
+    log_step "Running: canon context audit"
     run_audit
     log_info "Expect: one candidate, the 8-row command catalog"
     log_info "Expect: the 8-row comparison table is not reported"
@@ -304,7 +304,7 @@ stage_setup() {
   "drift")
     seed_repo
     seed_drift
-    log_step "Running: aitk context audit"
+    log_step "Running: canon context audit"
     run_audit
     log_info "Expect: sandbox.md unlisted and web.md missing"
     log_info "Expect: exit 0, since index drift is advisory rather than gating"
@@ -313,7 +313,7 @@ stage_setup() {
     seed_repo
     seed_folder
     seed_citation
-    log_step "Running: aitk context audit --json"
+    log_step "Running: canon context audit --json"
     exec bun "$PROJECT_ROOT/src/cli.ts" context audit --json
     ;;
   *)

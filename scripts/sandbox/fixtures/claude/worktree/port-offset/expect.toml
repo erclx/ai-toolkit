@@ -1,5 +1,5 @@
 # What a correct `/claude-worktree` run leaves behind on the port-offset arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # Step 6 reads the port helper rather than restating a number, so what this arm

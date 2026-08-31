@@ -7,7 +7,7 @@ description: Scope boundary for section-granular seed reconciliation against the
 
 ## Gap
 
-Without this skill, a project that edited a seed has no way to take an upstream change without losing something. No `aitk` command touches a seed at all, so the only route is a hand copy that overwrites the file and takes the edits with it, unrecorded. Nothing can deliver one upstream section into a file the project has customized, which is the case a grown project is always in.
+Without this skill, a project that edited a seed has no way to take an upstream change without losing something. No `canon` command touches a seed at all, so the only route is a hand copy that overwrites the file and takes the edits with it, unrecorded. Nothing can deliver one upstream section into a file the project has customized, which is the case a grown project is always in.
 
 A whole-file diff does not close it either. It cannot separate a section the user rewrote on purpose from a section the toolkit moved on without them, so the choice reaches the user as accept everything or lose everything, and the safe answer is always to skip.
 
@@ -34,12 +34,12 @@ Two failures belong to the audit rather than to the diff. A decision taken in ch
 
 ## Guards
 
-- No `aitk` on PATH, or no `.claude/` directory at the project root, stops before any read
+- No `canon` on PATH, or no `.claude/` directory at the project root, stops before any read
 
 ## Out of scope
 
-- Bulk install and sync of a whole domain, which `aitk <domain> install` and `aitk <domain> sync` own and `aitk-cli` documents. Reach for this skill when the target holds edits worth keeping, and for those commands when it does not.
+- Bulk install and sync of a whole domain, which `canon <domain> install` and `canon <domain> sync` own and `canon-cli` documents. Reach for this skill when the target holds edits worth keeping, and for those commands when it does not.
 - Golden configs, which overwrite by design and carry no section structure to diff
-- Governance rules: `aitk gov sync`
+- Governance rules: `canon gov sync`
 - First-time scaffold of a project that has installed nothing yet: `setup-init`
 - Public `README.md` and `docs/` prose: `docs-sync`

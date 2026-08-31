@@ -35,12 +35,12 @@ export function register(program: Command): void {
       [
         '',
         'A name resolves under standards/ at the working root, then the corpus',
-        'inside the aitk package. No standard installs into a project, so the',
+        'inside the canon package. No standard installs into a project, so the',
         'package corpus is what answers there. The frame names the copy it read.',
         '',
         'Examples:',
-        '  aitk standards markdown',
-        '  aitk standards markdown.md',
+        '  canon standards markdown',
+        '  canon standards markdown.md',
         '',
       ].join('\n'),
     )
@@ -84,9 +84,9 @@ export function register(program: Command): void {
         'standards/standard.md names, not a violation, so only an arrival fails.',
         '',
         'Examples:',
-        '  aitk standards audit',
-        '  aitk standards audit --json',
-        '  aitk standards audit --arrivals-only',
+        '  canon standards audit',
+        '  canon standards audit --json',
+        '  canon standards audit --arrivals-only',
         '',
       ].join('\n'),
     )
@@ -104,7 +104,7 @@ export function register(program: Command): void {
  * answers everywhere else.
  */
 function print(name: string): number {
-  intro('aitk standards')
+  intro('canon standards')
 
   const root = process.cwd()
   const resolved = resolveStandard(root, name)
@@ -113,7 +113,7 @@ function print(name: string): number {
     logWarn(`Unknown standard: ${name}`)
     logStep('Available standards')
     for (const each of listStandards(root)) logInfo(each)
-    logError("Run 'aitk standards list' for descriptions.")
+    logError("Run 'canon standards list' for descriptions.")
     outro()
     return 1
   }
@@ -147,7 +147,7 @@ async function runStandardsAudit(
     if (gateOnly) {
       frameError(message)
     } else {
-      intro('aitk standards audit')
+      intro('canon standards audit')
       logStep('Refused')
       logWarn(message)
       outro()
@@ -165,7 +165,7 @@ async function runStandardsAudit(
   if (gateOnly) {
     reportArrivalGate(audit)
   } else {
-    intro('aitk standards audit')
+    intro('canon standards audit')
     reportCorpus(audit)
     outro()
   }
@@ -201,7 +201,7 @@ function reportArrivalGate(
   const missing = audit.arrivalsWithoutCriterion
   if (missing.length === 0) return
 
-  intro('aitk standards audit')
+  intro('canon standards audit')
   logError(
     missing.length === 1
       ? '1 standard new to this branch carries no ## Success criterion section'

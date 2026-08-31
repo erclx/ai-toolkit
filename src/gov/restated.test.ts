@@ -44,7 +44,7 @@ function entryFor(
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-gov-restated-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-gov-restated-'))
 })
 
 afterEach(() => {

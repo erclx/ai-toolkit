@@ -15,7 +15,7 @@ import {
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-comments-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-comments-'))
 })
 
 afterEach(() => {

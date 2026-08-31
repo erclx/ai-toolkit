@@ -66,7 +66,7 @@ For each in-scope entry (see Scope), pick one action:
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in the project's own standards folder as `<domain>.md`.
 - **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.claude/.tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
-- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
+- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Never edit the synced `.claude/rules/` copies of toolkit rules, because `canon gov sync` overwrites them. Stop at handoff.
   - In the toolkit repo, point the user at `internal-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
   - In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`.
 - **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
@@ -159,7 +159,7 @@ Archiving means creating `.claude/.tmp/memory-archive/` at the main worktree roo
 Do not hand-edit `.claude/memory/index.md`. Once every archive move is done, regenerate it instead:
 
 ```bash
-aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
+canon indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
 ```
 
 The `PostToolUse` hook that keeps the index current matches `Write|Edit|MultiEdit`, and an archive move is a shell `mv`, so nothing fires on it. Without this call the index keeps a row per archived entry and drifts exactly the way the hand-appended one did. Run it once after the last move rather than per item.

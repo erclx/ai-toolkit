@@ -17,7 +17,7 @@ Does not govern:
 
 ## Map format
 
-The map lives at `.claude/aitk/pr-labels.toml` in the project root. Each key under `[domains]` is a label name and its value is the list of path prefixes that earn it.
+The map lives at `.claude/canon/pr-labels.toml` in the project root. Each key under `[domains]` is a label name and its value is the list of path prefixes that earn it.
 
 ```toml
 [domains]
@@ -29,7 +29,7 @@ A label takes more than one prefix when two folders read as one surface. Two lab
 
 Matching is prefix-anchored, so a row written for an authoring root reaches nothing under the copy a project consumes. A surface living only under a dotted folder carries its own prefix on the row that owns its subject, and a folder holding several subjects rather than one splits across the rows that own them.
 
-The map is authored by hand, so a surface added after it was written labels nothing until someone adds a row. `aitk labels audit` is what names that surface before the branch merges.
+The map is authored by hand, so a surface added after it was written labels nothing until someone adds a row. `canon labels audit` is what names that surface before the branch merges.
 
 ## Paths a map declines to label
 
@@ -50,7 +50,7 @@ A path claimed by a `[domains]` row and a `[declined]` row takes the label. It a
 ## Reporting a surface no row reaches
 
 ```bash
-aitk labels audit --base <base> --json
+canon labels audit --base <base> --json
 ```
 
 The record carries `labels`, `declined`, and `uncovered`. It exits 2 when `uncovered` has anything in it and 1 when it refuses, with `reason` naming the cause: `no-map` for a project that declared none, and a parse or range failure otherwise.

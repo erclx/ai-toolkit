@@ -5,12 +5,12 @@ description: Reading where an implementation reached history ahead of its test, 
 
 # Test order
 
-`aitk gov test-order` reports where an implementation reached a commit ahead of the test covering the same behavior. It answers the rule in `.claude/rules/core/070-planning.md` that asks for the test first, which until this verb existed was prose loaded on a glob match with nothing measuring it.
+`canon gov test-order` reports where an implementation reached a commit ahead of the test covering the same behavior. It answers the rule in `.claude/rules/core/070-planning.md` that asks for the test first, which until this verb existed was prose loaded on a glob match with nothing measuring it.
 
 ```bash
-aitk gov test-order
-aitk gov test-order --base origin/main --json
-aitk gov test-order --root ../my-app
+canon gov test-order
+canon gov test-order --base origin/main --json
+canon gov test-order --root ../my-app
 ```
 
 | Option          | Behavior                                                          |
@@ -51,6 +51,6 @@ Coverage is narrower than the rule the check answers to. The rule speaks to ever
 
 Exit codes are `0` when nothing reached history ahead of its test, `1` for a refusal, and `2` for at least one implementation-first finding. Unclassified rows move no exit code.
 
-Nothing wires this into `bun run check` or into a hook. The unclassified class is large and known, and gating a measure carrying a known false-positive class is what teaches contributors to route around the stage. `aitk tasks validate` is the precedent: it exits `2` on findings and is called where the claim is made rather than on every push.
+Nothing wires this into `bun run check` or into a hook. The unclassified class is large and known, and gating a measure carrying a known false-positive class is what teaches contributors to route around the stage. `canon tasks validate` is the precedent: it exits `2` on findings and is called where the claim is made rather than on every push.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the JSON record's `findings` array rather than the exit when a skill consumes this.

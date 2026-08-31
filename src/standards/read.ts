@@ -16,7 +16,7 @@ export function standardsSourceDir(root: string): string {
  * and a package copy is the one source that promise cannot cover, so the
  * spelling has to be one nothing will join to a project root.
  */
-const PACKAGE_LABEL = '<aitk>'
+const PACKAGE_LABEL = '<canon>'
 
 export interface StandardRoot {
   /** Absolute directory to search. */

@@ -55,7 +55,7 @@ Determine current: the row whose `path` equals `git rev-parse --show-toplevel`. 
 
 Determine provenance: a non-main row is `foreign` when its `path` does not start with `<MAIN_ROOT>/.claude/worktrees/`. That prefix is the folder `claude-worktree` creates under, a convention of that skill rather than a fact this one owns. A tree an operator registered by hand anywhere else on disk reads as `foreign`. Step 1 has already marked the main row `main`, so it never reaches this test.
 
-Determine occupancy: run `aitk sessions list --json` once for the whole enumeration, never once per row. Resolve each enumerated row's `path` and each live session's `worktree` field with `realpath` before comparing, since a session registered from a second clone of this repository reports a path under that clone rather than under `MAIN_ROOT`, and a raw string compare would hold nothing back. A row is `occupied` when a resolved `worktree` from any live session equals its resolved `path`. A resolved session `worktree` outside `MAIN_ROOT` names a different checkout, so it clears no row here and marks none as occupied.
+Determine occupancy: run `canon sessions list --json` once for the whole enumeration, never once per row. Resolve each enumerated row's `path` and each live session's `worktree` field with `realpath` before comparing, since a session registered from a second clone of this repository reports a path under that clone rather than under `MAIN_ROOT`, and a raw string compare would hold nothing back. A row is `occupied` when a resolved `worktree` from any live session equals its resolved `path`. A resolved session `worktree` outside `MAIN_ROOT` names a different checkout, so it clears no row here and marks none as occupied.
 
 The roster is unreadable when the command exits non-zero, when its JSON carries a `reason` field instead of a populated `sessions` array, or when `sessions` is non-empty but no entry carries a `worktree` key at all, which is the shape an older binary prints and cannot be told apart from a roster answering that nothing is occupied. `list` leaves the Notes column silent on that failure rather than changing behavior beyond it. `cleanup` refuses instead, stated in its own section below.
 
@@ -77,7 +77,7 @@ After the table, append a one-line hint:
 
 ## `cleanup` mode
 
-If Enumeration marked the roster unreadable, stop: `❌ Session roster unreadable, so occupancy cannot be checked. Resolve the aitk sessions list failure, then re-run cleanup.` Hold every non-main row rather than computing the remove set from the other five tests alone, since removing a tree a live session holds is the failure this skill exists to prevent and a sweep that removes nothing costs one re-run.
+If Enumeration marked the roster unreadable, stop: `❌ Session roster unreadable, so occupancy cannot be checked. Resolve the canon sessions list failure, then re-run cleanup.` Hold every non-main row rather than computing the remove set from the other five tests alone, since removing a tree a live session holds is the failure this skill exists to prevent and a sweep that removes nothing costs one re-run.
 
 From the enumeration, include a worktree in the remove set when all hold:
 

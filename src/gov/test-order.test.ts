@@ -41,7 +41,7 @@ function subjects(records: readonly { subject: string }[]): string[] {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-gov-test-order-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-gov-test-order-'))
   git('init', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -174,7 +174,7 @@ describe('readTestOrder', () => {
   })
 
   it('should refuse a root carrying no repository', () => {
-    const empty = mkdtempSync(join(tmpdir(), 'aitk-gov-test-order-empty-'))
+    const empty = mkdtempSync(join(tmpdir(), 'canon-gov-test-order-empty-'))
 
     const report = readTestOrder(empty)
 
@@ -193,7 +193,7 @@ describe('readTestOrder', () => {
   })
 
   it('should write a parseable reason on every refusal path', () => {
-    const empty = mkdtempSync(join(tmpdir(), 'aitk-gov-test-order-empty-'))
+    const empty = mkdtempSync(join(tmpdir(), 'canon-gov-test-order-empty-'))
 
     const report = readTestOrder(empty)
 

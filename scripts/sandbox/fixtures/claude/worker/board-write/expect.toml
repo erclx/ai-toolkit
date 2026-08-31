@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-worker` run leaves behind when the session finds
-# work that needs a new board row. Read by `aitk sandbox check`. Patterns use
+# What a correct `/canon:claude-worker` run leaves behind when the session finds
+# work that needs a new board row. Read by `canon sandbox check`. Patterns use
 # TOML literal strings so a regex needs no backslash escaping.
 
 # The arm exists for a failure measured twice in production rather than reasoned

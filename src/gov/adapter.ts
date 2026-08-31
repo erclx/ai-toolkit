@@ -47,10 +47,10 @@ export function createGovAdapter(root: string): SyncAdapter {
   const index = indexSourceRules(root)
 
   return {
-    banner: 'aitk gov sync',
+    banner: 'canon gov sync',
     label: 'rules',
     missingMessage:
-      "No governance surfaces found in target. Run 'aitk gov install' first.",
+      "No governance surfaces found in target. Run 'canon gov install' first.",
     unit: 'changes',
     installedRoot: (target: string) => join(target, '.claude', 'rules'),
     locateSource: (file: InstalledFile) =>
@@ -83,7 +83,7 @@ function collectMissingGov(root: string, target: string): RetiredSurface[] {
     return {
       path: dest,
       rel,
-      notice: `${rel} (listed by ${chain[0]}, not installed. Run aitk gov install ${chain[0]} to add it.)`,
+      notice: `${rel} (listed by ${chain[0]}, not installed. Run canon gov install ${chain[0]} to add it.)`,
     }
   })
 }

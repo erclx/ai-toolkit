@@ -121,7 +121,7 @@ An item already carrying an answer is refused rather than overwritten, whichever
 
 Answers live on items, so one pass over the folder reports every touched slot.
 
-A session with the toolkit CLI on PATH reads the folder through `aitk intake list`, which reports per-folder counts bare and one folder's items with `--json`, and takes `--unread` to keep only the empty slots. It is the surface under test, and it skips the index and every fenced sample, which the greps below cannot do.
+A session with the toolkit CLI on PATH reads the folder through `canon intake list`, which reports per-folder counts bare and one folder's items with `--json`, and takes `--unread` to keep only the empty slots. It is the surface under test, and it skips the index and every fenced sample, which the greps below cannot do.
 
 The greps stay for a reader without the CLI, and they overcount by whatever the folder displays in a fence.
 

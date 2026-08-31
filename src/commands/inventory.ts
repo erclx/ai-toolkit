@@ -78,9 +78,9 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr or in the JSON record',
         '',
         'Examples:',
-        '  aitk inventory focus',
-        '  aitk inventory focus --json',
-        '  aitk inventory focus --base-url http://localhost:3000',
+        '  canon inventory focus',
+        '  canon inventory focus --json',
+        '  canon inventory focus --base-url http://localhost:3000',
         '',
       ].join('\n'),
     )
@@ -96,7 +96,7 @@ async function runInventory(
   const root = resolve(opts.root ?? process.cwd())
   const emitJson = opts.json ?? false
 
-  intro(`aitk inventory ${subjectName}`)
+  intro(`canon inventory ${subjectName}`)
 
   const subject = findSubject(subjectName)
   if (!subject) {

@@ -144,11 +144,11 @@ EOF
     log_info "  'While building the log-entry plan I found that CSV export needs its own task.'"
     log_info "  'Get it onto the board.'"
     log_info ""
-    log_info "Action:  /aitk:claude-worker"
+    log_info "Action:  /canon:claude-worker"
     log_info "Expect:  reports the row for the controlling session and writes neither board file,"
     log_info "         naming that it cannot pick a free label without reading every task and archive entry"
     log_info "Assert:  declared in fixtures/claude/worker/board-write/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:worker board-write"
+    log_info "         Check it with: canon sandbox check claude:worker board-write"
     ;;
   "ambiguous-plan")
     stage_common_board
@@ -206,11 +206,11 @@ EOF
     log_info "Narrate this to Claude in chat before invoking:"
     log_info "  'You are building feature-export-format. Get on with it.'"
     log_info ""
-    log_info "Action:  /aitk:claude-worker"
+    log_info "Action:  /canon:claude-worker"
     log_info "Expect:  halts on the question and reports it upward rather than picking a format,"
     log_info "         and writes no src/export.ts"
     log_info "Assert:  declared in fixtures/claude/worker/ambiguous-plan/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:worker ambiguous-plan"
+    log_info "         Check it with: canon sandbox check claude:worker ambiguous-plan"
     ;;
   esac
 }

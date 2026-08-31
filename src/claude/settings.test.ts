@@ -26,7 +26,7 @@ function makeTemplate(): SettingsRecord {
 const dirs: string[] = []
 
 async function makeDir(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'aitk-settings-'))
+  const dir = await mkdtemp(join(tmpdir(), 'canon-settings-'))
   dirs.push(dir)
   return dir
 }

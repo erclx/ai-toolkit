@@ -49,8 +49,8 @@ function seedToolkit(): void {
 }
 
 beforeEach(() => {
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-reverse-'))
-  TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-reverse-toolkit-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-reverse-'))
+  TOOLKIT = mkdtempSync(join(tmpdir(), 'canon-reverse-toolkit-'))
   git('init', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -152,7 +152,7 @@ describe('buildReverseReport', () => {
   })
 
   it('should report history unavailable outside a git clone', () => {
-    const unversioned = mkdtempSync(join(tmpdir(), 'aitk-reverse-plain-'))
+    const unversioned = mkdtempSync(join(tmpdir(), 'canon-reverse-plain-'))
     writeTarget(join('prompts', 'bash.md'))
 
     const report = buildReverseReport(unversioned, TARGET)
@@ -164,7 +164,7 @@ describe('buildReverseReport', () => {
   })
 
   it('should still detect migrations when history is unavailable', () => {
-    const unversioned = mkdtempSync(join(tmpdir(), 'aitk-reverse-plain-'))
+    const unversioned = mkdtempSync(join(tmpdir(), 'canon-reverse-plain-'))
     writeTarget('CLAUDE.md', 'line\n'.repeat(400))
 
     expect(buildReverseReport(unversioned, TARGET).migrations).toHaveLength(1)

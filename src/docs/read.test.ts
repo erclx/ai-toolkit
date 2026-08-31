@@ -13,7 +13,7 @@ function writeDoc(relToRoot: string, content: string): void {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-docs-read-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-docs-read-'))
   mkdirSync(join(ROOT, 'docs'), { recursive: true })
   mkdirSync(join(ROOT, '.claude', 'context'), { recursive: true })
 })

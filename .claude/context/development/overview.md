@@ -29,7 +29,7 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 | `bun run check:spell`   | Read-only cspell check against project dictionaries.                                     |
 | `bun run check:shell`   | Read-only shellcheck against `scripts/`, `tooling/`, and `.claude/hooks/`.               |
 | `bun run check:types`   | Read-only `tsc --noEmit` against `src/`.                                                 |
-| `bun run check:install` | Clones the repo to tmp and asserts `aitk init` lands a fresh scaffold.                   |
+| `bun run check:install` | Clones the repo to tmp and asserts `canon init` lands a fresh scaffold.                  |
 | `bun run format`        | Auto-fix prettier and shfmt formatting.                                                  |
 | `bun run clean`         | Wipe `node_modules/`, clear bun cache, reinstall.                                        |
 | `bun run update`        | Interactive `bun update` followed by verification.                                       |
@@ -39,7 +39,7 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 
 `standards/context.md` scopes the `## Scripts` heading to this domain by name, and this file is where it lands. Three surfaces read the table, so a command added anywhere else is a command they cannot see: `project-commands` resolves a request against it, every stack reference extends it, and `docs/target-projects.md` tells a target to keep its own copy current.
 
-The table stays a table against the catalog rule beside it, which sends a surface that grows a row per shipped thing to a bullet list. That rule answers reflow conflicts between sibling branches, and the same standard names this section a table in the sentence that scopes it here. `aitk context audit` reports the row count under Tables on every run, so the finding is expected rather than outstanding.
+The table stays a table against the catalog rule beside it, which sends a surface that grows a row per shipped thing to a bullet list. That rule answers reflow conflicts between sibling branches, and the same standard names this section a table in the sentence that scopes it here. `canon context audit` reports the row count under Tables on every run, so the finding is expected rather than outstanding.
 
 ## Gotchas
 

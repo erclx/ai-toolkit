@@ -35,7 +35,7 @@ Read which one exists rather than composing either. A project carrying both keep
 
 A project carrying neither gets a refusal rather than a scaffold:
 
-`❌ No wiki folder. Run aitk wiki init to create one, then promote again.`
+`❌ No wiki folder. Run canon wiki init to create one, then promote again.`
 
 Creating the folder as a side effect of promoting one page hands the project a surface it never chose, and the refusal is one command from resolved.
 

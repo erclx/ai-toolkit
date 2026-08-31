@@ -40,7 +40,7 @@ stage_setup() {
   git commit -m "chore(sandbox): make governance stale" --no-verify -q
 
   git push --force origin HEAD:main -q
-  git ls-remote --heads origin 'chore/aitk-sync*' 2>/dev/null |
+  git ls-remote --heads origin 'chore/canon-sync*' 2>/dev/null |
     awk '{print $2}' | sed 's|refs/heads/||' |
     while read -r b; do git push origin --delete "$b" -q 2>/dev/null || true; done
 
@@ -49,6 +49,6 @@ stage_setup() {
   log_info "Stale rules: ${stale_rules[*]}"
   log_info "Remote: $(sandbox_anchor_url)"
 
-  log_step "Running: aitk sync"
+  log_step "Running: canon sync"
   exec bun "$PROJECT_ROOT/src/cli.ts" sync .
 }

@@ -17,7 +17,7 @@ This skill holds the framing, the board procedure, and the dispatch. Every step
 that builds something runs an existing skill. The queue rules below decide which
 one runs and when.
 
-Run `aitk docs operating-model` for the model this skill enacts: the two roles
+Run `canon docs operating-model` for the model this skill enacts: the two roles
 and what each owns, the loop end to end, why the worker's self-review and this
 session's review are different passes, and how a feature is sized.
 
@@ -41,7 +41,7 @@ No surface carries cross-version sequencing, so report none. A row's `Waiting on
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do.
 
-On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It sends the generic half to `aitk:session-map`, which captures what the session learned and writes a session map per `${CLAUDE_SKILL_DIR}/../../standards/session.md`, then adds the decisions taken under delegated authority as this role's extension. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
+On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It sends the generic half to `canon:session-map`, which captures what the session learned and writes a session map per `${CLAUDE_SKILL_DIR}/../../standards/session.md`, then adds the decisions taken under delegated authority as this role's extension. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
 On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work.
 
@@ -49,7 +49,7 @@ The review trigger takes the same shape. `references/orchestrator-poll.md` holds
 
 A board that is not moving is a third such moment. On a request to re-test the parked rows, read `${CLAUDE_SKILL_DIR}/references/orchestrator-parked.md` and follow it. It re-tests every `## Up next` and `## Needs a plan` blocker against the current tree, writes what each test showed into the row, and plans what it clears. Its trigger is the inverse of the refill sweep's below, which fires on a merge and asks what to promote next rather than whether a row already parked is still parked for a reason.
 
-That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/aitk:claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The three runbooks sit at `references/orchestrator-handoff.md`, `references/orchestrator-resume.md`, and `references/orchestrator-parked.md` inside this skill's own folder, so a person who knows their plugin root opens any one of them directly and follows it without this skill loaded at all.
+That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/canon:claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The three runbooks sit at `references/orchestrator-handoff.md`, `references/orchestrator-resume.md`, and `references/orchestrator-parked.md` inside this skill's own folder, so a person who knows their plugin root opens any one of them directly and follows it without this skill loaded at all.
 
 ## Output
 
@@ -116,7 +116,7 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
    - Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. That runbook holds the routing, and a summary of it here is a second source that drifts from it.
 6. Dispatch the handback. A pass posting anything owed, a finding at any severity or a testing question, tells the session holding that branch to run `claude-address-review`, rather than waiting for a person to relay it. Re-review when the worker's own message says the address pass finished, per the channel `claude-worker` states, rather than polling for an answer nothing else marks as landed. Then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
    - Read the threshold off `claude-pr-review`, which states it once and governs the heading with it, so an open heading and an owed dispatch answer the same question and either one is enough to send
-   - Resolve the target at the moment of sending with `aitk sessions list --branch`, never from a mapping written down earlier, since names rotate as sessions end and one recorded earlier in a session has failed inside the hour. The runbook read at step 5 routes on the count and the confidence it answers with
+   - Resolve the target at the moment of sending with `canon sessions list --branch`, never from a mapping written down earlier, since names rotate as sessions end and one recorded earlier in a session has failed inside the hour. The runbook read at step 5 routes on the count and the confidence it answers with
    - Open the message with the worktree and branch the sender believes the reader holds, asking to be corrected, whenever that mapping is inferred rather than confirmed
    - Name the skill for the reader to run rather than writing an invocation, which arrives as text
    - Read the pull request's own draft flag rather than the state a worker reports, since two reported a draft that read ready inside ninety seconds
@@ -189,10 +189,10 @@ Do not promote a task to fill the queue when nothing qualifies. A thin queue is 
 
 ### Writing the board
 
-Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, and this session is the only writer apart from `aitk tasks archive`. Moving a task between the board and `.claude/tasks/backlog.md` writes both files, and this session is that file's only writer.
+Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, and this session is the only writer apart from `canon tasks archive`. Moving a task between the board and `.claude/tasks/backlog.md` writes both files, and this session is that file's only writer.
 
 - Edit the file with the file-editing tool. A shell stream editor and an inline string replace both exit clean on a non-match, so a promotion that matched nothing leaves the board wrong with nothing reporting it, and the file-editing tool errors instead.
-- Write both halves of a move before reporting it. A row removed from one surface and not written to the other leaves a task file nothing names, and the folder is gitignored with no history to recover the row from. `aitk tasks validate` reports that state, so run it after any move.
+- Write both halves of a move before reporting it. A row removed from one surface and not written to the other leaves a task file nothing names, and the folder is gitignored with no history to recover the row from. `canon tasks validate` reports that state, so run it after any move.
 - Put the reason a row sits where it does in its Waiting on cell. Position is the ordering and the cell is where the ordering's rationale lives, so a row promoted with the cell left alone carries an order the next sweep cannot check.
 - Put a pointer in the Plan column, never prose. `## Run now` claims a written plan covers every open outcome, and `claude-autoship` refuses at its guard when it follows the column and finds no plan, which spends a worker dispatch to learn what the row should have said.
 - Name the file set in the Touches column. The disjointness call in step 6 is only checkable later when the sets are written down rather than reasoned once and discarded.

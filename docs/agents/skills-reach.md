@@ -5,12 +5,12 @@ description: Reporting the skill bodies that cite a path no target project recei
 
 # Citation reach
 
-`aitk claude skills reach [path]` reports every skill body citing a path that exists in the project and reaches no reader elsewhere. It reads and reports. Repairing what it finds is separate work.
+`canon claude skills reach [path]` reports every skill body citing a path that exists in the project and reaches no reader elsewhere. It reads and reports. Repairing what it finds is separate work.
 
 ```bash
-aitk claude skills reach
-aitk claude skills reach --json
-aitk claude skills reach ~/repos/my-project
+canon claude skills reach
+canon claude skills reach --json
+canon claude skills reach ~/repos/my-project
 ```
 
 | Option   | Behavior                                                   |
@@ -35,7 +35,7 @@ A backticked token carrying a separator and an extension, which is how every bod
 
 The same sibling named from the repository root as `claude/skills/<name>/references/<file>.md` is reported rather than skipped. The plugin loads from a cache rather than from the project tree, so that spelling resolves for nobody and the report is correct.
 
-A path the toolkit does not hold is dropped rather than reported. The measure asks whether a claim true here is false in a target, and a path true in neither is a different defect that `aitk context audit` already reports against its own corpus.
+A path the toolkit does not hold is dropped rather than reported. The measure asks whether a claim true here is false in a target, and a path true in neither is a different defect that `canon context audit` already reports against its own corpus.
 
 ## The ownership key
 
@@ -61,4 +61,4 @@ A line mentioning the toolkit for an unrelated reason exempts a citation on it. 
 
 Exit codes are `0` when every citation names its owner, `1` for a refusal, and `2` when at least one is unqualified. The refusal is a tree carrying neither `claude/skills/` nor `.claude/skills/`, which holds no skill body to measure, and it reports the reason rather than a clean count over nothing.
 
-The verb reports rather than gates. A toolkit-scoped instruction is sometimes meant for a session in this repository, so failing a push on one would make the check something to route around. `aitk audits run` registers it with no gating exit for the same reason, and carries `unqualifiedCitations` as its retained count.
+The verb reports rather than gates. A toolkit-scoped instruction is sometimes meant for a session in this repository, so failing a push on one would make the check something to route around. `canon audits run` registers it with no gating exit for the same reason, and carries `unqualifiedCitations` as its retained count.

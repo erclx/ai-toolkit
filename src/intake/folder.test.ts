@@ -62,7 +62,7 @@ async function seedFolder(
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-intake-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-intake-'))
 })
 
 afterEach(() => {

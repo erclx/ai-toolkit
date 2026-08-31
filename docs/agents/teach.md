@@ -11,11 +11,11 @@ That root resolution is also why the writing verbs exist at all. The file-editin
 
 ## List
 
-`aitk teach list` reports the workspaces under `.claude/teach/`, or what one workspace holds. It reads and never writes.
+`canon teach list` reports the workspaces under `.claude/teach/`, or what one workspace holds. It reads and never writes.
 
 ```bash
-aitk teach list
-aitk teach list regular-expressions --json
+canon teach list
+canon teach list regular-expressions --json
 ```
 
 | Option          | Behavior                                    |
@@ -31,10 +31,10 @@ The listing also names the required files a workspace does not carry, which is `
 
 ## Open
 
-`aitk teach open` creates a workspace at the next ordinal and writes all three required files.
+`canon teach open` creates a workspace at the next ordinal and writes all three required files.
 
 ```bash
-aitk teach open regular-expressions \
+canon teach open regular-expressions \
   --subject "Reading and writing regular expressions" \
   --starting-point "Comfortable with the shell, has never written a group" \
   --success "Write a pattern matching a date" \
@@ -58,10 +58,10 @@ The ordinal comes from the highest already present, incremented, so the caller d
 
 ## Resource
 
-`aitk teach resource` records sources in a workspace `RESOURCES.md`, keeping what was read apart from what was only found.
+`canon teach resource` records sources in a workspace `RESOURCES.md`, keeping what was read apart from what was only found.
 
 ```bash
-aitk teach resource regular-expressions \
+canon teach resource regular-expressions \
   --read "MDN regular expressions=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions" \
   --lead "RE2 syntax=https://github.com/google/re2/wiki/Syntax"
 ```
@@ -81,10 +81,10 @@ A URL a file displays inside a fence does not count as listed, which is how a wo
 
 ## Glossary
 
-`aitk teach glossary` adds terms to a workspace `GLOSSARY.md`, alphabetically.
+`canon teach glossary` adds terms to a workspace `GLOSSARY.md`, alphabetically.
 
 ```bash
-aitk teach glossary regular-expressions \
+canon teach glossary regular-expressions \
   --term "capture group=A parenthesised part of a pattern whose match is kept" \
   --first-seen 0002-groups.html
 ```
@@ -104,10 +104,10 @@ The entry lands as the standard's shape, leading with the term as a bolded span.
 
 ## Lesson
 
-`aitk teach lesson` resolves what the next lesson needs before it is written. It reads and never writes.
+`canon teach lesson` resolves what the next lesson needs before it is written. It reads and never writes.
 
 ```bash
-aitk teach lesson regular-expressions \
+canon teach lesson regular-expressions \
   --slug capture-groups \
   --questions 3 \
   --options 4
@@ -131,13 +131,13 @@ The order is drawn here rather than instructed, and that is the point of the ver
 
 ## Opening a workspace
 
-No `aitk teach` verb serves the workspace. `aitk serve` does, taking the teach root as its directory and the workspace contents page as its entry:
+No `canon teach` verb serves the workspace. `canon serve` does, taking the teach root as its directory and the workspace contents page as its entry:
 
 ```bash
-aitk serve .claude/teach --entry 03-fde-system-design/index.html --json
+canon serve .claude/teach --entry 03-fde-system-design/index.html --json
 ```
 
-It stays general rather than becoming `aitk teach serve`, because nothing about serving a directory is specific to a learning workspace, and the same verb carries a slide render and a design preview.
+It stays general rather than becoming `canon teach serve`, because nothing about serving a directory is specific to a learning workspace, and the same verb carries a slide render and a design preview.
 
 Read `url` off the record rather than building one from the port that was asked for. The verb walks forward past a port already in use, which is routine when a second workspace is already open, and the port it took is the one thing a composed URL gets wrong.
 

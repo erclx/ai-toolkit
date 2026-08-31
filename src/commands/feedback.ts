@@ -45,7 +45,7 @@ function writeLocal(body: string): string {
   const filename = `feedback-${deriveSlug(body)}-${timestamp()}.md`
   const filePath = join(reviewDir, filename)
   writeFileSync(filePath, `${body}\n`, 'utf8')
-  frameSuccess('aitk feedback', join(relativeDir, filename))
+  frameSuccess('canon feedback', join(relativeDir, filename))
   return filePath
 }
 
@@ -62,7 +62,7 @@ export function register(program: Command): void {
     .action(async (opts: { github?: boolean }) => {
       if (process.stdin.isTTY) {
         frameError(
-          'No feedback on stdin. Pipe a markdown block: pbpaste | aitk feedback',
+          'No feedback on stdin. Pipe a markdown block: pbpaste | canon feedback',
         )
         process.exitCode = 1
         return
@@ -81,13 +81,13 @@ export function register(program: Command): void {
           labels: ['feedback'],
         })
         if (url) {
-          frameSuccess('aitk feedback', url)
+          frameSuccess('canon feedback', url)
           process.stdout.write(`${url}\n`)
           return
         }
         if (!isToolkitSource()) {
           frameError(
-            'gh unavailable and no toolkit source to fall back to. Install gh, or file it at https://github.com/erclx/aitk/issues/new',
+            'gh unavailable and no toolkit source to fall back to. Install gh, or file it at https://github.com/erclx/canon/issues/new',
           )
           process.exitCode = 1
           return

@@ -40,28 +40,28 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 
 - Agent-first CLI surface with non-interactive paths, JSON catalogs, and composable flags on every command.
 - One authoritative source for governance rules, prose standards, Claude seeds, and workflow skills.
-- Installable Claude Code plugin that brings a curated skill set to any project scaffolded through `aitk`.
+- Installable Claude Code plugin that brings a curated skill set to any project scaffolded through `canon`.
 - Behavior and conventions captured as text that both humans and agents can read and enforce.
 - Low-friction install and sync so target projects pull updates without hand-patching.
 
 ## Non-goals
 
 - Replace human code review on risky changes. Agents augment the review loop. Humans still own the final call.
-- Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, snippets, and rules. Native `aitk` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
+- Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, snippets, and rules. Native `canon` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
 - Ship first-class support for every AI coding tool. Claude Code is the platform the toolkit targets. Extending to another tool stays open (deferred), but no parallel surface is maintained without a concrete use case driving it. A comparably-shaped project making the opposite call pays it directly: two skill trees, 29 identical files, 3,905 lines kept aligned by discipline alone.
 - Wrap framework scaffolding. Users run `bun init`, `npm create vite`, and similar themselves. The toolkit layers on top.
 - Provide a hosted service. Everything runs locally against local CLIs. Publishing an artifact to a registry someone else hosts stays in scope, since the boundary is where execution happens rather than where a download comes from.
 
 ## MVP features
 
-1. `aitk init`: one-shot bootstrap that layers base tooling, Claude seeds, governance, and snippets into a project, and scaffolds an empty `.claude/wiki/` for the project's own authoring.
+1. `canon init`: one-shot bootstrap that layers base tooling, Claude seeds, governance, and snippets into a project, and scaffolds an empty `.claude/wiki/` for the project's own authoring.
 2. Per-domain `list`, `install`, and `sync` subcommands so skills can read catalogs and apply updates.
 3. Governance stacks and rules installed as path-scoped files in `.claude/rules/`.
 4. Claude Code plugin with skills covering planning, review, architecture diagrams, UI tests, docs sync, memory review, and the git ship chain.
 5. Sandbox scenarios that provision representative project states for verifying each domain flow.
 6. Prose, commit, branch, PR, and skill authoring standards synced into every project.
 7. Snippets for recurring chat workflows.
-8. `aitk transcripts`: fetch a YouTube transcript with metadata frontmatter into the current repo.
+8. `canon transcripts`: fetch a YouTube transcript with metadata frontmatter into the current repo.
 
 ## Distribution
 
@@ -81,7 +81,7 @@ The scope that followed the MVP. What the toolkit has to achieve for a user who 
 
 ## Constraints
 
-- Every command must have a non-interactive path via args or `AITK_NON_INTERACTIVE=1`. Never require a TTY.
+- Every command must have a non-interactive path via args or `CANON_NON_INTERACTIVE=1`. Never require a TTY.
 - JSON output on `list` commands must pipe clean through any wrapper. UI and logs go to stderr.
 - Human-readable output carries color only where a destination renders one. `NO_COLOR` and a destination that is not a terminal each turn it off, asked per stream rather than once for the process, and the frame survives either way.
 - The toolkit is the authoritative source. Target projects consume via install and sync, never author in place.

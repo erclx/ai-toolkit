@@ -29,7 +29,7 @@ function writePackage(fields: Record<string, unknown>): void {
 }
 
 beforeEach(() => {
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-tooling-stamp-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-tooling-stamp-'))
 })
 
 afterEach(() => {

@@ -1,5 +1,5 @@
 # What a correct `/claude-intake` run leaves behind on the route arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The routing test is the one thing in this skill that decides whether the

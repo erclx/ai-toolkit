@@ -37,7 +37,7 @@ function seedSkills(count: number): void {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-counts-scan-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-counts-scan-'))
   // A git hook exports GIT_DIR into every process it runs, and it takes
   // precedence over `cwd`, so an inherited environment initializes the
   // repository somewhere other than the fixture and every case reads empty.

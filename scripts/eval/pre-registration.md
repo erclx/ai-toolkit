@@ -38,7 +38,7 @@ Recording any one of these with its reasoning satisfies the "at least one real d
 
 Written before the seed run. The subject is `tooling/claude/seeds/`, twelve files rather than one document, and the question is the task's outcome text: can a session that has never seen the seed work in a project scaffolded from it without asking for context the seed should have carried.
 
-The fixture is `feedwatch` again, stripped of `.claude/` and `CLAUDE.md`, with the seed installed through `aitk claude init` and the standards through `aitk standards install`, a verb since removed with the install channel. The CLI runs by path rather than as the linked binary, since `PROJECT_ROOT` resolves from the CLI's own source and a global binary would install the main checkout's seed instead of the one under test. Git is initialized after the install so the seed's `.gitignore` means something and the rules that shell out to git are reachable.
+The fixture is `feedwatch` again, stripped of `.claude/` and `CLAUDE.md`, with the seed installed through `canon claude init` and the standards through `canon standards install`, a verb since removed with the install channel. The CLI runs by path rather than as the linked binary, since `PROJECT_ROOT` resolves from the CLI's own source and a global binary would install the main checkout's seed instead of the one under test. Git is initialized after the install so the seed's `.gitignore` means something and the rules that shell out to git are reachable.
 
 The prompt is an ordinary feature request naming no `.claude/` path and no seed file: add a Slack delivery sink alongside the existing webhook and email sinks. Naming a seed file would tell the session where to look and measure obedience rather than discoverability.
 
@@ -90,7 +90,7 @@ Eleven bullets across four sections, addressed by their text rather than by thei
 A candidate the `base` stack already delivers path-scoped cannot show a difference, because the cut half still carries the rule through another file. Auditing this first is what separates a null meaning the section is dead from a null meaning governance carried it. Both are nulls and only one is evidence about the seed.
 
 - **Memory**: no rule and no installed standard mentions `.claude/memory/`. The cut half loses the rule outright.
-- **Indexes**: `standards/context.md` tells a session to skip `index.md` because `aitk indexes regen` rewrites it, and `555-tasks.md` forbids hand-editing the task index. Neither covers the `auto: false` escape. Coverage is partial and lands on the first candidate bullet.
+- **Indexes**: `standards/context.md` tells a session to skip `index.md` because `canon indexes regen` rewrites it, and `555-tasks.md` forbids hand-editing the task index. Neither covers the `auto: false` escape. Coverage is partial and lands on the first candidate bullet.
 - **Output**: no rule and no installed standard mentions the `**Created:**` grouping. The cut half loses the rule outright.
 - **Tasks**: `standards/tasks.md` covers the `Plan:` link, the `../plans/` path, and the `../.tmp/plans-archive/` destination in full, and `555-tasks.md` names that file the single source. Coverage is complete.
 

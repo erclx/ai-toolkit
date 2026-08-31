@@ -15,7 +15,7 @@ INTERNAL_TOPICS=" ci development sandbox "
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk docs list [options]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} canon docs list [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --json       ${GREY}# Emit machine-readable JSON${NC}"

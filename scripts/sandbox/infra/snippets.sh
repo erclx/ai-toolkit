@@ -15,11 +15,11 @@ stage_setup() {
 
   case "$SELECTED_OPTION" in
   "create")
-    log_step "Running: aitk snippets create"
+    log_step "Running: canon snippets create"
     exec "$PROJECT_ROOT/scripts/snippets/create.sh"
     ;;
   "list")
-    log_step "Running: aitk snippets list"
+    log_step "Running: canon snippets list"
     exec bun "$PROJECT_ROOT/src/cli.ts" snippets list
     ;;
   *)

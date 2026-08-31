@@ -1,5 +1,5 @@
 # What a correct `/claude-markdown-propose` Propose run leaves behind.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # Measured across five runs against this fixture while it was being written:

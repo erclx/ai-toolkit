@@ -4,7 +4,7 @@
 # Only the HTML regenerates here. The PNG beside it is a chromium render whose
 # bytes move with the browser version, so asserting it in verify.sh would fail
 # on a machine whose chromium differs rather than on a stale count. Rebuild the
-# image with `aitk capture assets/hero.html` after this script reports a change.
+# image with `canon capture assets/hero.html` after this script reports a change.
 # That capture also writes assets/hero.stamp, which records the digest of the
 # markup it rendered and is what the Hero stage compares, so all three files
 # commit together. The frame carries no version. `package.json` is bumped on main by the release
@@ -23,10 +23,10 @@ TEMPLATE="$PROJECT_ROOT/assets/hero.html.tmpl"
 OUTPUT="$PROJECT_ROOT/assets/hero.html"
 LISTED=10
 
-# `bun src/cli.ts` rather than `aitk`, since a globally linked binary resolves to
+# `bun src/cli.ts` rather than `canon`, since a globally linked binary resolves to
 # the main checkout no matter which worktree is running.
 catalog() {
-  (cd "$PROJECT_ROOT" && AITK_NON_INTERACTIVE=1 bun src/cli.ts "$@" --json 2>/dev/null)
+  (cd "$PROJECT_ROOT" && CANON_NON_INTERACTIVE=1 bun src/cli.ts "$@" --json 2>/dev/null)
 }
 
 if [ ! -f "$TEMPLATE" ]; then
@@ -35,11 +35,11 @@ if [ ! -f "$TEMPLATE" ]; then
 fi
 
 # The commands have no `--json` catalog of their own, so the count comes from
-# `aitk gov counts`, which already reads the registration block in the CLI
+# `canon gov counts`, which already reads the registration block in the CLI
 # entry point to judge a document stating its own command count. Reading that
 # figure here rather than re-deriving it with a second regex is what keeps the
 # two readings of `src/cli.ts` from drifting apart unwatched, which is the
-# defect `aitk gov counts` itself exists to catch.
+# defect `canon gov counts` itself exists to catch.
 # `gov counts` exits non-zero on an ordinary finding, unlike every `list` verb
 # below, so its output is read past that under `set -e` rather than aborting
 # a hero rebuild for a stale count somewhere unrelated in the tree.
@@ -96,7 +96,7 @@ const gov = JSON.parse(GOV_JSON)
 const slug = (entry) => entry.name.replace(/^\d+-/, "")
 const rules = gov.rules.map(slug)
 // A rule no stack names is opt-in behind `--add`, so featuring one advertises
-// an entry no ordinary `aitk gov install` delivers. The column samples the
+// an entry no ordinary `canon gov install` delivers. The column samples the
 // stack-reached subset while its count and remainder describe the whole catalog.
 const stacked = new Set(gov.stacks.flatMap((stack) => stack.rules))
 const deliveredRules = gov.rules.filter((entry) => stacked.has(entry.name)).map(slug)

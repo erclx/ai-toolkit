@@ -38,7 +38,7 @@ export function register(program: Command): void {
 }
 
 async function runInit(target: string): Promise<number> {
-  intro('aitk wiki')
+  intro('canon wiki')
 
   const resolved = resolve(target)
 

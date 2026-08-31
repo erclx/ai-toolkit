@@ -30,10 +30,10 @@ export function register(program: Command): void {
         'Passing any option skips the confirmation prompt.',
         '',
         'Examples:',
-        '  aitk init',
-        '  aitk init ../my-app',
-        '  aitk init --stack astro --add 260-shadcn ../my-app',
-        '  aitk init --skip governance ../my-app',
+        '  canon init',
+        '  canon init ../my-app',
+        '  canon init --stack astro --add 260-shadcn ../my-app',
+        '  canon init --skip governance ../my-app',
         '',
       ].join('\n'),
     )
@@ -47,7 +47,7 @@ async function runInit(
   options: InitOptions,
   skipPrompt: boolean,
 ): Promise<number> {
-  intro('aitk init')
+  intro('canon init')
 
   const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved

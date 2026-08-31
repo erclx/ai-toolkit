@@ -1,5 +1,5 @@
-# What `aitk sync --check --json` reports on a target holding a folder at a root
-# the toolkit has stopped shipping. Read by `aitk sandbox check`. Patterns use
+# What `canon sync --check --json` reports on a target holding a folder at a root
+# the toolkit has stopped shipping. Read by `canon sandbox check`. Patterns use
 # TOML literal strings so a regex needs no backslash escaping.
 #
 # This is the arm that would have reported nothing before the change rather than

@@ -17,7 +17,7 @@ export interface SeedListingWithContent {
 }
 
 /**
- * Reads the same plan `aitk claude init` applies. The bash re-globbed the seeds
+ * Reads the same plan `canon claude init` applies. The bash re-globbed the seeds
  * directory with its own hard-coded subdirectory list, which had drifted: it
  * never listed `.claude/context/`, so a seed init installs went unreported.
  *

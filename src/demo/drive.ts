@@ -11,7 +11,7 @@ import { pointerSource } from '@/demo/pointer'
 
 declare global {
   interface Window {
-    __aitk_demo_caption__?: (text: string) => void
+    __canon_demo_caption__?: (text: string) => void
   }
 }
 
@@ -45,7 +45,7 @@ const SETTLE_MS = 250
 /** Round trips sampled to price one, on the page a step is actually about to move across. */
 const CALIBRATION_STEPS = 8
 /** DOM id the caption bar installs under, read back by `drive.e2e.test.ts`. */
-export const CAPTION_ID = '__aitk_demo_caption_bar__'
+export const CAPTION_ID = '__canon_demo_caption_bar__'
 
 /**
  * The two output paths arrive resolved rather than as a root this re-resolves
@@ -95,7 +95,7 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     // leave an empty directory behind for a run that never started, and inside
     // the try so a failure here closes the browser rather than leaking it.
     videoDir = options.videoPath
-      ? mkdtempSync(join(tmpdir(), 'aitk-demo-'))
+      ? mkdtempSync(join(tmpdir(), 'canon-demo-'))
       : undefined
 
     context = await browser.value.newContext({
@@ -184,7 +184,7 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
 /**
  * Reads the launch through `@/browser/engine`, which is where the separation
  * between a binary that was never installed and every other launch failure now
- * lives. It moved out of this file when `aitk inventory` became the second
+ * lives. It moved out of this file when `canon inventory` became the second
  * command needing it, rather than being copied.
  */
 async function launch(): Promise<Launch> {
@@ -296,7 +296,7 @@ async function moveTo(
  */
 export function captionInitScript(): string {
   return `(() => {
-  if (window.__aitk_demo_caption__) return;
+  if (window.__canon_demo_caption__) return;
 
   let label;
 
@@ -328,7 +328,7 @@ export function captionInitScript(): string {
     ].join(';');
     bar.appendChild(label);
     document.body.appendChild(bar);
-    window.__aitk_demo_caption__ = (text) => {
+    window.__canon_demo_caption__ = (text) => {
       label.textContent = text || '';
       label.style.display = text ? 'inline-block' : 'none';
     };
@@ -344,7 +344,7 @@ export function captionInitScript(): string {
 
 async function setCaption(page: Page, caption: string): Promise<void> {
   await page.evaluate((text) => {
-    window.__aitk_demo_caption__?.(text)
+    window.__canon_demo_caption__?.(text)
   }, caption)
 }
 

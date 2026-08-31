@@ -4,7 +4,7 @@ Regression test for an always-loaded authoring artifact. The standards arms answ
 
 This is a spec-quality test, not an efficacy test. It says nothing about whether the resulting artifact is useful, which is the separate ablation designed in the `context-research` groundwork track. No baseline arm and N of 1 are correct here, because failure is self-evident: a session that reads the standard and still writes a per-file tree has proved the standard failed to communicate its own central rule.
 
-The folder sat at `scripts/standards/authoring-test/` while standards were all it tested. The seed arm made that placement wrong, since the seed is a tooling artifact rather than a standard, so it moved here at three referencing files rather than after the next arm made the move expensive. It stays unreachable from `aitk`: a run spends real money, and authorizing that spend is the operator's. Performing the run is not, so a session holding a shell drives `run.sh` itself once the spend is authorized.
+The folder sat at `scripts/standards/authoring-test/` while standards were all it tested. The seed arm made that placement wrong, since the seed is a tooling artifact rather than a standard, so it moved here at three referencing files rather than after the next arm made the move expensive. It stays unreachable from `canon`: a run spends real money, and authorizing that spend is the operator's. Performing the run is not, so a session holding a shell drives `run.sh` itself once the spend is authorized.
 
 ## Running
 
@@ -47,9 +47,9 @@ The runner copies the live `standards/<name>.md` in at run time rather than usin
 
 The standards arms copy one document into the fixture and judge one produced file. The seed arm differs on both counts.
 
-It installs through the real CLI, `aitk claude init` followed by `aitk gov install base`, rather than copying `tooling/claude/seeds/` across. Copying would skip the executable bit on the four hooks and the `settings.json` merge that registers them, which is a third of the seed and a state no project is ever in. No standards call sits between them, since the corpus installs into no project and each rule the stack registers names `aitk standards <name>`, which answers from the copy inside the package.
+It installs through the real CLI, `canon claude init` followed by `canon gov install base`, rather than copying `tooling/claude/seeds/` across. Copying would skip the executable bit on the four hooks and the `settings.json` merge that registers them, which is a third of the seed and a state no project is ever in. No standards call sits between them, since the corpus installs into no project and each rule the stack registers names `canon standards <name>`, which answers from the copy inside the package.
 
-The CLI runs by path, never as the globally linked `aitk`. `PROJECT_ROOT` resolves from the CLI's own source directory, so a global binary installs the main checkout's seed and silently ignores the edits under test.
+The CLI runs by path, never as the globally linked `canon`. `PROJECT_ROOT` resolves from the CLI's own source directory, so a global binary installs the main checkout's seed and silently ignores the edits under test.
 
 Git is initialized after the install, so the seed's `.gitignore` means something and the rules that shell out to git are reachable. A section the fixture puts out of reach cannot be judged unused.
 

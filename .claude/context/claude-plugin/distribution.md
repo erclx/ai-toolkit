@@ -43,7 +43,7 @@ A runbook can cite it and a loop prompt cannot. `${CLAUDE_SKILL_DIR}` expands wh
 
 ### What a symlink costs
 
-A symlink is an entry point that cannot filter. `standards/aitk/` and `snippets/aitk/` were excluded at every CLI verb and still reached every plugin cache, because an installer dereferences the two symlinks and copies whatever is behind them with no code in the path. The count reached five before the fix and grew on its own, since `snippets/aitk/` was where internal snippets were authored.
+A symlink is an entry point that cannot filter. `standards/canon/` and `snippets/canon/` were excluded at every CLI verb and still reached every plugin cache, because an installer dereferences the two symlinks and copies whatever is behind them with no code in the path. The count reached five before the fix and grew on its own, since `snippets/canon/` was where internal snippets were authored.
 
 Internal content now lives at `internal/`, which nothing under `claude/` reaches, and the filters that guarded the old category are deleted. `scripts/core/check-plugin-boundary.sh` walks the plugin tree with symlinks followed and fails on any file resolving under `internal/`, so what the filters asserted is now measured against what an install actually copies.
 
@@ -63,11 +63,11 @@ What that shape drops is the standards fallback. Install copies the named skill 
 
 ### The install ref reads as malformed
 
-`claude plugin install aitk@aitk` is `<plugin>@<marketplace>` with both names set to `aitk`, and the GitHub owner never enters the ref. It reads as malformed against the npm `@erclx/aitk` form, where `@` marks an owner scope, and the two identifier systems collide on one symbol. Renaming the marketplace to `erclx` would yield `aitk@erclx` and was rejected, since it breaks the install string in every README, doc, and installed `settings.json`.
+`claude plugin install canon@canon` is `<plugin>@<marketplace>` with both names set to `canon`, and the GitHub owner never enters the ref. It reads as malformed against the npm `@erclx/canon` form, where `@` marks an owner scope, and the two identifier systems collide on one symbol. Renaming the marketplace to `erclx` would yield `canon@erclx` and was rejected, since it breaks the install string in every README, doc, and installed `settings.json`.
 
 ### What a shape change does to an installed cache
 
-An installed plugin follows its marketplace where auto-update is on, which it is for the `aitk` marketplace on the authoring machine, so a version lag is no longer the usual failure. Earlier measurements caught the older one, where the cache sat 38 releases behind and served a skill the repository had replaced. What remains is a shape change.
+An installed plugin follows its marketplace where auto-update is on, which it is for the `canon` marketplace on the authoring machine, so a version lag is no longer the usual failure. Earlier measurements caught the older one, where the cache sat 38 releases behind and served a skill the repository had replaced. What remains is a shape change.
 
 A change to an entry's `skills` array reaches the reported inventory as soon as the marketplace refreshes and never reaches the cache. Adding a fifth skill made `claude plugin details` report five while the cache directory still held four, so the command answers from the entry rather than from what an install materialized. `claude plugin update` declined the work and reported the plugin already current, because the version key had not moved. Uninstall followed by install reconciled both.
 

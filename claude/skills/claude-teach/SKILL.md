@@ -23,10 +23,10 @@ The shape of the workspace is fixed by `${CLAUDE_SKILL_DIR}/../../standards/teac
 
 Workspaces live at the main worktree root, never inside a linked worktree. A copy per worktree forks the learning records, and the learner is one person.
 
-Every `aitk teach` verb resolves that root in-process, so no step below composes a path to a workspace file. Read the folder through the CLI rather than deriving its location:
+Every `canon teach` verb resolves that root in-process, so no step below composes a path to a workspace file. Read the folder through the CLI rather than deriving its location:
 
 ```bash
-aitk teach list --json
+canon teach list --json
 ```
 
 It reports every workspace with its path, its counts, and the ordinal a new one would take. A `no-teach` refusal means the project has opened none yet, which is the new-workspace path in Step 1 rather than a reason to stop. The open verb creates the folder.
@@ -40,14 +40,14 @@ From a linked worktree the file-editing tools refuse every path under the main r
 
 A topic the listing already carries is a resume, and anything else is a new workspace. An invocation asking to promote is neither: read the named workspace through the listing and go to Step 6, which teaches nothing and writes no lesson.
 
-On a resume, run `aitk teach list <topic> --json` for the files behind each count, then read the highest-numbered learning record and `GLOSSARY.md`. Those carry where the learner stopped and what they got wrong. The listing record carries `success`, the mission's success lines, which are the exit criteria this workspace is finished against. Report them with what is already met before teaching anything.
+On a resume, run `canon teach list <topic> --json` for the files behind each count, then read the highest-numbered learning record and `GLOSSARY.md`. Those carry where the learner stopped and what they got wrong. The listing record carries `success`, the mission's success lines, which are the exit criteria this workspace is finished against. Report them with what is already met before teaching anything.
 
 On a new workspace, settle the starting point first, by asking rather than by assuming. Difficulty with no floor under it teaches nobody, and the mission cannot be written without it.
 
 Then open the workspace, which derives the ordinal and writes all three required files:
 
 ```bash
-aitk teach open <topic> --json \
+canon teach open <topic> --json \
   --subject "<one line stating the subject>" \
   --starting-point "<what the learner already knows>" \
   --success "<an observable thing the learner will be able to do>" \
@@ -61,7 +61,7 @@ Repeat `--success` and `--out-of-scope` per line. The verb refuses a topic anoth
 Read the subject from sources rather than from recall. Record what was read and what was only found through the verb that owns the file:
 
 ```bash
-aitk teach resource <topic> --json \
+canon teach resource <topic> --json \
   --read "<title, naming which claims rest on it>=<url>" \
   --lead "<title>=<url>"
 ```
@@ -86,7 +86,7 @@ Two outputs with two lifetimes, and the split decides the format.
 Resolve the lesson before writing it, rather than composing its name or its quiz order by hand:
 
 ```bash
-aitk teach lesson <topic> --json \
+canon teach lesson <topic> --json \
   --slug <kebab slug for what this lesson covers> \
   --questions <how many questions the quiz carries> \
   --options <how many options each question carries>
@@ -104,7 +104,7 @@ Write the correct option first, then present the options in the order `order` re
 Add every term the lesson defines to `GLOSSARY.md` through the verb, which places the entries alphabetically in the shape the standard fixes:
 
 ```bash
-aitk teach glossary <topic> --json \
+canon teach glossary <topic> --json \
   --term "<term>=<definition, written without using the term>" \
   --first-seen <the lesson or reference page this batch comes from>
 ```
@@ -118,7 +118,7 @@ Follow `${CLAUDE_SKILL_DIR}/references/lesson-craft.md` for what makes a lesson 
 A lesson is a page carrying a stylesheet and a script, and an editor preview opens it with neither, so a path alone delivers unstyled markup that reads as the lesson. Serve the teach root and give the learner a link they can click:
 
 ```bash
-aitk serve .claude/teach --entry <nn>-<topic>/index.html --json
+canon serve .claude/teach --entry <nn>-<topic>/index.html --json
 ```
 
 Start it in the background so the session keeps going, and read `url` off the record rather than composing one. The verb walks past a port already in use, so the port it took is exactly the half a guessed URL gets wrong. Report the refusal and its `reason` when `ok` is false, and report it rather than proceeding silently when the verb does not resolve at all, which is an installed CLI predating it.
@@ -180,7 +180,7 @@ Progress:  <n> of <m> success lines met
 Open:      [<the url the serve verb reported>](<the same url>)
 ```
 
-Omit the reference line where the lesson produced no durable page. The open line is the one line that is never omitted, since it is the only route the learner has into the page, and it carries what `aitk serve` reported rather than a URL composed here. Where the verb refused, that line names the refusal instead of a link.
+Omit the reference line where the lesson produced no durable page. The open line is the one line that is never omitted, since it is the only route the learner has into the page, and it carries what `canon serve` reported rather than a URL composed here. Where the verb refused, that line names the refusal instead of a link.
 
 Write that line as a markdown link carrying the URL as both its text and its target, rather than as a bare URL and never inside backticks. A code span renders as text the reader has to select and copy, which is the one thing the line exists to save them, and the path rule the project states governs a file path rather than a URL.
 

@@ -7,7 +7,7 @@ description: Why a markdown rewrite is proposed per file and answered before any
 
 ## Gap
 
-Rewriting a passage in a governing document today means editing it live or arguing in chat, and three surfaces sit near this moment without covering it. `claude-standards-audit` maps changed markdown to the standards claiming it and reports violations, ending on its own description: `Do NOT fix violations. Reporting only.` `aitk markdown audit` measures bans and structural checkpoints from package data.
+Rewriting a passage in a governing document today means editing it live or arguing in chat, and three surfaces sit near this moment without covering it. `claude-standards-audit` maps changed markdown to the standards claiming it and reports violations, ending on its own description: `Do NOT fix violations. Reporting only.` `canon markdown audit` measures bans and structural checkpoints from package data.
 
 `claude-review` reports findings on a diff someone already wrote. None of the three drafts a replacement, carries an answer slot, or waits.
 
@@ -42,7 +42,7 @@ A second failure compounds the first. A claim copied across several files is cor
 
 ## Out of scope
 
-- Reporting a violation with no drafted replacement, which `claude-standards-audit` and `aitk markdown audit` already own
+- Reporting a violation with no drafted replacement, which `claude-standards-audit` and `canon markdown audit` already own
 - Reviewing a diff someone already wrote, which `claude-review` owns
 - Filing a raw brain dump as findings, which `claude-intake` owns
 - Reviewing `.claude/memory/` and proposing promote-or-retire actions per entry, which `claude-memory-review` owns on a different subject with a different answer contract

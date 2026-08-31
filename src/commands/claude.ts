@@ -121,9 +121,9 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk claude init',
-        '  aitk claude seeds list --json',
-        '  aitk claude sync ../my-app',
+        '  canon claude init',
+        '  canon claude seeds list --json',
+        '  canon claude sync ../my-app',
         '',
       ].join('\n'),
     )
@@ -161,7 +161,7 @@ export function register(program: Command): void {
     .argument('[subcommand]', "Only 'list' is supported")
     .helpOption('-h, --help', 'Show this help message')
     .action((subcommand: string | undefined) => {
-      intro('aitk claude')
+      intro('canon claude')
       logError(
         subcommand === undefined
           ? "Missing subcommand. Use 'list'."
@@ -173,7 +173,7 @@ export function register(program: Command): void {
 
   seeds
     .command('list')
-    .description('List toolkit seed docs as installed by aitk claude init')
+    .description('List toolkit seed docs as installed by canon claude init')
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Emit JSON with name, source, target, content')
     .option('--names', 'Only list target paths, one per line')
@@ -217,8 +217,8 @@ export function register(program: Command): void {
         'rather than the answer.',
         '',
         'Examples:',
-        '  aitk claude routing',
-        '  aitk claude routing --json',
+        '  canon claude routing',
+        '  canon claude routing --json',
         '',
       ].join('\n'),
     )
@@ -235,7 +235,7 @@ export function register(program: Command): void {
     )
     .helpOption('-h, --help', 'Show this help message')
     .action((subcommand: string | undefined) => {
-      intro('aitk claude')
+      intro('canon claude')
       logError(
         subcommand === undefined
           ? "Missing subcommand. Use 'list', 'audit', 'drift', 'reach', or 'rank'."
@@ -290,9 +290,9 @@ export function register(program: Command): void {
         'folder, and requirement-section findings are advisory.',
         '',
         'Examples:',
-        '  aitk claude skills audit',
-        '  aitk claude skills audit --json',
-        '  aitk claude skills audit --requirements-only',
+        '  canon claude skills audit',
+        '  canon claude skills audit --json',
+        '  canon claude skills audit --requirements-only',
         '',
       ].join('\n'),
     )
@@ -323,8 +323,8 @@ export function register(program: Command): void {
         'machine reads it as unknown rather than as a failure.',
         '',
         'Examples:',
-        '  aitk claude skills drift HEAD~20',
-        '  aitk claude skills drift 02d7b265 --json',
+        '  canon claude skills drift HEAD~20',
+        '  canon claude skills drift 02d7b265 --json',
         '',
       ].join('\n'),
     )
@@ -361,9 +361,9 @@ export function register(program: Command): void {
         'and the repair is to name the owner in the sentence.',
         '',
         'Examples:',
-        '  aitk claude skills reach',
-        '  aitk claude skills reach --json',
-        '  aitk claude skills reach ~/repos/my-project',
+        '  canon claude skills reach',
+        '  canon claude skills reach --json',
+        '  canon claude skills reach ~/repos/my-project',
         '',
       ].join('\n'),
     )
@@ -406,13 +406,13 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '',
         'Reports rather than gates. The corpus is a first run with no',
-        'baseline to fail a push against, so `aitk audits run` registers',
+        'baseline to fail a push against, so `canon audits run` registers',
         'this with no gating exit and joins the ratchet instead.',
         '',
         'Examples:',
-        '  aitk claude skills rank',
-        '  aitk claude skills rank --json',
-        '  aitk claude skills rank ~/repos/my-project --cases cases.json',
+        '  canon claude skills rank',
+        '  canon claude skills rank --json',
+        '  canon claude skills rank ~/repos/my-project --cases cases.json',
         '',
       ].join('\n'),
     )
@@ -429,7 +429,7 @@ function succeed(message: string): number {
 }
 
 async function runInit(target: string): Promise<number> {
-  intro('aitk claude')
+  intro('canon claude')
 
   const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
@@ -486,7 +486,7 @@ function summarize(seeds: readonly Seed[], gitignoreCount: number): string {
 }
 
 async function runSync(target: string): Promise<number> {
-  intro('aitk claude')
+  intro('canon claude')
 
   const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
@@ -494,11 +494,11 @@ async function runSync(target: string): Promise<number> {
   logStep('Seeded')
   for (const name of SEEDED_FILES) {
     if (existsSync(join(resolved, '.claude', name))) logInfo(name)
-    else logWarn(`${name} missing. Run \`aitk claude init\``)
+    else logWarn(`${name} missing. Run \`canon claude init\``)
   }
   for (const name of SEEDED_DIRS) {
     if (isDirectory(join(resolved, '.claude', name))) logInfo(`${name}/`)
-    else logWarn(`${name}/ missing. Run \`aitk claude init\``)
+    else logWarn(`${name}/ missing. Run \`canon claude init\``)
   }
 
   logStep('Scanning .gitignore')
@@ -547,7 +547,7 @@ async function runSync(target: string): Promise<number> {
  * pointing it at a real home directory.
  */
 async function runSetup(dest: string): Promise<number> {
-  intro('aitk claude')
+  intro('canon claude')
 
   const resolved = resolve(dest)
   if (resolved === join(PROJECT_ROOT, '.claude')) {
@@ -630,7 +630,7 @@ async function runSeedsList(opts: SeedsListOptions): Promise<number> {
   }
 
   const { GREY, NC } = palette(process.stderr)
-  intro('aitk claude')
+  intro('canon claude')
   logStep('Seed docs')
   for (const listing of listings) {
     logInfo(`${listing.target} ${GREY}← ${listing.source}${NC}`)
@@ -654,7 +654,7 @@ function runSkillsList(opts: SkillsListOptions): number {
     return 0
   }
 
-  intro('aitk claude')
+  intro('canon claude')
   logStep('Plugin skills')
   for (const listing of listings) {
     logInfo(listing.name)
@@ -678,7 +678,7 @@ async function runSkillsDrift(
   const skew = await readSkew()
 
   if (report.kind === 'measured') {
-    intro('aitk claude skills drift')
+    intro('canon claude skills drift')
     reportSkew(skew)
     reportDrift(report, ref)
     outro()
@@ -755,7 +755,7 @@ function runRouting(path: string | undefined, opts: RoutingOptions): number {
     return 1
   }
 
-  intro('aitk claude routing')
+  intro('canon claude routing')
   reportRouting(report)
   outro()
 
@@ -843,7 +843,7 @@ function runSkillsReach(
     return 1
   }
 
-  intro('aitk claude skills reach')
+  intro('canon claude skills reach')
   reportReach(report)
   outro()
 
@@ -927,7 +927,7 @@ function runSkillsRank(
     return refuseRank(root, report.reason, '', opts)
   }
 
-  intro('aitk claude skills rank')
+  intro('canon claude skills rank')
   reportRank(report)
   outro()
 
@@ -1070,7 +1070,7 @@ async function runSkillsAudit(
   if (gateOnly) {
     reportRequirementGate(report)
   } else {
-    intro('aitk claude skills audit')
+    intro('canon claude skills audit')
     reportScope(report)
     reportRequirements(report)
     reportFrontmatter(report)
@@ -1120,7 +1120,7 @@ function refuseAudit(
   if (gateOnly) {
     frameError(message)
   } else {
-    intro('aitk claude skills audit')
+    intro('canon claude skills audit')
     logStep('Refused')
     logWarn(message)
     outro()
@@ -1144,7 +1144,7 @@ function reportRequirementGate(report: SkillsAudit): void {
   const missing = report.missingRequirement
   if (missing.length === 0) return
 
-  intro('aitk claude skills audit')
+  intro('canon claude skills audit')
   logError(
     missing.length === 1
       ? '1 skill folder carries no REQUIREMENT.md'

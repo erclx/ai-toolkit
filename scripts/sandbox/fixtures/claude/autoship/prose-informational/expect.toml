@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-autoship` run leaves behind on the
-# prose-informational arm. Read by `aitk sandbox check`. Patterns use TOML
+# What a correct `/canon:claude-autoship` run leaves behind on the
+# prose-informational arm. Read by `canon sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 
 # The scenario's own log lines already state what Step 5's classifier should

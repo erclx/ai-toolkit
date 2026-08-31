@@ -76,9 +76,9 @@ export function register(program: Command): void {
         'exists to withhold.',
         '',
         'Examples:',
-        '  aitk gate run',
-        '  aitk gate run --all --no-write',
-        '  aitk gate run --json',
+        '  canon gate run',
+        '  canon gate run --all --no-write',
+        '  canon gate run --json',
         '',
       ].join('\n'),
     )
@@ -94,7 +94,7 @@ async function runGate(opts: RunCommandOptions): Promise<number> {
   const write = opts.write ?? true
   const run = commandRunner(root)
 
-  if (!emitJson && !nested) intro('aitk gate run')
+  if (!emitJson && !nested) intro('canon gate run')
 
   await repairBareFlag(root)
 

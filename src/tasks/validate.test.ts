@@ -126,7 +126,7 @@ function kinds(findings: readonly Finding[]): FindingKind[] {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-tasks-validate-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-tasks-validate-'))
 })
 
 afterEach(() => {

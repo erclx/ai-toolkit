@@ -24,7 +24,7 @@ function compared(delta: Delta | undefined) {
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-audits-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-audits-'))
 })
 
 afterEach(() => {

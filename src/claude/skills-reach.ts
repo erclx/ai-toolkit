@@ -179,7 +179,7 @@ export function citationsIn(
  *
  * A citation of a path this repository does not hold is dropped rather than
  * reported. The measure asks whether a claim true here is false in a target,
- * and a path true in neither is a different defect that `aitk context audit`
+ * and a path true in neither is a different defect that `canon context audit`
  * already reports against its own corpus.
  *
  * `resolveSkillsCorpus` prefers `claude/skills/`, which is the tree that

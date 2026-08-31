@@ -42,9 +42,9 @@ export function register(program: Command): void {
         '  2  --dry-run found folders that would change',
         '',
         'Examples:',
-        '  aitk indexes regen',
-        '  aitk indexes regen --dry-run',
-        '  aitk indexes regen --json docs/',
+        '  canon indexes regen',
+        '  canon indexes regen --dry-run',
+        '  canon indexes regen --json docs/',
         '',
       ].join('\n'),
     )
@@ -83,7 +83,7 @@ async function runRegen(
   const results: RegenResult[] = []
 
   if (!emitJson) {
-    intro('aitk indexes')
+    intro('canon indexes')
     logStep(dryRun ? 'Indexes (dry-run)' : 'Indexes')
   }
 

@@ -31,7 +31,7 @@ function commit(path: string, content: string, message: string): string {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-history-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-history-'))
   git('init', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -130,7 +130,7 @@ describe('readHistoryIndex', () => {
   })
 
   it('should return undefined outside a git repository', () => {
-    const unversioned = mkdtempSync(join(tmpdir(), 'aitk-unversioned-'))
+    const unversioned = mkdtempSync(join(tmpdir(), 'canon-unversioned-'))
 
     expect(
       readHistoryIndex(unversioned, ['standards/prose.md']),
