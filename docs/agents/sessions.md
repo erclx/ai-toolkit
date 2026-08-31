@@ -107,7 +107,9 @@ The registry holds one record per session and is never pruned, so it accumulates
 
 ## The status dwell
 
-Every row carries `statusUpdatedAt`, the stamp a client writes beside `status` at the moment it last changed, and `statusDwellMs`, the elapsed milliseconds since that stamp. Both are `null` where the record predates the field, and a stamp ahead of the reading clock clamps the dwell to zero rather than reporting a negative one.
+Every row carries `statusUpdatedAt`, the stamp a client writes beside `status` at the moment it last changed, and `statusDwellMs`, the elapsed milliseconds since that stamp. Measured over the live registry, 23 of 341 usable records carry `statusUpdatedAt`, so `null` is the ordinary answer rather than an edge case, and the absence tracks a client version rather than a record's age alone: the one record ever measured carrying `status: "waiting"` is among the 318 without it.
+
+`statusDwellMs` falls back to the coarser `updatedAt` stamp when `statusUpdatedAt` is absent, so it is `null` only where a record carries neither. `statusUpdatedAt` itself is never backfilled from the fallback and stays `null` in that case, since it names the exact stamp rather than an estimate. A stamp ahead of the reading clock clamps the dwell to zero rather than reporting a negative one.
 
 The dwell is what separates a status that resolves on its own from one that does not. `busy` and `idle` transition without help, so a long dwell there is ordinary. `waiting` does not: a session in that state is blocked on something outside itself, and a dwell that keeps growing past the ordinary span of a prompt is a session stalled rather than paused. `aitk sessions list` renders the dwell beside the status at the coarsest unit that keeps it a whole number, and the JSON record carries both fields on every row.
 

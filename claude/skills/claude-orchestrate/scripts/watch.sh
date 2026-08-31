@@ -8,7 +8,9 @@
 # only the pull request list stays silent through the second. A third case is
 # neither: a worker that stops on a question or a prompt neither finishes nor
 # crashes, and sits reading "waiting" beside the two statuses that resolve on
-# their own until something reports it, which is the WORKER-STOPPED line below.
+# their own until something reports it, which is the WORKER-STOPPED line
+# below, or WORKER-UNMEASURABLE for a "waiting" row too old to carry a stamp
+# this reads.
 #
 # `set -e` is deliberately not set. This runs for hours, and one transient `gh`
 # failure aborting the loop is a silent stop rather than a reported one. Every
@@ -33,6 +35,13 @@ INTERVAL=60
 # tripping it, and well inside the ten-to-thirty-minute span a dispatched build
 # ordinarily runs, so a real stall is caught with most of that window still
 # open to act on it.
+#
+# That one record carried `waitingFor: "approve Bash"`, a permission prompt
+# rather than a question, and the two clear on different schedules: a prompt
+# resolves the moment a person approves it, where a question can sit
+# legitimately while a controller finishes a turn. This number is defensible
+# for the second and generous for the first, and the gap stays open rather
+# than splitting the constant on a sample of one.
 STALL_THRESHOLD_S=300
 
 # Resolving the main worktree root rather than this file's folder keeps a watch
@@ -58,13 +67,19 @@ BASE_BRANCH="${BASE_REF#origin/}"
 # worker, whoever launched it. The prototype matched the `orchestrator-` prefix
 # instead, which reads a dispatched worker and misses every hand-launched one,
 # and those are the ordinary shape whenever the operator is launching.
+#
+# The row goes out tab-separated and comes back read with IFS set to a tab. A
+# name this client actually writes carries spaces, `Update session markdown
+# and check runnable commands (3)` among them, and splitting on whitespace
+# took that one apart into a wrong name, branch, status, and dwell.
 read_workers() {
   aitk sessions list --json 2>/dev/null | tail -1 | jq -r \
     --arg repository "$REPOSITORY" --arg base "$BASE_BRANCH" '
       .sessions[]?
       | select(.repository == $repository)
       | select(.branch != null and .branch != $base)
-      | "\(.name) \(.branch) \(.status) \(.statusDwellMs // -1)"
+      | [.name, .branch, .status, (.statusDwellMs // -1 | tostring)]
+      | @tsv
     ' 2>/dev/null | sort
 }
 
@@ -88,12 +103,13 @@ prev_names=""
 pulls_seen=0
 workers_seen=0
 
-# One row per worker name currently sitting past STALL_THRESHOLD_S, so a
-# reader watching the log is told once rather than on every remaining pass.
-# The prototype for that shape is the WORKER-GONE/WORKER pair above, tracked
-# in the same state a status change is: a name drops out the pass it stops
-# reading "waiting", which lets the same worker report a second stall later in
-# its life rather than being marked forever by its first one.
+# One row per worker name currently reported, waiting past STALL_THRESHOLD_S
+# or waiting with no stamp to measure, so a reader watching the log is told
+# once rather than on every remaining pass. The prototype for that shape is
+# the WORKER-GONE/WORKER pair above, tracked in the same state a status change
+# is: a name drops out the pass it stops reading "waiting", which lets the
+# same worker report a second stall later in its life rather than being
+# marked forever by its first one.
 declare -A stalled
 
 while true; do
@@ -109,7 +125,7 @@ while true; do
     echo "watch: the session roster failed to load, so no worker is classified this pass"
   fi
 
-  names="$(printf '%s\n' "$workers" | awk 'NF {print $1}' | sort -u)"
+  names="$(printf '%s\n' "$workers" | awk -F'\t' 'NF {print $1}' | sort -u)"
 
   if [ "$pulls_seen" -eq 1 ] && [ "$pulls_read" -eq 0 ]; then
     comm -13 <(printf '%s\n' "$prev_pulls") <(printf '%s\n' "$pulls") | grep . || true
@@ -123,11 +139,19 @@ while true; do
   fi
 
   if [ "$workers_read" -eq 0 ]; then
-    while IFS=' ' read -r w_name w_branch w_status w_dwell_ms; do
+    while IFS=$'\t' read -r w_name w_branch w_status w_dwell_ms; do
       [ -z "$w_name" ] && continue
 
-      if [ "$w_status" != "waiting" ] || [ "$w_dwell_ms" = "-1" ]; then
+      if [ "$w_status" != "waiting" ]; then
         unset "stalled[$w_name]"
+        continue
+      fi
+
+      if [ "$w_dwell_ms" = "-1" ]; then
+        if [ -z "${stalled[$w_name]:-}" ]; then
+          echo "WORKER-UNMEASURABLE $w_name $w_branch"
+          stalled[$w_name]=1
+        fi
         continue
       fi
 

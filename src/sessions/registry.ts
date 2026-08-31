@@ -22,13 +22,22 @@ export interface SessionRecord {
   readonly kind: string | undefined
   readonly status: string | undefined
   /**
-   * The epoch millisecond the client last changed `status`, stamped on every
-   * record a client of this vintage writes. Declared here rather than read
-   * opportunistically off the parsed object, since this file is what states
-   * what the domain reads and an undeclared field read anyway is the drift
-   * this domain exists downstream of.
+   * The epoch millisecond the client last changed `status`. Measured against
+   * the live registry, 23 of 341 usable records carry it, and the one record
+   * that has ever carried `status: "waiting"` is not among them, so its
+   * absence tracks a client version rather than a record's age alone.
+   * Declared here rather than read opportunistically off the parsed object,
+   * since this file is what states what the domain reads and an undeclared
+   * field read anyway is the drift this domain exists downstream of.
    */
   readonly statusUpdatedAt: number | undefined
+  /**
+   * The epoch millisecond the client last wrote the record at all, a coarser
+   * stamp than `statusUpdatedAt` that a client writes whether or not it also
+   * stamps the status change itself. Declared as the fallback dwell source
+   * for a record predating the narrower field, per the same reasoning above.
+   */
+  readonly updatedAt: number | undefined
   readonly startedAt: number | undefined
   /**
    * The process start time the client stamped at launch, compared against the

@@ -112,7 +112,9 @@ What starts it narrowed to an open pull request. A dispatch used to qualify too,
 
 `scripts/watch.sh` covers the same window on a loop of its own rather than on a scheduled prompt, reading the open pull request list and the session roster together every sixty seconds. The roster read is the half `poll.sh` cannot make and the reason both exist: a worker that finishes goes idle and one that crashes vanishes, so a trigger matching pull requests alone stays silent through the second. It classifies no pull request, leaving the routing block to decide what each report earns.
 
-A worker's own status is the one thing it judges directly. A `waiting` row whose dwell crosses `STALL_THRESHOLD_S` reports as `WORKER-STOPPED` once, tracked in the same per-name state the `WORKER`/`WORKER-GONE` pair already keeps, without routing through that block.
+A worker's own status is the one thing it judges directly. A `waiting` row whose dwell crosses `STALL_THRESHOLD_S` reports as `WORKER-STOPPED` once, tracked in the same per-name state the `WORKER`/`WORKER-GONE` pair already keeps, without routing through that block. A `waiting` row whose record carries neither `statusUpdatedAt` nor `updatedAt` reports as `WORKER-UNMEASURABLE` instead, rather than folding silently into the rows the threshold clears.
+
+The row goes out of `aitk sessions list --json` tab-separated and back in read with `IFS` set to a tab, since a name this client writes carries spaces on its own, `Update session markdown and check runnable commands (3)` among them, and a whitespace split took that one apart before anything reached the threshold check.
 
 Two things separate the shipped version from the prototype it came from, which ran an afternoon over four concurrent workers. It resolves the repository through `git worktree list` the way the poll's baseline does, where the prototype hardcoded one path. And it counts every session on a branch other than the base one as a worker, where the prototype matched the `orchestrator-` prefix, which reads a dispatched worker and misses every hand-launched one.
 

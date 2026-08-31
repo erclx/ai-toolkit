@@ -241,6 +241,36 @@ describe('resolveSessions', () => {
     })
   })
 
+  it('should fall back to updatedAt for the dwell when statusUpdatedAt is absent', async () => {
+    seed(100, { statusUpdatedAt: undefined, updatedAt: 1_000 })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+      now: () => 61_000,
+    })
+
+    expect(
+      report.kind === 'resolved' && report.sessions[0]?.statusDwellMs,
+    ).toBe(60_000)
+  })
+
+  it('should keep statusUpdatedAt null on a fallback dwell rather than borrowing updatedAt', async () => {
+    seed(100, { statusUpdatedAt: undefined, updatedAt: 1_000 })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+      now: () => 61_000,
+    })
+
+    expect(
+      report.kind === 'resolved' && report.sessions[0]?.statusUpdatedAt,
+    ).toBeNull()
+  })
+
   it('should clamp a stamp ahead of the clock to zero rather than a negative dwell', async () => {
     seed(100, { statusUpdatedAt: 120_000 })
 
