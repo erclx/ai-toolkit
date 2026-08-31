@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.57.0](https://github.com/erclx/canon/compare/v3.56.0...v3.57.0) (2026-08-31)
+
+
+### Features
+
+* **migrate:** add the aitk to canon rename instrument ([#1291](https://github.com/erclx/canon/issues/1291)) ([89cad19](https://github.com/erclx/canon/commit/89cad196c985666f9f6b27747c501ccf0424867a))
+
 ## [3.56.0](https://github.com/erclx/aitk/compare/v3.55.0...v3.56.0) (2026-08-31)
 
 
