@@ -31,6 +31,13 @@ import {
   SHIPPED_SKILLS_REL,
 } from '@/gov/restated'
 import {
+  CITATION_MARKER,
+  type CitationReport,
+  readCitations,
+  RULE_DIRS,
+  type RuleCitation,
+} from '@/gov/citations'
+import {
   readSuperseded,
   SUPERSEDED_MARKER,
   type SupersededHit,
@@ -81,6 +88,11 @@ interface TestOrderOptions {
 }
 
 interface SupersededOptions {
+  readonly root?: string
+  readonly json?: boolean
+}
+
+interface CitationsOptions {
   readonly root?: string
   readonly json?: boolean
 }
@@ -349,6 +361,70 @@ export function register(program: Command): void {
     )
 
   gov
+    .command('citations')
+    .description(
+      'Resolve every path a rule cites and name the ones reaching nothing',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Tree to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        `Reads ${RULE_DIRS.join(' and ')}. A rule citing a file that moved fails`,
+        'silently: nothing resolves the path until a session opens it, and the',
+        'drift check beside this one passes an authored rule and its consumed',
+        'copy that are wrong together.',
+        '',
+        'This gates, unlike the superseded sweep beside it. A path resolving to',
+        'nothing carries no judgment, and the classes where absence is correct',
+        'are separated before the verdict rather than left for a reader.',
+        '',
+        'Forms read, with where each resolves:',
+        '  standard  aitk standards <name> , against standards/ then',
+        '            internal/standards/ , mirroring how the CLI resolves one',
+        '  path      a backticked path carrying a directory segment and a file',
+        '            extension, against the root',
+        "  sibling   a bare <nnn>-<slug>.md , against the citing rule's folder",
+        '',
+        'Not read, each a shape the corpus writes and none of them a citation:',
+        '  a placeholder or glob segment, which describes a shape rather than',
+        '  naming a file, such as .claude/context/<domain>.md or app/**/route.ts',
+        '  a bare filename naming a convention, such as route.ts or manifest.toml',
+        '  a span carrying no file extension, which is a folder or a module',
+        '  specifier, such as src/pages/ , next/font , or claude/standards',
+        '  a fenced block, which displays a path rather than pointing at one',
+        '',
+        'Exempt, reported by name rather than dropped:',
+        '  governed  the citing rule spells the path in its own frontmatter, so',
+        '            it names a target artifact rather than a file here. A glob',
+        '            never exempts, since a typo inside one is the defect.',
+        '  ignored   git ignores the path, which is session scratch a clone is',
+        '            not expected to hold',
+        `  exempt    the line carries a \`${CITATION_MARKER}: <reason>\` marker`,
+        '            on itself or the one above',
+        '',
+        'Blind spots: a citation that resolves and points at the wrong file, a',
+        'path written without backticks, and a folder or a path carrying no extension,',
+        'which this declines rather than guesses at.',
+        '',
+        'Exit codes:',
+        '  0  every citation resolves or is exempt',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  at least one cited path resolves to nothing',
+        '',
+        'Examples:',
+        '  aitk gov citations',
+        '  aitk gov citations --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: CitationsOptions) => {
+      process.exitCode = await runCitations(opts)
+    })
+
+  gov
     .command('restated')
     .description(
       'Report every instruction the always-loaded file states that a second surface states too',
@@ -527,6 +603,127 @@ async function runSuperseded(
   }
 
   return report.findings.length > 0 ? 2 : 0
+}
+
+/**
+ * Gates, unlike `superseded` and `test-order` above. The classes where a path
+ * reaching nothing is correct are separated inside the sweep, which is what
+ * leaves the remainder a defect with no judgment in it, so a finding fails the
+ * push rather than asking a reader to weigh it.
+ */
+async function runCitations(opts: CitationsOptions): Promise<number> {
+  const root = resolve(opts.root ?? process.cwd())
+  const report = await readCitations(root)
+  const emitJson = opts.json ?? false
+
+  if (report.kind === 'unreadable') {
+    intro('aitk gov citations')
+    logStep('Refused')
+    logError(report.reason)
+    outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: report.reason })}\n`,
+      )
+    }
+
+    return 1
+  }
+
+  const dead = report.citations.filter((citation) => citation.status === 'dead')
+  reportCitations(report, root)
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ok: true, root, ...report })}\n`)
+  }
+
+  return dead.length > 0 ? 2 : 0
+}
+
+function describeCitation(citation: RuleCitation): string {
+  const tried = citation.candidates.join(', ')
+  return `[${citation.form}] ${citation.file}:${citation.line}: ${citation.cited} reaches nothing at ${tried}`
+}
+
+/**
+ * Named rather than counted, matching the exempt section of the sweep beside
+ * this one. An exemption is a judgment the tree recorded, and a reader weighing
+ * this report has to be able to reach the line that carries it.
+ */
+function reportExcused(
+  citations: readonly RuleCitation[],
+  status: RuleCitation['status'],
+  label: string,
+  empty: string,
+): void {
+  const excused = citations.filter((citation) => citation.status === status)
+
+  logStep(label)
+  if (excused.length === 0) {
+    logInfo(empty)
+    return
+  }
+
+  for (const citation of excused) {
+    logInfo(`${citation.file}:${citation.line}: ${citation.cited}`)
+  }
+}
+
+function reportCitations(
+  report: Extract<CitationReport, { kind: 'measured' }>,
+  root: string,
+): void {
+  intro('aitk gov citations')
+
+  logStep('Sweep')
+  logInfo(`${report.rules} rules under ${RULE_DIRS.join(' and ')} in ${root}`)
+
+  const counted = new Map<RuleCitation['form'], number>()
+  for (const citation of report.citations) {
+    counted.set(citation.form, (counted.get(citation.form) ?? 0) + 1)
+  }
+  logInfo(
+    report.citations.length === 0
+      ? 'no citation in either corpus'
+      : `${report.citations.length} citations: ${[...counted]
+          .map(([form, count]) => `${count} ${form}`)
+          .join(', ')}`,
+  )
+
+  const dead = report.citations.filter((citation) => citation.status === 'dead')
+
+  logStep('Unresolved')
+  if (dead.length === 0) {
+    logInfo('every cited path resolves')
+  } else {
+    for (const citation of dead) logError(describeCitation(citation))
+  }
+
+  reportExcused(
+    report.citations,
+    'governed',
+    'Governed',
+    'no rule cites a path it declares in its own frontmatter',
+  )
+  reportExcused(
+    report.citations,
+    'ignored',
+    'Ignored',
+    'no rule cites a path git ignores',
+  )
+  reportExcused(
+    report.citations,
+    'exempt',
+    'Exempt',
+    `no line carries a ${CITATION_MARKER} marker`,
+  )
+
+  logInfo(
+    'not read: a citation that resolves and points at the wrong file, a path written without backticks, and a folder or a path carrying no extension',
+  )
+
+  outro()
 }
 
 function describeHit(hit: SupersededHit): string {
