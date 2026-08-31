@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/erclx/canon/compare/v4.2.1...v4.3.0) (2026-08-31)
+
+
+### Features
+
+* **claude:** trip the review fallback on a count of open PRs ([#1300](https://github.com/erclx/canon/issues/1300)) ([b0382c4](https://github.com/erclx/canon/commit/b0382c4d1eaf94cd05fe758ed5d605b844f9cc24))
+
 ## [4.2.1](https://github.com/erclx/canon/compare/v4.2.0...v4.2.1) (2026-08-31)
 
 
