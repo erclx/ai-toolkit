@@ -250,22 +250,28 @@ const ORDINAL_HERE = new RegExp(
   `\\b(${ORDINAL_WORDS.join('|')})\\s+here\\b`,
   'i',
 )
+const LAST_AT_END = /\blast\.?\s*$/i
 
 /**
  * Reads the ordinal phrase a `Waiting on` cell states about its own position,
  * searching the whole cell for `<ordinal> here` or the bare word `last` rather
  * than anchoring to where the cell opens. The phrase sits at the end of the
  * sentence on every row that carries one, as in `nothing, cleared 2026-08-31
- * when it merged. Third here`. The vocabulary stays bounded to the twenty
- * words plus `last` so a cell reading `Untestable from here` does not match on
- * `from`, and a cell carrying neither reads as unordered rather than as an
- * error, which keeps a legitimately-phrased row out of the findings.
+ * when it merged. Third here`. The two-word phrase is safe to find anywhere,
+ * since it needs both a closed vocabulary word and `here` beside it, but a
+ * bare `last` is one of the commonest words in English and this corpus writes
+ * it constantly, as in `the last of the two instruments this rename needs`.
+ * Anchoring it to the end of the cell is what keeps that prose out of the
+ * findings, since every row that actually declares itself last puts the word
+ * there and nowhere else. A cell carrying neither reads as unordered rather
+ * than as an error, which keeps a legitimately-phrased row out of the
+ * findings.
  */
 function readOrdinal(cell: string): OrdinalWord | 'last' | undefined {
   const here = ORDINAL_HERE.exec(cell)
   if (here?.[1]) return here[1].toLowerCase() as OrdinalWord
 
-  return /\blast\b/i.test(cell) ? 'last' : undefined
+  return LAST_AT_END.test(cell) ? 'last' : undefined
 }
 
 function isRowLine(line: string): boolean {

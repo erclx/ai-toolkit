@@ -282,6 +282,19 @@ describe('readBoard', () => {
 
     expect(readBoard(text).rows[0]?.ordinal).toBeUndefined()
   })
+
+  it('should not read an ordinal out of a cell carrying the word "last" with no ordinal beside it', () => {
+    const text = boardBody([
+      '## Needs a plan',
+      '',
+      '| Task | Waiting on |',
+      '| ---- | ---------- |',
+      '| [v3.0-third](v3.0-third.md) | the last of the two instruments this rename needs, and nothing else |',
+      '',
+    ])
+
+    expect(readBoard(text).rows[0]?.ordinal).toBeUndefined()
+  })
 })
 
 describe('readBacklog', () => {
