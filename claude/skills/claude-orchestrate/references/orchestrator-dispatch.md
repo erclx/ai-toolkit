@@ -81,12 +81,12 @@ inconsistently. `claude-autoship` has carried the flag since `#365` and seven
 other shipped skills carry it too.
 
 The block above therefore leads with the call that does not need the user route
-and leaves the one that does to the tool. Three workers made the same tool call
-against the same plugin cache on 2026-08-31. One was answered with the body and
+and leaves the one that does to the tool. Four sessions made the same tool call
+against the same plugin cache on 2026-08-31. Two were answered with the body and
 shipped, and two were refused with `Skill canon:claude-autoship cannot be used
 with Skill tool due to disable-model-invocation`. Prefixing separated nothing,
-since one refused call carried the namespace and the other did not, so nothing a
-dispatcher writes predicts which answer a launch gets.
+since three of the four carried the namespace and those three landed on both
+answers, so nothing a dispatcher writes predicts which answer a launch gets.
 
 Read that as a route a dispatch may not depend on rather than one that usually
 works. The refusal closes the fallback in the same message, telling the session
@@ -96,9 +96,11 @@ rather than a degraded run, which is the correct outcome and not a thing to
 soften.
 
 Recovery belongs to whoever writes the next prompt, since a blocked session
-cannot replay its own launch. Re-dispatch onto the same branch with the autoship
-call leading the prompt, which puts the one command the first launch left as
-prose in the position the client expands.
+cannot replay its own launch. The refusal is sticky inside a session rather than
+something a retry clears, measured when one refused worker repeated the identical
+prefixed call and got the byte-identical error back. So re-dispatch onto the same
+branch with the autoship call leading the prompt, which puts the one command the
+first launch left as prose in the position the client expands.
 
 A launch that leads with `/canon:claude-autoship <plan>` and names no worktree
 call is the candidate for closing this on the first dispatch, since that chain's
