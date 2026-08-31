@@ -2,7 +2,12 @@ import { readdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { $ } from 'bun'
 import { gitEnv } from '@/git-env'
-import { isLegacyStamped, legacyStampPath, stampPath } from '@/sync/stamp'
+import {
+  isLegacyStamped,
+  legacyStampPath,
+  retiredNameStampPath,
+  stampPath,
+} from '@/sync/stamp'
 import { isDirectory } from '@/target'
 
 /**
@@ -44,8 +49,8 @@ export interface SweptTarget {
   readonly paths: readonly string[]
   /** The origin every path agrees on, or null when git resolved none. */
   readonly origin: string | null
-  /** True while every path still carries its stamp at the retired location. */
-  readonly legacy: boolean
+  /** The subset of `paths` still carrying their stamp at the retired location, in `paths` order. */
+  readonly legacyPaths: readonly string[]
 }
 
 /**
@@ -85,10 +90,17 @@ export interface SweepOptions {
   readonly originOf?: (path: string) => Promise<string | null>
 }
 
-/** Whether a folder carries an install stamp at either the current or the retired path. */
+/**
+ * Whether a folder carries an install stamp at the current path or either
+ * retired one. `aitk@3.57.0` still writes the folder form,
+ * `retiredNameStampPath`, as its current path, so a target a pre-rename
+ * binary syncs after this check drops the folder form would otherwise vanish
+ * from the walk with nothing saying so.
+ */
 function isStamped(path: string): boolean {
   return (
     Bun.file(stampPath(path)).size > 0 ||
+    Bun.file(retiredNameStampPath(path)).size > 0 ||
     Bun.file(legacyStampPath(path)).size > 0
   )
 }
@@ -225,7 +237,11 @@ async function group(
     const origin = origins[index]
 
     if (origin === null || origin === undefined) {
-      alone.push({ paths: [path], origin: null, legacy: isLegacyStamped(path) })
+      alone.push({
+        paths: [path],
+        origin: null,
+        legacyPaths: isLegacyStamped(path) ? [path] : [],
+      })
       return
     }
 
@@ -237,7 +253,7 @@ async function group(
   const merged = [...byOrigin.entries()].map(([origin, group]) => ({
     paths: group,
     origin,
-    legacy: group.every((path) => isLegacyStamped(path)),
+    legacyPaths: group.filter((path) => isLegacyStamped(path)),
   }))
 
   return [...merged, ...alone].sort((a, b) =>

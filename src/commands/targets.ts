@@ -1,13 +1,16 @@
 import type { Command } from 'commander'
+import { readStamp } from '@/sync/stamp'
 import { readPullsAcross, type TargetPulls } from '@/targets/pulls'
+import { backfillTarget } from '@/targets/registry'
 import {
   type KnownTarget,
   type ResolvedTargets,
   resolveTargets,
 } from '@/targets/resolve'
-import { DEFAULT_DEPTH, type SweepBound } from '@/targets/sweep'
+import { DEFAULT_DEPTH, type SweepBound, sweepTargets } from '@/targets/sweep'
 import {
   intro,
+  logError,
   logInfo,
   logStep,
   logWarn,
@@ -20,6 +23,7 @@ interface ListOptions {
   readonly json?: boolean
   readonly sweep?: string[]
   readonly depth?: string
+  readonly record?: boolean
 }
 
 interface PullsOptions extends ListOptions {}
@@ -64,6 +68,10 @@ export function register(program: Command): void {
       '--depth <n>',
       'How deep below each swept root to walk',
       String(DEFAULT_DEPTH),
+    )
+    .option(
+      '--record',
+      "Seed the index from every swept checkout's own stamp, refusing without --sweep",
     )
     .addHelpText('after', LIST_HELP)
     .action(async (opts: ListOptions) => {
@@ -111,6 +119,15 @@ const LIST_HELP = [
   'see another machine or a clone under a path nobody named, so read the bound',
   'before treating the count as the population.',
   '',
+  'A group reports how many of its checkouts still carry the install stamp',
+  'at the retired path, staying quiet when none do and plain when every one',
+  'does.',
+  '',
+  '--record backfills the index from a sweep rather than a sync. It seeds one',
+  "row per checkout from that checkout's own installed stamp, so a backfilled",
+  'row never claims a sync that did not run, and it refuses without --sweep',
+  'naming what to walk.',
+  '',
   'An exit code says nothing about a call made from a session, since a shell',
   'profile may wrap the binary in a function taking its status from a later',
   'command. Read the record rather than the exit when a skill consumes this.',
@@ -119,6 +136,7 @@ const LIST_HELP = [
   '  canon targets list',
   '  canon targets list --json',
   '  canon targets list --sweep ~/repos --json',
+  '  canon targets list --sweep ~/repos --record',
   '',
 ].join('\n')
 
@@ -155,6 +173,18 @@ async function runList(opts: ListOptions): Promise<number> {
 
   if (depth === null) return refuseDepth(opts)
 
+  let backfillFailed = false
+
+  if (opts.record === true) {
+    if (opts.sweep === undefined || opts.sweep.length === 0) {
+      return refuseRecordWithoutSweep(opts)
+    }
+
+    const backfill = await runBackfill(opts.sweep, depth)
+    reportBackfill(backfill)
+    backfillFailed = backfill.failed > 0
+  }
+
   const resolved = await resolveTargets({ sweep: opts.sweep, depth })
 
   const unknown = reportTargets(resolved)
@@ -172,7 +202,7 @@ async function runList(opts: ListOptions): Promise<number> {
     )
   }
 
-  return unknown ? 1 : 0
+  return unknown || backfillFailed ? 1 : 0
 }
 
 async function runPulls(paths: string[], opts: PullsOptions): Promise<number> {
@@ -234,6 +264,89 @@ function refuseDepth(opts: ListOptions): number {
   return 1
 }
 
+interface BackfillSummary {
+  readonly recorded: number
+  readonly skipped: number
+  readonly failed: number
+}
+
+/**
+ * Seeds the index from every checkout the sweep finds. `resolveTargets` walks
+ * the same roots again right after this returns, which costs a second walk
+ * rather than a restructure, since --record is a deliberate one-off rather
+ * than a path any routine run takes.
+ */
+async function runBackfill(
+  roots: readonly string[],
+  depth: number,
+): Promise<BackfillSummary> {
+  const swept = await sweepTargets(roots, { depth })
+  const paths = swept.targets.flatMap((target) => target.paths)
+
+  let recorded = 0
+  let skipped = 0
+  let failed = 0
+
+  for (const path of paths) {
+    const outcome = backfillTarget({ path, stampedAt: stampedAtOf(path) })
+    if (outcome === 'recorded') recorded++
+    else if (outcome === 'no-stamp') skipped++
+    else failed++
+  }
+
+  return { recorded, skipped, failed }
+}
+
+/**
+ * The most recent syncedAt across a checkout's stamped domains, so a
+ * backfilled row dates itself by the sync that actually touched the checkout
+ * rather than by the moment the backfill happened to run.
+ */
+function stampedAtOf(path: string): string | null {
+  const stamp = readStamp(path)
+  if (stamp === undefined) return null
+
+  const syncedAt = Object.values(stamp.domains)
+    .map((domain) => domain?.syncedAt)
+    .filter((value): value is string => value !== undefined)
+    .sort()
+
+  return syncedAt.at(-1) ?? null
+}
+
+function refuseRecordWithoutSweep(opts: ListOptions): number {
+  logStep('Refused')
+  logWarn(
+    '--record backfills from a walk, so it needs --sweep naming the roots to walk.',
+  )
+  outro()
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({ reason: 'record-without-sweep', targets: [] })}\n`,
+    )
+  }
+
+  return 1
+}
+
+function reportBackfill(summary: BackfillSummary): void {
+  logStep('Backfill')
+  logInfo(`${plural(summary.recorded, 'target')} recorded from its own stamp.`)
+
+  if (summary.skipped > 0) {
+    logWarn(
+      `${plural(summary.skipped, 'target')} skipped, carrying no readable stamp to date the row by.`,
+    )
+  }
+
+  if (summary.failed > 0) {
+    logError(
+      `${plural(summary.failed, 'target')} failed to write, so its row is unchanged.`,
+    )
+  }
+}
+
 /** Returns whether the population is unknown, which is the one refusal this read has. */
 function reportTargets(resolved: ResolvedTargets): boolean {
   logStep('Targets')
@@ -256,11 +369,25 @@ function reportTargets(resolved: ResolvedTargets): boolean {
 }
 
 function describe(target: KnownTarget): string {
-  const flags = [target.source, ...(target.legacy ? ['legacy stamp'] : [])]
+  const flags = [target.source, ...legacyFlag(target)]
   const clones =
     target.paths.length > 1 ? `\n  ${target.paths.slice(1).join('\n  ')}` : ''
 
   return `${target.paths[0]}  ${flags.join(', ')}${clones}`
+}
+
+/**
+ * "legacy stamp" plain when every checkout carries the retired stamp, the
+ * count appended when only some do, and nothing when none do. The mixed case
+ * is the one a bare flag could not say, and it is the common one: three of
+ * the four affected groups measured on this machine were mixed rather than
+ * uniform.
+ */
+function legacyFlag(target: KnownTarget): readonly string[] {
+  const count = target.legacyPaths.length
+  if (count === 0) return []
+  if (count === target.paths.length) return ['legacy stamp']
+  return [`legacy stamp (${count} of ${target.paths.length} checkouts)`]
 }
 
 function reportBound(bound: SweepBound): void {

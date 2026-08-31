@@ -201,3 +201,26 @@ export function recordTarget(
     return 'unwritten'
   }
 }
+
+/** One checkout a backfill is seeding, dated by its own on-disk stamp. */
+export interface BackfillTarget {
+  readonly path: string
+  /** From that checkout's `readStamp`. Null skips the row rather than dating it by the backfill itself. */
+  readonly stampedAt: string | null
+}
+
+export type BackfillOutcome = RecordOutcome | 'no-stamp'
+
+/**
+ * Seeds one row from a checkout's own stamp rather than from a sync, for a
+ * target a sweep found that the record never held. Loops `recordTarget`,
+ * which already replaces a row by resolved path, so this is a caller of it
+ * rather than a second file format.
+ */
+export function backfillTarget(
+  target: BackfillTarget,
+  path: string = registryPath(),
+): BackfillOutcome {
+  if (target.stampedAt === null) return 'no-stamp'
+  return recordTarget(target.path, new Date(target.stampedAt), path)
+}

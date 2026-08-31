@@ -27,8 +27,8 @@ export interface KnownTarget {
   readonly source: TargetSource
   /** When a sync last recorded this target, or null for a row only a sweep found. */
   readonly stampedAt: string | null
-  /** True while the install stamp still sits at the retired path. */
-  readonly legacy: boolean
+  /** The subset of `paths` still carrying their stamp at the retired location, in `paths` order. */
+  readonly legacyPaths: readonly string[]
 }
 
 export interface ResolvedTargets {
@@ -80,7 +80,7 @@ export async function resolveTargets(
           origin: null,
           source: 'record' as const,
           stampedAt: row.stampedAt,
-          legacy: isLegacyStamped(row.path),
+          legacyPaths: isLegacyStamped(row.path) ? [row.path] : [],
         }))
       : []
 
@@ -110,14 +110,22 @@ export async function resolveTargets(
     // Every caller reading a single path takes the first, and picking that by
     // sort order is how a repair ran in one clone while the count was taken
     // against another and the target read as untouched.
+    const paths = [
+      ...overlap,
+      ...target.paths.filter((path) => !known.has(path)),
+    ]
+
+    // Re-derived against this row's own order rather than carried from
+    // `target.legacyPaths`, which is ordered by the sweep's sort and mismatches
+    // `paths` the moment the recorded clone is not the one that sorts first.
     added.push({
-      paths: [...overlap, ...target.paths.filter((path) => !known.has(path))],
+      paths,
       origin: target.origin,
       source: overlap.length > 0 ? 'record' : 'sweep',
       stampedAt:
         recorded.find((row) => overlap.includes(row.paths[0] ?? ''))
           ?.stampedAt ?? null,
-      legacy: target.legacy,
+      legacyPaths: paths.filter((path) => isLegacyStamped(path)),
     })
   }
 
@@ -140,6 +148,6 @@ function given(path: string): KnownTarget {
     origin: null,
     source: 'given',
     stampedAt: null,
-    legacy: isLegacyStamped(path),
+    legacyPaths: isLegacyStamped(path) ? [path] : [],
   }
 }

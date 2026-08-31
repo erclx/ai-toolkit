@@ -13,15 +13,17 @@ description: The projects this toolkit installed into, the record the install wr
 canon targets list
 canon targets list --json
 canon targets list --sweep ~/repos --json
+canon targets list --sweep ~/repos --record
 ```
 
-| Option            | Behavior                                                |
-| ----------------- | ------------------------------------------------------- |
-| `--json`          | Add a machine-readable record on stdout                 |
-| `--sweep <path…>` | Also walk these roots for targets the record never held |
-| `--depth <n>`     | How deep below each swept root to walk, defaulting to 4 |
+| Option            | Behavior                                                                         |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `--json`          | Add a machine-readable record on stdout                                          |
+| `--sweep <path…>` | Also walk these roots for targets the record never held                          |
+| `--depth <n>`     | How deep below each swept root to walk, defaulting to 4                          |
+| `--record`        | Seed the index from every swept checkout's own stamp, refusing without `--sweep` |
 
-Exit codes: `0` the population was read, `1` refused. A refusal carries a `reason` of `bad-depth`, and an absent index reports as unknown rather than as no targets.
+Exit codes: `0` the population was read, `1` refused. A refusal carries a `reason` of `bad-depth` or, for `--record` given with no `--sweep`, `record-without-sweep`. An absent index reports as unknown rather than as no targets.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's fields rather than the exit when a skill consumes this.
 
@@ -48,6 +50,12 @@ A target cloned twice is one target. The sweep reads each checkout's `origin`, t
 The row leads with the clone the record knows, because the record only names one a sync actually ran in. Every caller reading a single path takes the first, and picking that by sort order is the shape behind a repair that ran in one clone while a count was taken against another, leaving the target reported as untouched.
 
 Nothing removes a row. A project deleted, moved, or that dropped the toolkit stays in the index, so a count drifts upward over time. It surfaces on use rather than silently, since the read below refuses a path it cannot open.
+
+## The retired stamp path
+
+Each row names the subset of its checkouts still carrying the install stamp at the retired path: `legacyPaths` in the JSON, a subset of `paths` in the same order. The render says `legacy stamp` plain when every checkout carries it and `legacy stamp (1 of 2 checkouts)` when only some do, which is the common case rather than the rare one.
+
+`--record` backfills the index from a sweep rather than from a sync, for a target the record never held. It seeds one row per checkout from that checkout's own installed stamp, taking `stampedAt` from the stamp itself rather than from the moment the backfill ran, so a backfilled row never claims a sync that did not happen. A checkout whose stamp cannot be read is skipped rather than dated by the backfill. It refuses without `--sweep` naming what to walk.
 
 ## Pulls
 
