@@ -31,7 +31,7 @@ The job name stays `🛡️ Static Checks` even though the job now runs the test
 
 Mode selection goes through `--no-write` and CI names the `check:ci` script rather than setting anything inline. It was an environment variable, `VERIFY_WRITE`, while the gate was a shell script, and the flag replaced it when the sequencing moved into a command: the two questions a caller answers are what to run and whether to write, and splitting one across a flag and the other across the environment left the surface half discoverable. Each mode runs exactly one format stage. The local run formats in place, so the check pass that used to follow it verified prettier and shfmt converged on their own output rather than verifying the repository.
 
-Scope selection goes through an `--all` argument, because it describes what to run rather than which mode to run in. An unknown argument exits 1 and `--help` prints the flags and the exit codes, so the surface stays discoverable without reading the table.
+Scope selection goes through an `--all` argument, because it describes what to run rather than which mode to run in. An unknown argument exits 1 and `--help` prints the flags, the exit codes, and what an unmeasured stage means, so the surface stays discoverable without reading the table.
 
 ### Triggers and stage selection
 
@@ -127,7 +127,7 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 ## Checks
 
-Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `aitk gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the prose below the table names each.
+Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `aitk gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the table marks each.
 
 | Stage                     | Command                                                  | What it asserts                                                                             |
 | ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -157,7 +157,7 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 
 Two rows report rather than gate on their own reading, Unreferenced rules and Audit set, because every finding either carries is a judgment and a push failing on one teaches a contributor to route around the stage. Both still print what they found.
 
-The third is Sandbox coverage, which fails under `check:ci` when the scenario tree does not report and warns on a contributor's machine, on the reasoning Plugin manifests uses for an absent `claude` binary. Shell, types, and tests skip on the changed-file set locally and never in CI, which is what `--all` buys.
+The third qualification is a stage that could not read its input at all, which is a state any row can reach and none used to report. Under `check:ci` that fails the run, since an absent tool on a runner is a broken workflow step. On a contributor's machine it warns and the run stays green, and the closing line names how many stages measured nothing rather than printing an unqualified pass. Shell, types, and tests skip on the changed-file set locally and never in CI, which is what `--all` buys.
 
 Rebuild this table from `STAGES` in `src/gate/stages.ts` rather than editing rows, since it once named half the stages and editing preserves whatever produced that. Both format stages are entries in that table now, so the rebuild reaches them the way it reaches every other row, and the hand-added row the old rebuild needed is gone. This table names the check side, since `check:ci` passes `--no-write` and the write side heads its output `Formatting` instead. Nothing compares the table to the table it describes, so the next stage added leaves it wrong again.
 

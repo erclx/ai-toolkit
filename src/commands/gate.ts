@@ -7,6 +7,7 @@ import {
   type GateContext,
   repairBareFlag,
   type StageResult,
+  type Summary,
   runStages,
   summarize,
 } from '@/gate/sequencer'
@@ -21,6 +22,7 @@ import {
   outro,
   palette,
   pipeOutput,
+  plural,
 } from '@/ui'
 
 interface RunCommandOptions {
@@ -60,11 +62,18 @@ export function register(program: Command): void {
       [
         '',
         'Exit codes:',
-        '  0  no stage found a fact',
-        '  1  a stage found a fact',
+        '  0  every stage that ran reported, and none found a fact',
+        '  1  a stage found a fact, or could not measure its input under CI',
         '',
         'A stage halts the run, so clearing a regenerate-then-assert stage',
         'reveals the next one behind it rather than the whole set at once.',
+        '',
+        'A stage that cannot read its input reports rather than passing. On a',
+        "contributor's machine that is a warning and the run still exits 0,",
+        'because an absent tool there is somebody mid-setup. Under CI it',
+        'refuses, because the same absence is a broken workflow step and a',
+        'green run over a stage that measured nothing is the pass the gate',
+        'exists to withhold.',
         '',
         'Examples:',
         '  aitk gate run',
@@ -136,7 +145,7 @@ async function runGate(opts: RunCommandOptions): Promise<number> {
     return code
   }
 
-  if (!nested) close(code)
+  if (!nested) close(summary, code)
   return code
 }
 
@@ -151,18 +160,28 @@ function report(result: StageResult): void {
 }
 
 /**
- * The closing verdict.
+ * The closing verdict, which names what the run did not measure rather than
+ * reporting a bare pass over it.
  *
- * The failure line is what the script this replaces never printed: it exited
- * from inside the frame, so a failing run left the frame unclosed and named no
- * verdict at all.
+ * A run where every stage read its input still closes on the line the script
+ * this replaces closed on, so nothing about the ordinary case moved. A run
+ * carrying an unmeasured stage says so, because a green line over a stage that
+ * looked at nothing is exactly the silence the reporting outcome exists
+ * against.
  */
-function close(code: number): void {
-  const { GREEN, NC, RED } = palette(process.stderr)
+function close(summary: Summary, code: number): void {
+  const { GREEN, NC, RED, YELLOW } = palette(process.stderr)
   outro()
 
   if (code !== 0) {
     process.stderr.write(`${RED}✗ Verification failed${NC}\n\n`)
+    return
+  }
+
+  if (summary.unmeasured > 0) {
+    process.stderr.write(
+      `${YELLOW}! Verification passed, ${plural(summary.unmeasured, 'stage')} measured nothing${NC}\n\n`,
+    )
     return
   }
 

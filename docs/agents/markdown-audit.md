@@ -126,7 +126,7 @@ The condition on that was something identifying a finite verb rather than guessi
 
 Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, and cadence is a distribution whose healthy range moves with the surface, so all four report under every code.
 
-`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `aitk gate run` is right to warn and skip. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
+`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `aitk gate run` is right to report it as unmeasured rather than as a pass. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
 
 `2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `aitk context audit` and the gate's own seed stage already draw between the same two codes.
 

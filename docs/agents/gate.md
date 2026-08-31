@@ -45,18 +45,20 @@ The changed set unions the branch diff against the merge base with `origin/main`
 
 ## A stage that cannot read its input
 
-Six stages can reach an input they cannot read: an absent tool, a catalog that did not report, a corpus with nothing under it. Each returns the reason and the run prints it as a warning without failing, which is what the shell script this replaces did.
+A stage reports one of four states. It passed, it was scoped out, it found a fact, or it could not measure its input at all.
 
-Two of the six qualify that under CI. Sandbox coverage and Plugin manifests refuse there rather than warning, because the scenario tree ships in the checkout and the runner installs the plugin CLI as a workflow step, so an absence on a runner is a broken workflow rather than somebody mid-setup.
+The fourth is the one worth naming. An absent tool, a catalog that did not report, a corpus with nothing under it: each used to print a line that read like a pass. Now the run records it as unmeasured, the closing line says how many stages measured nothing, and the reader is not told a verdict nobody took.
+
+What happens next depends on where the run is. On a contributor's machine it warns and the run still exits 0, because an absent tool there is somebody mid-setup. Under CI, read off `CI=true`, it refuses, because the same absence on a runner is a broken workflow step.
 
 ## Exit codes
 
-| Code | Meaning               |
-| ---- | --------------------- |
-| `0`  | no stage found a fact |
-| `1`  | a stage found a fact  |
+| Code | Meaning                                                       |
+| ---- | ------------------------------------------------------------- |
+| `0`  | every stage that ran reported, and none found a fact          |
+| `1`  | a stage found a fact, or could not measure its input under CI |
 
-One code for a failure, which is what a `bun run` caller and a git hook both read.
+One code for a failure, which is what a `bun run` caller and a git hook both read. An unmeasured stage takes no code of its own, since it has already refused under CI and reports on a contributor's machine, so a second code would name a state no caller branches on.
 
 ## The record
 
@@ -68,7 +70,13 @@ One code for a failure, which is what a `bun run` caller and a git hook both rea
   "root": "/path/to/checkout",
   "scoped": true,
   "changed": 12,
-  "summary": { "ran": 23, "passed": 22, "skipped": 1, "failed": 0 },
+  "summary": {
+    "ran": 23,
+    "passed": 22,
+    "skipped": 1,
+    "unmeasured": 0,
+    "failed": 0
+  },
   "stages": [{ "id": "indexes", "label": "Indexes", "status": "passed" }]
 }
 ```

@@ -19,7 +19,13 @@ A stage is a list of checks, and a check is one of four kinds. A `command` is an
 
 Every check is an argument vector. The script this replaced held each one as text and handed it to `eval`, which made every stage a quoting question, and nothing in the set turned out to need a shell once the drift assertion stopped being one. What that closes is stated under `## Quoting a pathspec changes what it matches` in `.claude/context/scripts/core.md`.
 
-Six places say something about not measuring their input and none of them fails, which the move carried across unchanged. A measure returns that reason and the sequencer prints it as a warning, so a run where a stage read nothing still closes on the same green line as a run where every stage read everything.
+### A stage that cannot measure its input reports rather than passing
+
+Six places in the shell script said something about not measuring and none of them failed, so a run where a stage read nothing closed on the same green line as a run where every stage read everything. That is now a status of its own.
+
+On a contributor's machine an unmeasured stage warns, the run still exits 0, and the closing line names how many stages measured nothing instead of printing an unqualified pass. Under CI it refuses, because an absent tool on a runner is a broken workflow step rather than somebody mid-setup. Sandbox coverage and Plugin manifests already drew that split for themselves, and generalizing it is what took it to the other four.
+
+The split is the sequencer's rather than each measure's. A measure returns the reason it could not read its input and never decides what happens next, so the rule is written once and no stage can disagree with it.
 
 ## Sandbox coverage
 
@@ -29,7 +35,7 @@ The gate is `SANDBOX_UNDECLARED_CEILING` in `src/gate/measures.ts`, an absolute 
 
 Raising the number is a deliberate edit, which is the point. A branch shipping an unarmed scenario has to say in the diff which one and why, rather than watching a percentage drift down over several merges with no single commit responsible.
 
-A coverage command that exits non-zero fails the stage under CI and warns on a contributor's machine. The scenario tree ships in the checkout, so a runner that cannot read it has a broken command rather than an absent tree, and taking the skip there would report the pass the stage exists to withhold. That is the split Manifest validation below already draws for an absent `claude` binary, and a warning inside a green run is read by nobody.
+A coverage command that exits non-zero fails the stage under CI and warns on a contributor's machine. The scenario tree ships in the checkout, so a runner that cannot read it has a broken command rather than an absent tree, and taking the skip there would report the pass the stage exists to withhold. That is the split Manifest validation below already draws for an absent `claude` binary, and it is now the sequencer's rule for every stage rather than a branch these two carry on their own.
 
 ## Manifest validation
 

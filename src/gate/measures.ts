@@ -55,8 +55,10 @@ export interface MeasureReport {
   /**
    * The stage could not read its input at all, so it has no verdict to give.
    *
-   * The sequencer prints it as a warning and carries on, which is what the six
-   * such places in the script this replaces did.
+   * Distinct from a pass with nothing to report, which is what six places in
+   * the script this replaces used to print. A skip rendered as a passing line
+   * reports the pass the stage exists to withhold, so the sequencer renders
+   * this as a warning on a contributor's machine and refuses on it under CI.
    */
   readonly unmeasured?: string
 }
@@ -359,12 +361,10 @@ export const sandboxCoverage: Measure = async (ctx) => {
   const run = await ctx.cli(['sandbox', 'coverage', '--json'])
 
   if (run.exitCode !== 0) {
-    const reason = `The scenario tree did not report (exit ${run.exitCode}). It ships in the checkout, so a run that does not report is a broken command rather than an absent tree.`
-    // A runner that cannot read a tree shipped in the checkout has a broken
-    // command, and skipping there would report the pass this stage exists to
-    // withhold. A contributor's machine takes the warning.
-    if (ctx.ci) return { emissions: [], failure: reason }
-    return { emissions: [], unmeasured: reason }
+    return {
+      emissions: [],
+      unmeasured: `The scenario tree did not report (exit ${run.exitCode}). It ships in the checkout, so a run that does not report is a broken command rather than an absent tree.`,
+    }
   }
 
   const record = parseJson(run.stdout) as
@@ -513,17 +513,19 @@ export const pluginManifests: Measure = async (ctx) => {
   const version = await ctx.run(['claude', '--version'])
 
   if (version.spawnError !== undefined) {
-    const reason =
-      'claude is not installed, so no manifest was read. CI installs it before this stage, so read the Install Plugin CLI step in .github/workflows/verify.yml.'
-    if (ctx.ci) return { emissions: [], failure: reason }
-    return { emissions: [], unmeasured: reason }
+    return {
+      emissions: [],
+      unmeasured:
+        'claude is not installed, so no manifest was read. CI installs it before this stage, so read the Install Plugin CLI step in .github/workflows/verify.yml.',
+    }
   }
 
   if (version.exitCode !== 0) {
-    const reason =
-      'claude is on PATH and claude --version fails, so the install brought down no platform-native binary and no manifest was read. Raise or lower the pinned version at the Install Plugin CLI step in .github/workflows/verify.yml, and record the move in .claude/context/ci.md.'
-    if (ctx.ci) return { emissions: [], failure: reason }
-    return { emissions: [], unmeasured: reason }
+    return {
+      emissions: [],
+      unmeasured:
+        'claude is on PATH and claude --version fails, so the install brought down no platform-native binary and no manifest was read. Raise or lower the pinned version at the Install Plugin CLI step in .github/workflows/verify.yml, and record the move in .claude/context/ci.md.',
+    }
   }
 
   const manifests = await collectPluginManifests(ctx)

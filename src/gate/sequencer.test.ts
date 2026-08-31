@@ -216,18 +216,36 @@ describe('a stage that cannot measure its input', () => {
     ],
   })
 
+  it('should report rather than pass on a contributor machine', async () => {
+    const outcome = await runStage(unreadable, contextWith({ ci: false }))
+
+    expect(outcome.status).toBe('unmeasured')
+  })
+
   it('should say what it could not read rather than printing a clean line', async () => {
-    const outcome = await runStage(unreadable, contextWith())
+    const outcome = await runStage(unreadable, contextWith({ ci: false }))
 
     expect(outcome.emissions).toEqual([
       { kind: 'warn', text: 'The scenario tree did not report.' },
     ])
   })
 
-  it('should leave the run green, which is what the shell script did', async () => {
-    const results = await runStages([unreadable], contextWith())
+  it('should refuse under CI, where an absent input is a broken runner', async () => {
+    const outcome = await runStage(unreadable, contextWith({ ci: true }))
+
+    expect(outcome.status).toBe('failed')
+  })
+
+  it('should leave the run green on a contributor machine', async () => {
+    const results = await runStages([unreadable], contextWith({ ci: false }))
 
     expect(exitCodeFor(results)).toBe(0)
+  })
+
+  it('should count itself out of the stages that reported', async () => {
+    const results = await runStages([unreadable], contextWith({ ci: false }))
+
+    expect(summarize(results)).toMatchObject({ passed: 0, unmeasured: 1 })
   })
 })
 

@@ -15,6 +15,8 @@ export type StageStatus =
   | 'passed'
   /** The changed set carries nothing this stage reads. */
   | 'skipped'
+  /** The stage could not read its input, so it has no verdict to give. */
+  | 'unmeasured'
   /** A check found a fact, which stops the run here. */
   | 'failed'
 
@@ -158,11 +160,26 @@ export async function runStage(
       }
     }
 
-    // A stage that could not read its input says so and the run carries on,
-    // which is what the six such places in the script this replaces did.
     if (outcome.unmeasured !== undefined) {
+      // Under CI an absent input is a broken runner rather than a machine
+      // mid-setup, so the same reading refuses there and warns here. Skipping
+      // on both would report the pass the stage exists to withhold.
+      if (ctx.ci) {
+        return {
+          id: stage.id,
+          label: stage.label,
+          status: 'failed',
+          emissions,
+          failure: `${outcome.unmeasured} Under CI that is a broken runner rather than a machine mid-setup, so this refuses rather than passing.`,
+        }
+      }
       emissions.push({ kind: 'warn', text: outcome.unmeasured })
-      return { id: stage.id, label: stage.label, status: 'passed', emissions }
+      return {
+        id: stage.id,
+        label: stage.label,
+        status: 'unmeasured',
+        emissions,
+      }
     }
   }
 
@@ -272,6 +289,7 @@ export interface Summary {
   readonly ran: number
   readonly passed: number
   readonly skipped: number
+  readonly unmeasured: number
   readonly failed: number
 }
 
@@ -283,13 +301,16 @@ export function summarize(results: readonly StageResult[]): Summary {
     ran: results.length,
     passed: counting('passed'),
     skipped: counting('skipped'),
+    unmeasured: counting('unmeasured'),
     failed: counting('failed'),
   }
 }
 
 /**
  * One code for a failure, which is what a `bun run` caller and a git hook both
- * read.
+ * read. A stage that could not measure does not take a code of its own here,
+ * because it has already refused under CI and reports on a contributor's
+ * machine, so a second code would name a state no caller branches on.
  */
 export function exitCodeFor(results: readonly StageResult[]): number {
   return results.some((result) => result.status === 'failed') ? 1 : 0

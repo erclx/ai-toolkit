@@ -182,7 +182,7 @@ describe('gate run', () => {
   it('should state what each exit code means', () => {
     const run = runCli(['gate', 'run', '--help'], { cwd: target })
 
-    expect(run.stdout).toContain('a stage found a fact')
+    expect(run.stdout).toContain('could not measure its input under CI')
   })
 
   it('should refuse a subcommand it does not register', () => {
