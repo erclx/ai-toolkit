@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.50.0](https://github.com/erclx/aitk/compare/v3.49.0...v3.50.0) (2026-08-31)
+
+
+### Features
+
+* **autoship:** move the review classifier from prose into a verb ([#1265](https://github.com/erclx/aitk/issues/1265)) ([f9305c0](https://github.com/erclx/aitk/commit/f9305c01d4101efe0ebf9ec2317e4f24180e8e84))
+
 ## [3.49.0](https://github.com/erclx/aitk/compare/v3.48.1...v3.49.0) (2026-08-31)
 
 
