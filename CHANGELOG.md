@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.51.0](https://github.com/erclx/aitk/compare/v3.50.0...v3.51.0) (2026-08-31)
+
+
+### Features
+
+* **tasks:** validate board row and table shape ([#1268](https://github.com/erclx/aitk/issues/1268)) ([70b6498](https://github.com/erclx/aitk/commit/70b6498258752c12330f2ef1fa1e5920999967da))
+
 ## [3.50.0](https://github.com/erclx/aitk/compare/v3.49.0...v3.50.0) (2026-08-31)
 
 
