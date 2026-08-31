@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.49.0](https://github.com/erclx/aitk/compare/v3.48.1...v3.49.0) (2026-08-31)
+
+
+### Features
+
+* **gov:** resolve every path a rule cites and every internal glob ([#1269](https://github.com/erclx/aitk/issues/1269)) ([73e5323](https://github.com/erclx/aitk/commit/73e5323dc23d6d72f73b40d445fc531671f1551c))
+
 ## [3.48.1](https://github.com/erclx/aitk/compare/v3.48.0...v3.48.1) (2026-08-31)
 
 
