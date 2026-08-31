@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.47.0](https://github.com/erclx/aitk/compare/v3.46.0...v3.47.0) (2026-08-31)
+
+
+### Features
+
+* **sessions:** reach the controlling session from a dispatched worker ([#1259](https://github.com/erclx/aitk/issues/1259)) ([07211ae](https://github.com/erclx/aitk/commit/07211ae1174d885cc28d271a744974019894db68))
+
 ## [3.46.0](https://github.com/erclx/aitk/compare/v3.45.0...v3.46.0) (2026-08-31)
 
 
