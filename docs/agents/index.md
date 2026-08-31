@@ -18,6 +18,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Self-stated counts](counts.md): Reading a sentence that asserts a closed catalog's size, how a match is decided, the plausibility filter that keeps a generic word from matching a subset, and why the sweep reports rather than gates
 - [Demo](demo.md): Compiling a screencast draft into a runnable plan, driving a served application to a recording and a still, the pointer the recording paints, and what each refusal reports
 - [Docs](docs.md): How aitk docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
+- [Merge gate](gate.md): Running the gate this repository verifies a branch with, what the stage table holds and what stays a script, how the changed set scopes three stages, and why a stage that cannot read its input reports rather than passing
 - [Indexes](indexes.md): Flags, exit codes, and JSON shape for aitk indexes regen, plus when it auto-stages what it rewrote
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project
 - [Intake](intake.md): Reading intake folder counts and items, the three read states an item can be in, landing a batch of selections in one cluster, the refusal reasons, and why a call is scoped to one file

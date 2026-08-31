@@ -30,6 +30,7 @@ import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
 import { register as worktrees } from '@/commands/worktrees'
 import { register as audits } from '@/commands/audits'
+import { register as gate } from '@/commands/gate'
 import { register as secrets } from '@/commands/secrets'
 import { register as deps } from '@/commands/deps'
 import { register as labels } from '@/commands/labels'
@@ -84,6 +85,7 @@ function showHelp(): void {
     `${GREY}│${NC}    autoship [cmd]     ${GREY}# Decide whether a changed set needs the review pass (classify)${NC}`,
     `${GREY}│${NC}    census [path]      ${GREY}# Report tracked file count, extension breakdown, and line totals${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
+    `${GREY}│${NC}    gate [cmd]         ${GREY}# Run the merge gate stage by stage (run)${NC}`,
     `${GREY}│${NC}    upgrade            ${GREY}# Reinstall the CLI globally with the manager that installed it${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
@@ -132,6 +134,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk labels audit --json`,
     `${GREY}│${NC}    aitk census --json`,
     `${GREY}│${NC}    aitk audits run --json`,
+    `${GREY}│${NC}    aitk gate run --all --no-write`,
     `${GREY}│${NC}    aitk upgrade --json`,
     `${GREY}└${NC}`,
   ]
@@ -186,6 +189,7 @@ labels(program)
 autoship(program)
 census(program)
 audits(program)
+gate(program)
 upgrade(program)
 
 program.parse()

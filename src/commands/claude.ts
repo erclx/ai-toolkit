@@ -1136,8 +1136,8 @@ function refuseAudit(
 /**
  * Prints nothing when every skill carries a requirement.
  *
- * `--requirements-only` is what `verify.sh` runs on every push, and that script
- * pipes a stage's whole output into its own frame. A passing gate that printed
+ * `--requirements-only` is what the merge gate runs on every push, and it pipes
+ * a stage's whole output into its own frame. A passing gate that printed
  * its frame would nest one inside the other on every contributor's push.
  */
 function reportRequirementGate(report: SkillsAudit): void {

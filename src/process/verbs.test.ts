@@ -151,3 +151,45 @@ describe('a list --json verb', () => {
     })
   })
 })
+
+/**
+ * The gate is the one verb here whose stages are not run from a case, and the
+ * decisive reason is recursion: its last stage runs `bun run test`, so a case
+ * spawning the gate spawns the suite that spawns the case. Two more sit behind
+ * it, since every stage reads this checkout by design and the first one writes
+ * to it, so pointing the run at a per-case directory would measure the wrong
+ * tree or reformat the repository under the suite. What the tier answers
+ * instead is the question an in-process call cannot: whether the entry point
+ * the two package scripts now name is registered in the binary at all.
+ *
+ * The stages themselves are driven end to end twice on every branch, by the
+ * `pre-push` hook and by `bun run check:ci` on the pull request.
+ */
+describe('gate run', () => {
+  it('should be registered under a group of its own', () => {
+    const run = runCli(['gate', '--help'], { cwd: target })
+
+    expect(run.status).toBe(0)
+    expect(run.stdout).toContain('run')
+  })
+
+  it('should carry both flags the package scripts pass it', () => {
+    const run = runCli(['gate', 'run', '--help'], { cwd: target })
+
+    expect(run.status).toBe(0)
+    expect(run.stdout).toContain('--all')
+    expect(run.stdout).toContain('--no-write')
+  })
+
+  it('should state what each exit code means', () => {
+    const run = runCli(['gate', 'run', '--help'], { cwd: target })
+
+    expect(run.stdout).toContain('could not measure its input under CI')
+  })
+
+  it('should refuse a subcommand it does not register', () => {
+    const run = runCli(['gate', 'bogus'], { cwd: target })
+
+    expect(run.status).not.toBe(0)
+  })
+})

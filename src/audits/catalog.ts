@@ -469,8 +469,8 @@ const RECORD_KINDS: readonly (readonly [string, Corpus])[] = [
 /**
  * Every audit the aggregate runs.
  *
- * `context`, `markdown`, and `skills` gate because `scripts/core/verify.sh`
- * already fails a push on each. `secrets` is the one entry that gates without
+ * `context`, `markdown`, and `skills` gate because the merge gate in
+ * `src/gate/stages.ts` already fails a push on each. `secrets` is the one entry that gates without
  * a stage behind it, added deliberately rather than as a side effect, since a
  * credential in the published tree is a fact and the split this repository
  * records gates a fact and reports a judgment. Weigh any further addition

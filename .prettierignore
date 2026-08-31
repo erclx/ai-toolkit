@@ -8,7 +8,7 @@
 !.claude-plugin/marketplace.json
 
 # regen-hero.sh writes this and serializes it its own way. Formatting it too
-# gives the file two writers that disagree, and the verify.sh Hero stage then
+# gives the file two writers that disagree, and the Hero stage then
 # fails for whichever of them committed last rather than for a stale count.
 # The template beside it is hand-edited and keeps its format gate.
 /assets/hero.html

@@ -349,8 +349,8 @@ function refuse(
 /**
  * Prints nothing when every path resolves.
  *
- * `--citations-only` is what `verify.sh` runs on every push, and that script
- * pipes a stage's whole output into its own frame. A passing gate that printed
+ * `--citations-only` is what the merge gate runs on every push, and it pipes
+ * a stage's whole output into its own frame. A passing gate that printed
  * its frame would nest one inside the other on every contributor's push.
  */
 function reportGate(report: ScannedCitations): void {

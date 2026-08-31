@@ -49,7 +49,7 @@ A standard then changes on a failure rather than on a finding. A finding is that
 
 Running outside the repo is the load-bearing part: a fixture under the repo loads this project's `CLAUDE.md` through the ancestor chain, and the session under test arrives already knowing what the test is trying to measure. Writes under `.claude/` stay blocked even with `--permission-mode acceptEdits`, so the artifact comes back in the final message and stdout is what gets judged.
 
-`aitk standards audit` reads the corpus at `standards/` and reports every filename carrying the section against every one that does not. `--arrivals-only` narrows the exit code to a standard new on the current branch, wired into `scripts/core/verify.sh` beside the skill-requirement gate whose shape it copies.
+`aitk standards audit` reads the corpus at `standards/` and reports every filename carrying the section against every one that does not. `--arrivals-only` narrows the exit code to a standard new on the current branch, wired into `src/gate/stages.ts` beside the skill-requirement gate whose shape it copies.
 
 Gating the standards already short the section would fail every push until someone closed them all, which is the sweep `standards/standard.md` forbids. Only an arrival missing the section fails.
 

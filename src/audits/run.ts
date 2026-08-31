@@ -32,7 +32,8 @@ export type Spawn = (spec: AuditSpec) => Promise<SpawnResult>
  * Runs each verb out of the checkout this CLI is executing from.
  *
  * `process.execPath` and the resolved `cli.ts` rather than a bare `aitk`, for
- * the reason `verify.sh` already names: a globally installed binary resolves to
+ * the reason `cliRunner` in `src/gate/sequencer.ts` already names: a globally
+ * installed binary resolves to
  * the main checkout no matter which worktree is running, so the aggregate would
  * measure the wrong tree and report a pass over a branch it never read.
  *

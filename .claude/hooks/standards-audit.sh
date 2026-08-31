@@ -39,7 +39,8 @@ root="${CLAUDE_PROJECT_DIR:-.}"
 # push stage read one build. A globally installed binary lags a branch by
 # whatever has not been released, which puts a ban kind added in
 # `src/markdown/bans.ts` into the push and not into the edit.
-# `scripts/core/verify.sh` names the same reason for the same choice.
+# `cliRunner` in `src/gate/sequencer.ts` names the same reason for the same
+# choice on the push side.
 #
 # A tree without the source falls back to the binary. A machine with neither
 # reports that nothing ran rather than exiting clean, since an edit nobody

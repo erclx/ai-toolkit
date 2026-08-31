@@ -94,7 +94,7 @@ Two seed sources can write one destination, and nothing reports the collision. A
 ### The seed gate
 
 - The seed tree is held to the standards it seeds by a `check` stage, not by a rule path. Widening the `paths` globs on the claude rules was the alternative and it fires only when a session happens to edit a seed, which leaves a seed nobody touches wrong indefinitely.
-- `verify.sh` runs `context audit <root> --gate` against each `tooling/<stack>/seeds/` carrying a `.claude/`, discovered per run rather than listed, so a new stack is covered without a script edit
+- The merge gate runs `context audit <root> --gate` against each `tooling/<stack>/seeds/` carrying a `.claude/`, discovered per run through `scripts/core/list-seed-roots.sh` rather than listed, so a new stack is covered without an edit to the stage
 - The seed gate reaches only what the index-plus-entry contract covers, which today is `tooling/base/seeds/.claude/context/`. The claude tree seeds four folders holding an `index.md` and no entries, so the gate measures their indexes and nothing else, and `ARCHITECTURE.md`, `DESIGN.md`, and `REQUIREMENTS.md` sit under no audited folder and stay out.
 - Reaching those three needs an audit keyed to a document standard rather than a folder, which no command has
 - A seed exempts itself from the section check with `stub: true` in its frontmatter, and both install paths strip the field so no target receives it. The exemption exists because the section check carries a false-positive class its own comment in `src/context/audit.ts` records: a standard may sanction omitting a section, and no measure separates that from a file that forgot it.
