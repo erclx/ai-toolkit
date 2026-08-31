@@ -164,9 +164,9 @@ EOF
     log_info "  src/styles/tokens.css: color, spacing, radius, font tokens"
     log_info "  src/components/Button.tsx: token usage in a real component"
     log_info "  REQUIREMENTS.md non-goal: no motion or transitions"
-    log_info "Action 1: /aitk:claude-design-extract"
+    log_info "Action 1: /canon:claude-design-extract"
     log_info "Expect:   source path announced, .claude/DESIGN.md token tables filled from tokens.css"
-    log_info "Action 2: aitk design render"
+    log_info "Action 2: canon design render"
     log_info "Expect:   .claude/review/design/index.html with swatches, samples, and bars"
     ;;
   "greenfield")
@@ -214,9 +214,9 @@ EOF
     log_info "  Personality: quiet, disciplined, warm paper tones, single accent, no motion"
     log_info "  Non-goals: no motion or transitions"
     log_info "  Architecture: Vite plus React web app (informs typography choices)"
-    log_info "Action 1: /aitk:claude-design-extract"
+    log_info "Action 1: /canon:claude-design-extract"
     log_info "Expect:   greenfield path announced, .claude/DESIGN.md proposed, most cells marked ? verify"
-    log_info "Action 2: aitk design render"
+    log_info "Action 2: canon design render"
     log_info "Expect:   .claude/review/design/index.html renders cleanly with swatches and samples"
     log_info "Expect:   every tagged cell shows a ? verify marker beside its value, never inside it"
     log_info "Expect:   the confidence line reports nearly every counted cell tagged on this path"

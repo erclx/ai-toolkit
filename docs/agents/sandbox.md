@@ -5,24 +5,24 @@ description: Scenario routing, the expectation scoring surface, and the coverage
 
 # Sandbox
 
-`aitk sandbox` provisions isolated project states, scores a provisioned one against a declared expectation, and reports which scenarios declare an expectation at all.
+`canon sandbox` provisions isolated project states, scores a provisioned one against a declared expectation, and reports which scenarios declare an expectation at all.
 
 ## Scenarios
 
-Scenarios live under `scripts/sandbox/`, one folder per category. `scripts/sandbox/fixtures/` is the exception, holding file content that scenarios stage rather than scenarios of its own, so both pickers filter it out. `files` in `package.json` excludes that tree, so an installed `aitk` carries the command, reports it as toolkit-only on one line, and exits 1 rather than failing on the missing directory. Route non-interactively with `SANDBOX_SCENARIO`:
+Scenarios live under `scripts/sandbox/`, one folder per category. `scripts/sandbox/fixtures/` is the exception, holding file content that scenarios stage rather than scenarios of its own, so both pickers filter it out. `files` in `package.json` excludes that tree, so an installed `canon` carries the command, reports it as toolkit-only on one line, and exits 1 rather than failing on the missing directory. Route non-interactively with `SANDBOX_SCENARIO`:
 
 ```bash
-SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
+SANDBOX_SCENARIO=sync canon sandbox infra:tooling
 ```
 
 Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` scenarios require interactive input and loop on empty input, so skip them in automated runs.
 
 ## Scenario expectations
 
-`aitk sandbox check <category>:<command> [arm]` scores a provisioned sandbox against the arm's `expect.toml`, printing a verdict on stderr and, with `--json`, the same verdict as a record on stdout.
+`canon sandbox check <category>:<command> [arm]` scores a provisioned sandbox against the arm's `expect.toml`, printing a verdict on stderr and, with `--json`, the same verdict as a record on stdout.
 
 ```bash
-aitk sandbox check claude:docs drift --json
+canon sandbox check claude:docs drift --json
 ```
 
 | Flag                | Effect                                                                      |
@@ -46,10 +46,10 @@ Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a ma
 
 ## Scenario coverage
 
-`aitk sandbox coverage` reports which scenarios declare expectations and which only provision a state. It reads the fixture tree, so it needs no provisioned sandbox and runs nothing. Where that tree does not ship it exits 1 and prints no percentage, since a denominator nobody looked at is not a coverage result. A tree that is present and holds no scenarios is a real zero and still reports one.
+`canon sandbox coverage` reports which scenarios declare expectations and which only provision a state. It reads the fixture tree, so it needs no provisioned sandbox and runs nothing. Where that tree does not ship it exits 1 and prints no percentage, since a denominator nobody looked at is not a coverage result. A tree that is present and holds no scenarios is a real zero and still reports one.
 
 ```bash
-aitk sandbox coverage --json
+canon sandbox coverage --json
 ```
 
 | Flag       | Effect                                                      |

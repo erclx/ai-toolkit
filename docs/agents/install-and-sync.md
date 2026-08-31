@@ -9,12 +9,12 @@ The behavior notes behind the verbs listed in `commands.md`. Each one records wh
 
 ## Domain sync
 
-`aitk gov sync` updates only rules already present under `.claude/rules/` and
+`canon gov sync` updates only rules already present under `.claude/rules/` and
 never adds new ones. A rule the toolkit does not ship is left alone, which is
 how project-authored rules survive, and one under `.claude/rules/project/`
 is left alone regardless of its name, since that subfolder is project-authored
 by location. It also removes a stale `.claude/GOV.md`
-from the retired build. Use `aitk gov install` to add rules.
+from the retired build. Use `canon gov install` to add rules.
 
 A rule the toolkit finds no source for, sitting in a shared subdirectory rather
 than under `.claude/rules/project/`, is reported with the path under that
@@ -22,53 +22,53 @@ subfolder it would take. The offer is conditional on the project having written
 the rule, since a rule the toolkit shipped and later renamed reaches the same
 line, and moving one there would mark it the project's for good. Nothing is
 moved either way, because a rule's installed path is one the project's own
-rules, skills, and docs may cite. `aitk standards rule` carries the reserved
+rules, skills, and docs may cite. `canon standards rule` carries the reserved
 number bands behind that placement, where `900-999` is the range a
 project-authored rule takes and everything below it belongs to the toolkit.
 
-`aitk sync --check` does not report an orphaned entry. It skips every one, so
-the destination reaches `aitk gov sync` alone, the one domain sync verb left.
+`canon sync --check` does not report an orphaned entry. It skips every one, so
+the destination reaches `canon gov sync` alone, the one domain sync verb left.
 
-When the target's install recorded a stack, `aitk gov sync` also reports a
+When the target's install recorded a stack, `canon gov sync` also reports a
 rule that stack lists and `.claude/rules/` does not hold, as a `missing` entry
 carrying no change. This is what makes a target whose recorded sync point
 postdates a rule joining its stack still see that rule: the report reads the
 target's current entitlement against its current tree rather than diffing
 from an anchor a later sync could advance past the rule's own commit. A
 target whose install predates the recorded chain falls back to the same
-band-inference `newRules` uses in `aitk sync --check`.
+band-inference `newRules` uses in `canon sync --check`.
 
-There is no `aitk standards sync` and no `aitk standards install`. The corpus
+There is no `canon standards sync` and no `canon standards install`. The corpus
 installs into no project, so the domain has nothing in a target to reconcile.
-`aitk standards <name>` prints one, resolving `standards/` at the working root
-and then the corpus inside the package, and `aitk standards list --json` carries
+`canon standards <name>` prints one, resolving `standards/` at the working root
+and then the corpus inside the package, and `canon standards list --json` carries
 the catalog.
 
-There is no `aitk snippets sync` and no `aitk snippets install` either, on the
+There is no `canon snippets sync` and no `canon snippets install` either, on the
 same ground: `claude/snippets` in the plugin cache symlinks live to the
 toolkit's own `snippets/`, so a session reaches one at its `@` reference with
-no copy to reconcile. `aitk snippets list --json` carries the catalog and
-`aitk snippets create` is the one verb left that still writes a file.
+no copy to reconcile. `canon snippets list --json` carries the catalog and
+`canon snippets create` is the one verb left that still writes a file.
 
 ## Install guards
 
-`aitk gov install` requires its first argument under
-`AITK_NON_INTERACTIVE=1`. It used to fall back to an interactive picker that
+`canon gov install` requires its first argument under
+`CANON_NON_INTERACTIVE=1`. It used to fall back to an interactive picker that
 resolved to its first option headlessly, so a call with no stack installed
 whichever stack sorted first. It now reports the valid names on stderr and
 exits 1.
 
 Every documented agent path already passes the argument, including
-`aitk init`. The confirm-then-apply prompt after it still resolves to `Yes`
+`canon init`. The confirm-then-apply prompt after it still resolves to `Yes`
 headlessly, so a call that names its stack is unchanged.
 
-`aitk gov install` also refuses the toolkit root as a target. It resolves the
+`canon gov install` also refuses the toolkit root as a target. It resolves the
 target before anything else, so a path that does not exist fails rather than
 being scaffolded.
 
 ## Standards resolution
 
-`aitk standards <name>` writes the document to stdout and the root it answered
+`canon standards <name>` writes the document to stdout and the root it answered
 from to stderr, so a caller capturing with `$(...)` receives the document alone.
 A name resolves with or without its `.md` extension, and one that matches no
 standard exits 1 after listing the catalog on stderr.
@@ -85,7 +85,7 @@ runs the verb again for that name.
 
 ## Governance regen
 
-`aitk gov regen` is the one governance verb that runs against the toolkit root,
+`canon gov regen` is the one governance verb that runs against the toolkit root,
 because the `.claude/rules/` it writes there is produced output rather than an
 operator's working copy. It reads the stack recorded in `internal/governance.toml`,
 installs it alongside anything under `internal/rules/`, and clears the
@@ -98,8 +98,8 @@ Consumed copies stage of `bun run check` asserts the result is committed.
 
 ## Whole-project sync
 
-`aitk sync` runs every installed domain sync, then offers to commit the result
-and open a pull request. Under `AITK_NON_INTERACTIVE=1` it applies the domain
+`canon sync` runs every installed domain sync, then offers to commit the result
+and open a pull request. Under `CANON_NON_INTERACTIVE=1` it applies the domain
 syncs and then refuses the git workflow, reporting the branch and commit it
 would have created and exiting 0. Nothing is staged, committed, or pushed
 headlessly.
@@ -109,7 +109,7 @@ It also refuses a target whose working tree is dirty, so commit or stash first.
 
 ## Drift reporting
 
-`aitk sync --check` reports drift and writes nothing, so it needs no clean tree
+`canon sync --check` reports drift and writes nothing, so it needs no clean tree
 and is safe to run at any time. Each file is classified as `stale` when it still
 matches what the toolkit installed, `customized` when the project edited it,
 `stranded` when it sits at a path the toolkit no longer installs to, `orphaned`
@@ -121,13 +121,13 @@ Use `--json` for the machine-readable report and `--exit-code` to fail a CI job.
 and missing files are both excluded from that exit code: a project-authored
 rule never converges, and a sync that added a missing one silently changes
 what the project is governed by, which stays a separate command an operator
-chooses to run. Attribution reads `.claude/aitk/config.json`, which every
+chooses to run. Attribution reads `.claude/canon/config.json`, which every
 install and sync writes.
 
 A target installed before stamping shipped has no such file, and neither does
 that fallback do anything to migrate it. A target stamped before the file
-moved into `.claude/aitk/` still carries it at the retired
-`.claude/aitk.json`, and `aitk sync --check` reads that path when the current
+moved into `.claude/canon/` still carries it at the retired
+`.claude/canon.json`, and `canon sync --check` reads that path when the current
 one is absent, reporting it rather than moving it. Only a target carrying
 neither path falls back to the toolkit's own git history.
 Installed content matching any
@@ -150,14 +150,14 @@ since `src/tooling/` runs its own inject machinery and has no walk to attribute.
 The chain is ordered nearest stack first, which is what a `--skip` run needs:
 recording the leaf alone would send the next report measuring against a layer the
 target deliberately does not carry. The report loads exactly those stacks, scans
-them the way `aitk tooling sync` would, and counts what differs per category
+them the way `canon tooling sync` would, and counts what differs per category
 under `tooling.counts`.
 
 `measured` is the field the section exists for. A target carrying no chain
 reports `measured: false`, which separates tooling nobody has ever looked at from
 tooling that is current. Both produce zero changes otherwise. Every target
 installed before the record shipped starts unmeasured and leaves on its next
-`aitk tooling sync`, since backfilling would mean inferring the chain from
+`canon tooling sync`, since backfilling would mean inferring the chain from
 installed files, which is the guess the record replaces.
 
 A workspace root records nothing, because each package resolves its own chain and
@@ -178,7 +178,7 @@ about a different corpus.
 All six report only against a toolkit-managed target, which is one carrying a
 `.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
 report says so through `managed` in the JSON and routes an unmanaged directory to
-`aitk init`. Seeds are why the gate exists, since they enumerate from the toolkit
+`canon init`. Seeds are why the gate exists, since they enumerate from the toolkit
 source rather than from what a target installed, so an unmanaged directory would
 otherwise report every seed as `missing`.
 
@@ -214,7 +214,7 @@ suffixed variant such as `TASKS-ARCHIVE.md` unreported.
 
 Route it to `migration-superseded`. That skill resolves the standard governing
 `replacedBy` from the `appliesTo` the standards catalog declares, reads the
-destination shape with `aitk standards <name>`, and proposes the split without
+destination shape with `canon standards <name>`, and proposes the split without
 writing. Where a folder has no governing standard, the entry earns a named
 refusal rather than a shape nobody stated.
 
@@ -243,20 +243,20 @@ The list rides beside `newSkills`, which asks the same question about the plugin
 catalog. Both are names rather than paths, and neither queues a change, because
 the two remedies differ: a skill loads live from the plugin directory and needs
 nothing run, while a rule reaches a target only when someone runs
-`aitk gov install`.
+`canon gov install`.
 
 Read a clean section as reporting rather than as delivering. Nothing here
 installs, nothing counts toward `--exit-code`, and a target can read the list and
 act on none of it. The value stops at an operator reading it, which is the same
 contract the skills list already sets.
 
-Since `aitk gov install` records the stack it resolved, a target carrying that
+Since `canon gov install` records the stack it resolved, a target carrying that
 record answers this by comparing its current entitlement against its current
 tree, with no anchor and no git diff involved. That is what lets the section
 name a rule that shipped before the target's last sync: the anchor a sync
 advances plays no part in the read, where an anchor-bound diff can never see a
 rule on the far side of a window a later sync moved past it. The per-file
-`missing` state `aitk gov sync` reports comes from the same comparison, so a
+`missing` state `canon gov sync` reports comes from the same comparison, so a
 rule the chain lists reaches both surfaces the same way.
 
 A target stamped before governance recorded a chain falls back to the older
@@ -364,22 +364,22 @@ so this section reports and gates nothing.
 
 ## Bootstrap
 
-`aitk init` installs up to four core domains and reports each one independently. A
+`canon init` installs up to four core domains and reports each one independently. A
 domain that fails does not abort the run, so the command finishes the rest and
 exits 1 naming the failures. Passing any flag skips the confirmation prompt,
 which is what makes it scriptable.
 
 `--stack` defaults to `base`, and the default
-does not read as a passed flag, so a bare `aitk init` installs governance and
+does not read as a passed flag, so a bare `canon init` installs governance and
 still prompts. `--skip` takes `wiki` and `governance`, and warns
 without aborting on any other value. There is no `--standards` and no
 `--snippets`, since no run writes either corpus into the target.
 
 ## Unguarded tooling primitives
 
-`aitk tooling inject` and `aitk tooling prune-gitignore` are the unguarded
+`canon tooling inject` and `canon tooling prune-gitignore` are the unguarded
 primitives beneath `sync`. They apply one stack with no scan and no prompt, and
-they deliberately skip the check that rejects `claude`, which is how `aitk
+they deliberately skip the check that rejects `claude`, which is how `canon
 claude` drives its own stack through them. Use `sync` unless you are scripting
 provisioning. Both frame their own output, so pass `--nested` when calling from
 inside an already-open frame.

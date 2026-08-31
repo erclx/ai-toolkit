@@ -35,7 +35,7 @@ The verification failure is the expensive one. A mermaid source can satisfy ever
 
 - No architecture file, no requirements file, and no folder structure to scan: stop, because nothing anchors a diagram
 - Render fails for any reason: continue to the output and name the skipped check. A missing renderer degrades the loop rather than failing it.
-- `aitk` not on PATH: report the catalog as stale rather than hand-editing it
+- `canon` not on PATH: report the catalog as stale rather than hand-editing it
 
 ## Out of scope
 

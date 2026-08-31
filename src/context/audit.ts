@@ -13,10 +13,10 @@ import { isStubSeed } from '@/seed-marker'
  * Entry length rests on one entry per domain, which is a domain fact, so
  * `standards/context.md` keeps it. Depth and bullet weight read the same over
  * any markdown file, so they are stated at the attribute tier and measured by
- * `aitk markdown audit` rather than here.
+ * `canon markdown audit` rather than here.
  */
 /**
- * Every reason `aitk context audit` refuses for.
+ * Every reason `canon context audit` refuses for.
  *
  * `no-folders` is the one ordinary absence: a project that never adopted
  * `.claude/context/`, `.claude/diagrams/`, or `.claude/wireframes/` names no

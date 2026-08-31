@@ -39,7 +39,7 @@ Drafted frontmatter is a proposal, and a session that writes it before the user 
 
 ## Out of scope
 
-- Regenerating an index in a project that already runs the system, which `aitk indexes regen` does on its own
+- Regenerating an index in a project that already runs the system, which `canon indexes regen` does on its own
 - Wiring the lint-staged entry or the hook, which the closeout offers and the user opts into
 - Installing governance rules or scaffolding a project: `setup-gov` and `setup-init`
 - Writing the frontmatter conventions themselves, which the prose standard owns

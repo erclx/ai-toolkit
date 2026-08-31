@@ -36,7 +36,7 @@ function migrate(args: string[]) {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-records-migrate-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-records-migrate-'))
   memoryDir = join(root, '.claude', 'memory')
   mkdirSync(memoryDir, { recursive: true })
 })

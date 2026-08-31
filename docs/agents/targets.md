@@ -7,12 +7,12 @@ description: The projects this toolkit installed into, the record the install wr
 
 ## List
 
-`aitk targets list` reports the projects this toolkit has installed into, with where each answer came from.
+`canon targets list` reports the projects this toolkit has installed into, with where each answer came from.
 
 ```bash
-aitk targets list
-aitk targets list --json
-aitk targets list --sweep ~/repos --json
+canon targets list
+canon targets list --json
+canon targets list --sweep ~/repos --json
 ```
 
 | Option            | Behavior                                                |
@@ -27,7 +27,7 @@ An exit code says nothing about a call made from a session, since a shell profil
 
 ## Where the answer comes from
 
-Every sync that stamps a target records it in a machine-level index at `$XDG_STATE_HOME/aitk/targets.json`, falling back to `~/.local/state/aitk/targets.json`. A project installed into since that shipped is therefore known without anyone naming it, and each row carries `stampedAt` from the sync that last touched it.
+Every sync that stamps a target records it in a machine-level index at `$XDG_STATE_HOME/canon/targets.json`, falling back to `~/.local/state/canon/targets.json`. A project installed into since that shipped is therefore known without anyone naming it, and each row carries `stampedAt` from the sync that last touched it.
 
 `--sweep` walks the roots given and finds what the record never held, which is every target installed before the index existed. A row says which of the two found it, and a row the record knows keeps that source even when the sweep reaches it too.
 
@@ -51,14 +51,14 @@ Nothing removes a row. A project deleted, moved, or that dropped the toolkit sta
 
 ## Pulls
 
-`aitk targets pulls` reports, per target, every open pull request with its checks and the heading its newest review pass carries.
+`canon targets pulls` reports, per target, every open pull request with its checks and the heading its newest review pass carries.
 
 ```bash
-aitk targets pulls
-aitk targets pulls ../caret ../stackr --json
+canon targets pulls
+canon targets pulls ../caret ../stackr --json
 ```
 
-Naming paths reads those and looks up nothing. Naming none reads every target `aitk targets list` reports. One clone per project is read, since two checkouts sharing an origin answer the same query and reading both spends the rate limit to print one answer twice.
+Naming paths reads those and looks up nothing. Naming none reads every target `canon targets list` reports. One clone per project is read, since two checkouts sharing an origin answer the same query and reading both spends the rate limit to print one answer twice.
 
 Exit codes: `0` at least one target was read, `1` refused or every target refused.
 

@@ -59,7 +59,7 @@ export interface SkewOptions {
 /**
  * The installed version against the newest published one.
  *
- * Never rejects and never reports through an exit code. `aitk sync --check
+ * Never rejects and never reports through an exit code. `canon sync --check
  * --exit-code` gates CI on drift it measured locally, so a lookup that failed
  * the caller would turn an offline machine into a failing check and the check
  * would be routed around. Every failure lands in `unknown` with its reason.
@@ -162,10 +162,10 @@ async function fetchLatest(name: string): Promise<string> {
 
 /**
  * One line naming the state, for a caller that renders the skew beside sections
- * it does not own. Held here so `aitk sync --check` and `aitk claude skills
+ * it does not own. Held here so `canon sync --check` and `canon claude skills
  * drift` cannot word the same three states differently.
  *
- * The remedy is chosen by the same detection `aitk upgrade` runs, because both
+ * The remedy is chosen by the same detection `canon upgrade` runs, because both
  * callers run from a source checkout routinely and that is where the verb
  * refuses. Naming it unconditionally sends a contributor whose clone sits a
  * release behind to a command that declines. The read is a match against the
@@ -186,7 +186,7 @@ export function describeSkew(
   const remedy =
     detectManager(root) === undefined
       ? 'This is a source checkout, so pull rather than reinstalling.'
-      : 'Run `aitk upgrade`.'
+      : 'Run `canon upgrade`.'
 
   return `Installed ${report.installed}, published ${report.latest}. ${remedy}`
 }

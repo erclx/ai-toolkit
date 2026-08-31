@@ -53,8 +53,8 @@ export function register(program: Command): void {
         '  2  at least one value was found',
         '',
         'Examples:',
-        '  aitk secrets scan',
-        '  aitk secrets scan --json',
+        '  canon secrets scan',
+        '  canon secrets scan --json',
         '',
       ].join('\n'),
     )
@@ -70,7 +70,7 @@ async function runScan(
   const root = resolve(path ?? process.cwd())
   const emitJson = opts.json ?? false
 
-  intro('aitk secrets scan')
+  intro('canon secrets scan')
 
   const scan = await scanShippedTree(root)
 

@@ -83,8 +83,8 @@ export function register(program: Command): void {
         'keeps a directory rather than removing one.',
         '',
         'Examples:',
-        '  aitk worktrees list',
-        '  aitk worktrees list --json',
+        '  canon worktrees list',
+        '  canon worktrees list --json',
         '',
       ].join('\n'),
     )
@@ -96,7 +96,7 @@ export function register(program: Command): void {
 async function runList(opts: ListCommandOptions): Promise<number> {
   const report = await reclaimReport({ cwd: process.cwd() })
 
-  intro('aitk worktrees list')
+  intro('canon worktrees list')
 
   if (report.kind === 'unreadable') {
     logStep('Refused')

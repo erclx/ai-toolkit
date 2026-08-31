@@ -33,5 +33,5 @@ The last failure sits at a boundary rather than inside a run. `setup-init` turns
 ## Out of scope
 
 - The rest of the onboarding chain. This skill installs governance and nothing else, and `setup-init` is the one-shot path that installs governance beside tooling, snippets, and the seeds.
-- Scaffolding the rule file an unmatched technology needs. `create-rule` writes one into a target project, and a rule the toolkit should ship is authored under `governance/rules/` against `aitk standards rule`.
-- Updating rules a project already has, which `aitk gov sync` owns
+- Scaffolding the rule file an unmatched technology needs. `create-rule` writes one into a target project, and a rule the toolkit should ship is authored under `governance/rules/` against `canon standards rule`.
+- Updating rules a project already has, which `canon gov sync` owns

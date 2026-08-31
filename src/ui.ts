@@ -135,13 +135,27 @@ export function frameSuccess(command: string, target: string): void {
   )
 }
 
+/**
+ * The retired spelling is still honored, and permanently.
+ *
+ * This variable is the documented way to drive any command headlessly, so
+ * every skill body, CI job, and operator script already written sets the old
+ * name. Those callers live in other repositories and in plugin caches this
+ * release cannot reach, and the failure mode of dropping the fallback is a
+ * command that quietly waits for a TTY nobody is watching rather than one that
+ * refuses and says why.
+ */
 export function isNonInteractive(): boolean {
-  return process.env.AITK_NON_INTERACTIVE === '1'
+  return (
+    process.env.CANON_NON_INTERACTIVE === '1' ||
+    // canon-keep-retired
+    process.env.AITK_NON_INTERACTIVE === '1'
+  )
 }
 
 /**
  * `nonInteractiveDefault` opts a prompt into the `select_option` behavior from
- * `scripts/lib/ui.sh`, where `AITK_NON_INTERACTIVE=1` resolves to the first
+ * `scripts/lib/ui.sh`, where `CANON_NON_INTERACTIVE=1` resolves to the first
  * option instead of failing. Callers that would rather fail loudly than pick
  * for the user leave it off.
  */
@@ -183,7 +197,7 @@ export async function select<Value>(opts: {
   return new Promise<Value>((resolve) => {
     if (!process.stdin.isTTY) {
       process.stderr.write(
-        `${GREY}│${NC} ${RED}✗${NC} ${message} requires a TTY. Pass an argument or set AITK_NON_INTERACTIVE=1.\n${GREY}└${NC}\n`,
+        `${GREY}│${NC} ${RED}✗${NC} ${message} requires a TTY. Pass an argument or set CANON_NON_INTERACTIVE=1.\n${GREY}└${NC}\n`,
       )
       process.exit(1)
     }

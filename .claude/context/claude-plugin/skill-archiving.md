@@ -11,7 +11,7 @@ Requirements, architecture, and design stay session-sourced, because those are j
 
 Nothing chained the archive until the `post-merge` git hook landed. Every earlier step fires from `claude-autoship` or `git-ship`, both of which finish while the pull request is still open, and a task archived there closes for work that may be abandoned. So the hook is the only event that lands late enough, and the board being gitignored rules out reading it from anywhere but the operator's own machine.
 
-That hook archives rather than announcing, and the escalation turned on closing one gap rather than on the detection proving itself. Both reasons the announce-only design gave for declining to act were re-measured. The first, that `index.md` regenerates from a `PostToolUse` hook a shell-side `mv` never fires, was void: `aitk indexes regen` is a CLI verb, so the command regenerates the index as part of the move. The second, that a gitignored board leaves no diff to review with nobody watching, holds only for a blind sweep of every all-`[x]` task and stops holding once the hook can name which task a merge closed.
+That hook archives rather than announcing, and the escalation turned on closing one gap rather than on the detection proving itself. Both reasons the announce-only design gave for declining to act were re-measured. The first, that `index.md` regenerates from a `PostToolUse` hook a shell-side `mv` never fires, was void: `canon indexes regen` is a CLI verb, so the command regenerates the index as part of the move. The second, that a gitignored board leaves no diff to review with nobody watching, holds only for a blind sweep of every all-`[x]` task and stops holding once the hook can name which task a merge closed.
 
 ## Naming the pull request a merge closed
 
@@ -21,13 +21,13 @@ Naming it is what nothing recorded. A branch name cannot carry the link, because
 
 That number has to name an open pull request. `gh pr view` resolves by head branch and ignores state, so a branch name reused after an earlier pull request merged returned the closed one, and the run rewrote a merged pull request's title and body while reporting its URL as the one it opened. The detection reads `gh pr list --head` scoped to `--state open` and to the repository's default base now, since one head can carry open pull requests against two bases and reading the first result would pick between them by list order. The run resolves once and reuses what that command printed rather than looking the number up again for the task write.
 
-The sandbox arm measured the second lookup rather than assuming it: `gh pr view` prefers the open pull request when a head carries both, so the number it wrote was right, and the claim that it recorded the merged one was wrong. It was removed anyway, because that precedence is an undocumented detail of the tool and the record `aitk tasks archive` closes against should not rest on one.
+The sandbox arm measured the second lookup rather than assuming it: `gh pr view` prefers the open pull request when a head carries both, so the number it wrote was right, and the claim that it recorded the merged one was wrong. It was removed anyway, because that precedence is an undocumented detail of the tool and the record `canon tasks archive` closes against should not rest on one.
 
 `git-followup` needed nothing, since its guard already stops unless the state is `OPEN`. The cause sits in `git-branch`, which has no collision check against a name that already carried a pull request, and that stays on the board because scoping the lookup makes a reused name survivable.
 
 ## Where the gates live
 
-The gates all live in `aitk tasks archive` rather than in the shell. A hook that pre-filtered would duplicate them in a language where the outcome test already needed an errexit comment, and the skill calling the same command is what stops the attended and unattended paths archiving differently.
+The gates all live in `canon tasks archive` rather than in the shell. A hook that pre-filtered would duplicate them in a language where the outcome test already needed an errexit comment, and the skill calling the same command is what stops the attended and unattended paths archiving differently.
 
 Each gate refuses with a non-zero exit rather than reporting, since a caller with nobody watching cannot act on a warning. A task whose outcomes are not all closed, whose plan is still live, or which shares its pull request number with another task all refuse and print why. `claude-tasks` keeps the one check the command cannot make, which is confirming the work reached `main` when a person archives by name rather than by merge.
 

@@ -20,7 +20,7 @@ Run these in parallel from `pwd`:
 - `ls docs/*.md 2>/dev/null`: list flat markdown files
 - `ls docs/*/ 2>/dev/null`: detect subfolders for the manual-review note
 - `ls .claude/context/ 2>/dev/null`: detect already-migrated content for conflict checks
-- `aitk claude seeds list --json 2>/dev/null`: get the canonical seed list to identify seed-derived files
+- `canon claude seeds list --json 2>/dev/null`: get the canonical seed list to identify seed-derived files
 
 Read each discovered `docs/*.md` file in parallel.
 
@@ -87,7 +87,7 @@ git mv docs/<file>.md .claude/context/<file>.md
 
 ## Reminder
 
-Run aitk indexes regen to update .claude/context/index.md.
+Run canon indexes regen to update .claude/context/index.md.
 ```
 
 If every file classified as "Keep in docs/", output: `✅ All docs/ content is human-facing. No moves proposed.`

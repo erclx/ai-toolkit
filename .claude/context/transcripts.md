@@ -7,7 +7,7 @@ description: Fetch YouTube transcripts with metadata frontmatter into any repo
 
 ## Overview
 
-`aitk transcripts <url>` fetches a YouTube video's captions and writes them as a markdown file with metadata frontmatter. It wraps `yt-dlp`, cleans the raw VTT captions into readable prose, and tags the output with the video's title, channel, duration, and publish date. The companion plugin skill drives the command from a chat request.
+`canon transcripts <url>` fetches a YouTube video's captions and writes them as a markdown file with metadata frontmatter. It wraps `yt-dlp`, cleans the raw VTT captions into readable prose, and tags the output with the video's title, channel, duration, and publish date. The companion plugin skill drives the command from a chat request.
 
 ## Layout
 
@@ -16,7 +16,7 @@ description: Fetch YouTube transcripts with metadata frontmatter into any repo
 
 ## Decisions
 
-- The command is toolkit-native. It runs against the current working directory, so any repo with `aitk` and `yt-dlp` on PATH can pull transcripts without installing anything.
+- The command is toolkit-native. It runs against the current working directory, so any repo with `canon` and `yt-dlp` on PATH can pull transcripts without installing anything.
 - When a video has no captions, the command still writes the frontmatter with `has_transcript: false` and a one-line note in place of the body, so a missing transcript is a recorded fact rather than a silent gap.
 
 ## External dependency
@@ -25,7 +25,7 @@ The command shells out to the `yt-dlp` binary, the same way the git skills shell
 
 ## Fetch command
 
-`aitk transcripts <url>` writes one file per video to the output directory. The filename is `<title-slug>--<video-id>.md`, so re-fetching the same video overwrites in place and two videos never collide.
+`canon transcripts <url>` writes one file per video to the output directory. The filename is `<title-slug>--<video-id>.md`, so re-fetching the same video overwrites in place and two videos never collide.
 
 | Option              | Default       | Behavior                                         |
 | ------------------- | ------------- | ------------------------------------------------ |
@@ -63,4 +63,4 @@ The command fetches one URL per run. Curated-channel batch mode, where a channel
 
 ## Related
 
-- `docs/agents/commands.md`: CLI flags and invocation contract for `aitk transcripts`
+- `docs/agents/commands.md`: CLI flags and invocation contract for `canon transcripts`

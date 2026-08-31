@@ -15,7 +15,7 @@ import { isMarked } from '@/exempt-marker'
  * target is word-keyed and spread past the fixture trees, so it would hide
  * part of the noise and none of the risk.
  */
-export const SECRET_MARKER = 'aitk-allow-secret'
+export const SECRET_MARKER = 'canon-allow-secret'
 
 /**
  * Whether the line at `index` is exempt, reading itself and the line above it.

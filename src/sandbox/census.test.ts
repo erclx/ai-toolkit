@@ -40,7 +40,7 @@ function exempt(name: string, reason: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-census-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-census-'))
 })
 
 afterEach(() => {
@@ -83,31 +83,31 @@ describe('skillForScenario', () => {
 
 describe('parseExemptions', () => {
   it('should read a reason keyed by skill', () => {
-    const parsed = parseExemptions('[aitk-cli]\nreason = "writes nothing"\n')
+    const parsed = parseExemptions('[canon-cli]\nreason = "writes nothing"\n')
 
-    expect(parsed.get('aitk-cli')).toBe('writes nothing')
+    expect(parsed.get('canon-cli')).toBe('writes nothing')
   })
 
   it('should throw on an entry carrying no reason rather than dropping it', () => {
     expect(() =>
-      parseExemptions('[aitk-cli]\nnote = "writes nothing"\n'),
-    ).toThrow(/aitk-cli declares no reason/)
+      parseExemptions('[canon-cli]\nnote = "writes nothing"\n'),
+    ).toThrow(/canon-cli declares no reason/)
   })
 
   it('should throw on an entry whose reason is empty', () => {
-    expect(() => parseExemptions('[aitk-cli]\nreason = ""\n')).toThrow(
+    expect(() => parseExemptions('[canon-cli]\nreason = ""\n')).toThrow(
       /declares no reason/,
     )
   })
 
   it('should throw on a top-level key that is not a table', () => {
-    expect(() => parseExemptions('aitk-cli = "writes nothing"\n')).toThrow(
+    expect(() => parseExemptions('canon-cli = "writes nothing"\n')).toThrow(
       /is not a table/,
     )
   })
 
   it('should throw on malformed TOML rather than losing the exemption set', () => {
-    expect(() => parseExemptions('[aitk-cli]\nreason = = 1\n')).toThrow()
+    expect(() => parseExemptions('[canon-cli]\nreason = = 1\n')).toThrow()
   })
 })
 
@@ -152,8 +152,8 @@ describe('collectCensus', () => {
   })
 
   it('should report a declared exemption with its reason', () => {
-    skill('aitk-cli')
-    exempt('aitk-cli', 'writes nothing')
+    skill('canon-cli')
+    exempt('canon-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
@@ -165,10 +165,10 @@ describe('collectCensus', () => {
   })
 
   it('should rank an armed arm above a stale exemption', () => {
-    skill('aitk-cli')
-    scenario('infra', 'aitk-cli')
-    declaration('infra', 'aitk-cli', '')
-    exempt('aitk-cli', 'writes nothing')
+    skill('canon-cli')
+    scenario('infra', 'canon-cli')
+    declaration('infra', 'canon-cli', '')
+    exempt('canon-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
@@ -177,20 +177,20 @@ describe('collectCensus', () => {
   })
 
   it('should report an exemption an arm now asserts rather than dropping it', () => {
-    skill('aitk-cli')
-    scenario('infra', 'aitk-cli')
-    declaration('infra', 'aitk-cli', '')
-    exempt('aitk-cli', 'writes nothing')
+    skill('canon-cli')
+    scenario('infra', 'canon-cli')
+    declaration('infra', 'canon-cli', '')
+    exempt('canon-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
-    expect(report.supersededExemptions).toEqual(['aitk-cli'])
+    expect(report.supersededExemptions).toEqual(['canon-cli'])
     expect(report.staleExemptions).toEqual([])
   })
 
   it('should not report a superseded exemption for a skill no arm asserts', () => {
-    skill('aitk-cli')
-    exempt('aitk-cli', 'writes nothing')
+    skill('canon-cli')
+    exempt('canon-cli', 'writes nothing')
 
     const report = collectCensus(root)
 
@@ -253,10 +253,10 @@ describe('collectCensus', () => {
   it('should count a partially armed catalog across the three verdicts', () => {
     skill('claude-docs')
     skill('bash-script')
-    skill('aitk-cli')
+    skill('canon-cli')
     scenario('claude', 'docs')
     declaration('claude', 'docs', 'drift')
-    exempt('aitk-cli', 'writes nothing')
+    exempt('canon-cli', 'writes nothing')
 
     const report = collectCensus(root)
 

@@ -32,7 +32,7 @@ function seedLegacyWiki(): string {
 }
 
 beforeEach(() => {
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-wiki-init-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-wiki-init-'))
 })
 
 afterEach(() => {

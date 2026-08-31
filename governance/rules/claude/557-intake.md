@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow the intake standard for the folder layout, frontmatter and dating, the item format, and retrieval. It is the single source. Read it with `aitk standards intake`.
+- Follow the intake standard for the folder layout, frontmatter and dating, the item format, and retrieval. It is the single source. Read it with `canon standards intake`.

@@ -5,12 +5,12 @@ description: Comparing the files a pull request body's Key Changes names against
 
 # Key Changes bijection
 
-`aitk pr key-changes` reads the `## Key Changes` section of a pull request body, lifts the paths its bullets claim, and compares that set against the files the pull request actually changed. This repository squash-merges, so the body becomes the commit message and the record on the trunk once the branch is gone.
+`canon pr key-changes` reads the `## Key Changes` section of a pull request body, lifts the paths its bullets claim, and compares that set against the files the pull request actually changed. This repository squash-merges, so the body becomes the commit message and the record on the trunk once the branch is gone.
 
 ```bash
-aitk pr key-changes
-aitk pr key-changes 1265 --json
-aitk pr key-changes --body .claude/.tmp/pr/body.md --base origin/main
+canon pr key-changes
+canon pr key-changes 1265 --json
+canon pr key-changes --body .claude/.tmp/pr/body.md --base origin/main
 ```
 
 The positional is the pull request to read, defaulting to the one open on this branch.
@@ -74,7 +74,7 @@ A claim is anchored when its first segment names a folder the tree holds. The ro
 | `1`  | refused, with `reason` naming the cause           |
 | `2`  | at least one claimed path is absent from the diff |
 
-Branch on the record rather than on the exit code. A shell function wrapping `aitk` takes its status from whatever it runs last, so every non-zero exit can reach a caller as zero.
+Branch on the record rather than on the exit code. A shell function wrapping `canon` takes its status from whatever it runs last, so every non-zero exit can reach a caller as zero.
 
 Three refusals separate a clean pass from a read that produced nothing:
 

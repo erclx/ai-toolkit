@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-memory-review` run leaves behind on the default
-# arm, through the propose pass alone. Read by `aitk sandbox check`. Patterns use
+# What a correct `/canon:claude-memory-review` run leaves behind on the default
+# arm, through the propose pass alone. Read by `canon sandbox check`. Patterns use
 # TOML literal strings so a regex needs no backslash escaping.
 #
 # The propose pass writes one file and that file is shared session scratch, which

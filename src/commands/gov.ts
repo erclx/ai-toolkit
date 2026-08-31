@@ -138,9 +138,9 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk gov install react',
-        '  aitk gov install node ../my-app',
-        '  aitk gov install astro --add 200-react,260-shadcn ../my-app',
+        '  canon gov install react',
+        '  canon gov install node ../my-app',
+        '  canon gov install astro --add 200-react,260-shadcn ../my-app',
         '',
       ].join('\n'),
     )
@@ -235,8 +235,8 @@ export function register(program: Command): void {
         '  2  at least one implementation reached history ahead of its test',
         '',
         'Examples:',
-        '  aitk gov test-order',
-        '  aitk gov test-order --base origin/main --json',
+        '  canon gov test-order',
+        '  canon gov test-order --base origin/main --json',
         '',
       ].join('\n'),
     )
@@ -285,8 +285,8 @@ export function register(program: Command): void {
         'around the stage.',
         '',
         'Examples:',
-        '  aitk gov counts',
-        '  aitk gov counts --json',
+        '  canon gov counts',
+        '  canon gov counts --json',
         '',
       ].join('\n'),
     )
@@ -346,8 +346,8 @@ export function register(program: Command): void {
         '  2  at least one declaration asserts either',
         '',
         'Examples:',
-        '  aitk gov superseded feature-feat- feature-',
-        '  aitk gov superseded feature-feat- feature- --json',
+        '  canon gov superseded feature-feat- feature-',
+        '  canon gov superseded feature-feat- feature- --json',
         '',
       ].join('\n'),
     )
@@ -394,7 +394,7 @@ export function register(program: Command): void {
         'present and the question answerable.',
         '',
         'Forms read, with where each resolves:',
-        '  standard  aitk standards <name> , against standards/ alone, which',
+        '  standard  canon standards <name> , against standards/ alone, which',
         '            is where the verb itself looks. internal/standards/ is not',
         '            tried, since a name resolving only there refuses for the',
         '            session that opens the citation.',
@@ -432,8 +432,8 @@ export function register(program: Command): void {
         '     nothing in this tree',
         '',
         'Examples:',
-        '  aitk gov citations',
-        '  aitk gov citations --json',
+        '  canon gov citations',
+        '  canon gov citations --json',
         '',
       ].join('\n'),
     )
@@ -478,8 +478,8 @@ export function register(program: Command): void {
         '  2  at least one instruction is restated outside a declared mirror',
         '',
         'Examples:',
-        '  aitk gov restated',
-        '  aitk gov restated --json',
+        '  canon gov restated',
+        '  canon gov restated --json',
         '',
       ].join('\n'),
     )
@@ -499,7 +499,7 @@ function runRestated(opts: RestatedOptions): number {
   const emitJson = opts.json ?? false
 
   if (report.kind === 'unreadable') {
-    intro('aitk gov restated')
+    intro('canon gov restated')
     logStep('Refused')
     logWarn(RESTATED_REFUSALS[report.reason])
     outro()
@@ -543,7 +543,7 @@ function reportRestated(
   report: Extract<RestatedReport, { kind: 'measured' }>,
   root: string,
 ): void {
-  intro('aitk gov restated')
+  intro('canon gov restated')
 
   // A count of what matched reads as a verdict on the repository unless the run
   // also says how wide the corpus behind it was.
@@ -599,7 +599,7 @@ async function runSuperseded(
   const emitJson = opts.json ?? false
 
   if (report.kind === 'unreadable') {
-    intro('aitk gov superseded')
+    intro('canon gov superseded')
     logStep('Refused')
     logError(report.reason)
     outro()
@@ -634,7 +634,7 @@ async function runCitations(opts: CitationsOptions): Promise<number> {
   const emitJson = opts.json ?? false
 
   if (report.kind === 'unreadable') {
-    intro('aitk gov citations')
+    intro('canon gov citations')
     logStep('Refused')
     logError(report.reason)
     outro()
@@ -722,7 +722,7 @@ function reportCitations(
   report: Extract<CitationReport, { kind: 'measured' }>,
   root: string,
 ): void {
-  intro('aitk gov citations')
+  intro('canon gov citations')
 
   logStep('Sweep')
   logInfo(`${report.rules} rules under ${RULE_DIRS.join(' and ')} in ${root}`)
@@ -817,7 +817,7 @@ function reportSuperseded(
   report: Extract<SupersededReport, { kind: 'measured' }>,
   root: string,
 ): void {
-  intro('aitk gov superseded')
+  intro('canon gov superseded')
 
   logStep('Sweep')
   logInfo(`${report.superseded} → ${report.replacement} in ${root}`)
@@ -862,7 +862,7 @@ function reportSuperseded(
 
 /**
  * Reports and never gates, so the finding count moves the exit code without
- * anything wiring it into a push. `aitk tasks validate` set that shape: a
+ * anything wiring it into a push. `canon tasks validate` set that shape: a
  * measure carrying a known false-positive class is what forces contributors to
  * route around a stage, and the unclassified bucket here is that class.
  */
@@ -876,7 +876,7 @@ function runTestOrder(opts: TestOrderOptions): number {
   // reading stdout sees pure data either way, and an operator reading the
   // terminal sees the refusal rather than a command that appeared to do nothing.
   if (report.kind === 'unreadable') {
-    intro('aitk gov test-order')
+    intro('canon gov test-order')
     logStep('Refused')
     logError(report.message)
     outro()
@@ -908,7 +908,7 @@ function reportTestOrder(
   report: Extract<TestOrderReport, { kind: 'measured' }>,
   root: string,
 ): void {
-  intro('aitk gov test-order')
+  intro('canon gov test-order')
 
   logStep('Range')
   logInfo(`${report.base.slice(0, 8)}..${report.head.slice(0, 8)} in ${root}`)
@@ -958,7 +958,7 @@ async function runCounts(opts: CountsOptions): Promise<number> {
   const emitJson = opts.json ?? false
 
   if (report.kind === 'unreadable') {
-    intro('aitk gov counts')
+    intro('canon gov counts')
     logStep('Refused')
     logWarn(COUNTS_REFUSALS[report.reason])
     outro()
@@ -993,7 +993,7 @@ function reportCounts(
   report: Extract<CountsReport, { kind: 'measured' }>,
   root: string,
 ): void {
-  intro('aitk gov counts')
+  intro('canon gov counts')
 
   logStep('Corpus')
   logInfo(`${report.filesScanned} tracked markdown file(s) in ${root}`)
@@ -1054,7 +1054,7 @@ function runList(opts: ListOptions): number {
     return 0
   }
 
-  intro('aitk gov list')
+  intro('canon gov list')
 
   if (sections.stacks) {
     logStep('Stacks')
@@ -1102,7 +1102,7 @@ function displayPath(target: string, rel: string): string {
 
 /**
  * Refuses rather than picking. `select_option` returned `options[0]` under
- * `AITK_NON_INTERACTIVE=1`, so a headless `aitk gov install` with no stack
+ * `CANON_NON_INTERACTIVE=1`, so a headless `canon gov install` with no stack
  * installed whichever stack sorted first, measured as 26 astro rules into an
  * empty directory. Every documented agent path already passes the argument.
  */
@@ -1134,7 +1134,7 @@ async function runInstall(
   target: string,
   opts: InstallOptions,
 ): Promise<number> {
-  intro('aitk gov install')
+  intro('canon gov install')
 
   const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
@@ -1218,13 +1218,13 @@ async function runInstall(
  * contract, and the skills point at the path.
  */
 async function runBuild(target: string): Promise<number> {
-  intro('aitk gov build')
+  intro('canon gov build')
 
   const resolved = resolve(target)
   const rulesDir = join(resolved, RULES_REL)
 
   if (!existsSync(rulesDir)) {
-    logError(`No rules found at ${rulesDir}. Run \`aitk gov install\` first.`)
+    logError(`No rules found at ${rulesDir}. Run \`canon gov install\` first.`)
     outro()
     return 1
   }

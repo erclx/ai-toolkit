@@ -8,7 +8,7 @@ description: Drafts `.claude/DESIGN.md` from a project's existing prose and shel
 ## Guards
 
 - If `.claude/DESIGN.md` already exists and has content beyond the seed template, stop: `❌ .claude/DESIGN.md already populated. Edit directly or archive the existing file first.`
-- If `aitk` is not on PATH, stop: `❌ aitk CLI not found.`
+- If `canon` is not on PATH, stop: `❌ canon CLI not found.`
 
 Step 1 carries two more stops that apply to one path only. Do not evaluate them before the path is picked.
 
@@ -46,10 +46,10 @@ Run these reads in parallel. Do not speculatively recurse into every directory.
 Run this from the project root:
 
 ```bash
-aitk claude seeds list --json | jq -r '.[] | select(.path == ".claude/DESIGN.md") | .content'
+canon claude seeds list --json | jq -r '.[] | select(.path == ".claude/DESIGN.md") | .content'
 ```
 
-Use the returned content as the target shape. Keep every section heading and every table header intact. The `aitk design render` parser depends on them.
+Use the returned content as the target shape. Keep every section heading and every table header intact. The `canon design render` parser depends on them.
 
 ## Step 4: fill the template
 
@@ -87,7 +87,7 @@ Do not invent non-goals. A proposed motion line is fine when neither the persona
 Write the filled template to `.claude/DESIGN.md` from the project root. Then run:
 
 ```bash
-aitk design render
+canon design render
 ```
 
 The command writes an HTML plus CSS preview to `.claude/review/design/`. Output the path in chat so the user can open it.

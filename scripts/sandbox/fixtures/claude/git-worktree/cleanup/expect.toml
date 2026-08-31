@@ -1,5 +1,5 @@
-# What a correct `/aitk:git-worktree` run leaves behind on the cleanup arm,
-# after `list` then `cleanup` both run in one turn. Read by `aitk sandbox
+# What a correct `/canon:git-worktree` run leaves behind on the cleanup arm,
+# after `list` then `cleanup` both run in one turn. Read by `canon sandbox
 # check`. Patterns use TOML literal strings so a regex needs no backslash
 # escaping.
 

@@ -14,7 +14,7 @@ import {
 let DIR: string
 
 beforeEach(() => {
-  DIR = mkdtempSync(join(tmpdir(), 'aitk-resolve-'))
+  DIR = mkdtempSync(join(tmpdir(), 'canon-resolve-'))
 })
 
 afterEach(() => {
@@ -28,7 +28,7 @@ function seed(pid: number, fields: Record<string, unknown> = {}): void {
       pid,
       sessionId: `id-${pid}`,
       cwd: `/repo/worktrees/w${pid}`,
-      name: `aitk-${pid}`,
+      name: `canon-${pid}`,
       kind: 'interactive',
       status: 'idle',
       startedAt: pid,
@@ -79,7 +79,7 @@ describe('resolveSessions', () => {
     })
 
     expect(report.kind === 'resolved' && report.sessions[0]).toMatchObject({
-      name: 'aitk-100',
+      name: 'canon-100',
       branch: 'feat/parser',
       unresolved: null,
     })
@@ -290,7 +290,7 @@ describe('resolveSessions', () => {
 /** A resolved row, which the self read matches against rather than a record. */
 function row(pid: number, sessionId: string | null): ResolvedSession {
   return {
-    name: `aitk-${pid}`,
+    name: `canon-${pid}`,
     pid,
     sessionId,
     cwd: `/repo/worktrees/w${pid}`,

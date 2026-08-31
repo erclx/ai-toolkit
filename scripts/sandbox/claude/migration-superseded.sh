@@ -95,18 +95,18 @@ EOF
       return 1
     fi
 
-    # The destination shape is read through `aitk standards <name>`, which is the
+    # The destination shape is read through `canon standards <name>`, which is the
     # only route a target has now that no corpus installs into one. The guard
     # asserts the read resolves, since an arm whose standards were unreachable
     # would score a refusal rather than the proposal declared below.
     local missing=""
     for standard in tasks diagrams; do
-      if ! AITK_NON_INTERACTIVE=1 aitk standards "$standard" >/dev/null 2>&1; then
+      if ! CANON_NON_INTERACTIVE=1 canon standards "$standard" >/dev/null 2>&1; then
         missing="$missing $standard"
       fi
     done
     if [ -n "$missing" ]; then
-      log_error "aitk standards could not resolve$missing. The arm would score the unresolved refusal instead."
+      log_error "canon standards could not resolve$missing. The arm would score the unresolved refusal instead."
       return 1
     fi
 
@@ -116,12 +116,12 @@ EOF
     # whole rather than piped, since `pipefail` turns a matcher's early exit
     # into a SIGPIPE the guard would read as a missing section.
     local report
-    report=$(AITK_NON_INTERACTIVE=1 aitk sync --check . --json 2>/dev/null) || true
+    report=$(CANON_NON_INTERACTIVE=1 canon sync --check . --json 2>/dev/null) || true
 
     case "$report" in
     *'"superseded"'*) ;;
     *)
-      log_error "The aitk on PATH reports no superseded section. Install a CLI at 0.46.0 or newer before running this arm."
+      log_error "The canon on PATH reports no superseded section. Install a CLI at 0.46.0 or newer before running this arm."
       return 1
       ;;
     esac
@@ -131,8 +131,8 @@ EOF
     log_info "  TASKS.md is tracked and ignored, so the untrack has to precede the entry"
     log_info "  DIAGRAMS.md carries two kinds the destination folder fixes filenames for"
     log_info "  HOOKS.md pairs to a folder no standard declares, so it earns no proposal"
-    log_info "  Standards resolve through aitk standards, which is the target's only route"
-    log_info "Action:  /aitk:migration-superseded"
+    log_info "  Standards resolve through canon standards, which is the target's only route"
+    log_info "Action:  /canon:migration-superseded"
     log_info "Expect:  proposes both splits from the resolved standards, declines the third,"
     log_info "         names git rm --cached ahead of the ignore entry, and writes nothing"
     log_info "Assert:  declared in fixtures/claude/migration-superseded/retired/expect.toml"

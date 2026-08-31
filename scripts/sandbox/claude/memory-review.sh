@@ -18,7 +18,7 @@ stage_setup() {
 
 # Sample Project
 
-Task API used as the fixture for /aitk:claude-memory-review.
+Task API used as the fixture for /canon:claude-memory-review.
 
 ## Behavior
 
@@ -35,10 +35,10 @@ Task API used as the fixture for /aitk:claude-memory-review.
 - Track work in `.claude/tasks/`, one file per task.
 EOF
 
-  mkdir -p .claude/skills/aitk-sample
-  cat <<'EOF' >.claude/skills/aitk-sample/SKILL.md
+  mkdir -p .claude/skills/canon-sample
+  cat <<'EOF' >.claude/skills/canon-sample/SKILL.md
 ---
-name: aitk-sample
+name: canon-sample
 description: Guide edits under src/.
 ---
 
@@ -139,7 +139,7 @@ Be thoughtful about changes.
 **How to apply:** Consider impact before editing.
 EOF
 
-  # Seeded in the shape `aitk indexes regen` produces, so the fixture matches
+  # Seeded in the shape `canon indexes regen` produces, so the fixture matches
   # what the memory-index hook would have written. A hand-shaped index here
   # would drift from the renderer and teach the arm the wrong contract.
   cat <<'EOF' >.claude/memory/index.md
@@ -172,7 +172,7 @@ EOF
   log_step "Scenario ready: memory review with mixed classification"
   log_info "Fixtures seeded in .claude/memory/:"
   log_info "  confirm-destructive-commands  : promote to CLAUDE.md Behavior (cross-domain)"
-  log_info "  zod-in-src-routes             : promote to .claude/skills/aitk-sample/SKILL.md (path-scoped)"
+  log_info "  zod-in-src-routes             : promote to .claude/skills/canon-sample/SKILL.md (path-scoped)"
   log_info "  no-obvious-comments + comments-explain-why : consolidate into one promote"
   log_info "  memory-location               : already absorbed in CLAUDE.md Memory, should retire"
   log_info "  be-careful                    : crisp-fail, should retire"
@@ -184,9 +184,9 @@ EOF
   log_info "  so memory-review-memory-sweep.md is evidence the fallback resolved"
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
-  log_info "Action:  /aitk:claude-memory-review"
+  log_info "Action:  /canon:claude-memory-review"
   log_info "Expect:  declared in fixtures/claude/memory-review/expect.toml"
-  log_info "         Check it with: aitk sandbox check claude:memory-review"
+  log_info "         Check it with: canon sandbox check claude:memory-review"
   log_info "         Interactively, respond 'all' to exercise the apply path, after"
   log_info "         which each handled entry sits in .claude/.tmp/memory-archive/"
   log_info "         rather than deleted, and index.md has lost its rows. The"

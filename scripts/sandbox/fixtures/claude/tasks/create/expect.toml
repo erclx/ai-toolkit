@@ -1,9 +1,9 @@
 # What a correct `/claude-tasks` run leaves behind on the create arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The create path has no CLI verb. `src/commands/tasks.ts` registers `archive`
-# alone, so the skill writes this file itself from `aitk standards tasks`.
+# alone, so the skill writes this file itself from `canon standards tasks`.
 # That makes the whole of what this arm asserts prose behavior, with no unit
 # test underneath it, which is the opposite of the archive arm beside it.
 

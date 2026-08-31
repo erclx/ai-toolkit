@@ -32,7 +32,7 @@ Each slide follows as a section, separated by a `---` rule. A slide opens with a
 
 ## Layout catalog
 
-`aitk slides list --json` emits the catalog so a skill reads layout names at runtime rather than hardcoding them. The layouts cover a cover title, a contents slide, a section divider, a bullet list, two labeled columns, a row of stat callouts, a card grid, and a pull quote. Each layout function owns its geometry and enforces the type scale, so content sizes to fit rather than overflowing.
+`canon slides list --json` emits the catalog so a skill reads layout names at runtime rather than hardcoding them. The layouts cover a cover title, a contents slide, a section divider, a bullet list, two labeled columns, a row of stat callouts, a card grid, and a pull quote. Each layout function owns its geometry and enforces the type scale, so content sizes to fit rather than overflowing.
 
 ## Navigation
 
@@ -44,13 +44,13 @@ A `toc` slide renders a clickable contents list. The render builds the navigatio
 
 ## Render command
 
-`aitk slides render --source .claude/SLIDES.md --out .claude/review/slides` parses the source, builds the deck with pptxgenjs, and writes one `.pptx` named after the source. A `--variant light` or `--variant dark` flag overrides the frontmatter variant for a one-off render. Data and logs follow the standard stream contract: the success frame goes to stderr, leaving stdout clean.
+`canon slides render --source .claude/SLIDES.md --out .claude/review/slides` parses the source, builds the deck with pptxgenjs, and writes one `.pptx` named after the source. A `--variant light` or `--variant dark` flag overrides the frontmatter variant for a one-off render. Data and logs follow the standard stream contract: the success frame goes to stderr, leaving stdout clean.
 
-`--mirror <dir>` copies the rendered deck into another directory after writing, and the `AITK_SLIDES_MIRROR` environment variable sets a default mirror so the path stays out of the repo. `--open` opens the deck after writing, targeting the mirror copy when present. On WSL it opens through the Windows shell, elsewhere through the platform opener.
+`--mirror <dir>` copies the rendered deck into another directory after writing, and the `CANON_SLIDES_MIRROR` environment variable sets a default mirror so the path stays out of the repo. `--open` opens the deck after writing, targeting the mirror copy when present. On WSL it opens through the Windows shell, elsewhere through the platform opener.
 
 ## Draft skill
 
-`aitk:aitk-slides-draft` drafts `.claude/SLIDES.md` from a topic, picks a layout per slide from the catalog, and shells out to the render command. The skill owns the deck content and the design choices encoded in the source. It never reimplements layout or styling, which live in the CLI.
+`canon:canon-slides-draft` drafts `.claude/SLIDES.md` from a topic, picks a layout per slide from the catalog, and shells out to the render command. The skill owns the deck content and the design choices encoded in the source. It never reimplements layout or styling, which live in the CLI.
 
 After the first render it runs a one-pass quality check: convert the deck to images with `soffice` and `pdftoppm`, inspect every slide with fresh eyes for overlap, overflow, and contrast, fix once, and stop. The image pass is skipped with a note when those tools are absent.
 

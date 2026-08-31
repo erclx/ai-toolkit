@@ -13,7 +13,7 @@ The guard is also what makes the report's `superseded` section measured. Every s
 
 ## Step 1: read the report
 
-Run `aitk sync --check . --json` from the project root. Its `superseded` array is the detection. Each entry carries `rel`, the retired file, and `replacedBy`, the folder that took its job.
+Run `canon sync --check . --json` from the project root. Its `superseded` array is the detection. Each entry carries `rel`, the retired file, and `replacedBy`, the folder that took its job.
 
 An empty array is the pass: `✅ No superseded artifact. Every .claude/ file the seeds replaced is already a folder.`
 
@@ -21,9 +21,9 @@ An empty array is the pass: `✅ No superseded artifact. Every .claude/ file the
 
 Stop on any of three conditions, naming which one fired:
 
-- `aitk` is not on `PATH`: `❌ aitk is not on PATH. The superseded section is the only detection this skill has.`
-- The command exits non-zero: `❌ aitk sync --check failed. Fix the report before proposing a split.`
-- The report parses and carries no `superseded` key at all: `❌ This aitk predates the superseded field, which reached a release in 0.46.0. Upgrade, then re-run.`
+- `canon` is not on `PATH`: `❌ canon is not on PATH. The superseded section is the only detection this skill has.`
+- The command exits non-zero: `❌ canon sync --check failed. Fix the report before proposing a split.`
+- The report parses and carries no `superseded` key at all: `❌ This canon predates the superseded field, which reached a release in 0.46.0. Upgrade, then re-run.`
 
 Test for the key rather than for emptiness. A current CLI reporting `"superseded": []` has looked and found nothing, which is the pass above, and reading an absent key as an empty answer reports a clean layout to the projects this skill exists for.
 
@@ -33,15 +33,15 @@ No listing substitutes for the field. The pairing runs against the seed folder n
 
 ### Match the folder against the catalog
 
-Run `aitk standards list --json` and match each entry's `replacedBy` against the `appliesTo` array the catalog declares. Resolve from the catalog rather than from the folder stem, so a seed folder the toolkit adds later resolves without an edit here.
+Run `canon standards list --json` and match each entry's `replacedBy` against the `appliesTo` array the catalog declares. Resolve from the catalog rather than from the folder stem, so a seed folder the toolkit adds later resolves without an edit here.
 
 Compare on the folder rather than on the exact string. An `appliesTo` value matches when it equals `replacedBy` or begins with `replacedBy` followed by a slash. The report spells the folder `.claude/tasks` and the catalog spells it `.claude/tasks/`, and `memory` declares a filename pattern beneath its folder rather than the folder itself, so string equality matches nothing the catalog actually carries and sends every entry to a decline below.
 
 ### Read the standard through the verb
 
-A match resolves to that standard's `name`. Read it with `aitk standards <name>`, which writes the document to stdout and the root it answered from to stderr.
+A match resolves to that standard's `name`. Read it with `canon standards <name>`, which writes the document to stdout and the root it answered from to stderr.
 
-The verb is the one route. It resolves `standards/<name>.md` at the project root first, which is where a project that authors standards of its own keeps them, and falls back to the corpus inside the aitk package. No toolkit standard installs into a project, so there is no third path to test and no case where the shape is unreachable while the catalog names it.
+The verb is the one route. It resolves `standards/<name>.md` at the project root first, which is where a project that authors standards of its own keeps them, and falls back to the corpus inside the canon package. No toolkit standard installs into a project, so there is no third path to test and no case where the shape is unreachable while the catalog names it.
 
 Report the root the frame named beside the proposal. A shape read from the project's own `standards/` is the project's stated agreement, and one read from the package is the toolkit's default, which is a difference the user weighs rather than a reason to refuse.
 
@@ -49,10 +49,10 @@ Report the root the frame named beside the proposal. A shape read from the proje
 
 Four states end an entry with no proposal. Name whichever one fired rather than collapsing them, because two of them are unmeasured and two are answers:
 
-- The catalog carries no `appliesTo` key: `⚠️ This aitk emits no appliesTo, so which standard governs <replacedBy> is unread.`
+- The catalog carries no `appliesTo` key: `⚠️ This canon emits no appliesTo, so which standard governs <replacedBy> is unread.`
 - No value covers `replacedBy` and some entry carries an empty `appliesTo`: an empty array is a scope statement that did not parse, so a no-match verdict is unread rather than negative. Name the standards that did not parse.
 - No value covers `replacedBy` and every array is populated: `⚠️ The toolkit ships no standard for <replacedBy>. Nothing states the destination shape.` No command fixes it, so name none.
-- The standard resolved in the catalog and `aitk standards <name>` exits non-zero: name the standard and the exit, since the catalog and the read disagree and only one of them can be right.
+- The standard resolved in the catalog and `canon standards <name>` exits non-zero: name the standard and the exit, since the catalog and the read disagree and only one of them can be right.
 
 ## Step 3: read the shape and map the file onto it
 
@@ -88,7 +88,7 @@ Print one block per superseded entry, then the shared reminder. Omit empty group
 ```markdown
 ## Split
 
-`.claude/TASKS.md` → `.claude/tasks/`, shaped by `aitk standards tasks`
+`.claude/TASKS.md` → `.claude/tasks/`, shaped by `canon standards tasks`
 
 ## Proposed files
 

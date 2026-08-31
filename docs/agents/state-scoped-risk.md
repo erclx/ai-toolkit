@@ -7,19 +7,19 @@ description: Reading committed state rather than an arriving change, the shipped
 
 Every review surface a session can reach is scoped to a change. `claude-review` reads the branch diff, `claude-pr-review` reads a pull request, and `code-review` takes a diff, a branch, or a path. A risk that arrived before the range under review is invisible to all three by construction, which is what these two commands answer.
 
-| Question                                                 | Command             |
-| -------------------------------------------------------- | ------------------- |
-| Does a credential sit in the tree this repository ships? | `aitk secrets scan` |
-| Does a resolved dependency carry a published advisory?   | `aitk deps audit`   |
+| Question                                                 | Command              |
+| -------------------------------------------------------- | -------------------- |
+| Does a credential sit in the tree this repository ships? | `canon secrets scan` |
+| Does a resolved dependency carry a published advisory?   | `canon deps audit`   |
 
-Neither reads a range. That boundary is deliberate: change-scoped correctness review already exists, and a state-scoped bug scan would be a different product competing with it. Both register in `aitk audits run`, so a reader who runs the aggregate gets them without knowing they exist.
+Neither reads a range. That boundary is deliberate: change-scoped correctness review already exists, and a state-scoped bug scan would be a different product competing with it. Both register in `canon audits run`, so a reader who runs the aggregate gets them without knowing they exist.
 
 ## Secrets in the shipped tree
 
 ```bash
-aitk secrets scan
-aitk secrets scan --json
-aitk secrets scan ../my-app
+canon secrets scan
+canon secrets scan --json
+canon secrets scan ../my-app
 ```
 
 The corpus is the package's own `files` field rather than a list the check keeps. That field is the single statement of which trees leave this repository, so a second list beside it would answer the same question and drift. It also carries the negations the publish already makes, which is what puts the sandbox tree, the eval tree, and every test file out of scope by the rule that keeps them out of the tarball rather than by an exclusion this check invented.
@@ -47,7 +47,7 @@ A reported value is redacted to its two ends. Those are what a reader needs to f
 A line carrying a credential-shaped value on purpose takes an inline marker, either on the line itself or on the line directly above it:
 
 ```bash
-# aitk-allow-secret: documented sample from the vendor's own reference
+# canon-allow-secret: documented sample from the vendor's own reference
 AWS_KEY="<the sample value>"
 ```
 
@@ -59,7 +59,7 @@ The exemption travels with the line rather than sitting in a path list away from
 
 Exit codes are `0` when the shipped tree carries no credential-shaped value, `1` for a refusal, and `2` for at least one value found.
 
-This is the one entry in `aitk audits run` that gates without an `aitk gate run` stage behind it. A credential in the published tree is a fact rather than a judgment, which is the test the catalog asks any gating addition to pass, and the architecture record already ranks content leaving the repository above content that stays.
+This is the one entry in `canon audits run` that gates without a `canon gate run` stage behind it. A credential in the published tree is a fact rather than a judgment, which is the test the catalog asks any gating addition to pass, and the architecture record already ranks content leaving the repository above content that stays.
 
 A refusal is never a clean tree. Five reasons produce one, and each exits `1`, because zero findings over zero files reads in the report exactly like zero findings over the whole shipped tree.
 
@@ -78,8 +78,8 @@ The last two mean a corpus exists and went unread, so neither is softened. `priv
 ## Advisories against the resolved dependencies
 
 ```bash
-aitk deps audit
-aitk deps audit --json
+canon deps audit
+canon deps audit --json
 ```
 
 The check shells the runtime's own advisory command rather than carrying an index. A vendored advisory database is a second corpus to keep current, and what this is worth is the report rather than the data.

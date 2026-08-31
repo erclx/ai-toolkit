@@ -26,7 +26,7 @@ function git(...args: string[]): string {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-reclaim-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-reclaim-'))
   git('init', '--quiet', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -48,7 +48,7 @@ function roster(sessions: readonly ResolvedSession[] = []): SessionReport {
 
 function session(fields: Partial<ResolvedSession>): ResolvedSession {
   return {
-    name: 'aitk-1',
+    name: 'canon-1',
     pid: 1,
     sessionId: 'id-1',
     cwd: '/repo',

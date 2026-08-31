@@ -13,7 +13,7 @@ function seedFile(relPath: string, body: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-seeds-list-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-seeds-list-'))
 })
 
 afterEach(() => {

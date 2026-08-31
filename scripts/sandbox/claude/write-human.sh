@@ -56,7 +56,7 @@ EOF
   log_info "  4. Rule of three: an invented triad, and a three-bullet Configuration block"
   log_info "  5. Synonym cycling: cache, store, buffer, layer for one thing"
   log_info "  6. Adverb propping and a false range, with no measurement behind either"
-  log_info "Action:  /aitk:write-human, asking for a revision of docs/cache.md"
+  log_info "Action:  /canon:write-human, asking for a revision of docs/cache.md"
   log_info "Expect:  a rewrite varying sentence length and opening structure, with the"
   log_info "         fragments given verbs, one name per thing, and the triad cut to what"
   log_info "         the subject holds. Read the result against the rhythm rules rather"

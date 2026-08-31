@@ -331,7 +331,7 @@ export function commandRunner(root: string): RunCommand {
 }
 
 /**
- * Spawns this checkout's own CLI rather than whatever `aitk` resolves to.
+ * Spawns this checkout's own CLI rather than whatever `canon` resolves to.
  *
  * A globally installed binary resolves to the main checkout no matter which
  * worktree is running, so a gate reading through it would measure the wrong
@@ -351,7 +351,7 @@ async function spawn(
     cwd,
     reject: false,
     all: true,
-    env: { ...gitEnv(), AITK_NON_INTERACTIVE: '1' },
+    env: { ...gitEnv(), CANON_NON_INTERACTIVE: '1' },
     extendEnv: false,
   })
 

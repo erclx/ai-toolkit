@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-autoship` run leaves behind on the
-# prose-executable arm. Read by `aitk sandbox check`. Patterns use TOML literal
+# What a correct `/canon:claude-autoship` run leaves behind on the
+# prose-executable arm. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 
 # The diff here is all markdown, same as `prose-informational`, but

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "aitk",
+      "name": "canon",
       "dependencies": {
         "commander": "^13.1.0",
         "execa": "^9.5.2",

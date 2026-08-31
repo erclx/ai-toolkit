@@ -19,7 +19,7 @@ export GIT_TERMINAL_PROMPT=0
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk sandbox [cat:cmd]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} canon sandbox [cat:cmd]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    cat:cmd   ${GREY}# Scenario to provision (e.g. git:commit)${NC}"
@@ -32,10 +32,10 @@ show_help() {
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
-  echo -e "${GREY}│${NC}    aitk sandbox"
-  echo -e "${GREY}│${NC}    aitk sandbox git:commit"
-  echo -e "${GREY}│${NC}    aitk sandbox reset"
-  echo -e "${GREY}│${NC}    aitk sandbox clean"
+  echo -e "${GREY}│${NC}    canon sandbox"
+  echo -e "${GREY}│${NC}    canon sandbox git:commit"
+  echo -e "${GREY}│${NC}    canon sandbox reset"
+  echo -e "${GREY}│${NC}    canon sandbox clean"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -203,7 +203,7 @@ run_sandbox_install() {
 
   # The installer's own frame would bury the provisioning timeline, so it stays
   # captured unless it fails, where it is the only thing naming the cause.
-  if ! AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" "$@" \
+  if ! CANON_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" "$@" \
     >/dev/null 2>"$install_log"; then
     cat "$install_log" >&2
     rm -f "$install_log"
@@ -241,7 +241,7 @@ commit_environment_setup() {
 
 # No standards injection. The corpus installs into no target, so a sandbox
 # without one is the shape a scaffolded project has, and a scenario driving a
-# skill that reads a standard exercises the `aitk standards <name>` path a real
+# skill that reads a standard exercises the `canon standards <name>` path a real
 # project takes.
 setup_sandbox_assets() {
   [ -n "$SANDBOX_INJECT_SEEDS" ] && inject_seeds
@@ -341,7 +341,7 @@ reset_sandbox() {
   local GREEN RED YELLOW WHITE GREY NC
   set_palette 2
   if [ ! -d "$SANDBOX/.git" ]; then
-    log_error "No sandbox found. Run \`aitk sandbox\` first."
+    log_error "No sandbox found. Run \`canon sandbox\` first."
   fi
 
   log_step "Sandbox state"
@@ -350,7 +350,7 @@ reset_sandbox() {
   (cd "$SANDBOX" && git rev-parse refs/sandbox/baseline >/dev/null 2>&1) && has_baseline=1
 
   if [ "$has_baseline" -eq 0 ]; then
-    log_error "No baseline found. Re-provision with \`aitk sandbox <cat>:<cmd>\`."
+    log_error "No baseline found. Re-provision with \`canon sandbox <cat>:<cmd>\`."
   fi
 
   local is_dirty=0
@@ -422,7 +422,7 @@ main() {
   fi
 
   if [[ "$no_header" -eq 0 ]]; then
-    open_timeline "aitk sandbox"
+    open_timeline "canon sandbox"
   fi
   trap close_timeline EXIT
 
@@ -454,7 +454,7 @@ main() {
 
   if [ -n "${2:-}" ]; then
     export SANDBOX_SCENARIO="$2"
-    export AITK_NON_INTERACTIVE="1"
+    export CANON_NON_INTERACTIVE="1"
   fi
 
   initialize_sandbox_environment "$category" "$command"

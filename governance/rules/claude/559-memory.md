@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow the memory standard for the filename and type prefix, the frontmatter, the body shape per type, links between entries, and the lifecycle. It is the single source. Read it with `aitk standards memory`.
+- Follow the memory standard for the filename and type prefix, the frontmatter, the body shape per type, links between entries, and the lifecycle. It is the single source. Read it with `canon standards memory`.

@@ -5,7 +5,7 @@ description: Re-testing every parked blocker against the current tree, the two t
 
 Re-test every parked row as orchestrator. A blocker cell is a measurement taken the day the row was parked and nothing re-takes it, so a row can wait on a condition that stopped holding weeks earlier with no surface reporting the gap.
 
-Two triggers start this pass. `orchestrator-sweep.md` ends by sending the rows `aitk tasks validate` listed as untested here, because a merge changes the tree under every parked row at once rather than under the rows naming it. The other is an idle session: nothing merged, workers are building, no pull request is waiting on a first pass, and the board is not moving.
+Two triggers start this pass. `orchestrator-sweep.md` ends by sending the rows `canon tasks validate` listed as untested here, because a merge changes the tree under every parked row at once rather than under the rows naming it. The other is an idle session: nothing merged, workers are building, no pull request is waiting on a first pass, and the board is not moving.
 
 The two differ in scope rather than in procedure. A merge sends the untested rows, since the validator already re-took the two kinds it can settle. An idle session walks every parked row, because no event narrowed which of them to look at.
 
@@ -21,7 +21,7 @@ Take the rows in board order and finish one before opening the next. Clearing a 
 
 ## Re-testing a row
 
-The blocker cell states what the row waits on, and each kind is tested differently. `aitk tasks validate` already re-takes the first two and reports the rest as untested, so run it first and re-take by hand only what it names.
+The blocker cell states what the row waits on, and each kind is tested differently. `canon tasks validate` already re-takes the first two and reports the rest as untested, so run it first and re-take by hand only what it names.
 
 - Collision with a track in flight: the validator tests the file the cell cites against the Touches column of every `## Run now` row. A track that merged since the row was parked is no longer in flight, whatever the sets still share. A cell naming the file in prose rather than in backticks cites nothing, so write the collision the way the board format spells it and the check picks the row up on the next run.
 - A dependency on another task: the validator opens the task a link in the cell names. One whose outcomes are all `[x]`, or one already archived, holds nothing. A cell naming the task in prose resolves to no file, so open it by hand and rewrite the cell as a link.
@@ -29,7 +29,7 @@ The blocker cell states what the row waits on, and each kind is tested different
 - Waiting on a plan: nothing external holds the row, so the pass writes the plan rather than testing anything. See The plan half below.
 - Waiting on an operator action, such as a run that happens from a shell: record it as untestable this pass and name what the operator has to do. A session cannot clear it, and re-measuring it every pass is waste.
 
-Write the result into the row. A re-test reported in chat is lost at the next compaction and the next pass measures the same thing again. Rewrite a blocker cell whose test no longer holds, move the row to the group its new state puts it in, and record the measurement in that task's `## Findings` with the date it was taken. `### Writing the board` in `claude-orchestrate` owns the method, and `aitk tasks validate` runs once the board is rewritten and before the report.
+Write the result into the row. A re-test reported in chat is lost at the next compaction and the next pass measures the same thing again. Rewrite a blocker cell whose test no longer holds, move the row to the group its new state puts it in, and record the measurement in that task's `## Findings` with the date it was taken. `### Writing the board` in `claude-orchestrate` owns the method, and `canon tasks validate` runs once the board is rewritten and before the report.
 
 ## Two ways a re-test goes wrong
 

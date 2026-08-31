@@ -5,12 +5,12 @@ description: Reading a sentence that asserts a closed catalog's size, how a matc
 
 # Self-stated counts
 
-`aitk gov counts` reports a sentence stating how many members a closed catalog holds where the stated figure disagrees with what the tree actually counts. A document that reports its own catalog size carries a number nothing else compares against the tree, so it goes stale on the edit that moves the catalog and reads as current until a reviewer happens to recompute it.
+`canon gov counts` reports a sentence stating how many members a closed catalog holds where the stated figure disagrees with what the tree actually counts. A document that reports its own catalog size carries a number nothing else compares against the tree, so it goes stale on the edit that moves the catalog and reads as current until a reviewer happens to recompute it.
 
 ```bash
-aitk gov counts
-aitk gov counts --json
-aitk gov counts --root ../my-app
+canon gov counts
+canon gov counts --json
+canon gov counts --root ../my-app
 ```
 
 | Option          | Behavior                                                   |
@@ -28,7 +28,7 @@ A closed set of six, each with a filesystem reader behind it rather than every l
 - `rules`: authored governance rules, a file per `governance/rules/**/*.md`
 - `standards`: the authoring corpus at `standards/`
 - `snippets`: distinct entries across every `snippets/` category, matching what `regen-hero.sh` counts
-- `commands`: top-level `aitk` commands, read off `src/cli.ts`'s registration imports
+- `commands`: top-level `canon` commands, read off `src/cli.ts`'s registration imports
 - `audits`: the registered set in `src/audits/catalog.ts`, this entry included
 
 The set is closed rather than derived, so widening it is a deliberate change to this file rather than a side effect of a new list command shipping elsewhere. `commands` is the one catalog with no meaning outside this repository: a project installing this CLI carries no `src/cli.ts` of its own, and that catalog reads as not applicable there rather than as zero, since zero would report a finding against any such project stating its command count as anything but zero, forever.
@@ -63,14 +63,14 @@ A second figure in a sentence whose first figure already matched is a fourth gap
 
 A calendar date (`2026-08-21`) or a backticked commit reference in the same sentence reads the whole sentence past, since that is how this corpus already marks a figure as a historical record rather than a live claim. `.claude/ARCHITECTURE.md` and the context entries carry a figure this way deliberately, and every one of them stays correct forever.
 
-The wider check over prose restatements is deliberately out of reach here. `aitk gov restated` already records a parser over prose as rejected, and this sweep reaches a number with a command behind it rather than two sentences a reader has to judge as agreeing.
+The wider check over prose restatements is deliberately out of reach here. `canon gov restated` already records a parser over prose as rejected, and this sweep reaches a number with a command behind it rather than two sentences a reader has to judge as agreeing.
 
 ## Exit codes
 
 Exit codes are `0` when no stated figure disagrees with the tree, `1` for a refusal, and `2` for at least one disagreement.
 
-Nothing wires this into `bun run check` or into a hook. The false-positive rate is read off the first real run rather than assumed ahead of it, and gating a measure with an unmeasured rate is what teaches a contributor to route around the stage. `aitk gov restated` and `aitk gov test-order` are the siblings this reasoning already governs.
+Nothing wires this into `bun run check` or into a hook. The false-positive rate is read off the first real run rather than assumed ahead of it, and gating a measure with an unmeasured rate is what teaches a contributor to route around the stage. `canon gov restated` and `canon gov test-order` are the siblings this reasoning already governs.
 
-Both refusals are breaks rather than absences. A tree with no git history or no markdown file at all is a broken checkout, matching what `aitk markdown audit` already reads `no-git` and `no-markdown` as, since this sweep shares that corpus.
+Both refusals are breaks rather than absences. A tree with no git history or no markdown file at all is a broken checkout, matching what `canon markdown audit` already reads `no-git` and `no-markdown` as, since this sweep shares that corpus.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `findings` rather than the exit when a skill consumes this.

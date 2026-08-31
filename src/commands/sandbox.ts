@@ -41,7 +41,7 @@ const SANDBOX_DIR = join(PROJECT_ROOT, 'scripts', 'sandbox')
  * so a caller that sees `true` returns without touching the tree.
  *
  * `scripts/sandbox` is excluded from the published package, so an installed
- * `aitk` resolves `SANDBOX_DIR` to a directory that is not there. Both entry
+ * `canon` resolves `SANDBOX_DIR` to a directory that is not there. Both entry
  * points that walk the tree ask here rather than carrying a check each, because
  * absence is a property of the install rather than of a verb, and a second copy
  * of the question is a second message to keep true. `check` reads the tree as
@@ -58,7 +58,7 @@ const SANDBOX_DIR = join(PROJECT_ROOT, 'scripts', 'sandbox')
 function reportAbsentScenarioTree(): boolean {
   if (existsSync(SANDBOX_DIR)) return false
 
-  frameError('sandbox is toolkit-only and is absent from an installed aitk')
+  frameError('sandbox is toolkit-only and is absent from an installed canon')
   process.exitCode = 1
 
   return true
@@ -103,7 +103,7 @@ function getCommands(category: string): string[] {
 }
 
 async function interactivePicker(): Promise<string> {
-  intro('aitk sandbox')
+  intro('canon sandbox')
 
   const categories = getCategories()
   const category = await select({
@@ -284,7 +284,7 @@ function reportCensus(report: CensusReport): void {
 function runCoverage(options: CoverageOptions): void {
   if (reportAbsentScenarioTree()) return
 
-  intro('aitk sandbox coverage')
+  intro('canon sandbox coverage')
 
   const report = collectCoverage(PROJECT_ROOT)
 
@@ -339,7 +339,7 @@ function runCheck(
   arm: string | undefined,
   options: CheckOptions,
 ): void {
-  intro('aitk sandbox check')
+  intro('canon sandbox check')
 
   const parsed = parseTarget(target)
   if (parsed === undefined) {
@@ -354,7 +354,7 @@ function runCheck(
   // whole point of a verdict is that it means what it says.
   const sandboxDir = sandboxTree()
   if (!existsSync(sandboxDir)) {
-    logError(`No sandbox at ${sandboxDir}. Provision one with aitk sandbox.`)
+    logError(`No sandbox at ${sandboxDir}. Provision one with canon sandbox.`)
     outro()
     process.exitCode = 1
     return
@@ -428,8 +428,8 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk sandbox check claude:docs drift',
-        '  aitk sandbox check claude:docs drift --envelope run.json --json',
+        '  canon sandbox check claude:docs drift',
+        '  canon sandbox check claude:docs drift --envelope run.json --json',
         '',
         'Exit codes: 0 on pass or unchecked, 1 on failure.',
         'With --strict, unchecked exits 1 as well.',
@@ -453,9 +453,9 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk sandbox coverage',
-        '  aitk sandbox coverage --json',
-        '  aitk sandbox coverage --skills',
+        '  canon sandbox coverage',
+        '  canon sandbox coverage --json',
+        '  canon sandbox coverage --skills',
         '',
         'Exit codes: 0, unless --strict and a scenario declares nothing, or',
         '--skills and an exemption names no shipped skill or one an arm asserts.',

@@ -5,7 +5,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "package-name": "@erclx/aitk",
+      "package-name": "@erclx/canon",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {

@@ -21,9 +21,9 @@ The last is the name map. `prose` split into `markdown.md` plus the `write-human
 
 - Detect from a read of `.claude/standards/` itself, since no report names the tree and a session waiting for one waits forever
 - Report the state a binary behind the published version puts the sync in, before naming a sync a stale binary would run
-- Split the tree against `aitk standards list --json` three ways, separating an unchanged toolkit copy from a drifted one and from a name that resolves to no standard
+- Split the tree against `canon standards list --json` three ways, separating an unchanged toolkit copy from a drifted one and from a name that resolves to no standard
 - Name every runtime reader ahead of any delete, splitting a reader from a citation by whether the file is markdown, and say when the search could not run
-- Give every citation inside a target one target form, `aitk standards <name>`, and say why the plugin-root form fails there
+- Give every citation inside a target one target form, `canon standards <name>`, and say why the plugin-root form fails there
 - Order the proposal sync, drop, sweep, and state that the sweep re-reads after the sync rather than before it
 - Report an unmatched name as the user's to place, naming the `prose` split as the recorded instance
 - Report the measured empty case as a pass, since the guard is what proves the read ran
@@ -40,7 +40,7 @@ The last is the name map. `prose` split into `markdown.md` plus the `write-human
 
 - A directory with no `.claude/` stops, since nothing there installed a tree
 - A `.claude/standards/` holding no markdown is the pass rather than a refusal
-- No `aitk` on `PATH` stops, since every citation this move writes names a verb the target has to run
+- No `canon` on `PATH` stops, since every citation this move writes names a verb the target has to run
 
 ## Out of scope
 

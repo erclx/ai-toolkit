@@ -7,7 +7,7 @@ import { presentNames, resolveFolders } from '@/context/folders'
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-folders-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-folders-'))
 })
 
 afterEach(() => {

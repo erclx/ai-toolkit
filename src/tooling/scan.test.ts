@@ -37,7 +37,7 @@ function target(): string {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-scan-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-scan-'))
 })
 
 afterEach(() => {

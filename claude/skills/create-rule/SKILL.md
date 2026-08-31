@@ -5,11 +5,11 @@ description: Scaffolds a project-specific governance rule into `.claude/rules/pr
 
 # Create rule
 
-Author a project-local governance rule. The rule lives in the target project, not the toolkit, so `aitk gov sync` never overwrites it: the sync engine orphans anything under `.claude/rules/project/` by location, before it ever checks the rule's name against the toolkit catalog. A rule written anywhere else under `.claude/rules/` survives the sync too, and the report offers it the path under the project subfolder it would take.
+Author a project-local governance rule. The rule lives in the target project, not the toolkit, so `canon gov sync` never overwrites it: the sync engine orphans anything under `.claude/rules/project/` by location, before it ever checks the rule's name against the toolkit catalog. A rule written anywhere else under `.claude/rules/` survives the sync too, and the report offers it the path under the project subfolder it would take.
 
 ## Guards
 
-- If no `.claude/` directory exists, stop: `❌ No .claude/ directory found. Run aitk init first.`
+- If no `.claude/` directory exists, stop: `❌ No .claude/ directory found. Run canon init first.`
 - If the request names no behavior to enforce, stop: `❌ Describe what the rule should enforce and which files it applies to.`
 
 ## Step 1: gather intent

@@ -58,11 +58,11 @@ Fix the feedback CLI so it applies the `feedback` label.
 
 ## Details
 
-`aitk feedback --github` opens an issue with no label, so `aitk-feedback-triage` never lists it.
+`canon feedback --github` opens an issue with no label, so `canon-feedback-triage` never lists it.
 
 ## Context
 
-Run a piped `aitk feedback --github`, then check the issue carries no `feedback` label.
+Run a piped `canon feedback --github`, then check the issue carries no `feedback` label.
 
 ## Proposed
 

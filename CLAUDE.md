@@ -8,7 +8,7 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 
 Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive from it.
 
-- Every command has a non-interactive path via args or `AITK_NON_INTERACTIVE=1`. Never require a TTY.
+- Every command has a non-interactive path via args or `CANON_NON_INTERACTIVE=1`. Never require a TTY.
 - Data goes to stdout. UI and logs go to stderr. JSON output must pipe clean through any wrapper.
 - Every domain has a `list` command with `--json` so skills read catalogs at runtime. Never hardcode names in skills.
 - Extend existing commands with flags over creating bespoke variants. Prefer `--add` and similar composition over stack explosion.
@@ -42,7 +42,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 ## Conventions
 
-- Update affected consumer docs in `docs/` as part of the change, through the `aitk:docs-sync` skill. No rule is scoped to that folder.
+- Update affected consumer docs in `docs/` as part of the change, through the `canon:docs-sync` skill. No rule is scoped to that folder.
 
 ## Content ownership
 
@@ -82,7 +82,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 - `governance/rules/`: governance rules
 - `internal/`: toolkit-internal standards, snippets, and rules, plus the record of which governance stack this repo consumes, all outside every installable surface
-- `standards/`: authoring conventions, read through `aitk standards <name>` rather than installed
+- `standards/`: authoring conventions, read through `canon standards <name>` rather than installed
 - `tooling/`: golden configs (base), references, and manifests per stack
 - `claude/skills/`: plugin skills installable in target projects
 - `.claude/skills/`: internal skills, toolkit repo only

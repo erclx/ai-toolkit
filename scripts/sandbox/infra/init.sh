@@ -35,12 +35,12 @@ SCRIPT
 
   case "$SELECTED_OPTION" in
   "default")
-    log_step "Running: aitk init ."
+    log_step "Running: canon init ."
     exec bun "$PROJECT_ROOT/src/cli.ts" init .
     ;;
   "with-flags")
-    log_step "Running: aitk init --stack base --skip wiki ."
-    export AITK_NON_INTERACTIVE=1
+    log_step "Running: canon init --stack base --skip wiki ."
+    export CANON_NON_INTERACTIVE=1
     exec bun "$PROJECT_ROOT/src/cli.ts" init --stack base --skip wiki .
     ;;
   *)

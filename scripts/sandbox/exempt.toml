@@ -1,6 +1,6 @@
 # Skills a sandbox run cannot assert, each with the reason it cannot.
 #
-# `aitk sandbox coverage --skills` reads this. An entry here is a claim that no
+# `canon sandbox coverage --skills` reads this. An entry here is a claim that no
 # arm should be written, so it needs a reason a later reader can check and
 # overturn. A skill left out of this file reports `should-be-asserted`, which is
 # the honest default.
@@ -28,7 +28,7 @@
 [setup-plugins]
 reason = "Writes user-scoped plugin state on the machine via the claude plugin CLI. The checker asserts over the sandbox tree, which that write never enters."
 
-[aitk-cli]
+[canon-cli]
 reason = "Reference only. Its body forbids running the commands it describes, so a correct run produces no artifact to assert over."
 
 [systematic-debugging]
@@ -37,5 +37,5 @@ reason = "Gates how other work proceeds and writes nothing of its own. What it c
 [session-resume]
 reason = "Reads tracked work and context and writes nothing. A run leaves the tree byte-identical, so every mechanical assertion would pass on a session that did nothing."
 
-[aitk-feedback-file]
+[canon-feedback-file]
 reason = "Writes into the toolkit's own .claude/review/ rather than the project it runs in. run.sh reports that as an escape and cannot assert its content, since the path is outside the tree the snapshot covers."

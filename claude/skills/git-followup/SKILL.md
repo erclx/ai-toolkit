@@ -22,7 +22,7 @@ A missing tracking ref is no longer a guard. An open pull request proves the bra
 
 1. Run `git status` to confirm the changes are intentional
 2. Run `git add -A` to stage every change
-3. Invoke `aitk:git-commit` to generate one conventional commit from the staged diff
+3. Invoke `canon:git-commit` to generate one conventional commit from the staged diff
 4. Push, in one of two cases.
    - When `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null` is empty, the branch has an open pull request and no tracking ref, so run `git push -u origin HEAD` to send the commit and set the ref in one step.
    - Otherwise push to the tracking branch with `git push`, and when `git merge-base --is-ancestor @{u} HEAD` exits non-zero, a caller rewrote the branch and a plain push is rejected, so push with `--force-with-lease` instead.

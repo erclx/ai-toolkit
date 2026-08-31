@@ -1,5 +1,5 @@
 # What a correct `/claude-docs` run leaves behind on the board-sweep arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The arm asserts the plans sweep is board-wide. `drift` already asserts a plan

@@ -10,8 +10,8 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 
 1. Scaffold with `bunx create-astro@latest`. Choose `TypeScript: Strict`. Skip git init and install.
 2. Add React integration: `bunx astro add react`. Do not use `astro add tailwind`. That command installs the v3 integration. Tailwind v4 arrives via the web manifest.
-3. Install web tooling: `aitk tooling sync web . --write`
-4. Install astro adapter: `aitk tooling sync astro . --write`
+3. Install web tooling: `canon tooling sync web . --write`
+4. Install astro adapter: `canon tooling sync astro . --write`
 5. Extend the `ci` and `development` context entries under `.claude/context/` per the web reference's extend sections plus the astro rows below.
 6. Run `bun run lint:fix` then `bun run check`.
 

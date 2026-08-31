@@ -57,15 +57,15 @@ A rule authored under `governance/rules/` in a folder no stack names reaches no 
 
 ### Why the unreferenced stage stays advisory
 
-The `Unreferenced rules` stage in `src/gate/stages.ts` reports rules no stack reaches and never fails, comparing the catalog against the list `src/gate/measures.ts` records. `260-shadcn` and `320-tanstack-query` are opt-in libraries this repository ships on purpose. `505-at-references` used to reach no stack by design: a rule under `governance/rules/claude/` would ship to every `base` consumer through that folder's whole-folder entry, so the `@`-reference convention sat in its own `governance/rules/snippets/` instead, reachable only through `aitk snippets install`. That install channel retired, leaving the rule no delivery path at all, so `base` now carries `snippets` as a folder-whole entry too and the rule ships the same way `core` and `claude` do. A gate here would fail every push over the two deliberate cases that remain.
+The `Unreferenced rules` stage in `src/gate/stages.ts` reports rules no stack reaches and never fails, comparing the catalog against the list `src/gate/measures.ts` records. `260-shadcn` and `320-tanstack-query` are opt-in libraries this repository ships on purpose. `505-at-references` used to reach no stack by design: a rule under `governance/rules/claude/` would ship to every `base` consumer through that folder's whole-folder entry, so the `@`-reference convention sat in its own `governance/rules/snippets/` instead, reachable only through `canon snippets install`. That install channel retired, leaving the rule no delivery path at all, so `base` now carries `snippets` as a folder-whole entry too and the rule ships the same way `core` and `claude` do. A gate here would fail every push over the two deliberate cases that remain.
 
 `GOV_EXPECTED_UNREFERENCED` in that script holds both, and a third rule arriving reads as new against it. Reconsider failing if the set keeps growing and the pattern turns out to be an accident rather than a design.
 
 ## Adding a stack
 
-Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names without `.md` in the `rules` array, or a folder name under `governance/rules/` to take that folder whole. Nothing compiles the stack, so the file is live to `aitk gov install` as soon as it is written.
+Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names without `.md` in the `rules` array, or a folder name under `governance/rules/` to take that folder whole. Nothing compiles the stack, so the file is live to `canon gov install` as soon as it is written.
 
-`bun run check` still has something to say about it. Governance stacks are one of the five catalogs `scripts/core/regen-hero.sh` counts, so a new file moves the count on `assets/hero.html` and the Hero stage fails until `aitk capture assets/hero.html` re-renders the image. The capture writes `assets/hero.stamp` alongside, and `assert_hero_stamp` compares the two digests it holds against the markup and the image on disk.
+`bun run check` still has something to say about it. Governance stacks are one of the five catalogs `scripts/core/regen-hero.sh` counts, so a new file moves the count on `assets/hero.html` and the Hero stage fails until `canon capture assets/hero.html` re-renders the image. The capture writes `assets/hero.stamp` alongside, and `assert_hero_stamp` compares the two digests it holds against the markup and the image on disk.
 
 ```toml
 extends = "node"

@@ -1,9 +1,9 @@
 # What a correct `/claude-worktree` run leaves behind on the submodule guard arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # This arm asserts the guard. It is written against the prompt
-# `cd vendor, then /aitk:claude-worktree`, since the expectation format carries
+# `cd vendor, then /canon:claude-worktree`, since the expectation format carries
 # no prompt field and the runner takes one as a free argument. The session's
 # `Bash` working directory persists across calls, so the directory change lands
 # before the skill reads any git state. Run against the bare skill prompt this

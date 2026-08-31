@@ -8,8 +8,8 @@ paths:
 
 ## Skill routing
 
-- Use `aitk:bash-script` for an interactive or human-facing script: prompts, a visual timeline UI, framed terminal output.
-- Use `aitk:bash-cli-script` for a non-interactive script: automation, CI, cron, a pipeline helper, or anything run by an agent rather than watched by a person.
+- Use `canon:bash-script` for an interactive or human-facing script: prompts, a visual timeline UI, framed terminal output.
+- Use `canon:bash-cli-script` for a non-interactive script: automation, CI, cron, a pipeline helper, or anything run by an agent rather than watched by a person.
 - Load the matched skill's own reference templates rather than hand-rolling interactivity or logging patterns outside them.
 - Report it rather than proceeding silently when the matched skill does not resolve. Both ship with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have them.
 

@@ -12,9 +12,9 @@ Owns the scenarios that provision isolated project states for testing scripts, c
 - `scripts/sandbox/` owns the scenario scripts, one folder per category
 - `scripts/sandbox/<category>/` owns one file per command, each holding one or more named scenarios
 - `scripts/sandbox/fixtures/` owns file content staged into the sandbox, one tree per scenario arm
-- `$XDG_STATE_HOME/aitk/sandbox-<run-id>` owns the provisioned project state, outside the repository and unique to the run that provisioned it
+- `$XDG_STATE_HOME/canon/sandbox-<run-id>` owns the provisioned project state, outside the repository and unique to the run that provisioned it
 
-Run `aitk sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added. `fixtures/` sits alongside the categories but holds no scenarios, so both pickers filter it out by name.
+Run `canon sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added. `fixtures/` sits alongside the categories but holds no scenarios, so both pickers filter it out by name.
 
 - `tooling/`: golden configs per stack, plus raw upstream templates
 - `infra/`: domain CLI commands, covering init, gov, standards, snippets, and others
@@ -28,7 +28,7 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 ### Scenario defaults and the reset contract
 
 - Sandboxes are minimal by default: no seeds, no standards, no gov rules, and auto-commit on. A scenario declares only the flags it needs, so the fixture states exactly what it depends on.
-- `claude/` scenarios default to `SANDBOX_INJECT_SEEDS="true"` so each models a real post-`aitk init` project. Two documented exceptions: `setup-init.sh` tests `aitk init` itself, and `autoship.sh` wipes the anchor after injection.
+- `claude/` scenarios default to `SANDBOX_INJECT_SEEDS="true"` so each models a real post-`canon init` project. Two documented exceptions: `setup-init.sh` tests `canon init` itself, and `autoship.sh` wipes the anchor after injection.
 - The reset contract belongs to the scenario, not the framework. A scenario that touches a real remote closes its own PRs and force-pushes a fresh main, because only the scenario knows what it created.
 
 ### Headless runs and permissions
@@ -41,13 +41,13 @@ What `write_scope` cannot do is prevent the write, and it cannot see a write out
 
 ### A per-arm escape scope for the one arm meant to reach past the tree
 
-`claude:aitk-rollout` is the only catalog entry whose skill's own job is dispatching a nested `claude --bg` session, and the one bound on it before this row was a line of narration asking the driven model to dispatch nothing. `run.sh`'s escape watch never enforced that, since it only ever reported a write under the four scratch directories as an unattributed warning, so a dispatch that reached the toolkit's own `.claude/plans/` or `.claude/tasks/` would have passed the arm cleanly.
+`claude:canon-rollout` is the only catalog entry whose skill's own job is dispatching a nested `claude --bg` session, and the one bound on it before this row was a line of narration asking the driven model to dispatch nothing. `run.sh`'s escape watch never enforced that, since it only ever reported a write under the four scratch directories as an unattributed warning, so a dispatch that reached the toolkit's own `.claude/plans/` or `.claude/tasks/` would have passed the arm cleanly.
 
 `escape_scope` in an arm's `expect.toml` closes that with the mechanism `write_scope` already models: a set of globs matched against what `escape_roots` and `ESCAPE_SCRATCH_DIRS` found, checked by the same harness that finds them rather than left to the skill's own restraint. Declaring the key, even at `escape_scope = []`, turns the warning into a mechanical result. A write matching a declared glob passes as expected, and everything else fails the arm outright, which is what "the harness asserts them" means in practice.
 
 The alternative was accepting the exposure and stating it in prose, declined because the accidental bound this arm leaned on had already weakened once on its own, when a `targets.json` appeared on this machine as a side effect of an unrelated test.
 
-`claude:aitk-rollout` declares `escape_scope = []` for the reason its fixture already gives: the arm's narration tells the run to dispatch no worker, so every tested path is the refusal, and a correct run touches none of the eight watched destinations. A future arm that actually drives the dispatch widens the scope from what that run measures rather than from a guess at what a worker touches, the same discipline `write_scope`'s own comment states for the same fixture.
+`claude:canon-rollout` declares `escape_scope = []` for the reason its fixture already gives: the arm's narration tells the run to dispatch no worker, so every tested path is the refusal, and a correct run touches none of the eight watched destinations. A future arm that actually drives the dispatch widens the scope from what that run measures rather than from a guess at what a worker touches, the same discipline `write_scope`'s own comment states for the same fixture.
 
 Two things a scoped pass does not say. It says nothing about a write outside the watch's own reach, being a home directory, a sibling worktree, or the machine-level target and session registries a live dispatch would actually touch, since those sit past what `escape_roots` names at all. It says nothing about whether the write it did see belongs to this run rather than a sibling's, since the harness still cannot attribute one. `.claude/context/sandbox/coverage.md` carries what a reader can and cannot conclude from either kind of pass.
 
@@ -63,13 +63,13 @@ The checker is TypeScript while provisioning stays bash. The harness was closed 
 
 - A run reports pass, fail, or unchecked. Absence of a declaration is `unchecked` rather than a pass, since a scenario that asserts nothing cannot pass, and rather than a failure, since failing every undeclared arm would make the harness unusable while expectations roll out. Only a failure exits non-zero.
 - `unchecked` keeps its name rather than becoming `unproven`. The state already existed when the reporting gap was scoped, and a second word for one state costs more than the clearer label gains.
-- The per-arm verdict was never the coverage problem. A single arm reports `unchecked` honestly, but reading that number across the catalog meant running `find` by hand, so the rollout had no surface. `aitk sandbox coverage` is that surface, and it counts scenarios and arms separately because the two denominators disagree.
+- The per-arm verdict was never the coverage problem. A single arm reports `unchecked` honestly, but reading that number across the catalog meant running `find` by hand, so the rollout had no surface. `canon sandbox coverage` is that surface, and it counts scenarios and arms separately because the two denominators disagree.
 - `--strict` inverts the exit rule for a caller that has finished arming. It stays opt-in, since the default has to keep 48 undeclared scenarios runnable.
 
 ### What a sandbox is provisioned with
 
-- Standards and gov rules provision through the real installer rather than a copy. Both copies reimplemented an installer's selection rules, and the standards one omitted the `index.md` a real install rebuilds while neither wrote the `.claude/aitk/config.json` stamp. A sandbox now carries what a target carries, which is what makes a rule change observable to a run.
-- Seeds stay a raw copy. `aitk claude init` does more than drop files, and the scenarios depending on the current shape outnumber the drift the copy risks. Hooks ship inside the seed tree, so a hook change is already reachable by any scenario declaring `SANDBOX_INJECT_SEEDS`.
+- Standards and gov rules provision through the real installer rather than a copy. Both copies reimplemented an installer's selection rules, and the standards one omitted the `index.md` a real install rebuilds while neither wrote the `.claude/canon/config.json` stamp. A sandbox now carries what a target carries, which is what makes a rule change observable to a run.
+- Seeds stay a raw copy. `canon claude init` does more than drop files, and the scenarios depending on the current shape outnumber the drift the copy risks. Hooks ship inside the seed tree, so a hook change is already reachable by any scenario declaring `SANDBOX_INJECT_SEEDS`.
 
 ### Why the sandbox sits outside the repository
 
@@ -79,11 +79,11 @@ Location and inheritance are separable, which is what lets both harnesses sit ou
 
 ### The sandbox path and its guard
 
-The sandbox tree lives at `$XDG_STATE_HOME/aitk/sandbox-<run-id>`, defaulting to `~/.local/state/aitk/sandbox-<run-id>`, and `AITK_SANDBOX_DIR` overrides the whole path. Two definitions hold it, `resolve_sandbox_dir` in `scripts/lib/sandbox-path.sh` and `sandboxTree` in `src/commands/sandbox.ts`, and the exec boundary is why there are two rather than one.
+The sandbox tree lives at `$XDG_STATE_HOME/canon/sandbox-<run-id>`, defaulting to `~/.local/state/canon/sandbox-<run-id>`, and `CANON_SANDBOX_DIR` overrides the whole path. Two definitions hold it, `resolve_sandbox_dir` in `scripts/lib/sandbox-path.sh` and `sandboxTree` in `src/commands/sandbox.ts`, and the exec boundary is why there are two rather than one.
 
 ### The per-run id
 
-`<run-id>` comes from `mint_sandbox_run_id` and `mintSandboxRunId`, the twins' own twin functions. Each mints a short random suffix the first time a process asks for the default and holds it in `AITK_SANDBOX_RUN_ID` for the rest of that process, so a child inheriting the environment resolves the same tree its parent did rather than minting a second one.
+`<run-id>` comes from `mint_sandbox_run_id` and `mintSandboxRunId`, the twins' own twin functions. Each mints a short random suffix the first time a process asks for the default and holds it in `CANON_SANDBOX_RUN_ID` for the rest of that process, so a child inheriting the environment resolves the same tree its parent did rather than minting a second one.
 
 `run.sh` mints once, before it provisions, which is what lets its own provisioning step and the `sandbox check` it runs afterward agree. `.claude/context/sandbox/running.md` carries the collision this replaced and what it costs a caller who resolves the tree standalone.
 
@@ -117,16 +117,16 @@ Five of those entries assert mechanically, two in `claude/review` and three in `
 
 A demoted assertion is never inverted into `absent`. Where a claim genuinely cannot be read, the filenames a wrong run would have chosen stay undeclared, because an `absent` entry would pass for the file being elsewhere rather than for the run being correct. That is the vacuous pass `manual` is excluded from the count to prevent, arriving through the back door. The rule outlived the escape that motivated it and holds for any claim over output the snapshot does not reach.
 
-A bare key below a `[[content]]` header belongs to that table, not to the document. `claude/ui-test` shipped its `max_turns` and all five `manual` entries under its last content block, so the ceiling never asserted, the entries never reached the unchecked count, and `aitk sandbox coverage` read the arm as armed throughout. `contentArray` now throws on any key beside `path` and `pattern`, which is the only level that can see the difference.
+A bare key below a `[[content]]` header belongs to that table, not to the document. `claude/ui-test` shipped its `max_turns` and all five `manual` entries under its last content block, so the ceiling never asserted, the entries never reached the unchecked count, and `canon sandbox coverage` read the arm as armed throughout. `contentArray` now throws on any key beside `path` and `pattern`, which is the only level that can see the difference.
 
 An arm over a step that reports rather than writes needs `reply`, because every tree assertion it can make is a negative and a declaration of only negatives passes hardest on the skip it exists to detect. `claude:docs/anchor-sweep` pins a record that has to survive the run byte-identical, which a run where the step never fired satisfies perfectly. Two `reply` substrings are what separate the two. The same shape reaches any arm whose subject decides not to write.
 
 ### Naming and staging a scenario
 
-A scenario file is named for the skill it drives, not for the domain the skill sits in. `scripts/sandbox/claude/memory-review.sh` drives `/aitk:claude-memory-review`, and had the two names diverged the `<category>/<rest>.sh` mapping rule would find nothing and the audit would report the skill unpaired. A skill that gets renamed takes its scenario file with it rather than gaining a second scenario beside it.
+A scenario file is named for the skill it drives, not for the domain the skill sits in. `scripts/sandbox/claude/memory-review.sh` drives `/canon:claude-memory-review`, and had the two names diverged the `<category>/<rest>.sh` mapping rule would find nothing and the audit would report the skill unpaired. A skill that gets renamed takes its scenario file with it rather than gaining a second scenario beside it.
 
 - A scenario whose expectation reads a slug checks out its branch explicitly. `git init` inherits the machine's `init.defaultBranch`, so an arm resting on the initial branch name passes or fails by local git config.
-- Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `aitk sandbox reset` restores without provisioning again.
+- Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `canon sandbox reset` restores without provisioning again.
 
 ### The anchor remote and its credentials
 
@@ -154,20 +154,20 @@ Identity and remote setup collapse into `configure_sandbox_anchor_remote`, which
 - After provisioning, your terminal cwd may need a refresh. Add a wrapper to `.zshrc` or `.bashrc`:
 
 ```bash
-aitk() {
-  command aitk "$@"
+canon() {
+  command canon "$@"
   cd .
 }
 ```
 
-- On Windows, back-to-back headless runs can briefly fail to wipe the sandbox tree with a busy-lock. Re-run or `aitk sandbox clean` first.
+- On Windows, back-to-back headless runs can briefly fail to wipe the sandbox tree with a busy-lock. Re-run or `canon sandbox clean` first.
 - An autonomous sonnet run costs roughly $0.10 to $0.60 and tracks the turn count, measured at $0.28 for 7 turns and $0.58 for 17 on 2026-08-13. Drive one skill on demand rather than sweeping the catalog.
-- Skills whose body forbids probing project surfaces, such as `aitk-feedback-file`, have no fixture to anchor and stay out of scope.
+- Skills whose body forbids probing project surfaces, such as `canon-feedback-file`, have no fixture to anchor and stay out of scope.
 - Anchor scenarios take their starting tree from a fixture, so provisioning does not depend on what the previous arm published to the remote. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
 
 ### A scenario faking a live session writes to the real registry
 
-A scenario needing a live session record for a roster read, such as testing occupancy against `aitk sessions list`, has no sandbox-local registry to point at. Provisioning and the later spawned `claude -p` run are separate script invocations with no shared environment, the same split that gives `run.sh` its own `GIT_TERMINAL_PROMPT=0` export above, so an env var set during provisioning cannot repoint `CLAUDE_CONFIG_DIR` for the spawned session. Such a scenario writes to the real `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions/` on the host instead. Bound the spawned process well under a day so it exits on its own once no run needs it, since the record then drops out of `aitk sessions list`'s live roster automatically rather than sitting there for every consumer that reads it until someone removes it by hand. Key the record's filename on the process's pid, so a second drive gets its own record instead of overwriting the first run's and orphaning its still-running process.
+A scenario needing a live session record for a roster read, such as testing occupancy against `canon sessions list`, has no sandbox-local registry to point at. Provisioning and the later spawned `claude -p` run are separate script invocations with no shared environment, the same split that gives `run.sh` its own `GIT_TERMINAL_PROMPT=0` export above, so an env var set during provisioning cannot repoint `CLAUDE_CONFIG_DIR` for the spawned session. Such a scenario writes to the real `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions/` on the host instead. Bound the spawned process well under a day so it exits on its own once no run needs it, since the record then drops out of `canon sessions list`'s live roster automatically rather than sitting there for every consumer that reads it until someone removes it by hand. Key the record's filename on the process's pid, so a second drive gets its own record instead of overwriting the first run's and orphaning its still-running process.
 
 ## Standing limits
 

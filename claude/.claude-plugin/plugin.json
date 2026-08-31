@@ -1,13 +1,13 @@
 {
-  "name": "aitk",
+  "name": "canon",
   "description": "Automated governance, versioning, and discovery tools for Claude Code.",
   "version": "3.57.0",
   "author": {
     "name": "Eric Le",
     "url": "https://github.com/erclx"
   },
-  "homepage": "https://github.com/erclx/aitk",
-  "repository": "https://github.com/erclx/aitk",
+  "homepage": "https://github.com/erclx/canon",
+  "repository": "https://github.com/erclx/canon",
   "license": "MIT",
   "keywords": [
     "governance",

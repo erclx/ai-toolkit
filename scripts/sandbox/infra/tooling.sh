@@ -33,7 +33,7 @@ EOF
 
   case "$SELECTED_OPTION" in
   "sync")
-    log_step "Running: aitk tooling sync"
+    log_step "Running: canon tooling sync"
     log_info "Expected: the report lists every path, then a prompt asks before anything is written."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
     ;;
@@ -56,16 +56,16 @@ EOF
     git add docs/development.md
     git commit -m "chore(sandbox): seed drifted docs/development.md" --no-verify -q
 
-    log_step "Running: aitk tooling sync base"
+    log_step "Running: canon tooling sync base"
     log_info "docs/development.md is pre-populated with a drifted copy."
     log_info "After sync, diff HEAD -- docs/development.md should be empty."
     log_info "The report names it before the prompt, so the drift is visible ahead of the write."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
     ;;
   "sync-headless")
-    log_step "Running: AITK_NON_INTERACTIVE=1 aitk tooling sync base ."
+    log_step "Running: CANON_NON_INTERACTIVE=1 canon tooling sync base ."
     log_info "Expected: the report lists every path, nothing is written, and the exit is 1."
-    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . || log_info "Exit: $?"
+    CANON_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . || log_info "Exit: $?"
     log_info "Expected: git status is clean, since the refusal wrote nothing."
     git status --short
 
@@ -74,7 +74,7 @@ EOF
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
     ;;
   "reference")
-    log_step "Running: aitk tooling reference base"
+    log_step "Running: canon tooling reference base"
     log_info "Expected: the reference doc prints to stdout. Nothing is written."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling reference base
     ;;
@@ -84,38 +84,38 @@ EOF
     cat <<'EOF' >.claude/tooling/base.md
 # Base reference (stale copy from before the read route shipped)
 
-This file predates aitk tooling reference and no command still writes it.
+This file predates canon tooling reference and no command still writes it.
 EOF
     git add .claude/tooling/base.md
     git commit -m "chore(sandbox): seed a stale installed reference copy" --no-verify -q
 
-    log_step "Running: aitk tooling reference base"
+    log_step "Running: canon tooling reference base"
     log_info "Expected: prints the current tooling/base/reference.md doc, not the stale file above."
     bun "$PROJECT_ROOT/src/cli.ts" tooling reference base
 
-    log_step "Running: AITK_NON_INTERACTIVE=1 aitk tooling sync base . --write"
+    log_step "Running: CANON_NON_INTERACTIVE=1 canon tooling sync base . --write"
     log_info "Expected: the stale .claude/tooling/base.md is left untouched. diff HEAD -- .claude/tooling/base.md should be empty."
-    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
+    CANON_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
     log_step "Diffing the stale copy against HEAD"
     exec git diff HEAD -- .claude/tooling/base.md
     ;;
   "monorepo")
     log_step "Staging base tooling at repo root"
-    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
+    CANON_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
     bunx husky
     mkdir -p frontend
 
-    log_step "Running: aitk tooling sync vite-react ./frontend --skip base"
+    log_step "Running: canon tooling sync vite-react ./frontend --skip base"
     log_info "Expected: frontend gets web and vite-react configs, no base configs."
     log_info "Expected: only the root .husky exists, no frontend/.husky."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync vite-react ./frontend --skip base
     ;;
   "create")
-    log_step "Running: aitk tooling create"
+    log_step "Running: canon tooling create"
     exec "$PROJECT_ROOT/scripts/tooling/create.sh"
     ;;
   "list")
-    log_step "Running: aitk tooling list"
+    log_step "Running: canon tooling list"
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling list
     ;;
   *)

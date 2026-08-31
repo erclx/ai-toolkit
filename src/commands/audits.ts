@@ -78,9 +78,9 @@ export function register(program: Command): void {
         "folder holds one machine's scratch, and its counts answer nobody else.",
         '',
         'Examples:',
-        '  aitk audits run',
-        '  aitk audits run --json',
-        '  aitk audits run --record',
+        '  canon audits run',
+        '  canon audits run --json',
+        '  canon audits run --record',
         '',
       ].join('\n'),
     )
@@ -103,8 +103,8 @@ export function register(program: Command): void {
         '  0  the catalog was listed',
         '',
         'Examples:',
-        '  aitk audits list',
-        '  aitk audits list --json',
+        '  canon audits list',
+        '  canon audits list --json',
         '',
       ].join('\n'),
     )
@@ -120,7 +120,7 @@ function runList(opts: ListCommandOptions): number {
         audits: AUDITS.map((audit) => ({
           id: audit.id,
           label: audit.label,
-          command: `aitk ${audit.argv.join(' ')}`,
+          command: `canon ${audit.argv.join(' ')}`,
           corpus: audit.corpus,
           gates: audit.gatingExits.length > 0,
         })),
@@ -129,10 +129,10 @@ function runList(opts: ListCommandOptions): number {
     return 0
   }
 
-  intro('aitk audits list')
+  intro('canon audits list')
   for (const audit of AUDITS) {
     logStep(audit.label)
-    logInfo(`aitk ${audit.argv.join(' ')}`)
+    logInfo(`canon ${audit.argv.join(' ')}`)
     logInfo(
       `${audit.corpus} corpus, ${audit.gatingExits.length > 0 ? 'gates on a fact' : 'reports only'}`,
     )
@@ -188,7 +188,7 @@ async function runAll(opts: RunCommandOptions): Promise<number> {
       )
       return 1
     }
-    intro('aitk audits run')
+    intro('canon audits run')
     logStep('Refused')
     logError(message)
     outro()
@@ -274,11 +274,11 @@ function report(
 ): void {
   const byId = new Map(deltas.map((delta) => [delta.id, delta]))
 
-  intro('aitk audits run')
+  intro('canon audits run')
 
   logStep('Baseline')
   if (baseline === undefined) {
-    logWarn(`None recorded. Take one with aitk audits run --record.`)
+    logWarn(`None recorded. Take one with canon audits run --record.`)
   } else {
     logInfo(`${baseline.recordedAt} at ${baseline.commit.slice(0, 8)}`)
   }

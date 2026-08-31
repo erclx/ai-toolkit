@@ -9,7 +9,7 @@ description: Why a plain restatement is asked for by name, and where its boundar
 
 Without this skill, a reader who cannot follow a dense answer has to ask for it again in ordinary words, and the second answer is drafted by the same session that produced the first. Nothing tells that session which half of its own text carried the decision, so the rewrite shortens the passage and keeps the abstraction that made it hard to read.
 
-The corpus around it covers the neighboring jobs and not this one. `write-human` governs a passage being drafted or revised and arrives on a markdown edit, so it never sees an answer in chat and never reaches a document nobody is editing. `aitk markdown audit` reports sentence spread and repeated openings against a stated range, which measures how a passage moves and says nothing about whether a reader can act on it.
+The corpus around it covers the neighboring jobs and not this one. `write-human` governs a passage being drafted or revised and arrives on a markdown edit, so it never sees an answer in chat and never reaches a document nobody is editing. `canon markdown audit` reports sentence spread and repeated openings against a stated range, which measures how a passage moves and says nothing about whether a reader can act on it.
 
 A restatement also fails in a way a rewrite does not. A run that compresses by dropping what supports a claim leaves a reader who acts on the plain version and meets a different answer in the source, and that failure is invisible in the restatement itself.
 
@@ -36,6 +36,6 @@ A restatement also fails in a way a rewrite does not. A run that compresses by d
 ## Out of scope
 
 - Drafting or revising a passage, which is `write-human` on a markdown edit
-- Measuring cadence in finished output, which `aitk markdown audit` reports from package data
+- Measuring cadence in finished output, which `canon markdown audit` reports from package data
 - Rewriting a document into a file, which is a proposal against the source rather than a restatement of it
 - The banned words, characters, and spellings, which `markdown.md` states and the audit gates

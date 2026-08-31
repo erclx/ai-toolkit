@@ -8,7 +8,7 @@ import { auditFolder, listedTargets } from '@/context/index-drift'
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-index-drift-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-index-drift-'))
 })
 
 afterEach(() => {

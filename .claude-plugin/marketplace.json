@@ -1,5 +1,5 @@
 {
-  "name": "aitk",
+  "name": "canon",
   "description": "One source for your repos' AI conventions. Install once, sync everywhere.",
   "owner": {
     "name": "Eric Le",
@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "name": "aitk",
+      "name": "canon",
       "source": "./claude",
       "description": "Automated governance, versioning, and discovery tools for Claude Code."
     }

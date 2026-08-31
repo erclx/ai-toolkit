@@ -6,7 +6,7 @@ Run each prompt in a fresh session. Invoke with `/internal-ask <question>`. Judg
 
 - **Prompt:** `/internal-ask how do I set up a target project?`
 - **Expected source:** `docs/target-projects.md`
-- **Shape:** short answer explaining `aitk init`, cites the doc.
+- **Shape:** short answer explaining `canon init`, cites the doc.
 
 ## 2. docs/ hit, CLI surface
 

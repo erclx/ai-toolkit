@@ -30,7 +30,7 @@ Counting the bodies that cite a standard reads short of the set a move has to sa
 
 ### A rule delivers the standard it routes to rather than absorbing it
 
-The seventeen document-type standards route to the governance rule that globs them, and the rule names `aitk standards <name>` rather than carrying the guidance itself. Folding it in was the reading the routing sentence admits, and it costs roughly 2,400 lines against eighteen rules totalling 377, which turns a 16 to 29 line rule into a 100 to 300 line one and reproduces the standard's whole structure inside the pointer to it.
+The seventeen document-type standards route to the governance rule that globs them, and the rule names `canon standards <name>` rather than carrying the guidance itself. Folding it in was the reading the routing sentence admits, and it costs roughly 2,400 lines against eighteen rules totalling 377, which turns a 16 to 29 line rule into a 100 to 300 line one and reproduces the standard's whole structure inside the pointer to it.
 
 What the rule delivers is arrival rather than text. It fires on the glob while the file is open, which is the property the census routed on, and a pointer a session can execute serves that as well as an inlined copy would. Settled by the operator on 2026-08-20.
 
@@ -55,7 +55,7 @@ Twenty-seven standards, all at the flat root now that `bundled/` is retired. Eac
 
 ### To the CLI
 
-- `markdown.md` fixes what a check can decide about any markdown file. `aitk markdown audit`, arrived, with `501-markdown.md` left pointing at it.
+- `markdown.md` fixes what a check can decide about any markdown file. `canon markdown audit`, arrived, with `501-markdown.md` left pointing at it.
 
 `slug.md` and `publish.md` were recorded here and are withdrawn below.
 

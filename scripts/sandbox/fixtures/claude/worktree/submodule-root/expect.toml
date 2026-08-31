@@ -1,10 +1,10 @@
 # What a correct `/claude-worktree` run leaves behind on the submodule control
-# arm. Read by `aitk sandbox check`. Patterns use TOML literal strings so a
+# arm. Read by `canon sandbox check`. Patterns use TOML literal strings so a
 # regex needs no backslash escaping.
 
 # This arm stages the same tree as `submodule` next door and runs from the
 # superproject root instead. It is written against the bare prompt
-# `/aitk:claude-worktree`, since the expectation format carries no prompt field.
+# `/canon:claude-worktree`, since the expectation format carries no prompt field.
 # The guard is asserted by the sibling arm and this one asserts that it stays
 # silent where it should, which is the half a regression would break first.
 

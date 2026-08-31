@@ -75,7 +75,7 @@ async function seedTask(fixture: TaskFixture = {}): Promise<string> {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-tasks-archive-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-tasks-archive-'))
 })
 
 afterEach(() => {

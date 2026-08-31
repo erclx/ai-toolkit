@@ -34,7 +34,7 @@ EOF
     log_step "Scenario ready: matched-plan tier (Step 2, tier 1)"
     log_info "Branch: foo"
     log_info "Plan:   .claude/plans/feature-foo.md"
-    log_info "Action:  /aitk:claude-worktree"
+    log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  skill derives foo from tier 1, no prompt"
     log_info "         worktree at .claude/worktrees/foo/, branch feat/foo post-rename"
     ;;
@@ -56,7 +56,7 @@ EOF
     log_step "Scenario ready: multi-plan tier (Step 2, tier 3)"
     log_info "Branch: default"
     log_info "Plans:  feature-alpha.md, feature-bravo.md"
-    log_info "Action:  /aitk:claude-worktree"
+    log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  skill falls to tier 3 and asks which plan"
     log_info "         respond with alpha or bravo to pick the slug"
     ;;
@@ -66,7 +66,7 @@ EOF
     log_step "Scenario ready: branch-only tier (Step 2, tier 4)"
     log_info "Branch: bar"
     log_info "Plans:  none"
-    log_info "Action:  /aitk:claude-worktree"
+    log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  skill falls to tier 4 and uses bar"
     log_info "         worktree at .claude/worktrees/bar/, branch feat/bar post-rename"
     ;;
@@ -83,7 +83,7 @@ EOF
     log_step "Scenario ready: target collision (Step 2)"
     log_info "Branch: feat/baz"
     log_info "Plan:   .claude/plans/feature-baz.md"
-    log_info "Action:  /aitk:claude-worktree"
+    log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  slug transform drops the type, so tier 1 derives baz"
     log_info "         target feat/baz already exists, so Step 2 stops"
     log_info "         no worktree is created and the existing branch is left alone"
@@ -109,7 +109,7 @@ EOF
     log_step "Scenario ready: dependency report (Step 6)"
     log_info "Branch: qux"
     log_info "Plan:   .claude/plans/feature-qux.md"
-    log_info "Action:  /aitk:claude-worktree"
+    log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  entry proceeds, then Step 6 reports two lines"
     log_info "         package.json present and node_modules missing, so it names bun install"
     log_info "         no scripts/worktree-port.sh here, so the port line names the stack default"
@@ -145,7 +145,7 @@ EOF
     log_step "Scenario ready: port report (Step 6)"
     log_info "Branch: corge"
     log_info "Plan:   .claude/plans/feature-corge.md"
-    log_info "Action:  /aitk:claude-worktree"
+    log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  declared in fixtures/claude/worktree/port-offset/expect.toml"
     ;;
   "submodule" | "submodule-root")
@@ -185,19 +185,19 @@ EOF
       log_step "Scenario ready: submodule guard (Guards)"
       log_info "Branch: grault"
       log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
-      log_info "Action:  cd vendor, then /aitk:claude-worktree"
+      log_info "Action:  cd vendor, then /canon:claude-worktree"
       log_info "Expect:  both rev-parse reads return one path, so the linked-worktree guard passes"
       log_info "         the superproject read resolves, so the skill stops and names this root"
       log_info "         no worktree is created and no .claude/ is written under vendor"
-      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"cd vendor, then /aitk:claude-worktree\" submodule"
+      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"cd vendor, then /canon:claude-worktree\" submodule"
     else
       log_step "Scenario ready: submodule control (Guards)"
       log_info "Branch: grault"
       log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
-      log_info "Action:  /aitk:claude-worktree from this root"
+      log_info "Action:  /canon:claude-worktree from this root"
       log_info "Expect:  the superproject read is empty here, so the guard stays silent"
       log_info "         entry derives grault from the plan and creates the worktree"
-      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"/aitk:claude-worktree\" submodule-root"
+      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"/canon:claude-worktree\" submodule-root"
     fi
     ;;
   *)
@@ -206,5 +206,5 @@ EOF
   esac
 
   log_info ""
-  log_info "Cleanup: run 'aitk sandbox clean' after the test to wipe the worktree and its branch refs."
+  log_info "Cleanup: run 'canon sandbox clean' after the test to wipe the worktree and its branch refs."
 }

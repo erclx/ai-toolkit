@@ -133,11 +133,11 @@ export function register(program: Command): void {
         'coarsest unit that keeps it a whole number.',
         '',
         'Examples:',
-        '  aitk sessions list',
-        '  aitk sessions list --json',
-        '  aitk sessions list --branch feat/parser --json',
-        '  aitk sessions list --branch chore/agents --repository ../caret --json',
-        '  aitk sessions list --self --json',
+        '  canon sessions list',
+        '  canon sessions list --json',
+        '  canon sessions list --branch feat/parser --json',
+        '  canon sessions list --branch chore/agents --repository ../caret --json',
+        '  canon sessions list --self --json',
         '',
       ].join('\n'),
     )
@@ -150,7 +150,7 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   const report = await resolveSessions()
 
   if (report.kind === 'absent') {
-    intro('aitk sessions list')
+    intro('canon sessions list')
     logStep('Refused')
     logWarn(
       `No session registry at ${report.dir}. Nothing was read, so this is not a machine with no sessions.`,
@@ -173,7 +173,7 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   const own = opts.self ? selfOf(report.sessions, callerIdentity()) : null
 
   if (own?.kind === 'unresolved') {
-    intro('aitk sessions list')
+    intro('canon sessions list')
     logStep('Refused')
     logWarn(selfRefusal(own))
     outro()
@@ -205,7 +205,7 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   const repository = opts.branch ? await repositoryOf(at) : null
 
   if (opts.branch && repository === null) {
-    intro('aitk sessions list')
+    intro('canon sessions list')
     logStep('Refused')
     logWarn(
       `--branch scopes the match to one repository, and none resolved at ${at}. Run it inside one, name another with --repository, or read the whole roster and filter on the repository field.`,
@@ -232,7 +232,7 @@ async function runList(opts: ListCommandOptions): Promise<number> {
     ? await checkClaim(opts.branch, { cwd: at, resolve: async () => report })
     : null
 
-  intro('aitk sessions list')
+  intro('canon sessions list')
   reportConfidence(report)
   reportSessions(shown, opts.branch, repository, own !== null)
   if (claim) reportClaim(claim)

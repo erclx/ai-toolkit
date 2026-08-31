@@ -5,12 +5,12 @@ description: Counting the instructions the always-loaded file and every path-sco
 
 # Restated instructions
 
-`aitk gov restated` reports every instruction the always-loaded file or a path-scoped rule states that a further surface states too. It answers a question nothing else here could: one rule was found written in three places, and it was found by accident when a shipped skill deleted a file the rule said to keep.
+`canon gov restated` reports every instruction the always-loaded file or a path-scoped rule states that a further surface states too. It answers a question nothing else here could: one rule was found written in three places, and it was found by accident when a shipped skill deleted a file the rule said to keep.
 
 ```bash
-aitk gov restated
-aitk gov restated --json
-aitk gov restated --root ../my-app
+canon gov restated
+canon gov restated --json
+canon gov restated --root ../my-app
 ```
 
 | Option          | Behavior                                                   |
@@ -74,8 +74,8 @@ The ownership table assigns a cross-domain rule and a domain-triggered one, and 
 
 Exit codes are `0` when no instruction is restated outside a declared mirror, `1` for a refusal, and `2` for at least one restatement outside one. Mirrors move no exit code.
 
-Nothing wires this into `bun run check` or into a hook. A restatement is legitimate more often than not, and gating a measure whose ordinary result is a finding is what teaches contributors to route around the stage. `aitk gov test-order` and `aitk labels audit` are the siblings.
+Nothing wires this into `bun run check` or into a hook. A restatement is legitimate more often than not, and gating a measure whose ordinary result is a finding is what teaches contributors to route around the stage. `canon gov test-order` and `canon labels audit` are the siblings.
 
-Both refusals are absences rather than breaks. A target holds none of the seed, a shipped skills tree, or a rules tree, so `aitk audits run` reads `no-instructions` and `no-surfaces` as a corpus that is not there rather than a verb that failed.
+Both refusals are absences rather than breaks. A target holds none of the seed, a shipped skills tree, or a rules tree, so `canon audits run` reads `no-instructions` and `no-surfaces` as a corpus that is not there rather than a verb that failed.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `counts` rather than the exit when a skill consumes this.

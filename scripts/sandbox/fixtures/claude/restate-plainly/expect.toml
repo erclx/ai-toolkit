@@ -1,5 +1,5 @@
-# What a correct `/aitk:restate-plainly docs/retry.md` run leaves behind on the seeded
-# document. Read by `aitk sandbox check`. Patterns use TOML literal strings so a
+# What a correct `/canon:restate-plainly docs/retry.md` run leaves behind on the seeded
+# document. Read by `canon sandbox check`. Patterns use TOML literal strings so a
 # regex needs no backslash escaping.
 #
 # Every top-level key sits above the first `[[content]]` block. A bare key below
@@ -54,7 +54,7 @@ manual = [
   "The restatement reads as prose rather than as a list of verbless fragments. Semantic: this is the failure a compression pass produces, and cadence is a property of a passage that no single pattern counts.",
   "The run loaded the write-human skill before writing the restatement. Unwired: the claim is about which skills were loaded, which the envelope does not carry.",
   "No fact, number, or name entered the restatement that docs/retry.md does not carry. Semantic: an invented claim is an addition to prose the harness never captures as a file.",
-  "The restatement carries no banned character. Unwired: the bans are gated over files by aitk markdown audit, and a reply is prose the harness captures as text rather than as a path. The run of 2026-08-25 returned a correct restatement carrying an em dash, so read this one rather than assuming the citation reached it.",
+  "The restatement carries no banned character. Unwired: the bans are gated over files by canon markdown audit, and a reply is prose the harness captures as text rather than as a path. The run of 2026-08-25 returned a correct restatement carrying an em dash, so read this one rather than assuming the citation reached it.",
 ]
 
 # The source document, pinned from its frontmatter through the paragraph

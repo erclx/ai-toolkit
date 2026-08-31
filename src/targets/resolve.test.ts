@@ -10,7 +10,7 @@ let FILE: string
 
 function stamp(...segments: string[]): string {
   const target = join(ROOT, ...segments)
-  const path = join(target, '.claude', 'aitk', 'config.json')
+  const path = join(target, '.claude', 'canon', 'config.json')
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(path, JSON.stringify({ covers: [], domains: {} }))
   return target
@@ -19,7 +19,7 @@ function stamp(...segments: string[]): string {
 const noOrigin = async (): Promise<string | null> => null
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-resolve-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-resolve-'))
   FILE = join(ROOT, 'targets.json')
 })
 

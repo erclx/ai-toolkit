@@ -96,7 +96,7 @@ query = "button"
 
 describe('readInventoryConfig', () => {
   it('should refuse a project declaring no config at all', () => {
-    const root = mkdtempSync(join(tmpdir(), 'aitk-inventory-'))
+    const root = mkdtempSync(join(tmpdir(), 'canon-inventory-'))
 
     expect(readInventoryConfig(root)).toEqual({
       kind: 'refused',
@@ -105,7 +105,7 @@ describe('readInventoryConfig', () => {
   })
 
   it('should read the config a project declares at its root', () => {
-    const root = mkdtempSync(join(tmpdir(), 'aitk-inventory-'))
+    const root = mkdtempSync(join(tmpdir(), 'canon-inventory-'))
     writeFileSync(join(root, CONFIG_REL), COMPLETE)
 
     const read = readInventoryConfig(root)

@@ -18,8 +18,8 @@ function writeFixture(rel: string, content = 'body\n'): void {
 }
 
 beforeEach(() => {
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-layout-'))
-  TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-layout-toolkit-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-layout-'))
+  TOOLKIT = mkdtempSync(join(tmpdir(), 'canon-layout-toolkit-'))
   write(TOOLKIT, join('standards', 'prose.md'))
   write(TOOLKIT, join('standards', 'tasks.md'))
   write(TOOLKIT, join('snippets', 'review', 'diff.md'))

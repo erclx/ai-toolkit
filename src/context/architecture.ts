@@ -85,7 +85,7 @@ const QUANTIFIES_PATH = new RegExp(
 /** A code span naming a shell check this repository could run. */
 const SCRIPT_SPAN = /^scripts\/[\w./-]+\.sh$/
 /** A code span invoking the CLI, which may or may not name a registered audit. */
-const AITK_SPAN = /^aitk\s+(.+)$/
+const CANON_SPAN = /^canon\s+(.+)$/
 
 /**
  * The audit invocations a decision could name, spelled as a reader writes them.
@@ -104,7 +104,7 @@ function codeSpans(text: string): string[] {
 /**
  * Names the executable checks an entry spells.
  *
- * A script has to exist on disk and an `aitk` invocation has to match a
+ * A script has to exist on disk and a `canon` invocation has to match a
  * registered audit, because an entry naming a check that was removed is an
  * uncovered claim wearing a covered one's words.
  */
@@ -112,7 +112,7 @@ async function namedChecks(root: string, body: string): Promise<string[]> {
   const spans = [...new Set(codeSpans(body))]
 
   const verbs = spans.filter((span) => {
-    const invocation = span.match(AITK_SPAN)?.[1]
+    const invocation = span.match(CANON_SPAN)?.[1]
     return invocation !== undefined && AUDIT_INVOCATIONS.includes(invocation)
   })
 

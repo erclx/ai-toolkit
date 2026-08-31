@@ -7,13 +7,13 @@ description: Selecting a shipped task by stem or pull request, recording a numbe
 
 ## Archive
 
-`aitk tasks archive` moves a shipped task from `.claude/tasks/` into `.claude/tasks/archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.
+`canon tasks archive` moves a shipped task from `.claude/tasks/` into `.claude/tasks/archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.
 
 Name the task by its filename stem, or by the pull request it carries:
 
 ```bash
-aitk tasks archive v28.1-trigger-escalation
-aitk tasks archive --pull-request 673 --json
+canon tasks archive v28.1-trigger-escalation
+canon tasks archive --pull-request 673 --json
 ```
 
 | Option               | Behavior                                                     |
@@ -30,19 +30,19 @@ Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a war
 
 The row is matched by the link in its first cell rather than by a pattern against the whole line. A row names the task it is about in the first cell, so a link anywhere after it is a reference, such as a blocker naming what it waits on, and matching the line would drop the referring task's row too.
 
-The row removal reaches `priority.md` alone. A task gets to a merge by being planned and handed out, and both steps move it onto the board first, so one archived straight off `backlog.md` leaves its bullet standing and `aitk tasks validate` reports that bullet as naming a file that is gone.
+The row removal reaches `priority.md` alone. A task gets to a merge by being planned and handed out, and both steps move it onto the board first, so one archived straight off `backlog.md` leaves its bullet standing and `canon tasks validate` reports that bullet as naming a file that is gone.
 
 The board is shared scratch at the main worktree root, so `--root` defaults to the first entry of `git worktree list` rather than the working directory. A linked worktree archives against the same board every other session reads.
 
 Skills branch on the reason rather than on the exit code:
 
 ```bash
-aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .reason end'
+canon tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .reason end'
 ```
 
 ## Plan citations
 
-`aitk tasks plan-citations <stem>` answers where a task's plan sits and which other live tasks hold it. It reports and never writes.
+`canon tasks plan-citations <stem>` answers where a task's plan sits and which other live tasks hold it. It reports and never writes.
 
 | Option          | Effect                                      |
 | --------------- | ------------------------------------------- |
@@ -53,25 +53,25 @@ The record carries `location`, one of `unstated`, `live`, `archived`, or `outsid
 
 The target resolves against `.claude/tasks/` and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file and one plan two tasks spelled differently counts once.
 
-`aitk tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, so a sweep calling a verb the installed `aitk` predates gets no record back and archives nothing.
+`canon tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, so a sweep calling a verb the installed `canon` predates gets no record back and archives nothing.
 
-Branch on `reason` rather than on the exit code, which is the rule the archive section above already states and which this verb needs for a second reason. An operator's shell profile may wrap `aitk` in a function that runs the binary and then another command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
+Branch on `reason` rather than on the exit code, which is the rule the archive section above already states and which this verb needs for a second reason. An operator's shell profile may wrap `canon` in a function that runs the binary and then another command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
 
 A `live` location with an empty `citedBy` is the sweep to run. One whose `citedBy` names a sibling is a plan several tasks share, which the sweep leaves alone and the archive gate lets through.
 
 ```bash
-aitk tasks plan-citations v28.1-trigger-escalation --json | jq -r '.location'
+canon tasks plan-citations v28.1-trigger-escalation --json | jq -r '.location'
 ```
 
 ## Pull request
 
-`aitk tasks pull-request` records the number a branch's pull request carries onto the task that branch closes. It adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already holds, and corrects the number in place when the line exists.
+`canon tasks pull-request` records the number a branch's pull request carries onto the task that branch closes. It adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already holds, and corrects the number in place when the line exists.
 
 Name the task by its filename stem, or by the plan its `Plan:` line points at:
 
 ```bash
-aitk tasks pull-request 673 v28.1-trigger-escalation
-aitk tasks pull-request 673 --plan worktree-scratch-routing --json
+canon tasks pull-request 673 v28.1-trigger-escalation
+canon tasks pull-request 673 --plan worktree-scratch-routing --json
 ```
 
 | Option          | Behavior                                           |
@@ -88,11 +88,11 @@ A malformed argument refuses as `bad-input` instead, which sits outside that set
 
 ## Outcome
 
-`aitk tasks outcome` marks outcomes `[x]` on a task by their position in its outcome list, counting every checkbox in file order from 1.
+`canon tasks outcome` marks outcomes `[x]` on a task by their position in its outcome list, counting every checkbox in file order from 1.
 
 ```bash
-aitk tasks outcome v28.1-trigger-escalation --close 1 --close 3
-aitk tasks outcome --plan worktree-scratch-routing --close 2 --json
+canon tasks outcome v28.1-trigger-escalation --close 1 --close 3
+canon tasks outcome --plan worktree-scratch-routing --close 2 --json
 ```
 
 | Option               | Behavior                                           |
@@ -104,7 +104,7 @@ aitk tasks outcome --plan worktree-scratch-routing --close 2 --json
 
 An outcome already closed comes back under `alreadyClosed` rather than refusing, so a rerun against the same positions changes nothing. A position past the end of the list refuses as `out-of-range`, since a caller counting wrong should hear about it rather than mark a neighbor.
 
-Positions skip fenced blocks. A checkbox inside a sample a task displays is not an outcome the task claims, and counting one would shift every position after it. `aitk tasks archive` reads the list through the same walker, so the two verbs cannot disagree about which checkboxes are outcomes.
+Positions skip fenced blocks. A checkbox inside a sample a task displays is not an outcome the task claims, and counting one would shift every position after it. `canon tasks archive` reads the list through the same walker, so the two verbs cannot disagree about which checkboxes are outcomes.
 
 Exit codes: `0` closed, `1` refused. The `reason` field adds `no-outcomes`, `out-of-range`, and `bad-input` to the three above.
 
@@ -112,11 +112,11 @@ Both verbs exist because the write is an edit inside a file that already exists.
 
 ## Validate
 
-`aitk tasks validate` reports what each row of `priority.md` claims against what the tree holds. It reads and never writes, because a row is a session's claim about readiness and a validator that repaired one would be asserting the claim it exists to test.
+`canon tasks validate` reports what each row of `priority.md` claims against what the tree holds. It reads and never writes, because a row is a session's claim about readiness and a validator that repaired one would be asserting the claim it exists to test.
 
 ```bash
-aitk tasks validate
-aitk tasks validate --json
+canon tasks validate
+canon tasks validate --json
 ```
 
 Seven checks run. Plan and Collisions reach one half each of the `## Run now` test the board standard states. Mapping and Grouping test the folder contract and hold for every group, and Shape holds for every group too, ahead of the four. Ordering reaches only the `## Needs a plan` rows, and Blockers reaches every row outside `## Run now`:
@@ -194,7 +194,7 @@ Columns are read from each table's own header rather than by position, so a proj
 Skills branch on the findings rather than on the exit code:
 
 ```bash
-aitk tasks validate --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
+canon tasks validate --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
 ```
 
 For the board format, the `Pull request:` line, and the archive rules, see `standards/tasks.md`.

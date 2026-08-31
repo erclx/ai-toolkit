@@ -24,7 +24,7 @@ function seedRule(folder: string, name: string, body: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-gov-list-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-gov-list-'))
 })
 
 afterEach(() => {

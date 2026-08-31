@@ -7,7 +7,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/tooling.sh"
 
-TOOLKIT_TOKEN="aitk"
+TOOLKIT_TOKEN="canon"
 TOOLING_ROOT="$PROJECT_ROOT/tooling"
 
 # `find` writes to stderr and returns non-zero for a missing root, inside a

@@ -5,12 +5,12 @@ description: Running the gate this repository verifies a branch with, what the s
 
 # Merge gate
 
-`aitk gate run` runs every stage that guards a branch here, in order, stopping at the first stage that finds a fact. `bun run check` and `bun run check:ci` resolve to it, and `scripts/core/update.sh` calls it with `--nested` after a dependency update.
+`canon gate run` runs every stage that guards a branch here, in order, stopping at the first stage that finds a fact. `bun run check` and `bun run check:ci` resolve to it, and `scripts/core/update.sh` calls it with `--nested` after a dependency update.
 
 ```bash
-aitk gate run
-aitk gate run --all --no-write
-aitk gate run --json
+canon gate run
+canon gate run --all --no-write
+canon gate run --json
 ```
 
 | Option       | Behavior                                                                      |
@@ -22,18 +22,18 @@ aitk gate run --json
 
 ## What the command owns and what it runs
 
-Three things sit in the command: the stage table in `src/gate/stages.ts`, the changed-file scoping and the run loop in `src/gate/sequencer.ts`, and every threshold comparison in `src/gate/measures.ts`. Each individual check is the script or the verb it already was, under `scripts/core/` or behind another `aitk` command, and the move changed none of them. Sequencing, scoping, and comparison are where the recurring defects were, and a check whose behavior changed while its sequencing moved would make any regression impossible to attribute.
+Three things sit in the command: the stage table in `src/gate/stages.ts`, the changed-file scoping and the run loop in `src/gate/sequencer.ts`, and every threshold comparison in `src/gate/measures.ts`. Each individual check is the script or the verb it already was, under `scripts/core/` or behind another `canon` command, and the move changed none of them. Sequencing, scoping, and comparison are where the recurring defects were, and a check whose behavior changed while its sequencing moved would make any regression impossible to attribute.
 
 A stage is a list of checks and a check is one of four kinds:
 
 | Kind      | What it is                                                                      |
 | --------- | ------------------------------------------------------------------------------- |
 | `command` | Any binary, run from the project root                                           |
-| `cli`     | This checkout's own `src/cli.ts`, never a globally installed `aitk`             |
+| `cli`     | This checkout's own `src/cli.ts`, never a globally installed `canon`            |
 | `drift`   | A regenerated pathspec asserted against the index and against the untracked set |
 | `measure` | A reading whose verdict is a comparison rather than an exit code                |
 
-A `cli` check runs the source rather than the binary because a globally installed `aitk` resolves to the main checkout no matter which worktree is running, so a gate reading through it would measure the wrong tree and pass a branch it never opened.
+A `cli` check runs the source rather than the binary because a globally installed `canon` resolves to the main checkout no matter which worktree is running, so a gate reading through it would measure the wrong tree and pass a branch it never opened.
 
 Every check is an argument vector rather than a shell line, so no stage carries a quoting hazard and a `drift` pathspec reaches git exactly as the table spells it.
 

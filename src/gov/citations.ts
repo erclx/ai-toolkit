@@ -9,14 +9,14 @@ import { parseFrontmatter } from '@/indexes/frontmatter'
 
 /**
  * The inline token exempting one line from this sweep, shaped on the
- * `aitk-allow-superseded` precedent and read by the same two-line rule.
+ * `canon-allow-superseded` precedent and read by the same two-line rule.
  *
  * Everything the classifier below can separate mechanically is separated
  * there. This is for the residue: a line whose path is written as a reference
  * and is correct in naming something absent, for a reason a later reader has
  * to be able to weigh. A bare token names no reason, so it mutes nothing.
  */
-export const CITATION_MARKER = 'aitk-allow-citation'
+export const CITATION_MARKER = 'canon-allow-citation'
 
 /** The two rule corpora, authored here and read from the repository root. */
 export const RULE_DIRS: readonly string[] = [
@@ -123,10 +123,10 @@ const BACKTICKED = /`([^`\n]+)`/g
 
 /**
  * The verb form, with the name captured. A leading letter or digit is required,
- * which is what leaves `aitk standards <name>` unmatched: that line teaches the
+ * which is what leaves `canon standards <name>` unmatched: that line teaches the
  * form rather than citing a standard, and it is the only one in either corpus.
  */
-const STANDARD_CALL = /aitk standards ([A-Za-z0-9][A-Za-z0-9._-]*)/g
+const STANDARD_CALL = /canon standards ([A-Za-z0-9][A-Za-z0-9._-]*)/g
 
 /** A rule filename, which is how a rule names a sibling with no folder around it. */
 const SIBLING_RULE = /^\d{3}-[a-z0-9-]+\.md$/
@@ -185,7 +185,7 @@ export function classifySpan(span: string): CitationForm | undefined {
  * `@/standards/read`, which reads `standards/` at the working root and then the
  * package corpus. This verb refuses a tree holding no rule corpus, so it runs
  * only where those two roots are one directory. `internal/standards/` is
- * deliberately absent: `aitk standards <name>` never reaches it, so admitting it
+ * deliberately absent: `canon standards <name>` never reaches it, so admitting it
  * here would pass a citation that refuses for the session opening it, which is a
  * gate failing open.
  *

@@ -11,7 +11,7 @@ Read these files in parallel:
 
 - `${CLAUDE_SKILL_DIR}/../../standards/branch.md`: branch format, valid types, and constraints
 - `${CLAUDE_SKILL_DIR}/../../standards/pr.md`: structure, rules, and banned phrases
-- `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/aitk/pr-labels.toml`.
+- `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/canon/pr-labels.toml`.
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
 - `${CLAUDE_SKILL_DIR}/../../standards/versioning.md`: phase label vs semver discipline
@@ -72,7 +72,7 @@ Leave a box unchecked only for the human-only cases the reference defines, and n
 
 Before running the final command, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so run the scan regardless of what backs it downstream. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/../../standards/pr.md`.
 
-A `pull_request` workflow job now backs the phase-label half for this repository, running `aitk labels scan` against the opened title and body. A project holding an older `aitk` carries no such job and reaches no check at all, so the scan above stays required rather than optional.
+A `pull_request` workflow job now backs the phase-label half for this repository, running `canon labels scan` against the opened title and body. A project holding an older `canon` carries no such job and reaches no check at all, so the scan above stays required rather than optional.
 
 ### Resolving the pull request
 
@@ -89,18 +89,18 @@ A detached HEAD gives `git branch --show-current` an empty result, which would r
 Ask the CLI first:
 
 ```bash
-aitk labels audit --base <base> --json
+canon labels audit --base <base> --json
 ```
 
 The record carries `labels`, the set this branch earns, and `uncovered`, the changed paths no row of the map reaches. Join `labels` with commas into `pr_labels` below. Report each `uncovered` path beside the result line, naming the map so the reader knows where a row would go, since a surface nobody covered merges bare and nothing else says so.
 
-Branch on the record rather than on the exit. An operator's shell profile may wrap `aitk` in a function whose status comes from a trailing command, and the binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike.
+Branch on the record rather than on the exit. An operator's shell profile may wrap `canon` in a function whose status comes from a trailing command, and the binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike.
 
 A `reason` of `no-map` is the answer that the project declared no map, which earns no labels and no warning: a label set this skill supplied would be a guess about that project's surfaces. Stop there and label nothing.
 
 Every other `reason` is a map or a range the verb could not read, which is `unreadable-map`, `no-domains`, `no-base`, and `unreadable-changes`, plus `bad-base` for a ref this skill resolved wrongly. Take the fallback below and warn beside the result line, naming the reason. A map with a typo in it still has rows a prefix match can reach, and reading the refusal as an absence would open the pull request with no labels and nothing said, which is the surface merging bare that the verb exists to name.
 
-The fallback is reading `.claude/aitk/pr-labels.toml` and matching it against the name-only diff per `${CLAUDE_SKILL_DIR}/references/labels.md`. It also covers no record coming back at all, which is an installed `aitk` predating the verb, since a skill reaches a target the moment it merges while the CLI reaches one only when a release publishes. The fallback labels correctly and reports no uncovered path, which is the half only the verb carries.
+The fallback is reading `.claude/canon/pr-labels.toml` and matching it against the name-only diff per `${CLAUDE_SKILL_DIR}/references/labels.md`. It also covers no record coming back at all, which is an installed `canon` predating the verb, since a skill reaches a target the moment it merges while the CLI reaches one only when a release publishes. The fallback labels correctly and reports no uncovered path, which is the half only the verb carries.
 
 Leave `pr_labels` empty when no map resolves or no prefix matches, which skips the labelling command rather than running it against nothing.
 
@@ -140,7 +140,7 @@ Write the `number` the final command printed onto the task the branch is closing
 The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.claude/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
 
 ```bash
-aitk tasks pull-request <number> --plan feature-<slug> --json
+canon tasks pull-request <number> --plan feature-<slug> --json
 ```
 
 The slug is a guess at which plan this branch carries rather than a fact about the task, which is why the verb re-checks it against the board and refuses instead of writing on a near miss. A branch whose slug names no plan file falls to the silent skip below, the same as one whose plan no task cites.
@@ -149,7 +149,7 @@ The verb resolves the board at the main worktree root in-process, adds `Pull req
 
 Skip this silently when the record is `ok: false` and `reason` is `no-board`, `no-match`, or `ambiguous`. Those are the three cases a guessed write would compound: no board, no task naming the plan, or more than one. One task, one pull request, and a wrong match archives the wrong task unattended once the branch merges. Report any other refusal rather than swallowing it.
 
-The number is what lets the merge close the task. Every merge on `main` is a squash carrying it in the subject, so the number survives where a branch name does not, and `post-merge` reads it back to call `aitk tasks archive`. Writing it here rather than at worktree time is what makes it a pull request number rather than a branch the squash discards.
+The number is what lets the merge close the task. Every merge on `main` is a squash carrying it in the subject, so the number survives where a branch name does not, and `post-merge` reads it back to call `canon tasks archive`. Writing it here rather than at worktree time is what makes it a pull request number rather than a branch the squash discards.
 
 ## After execution
 

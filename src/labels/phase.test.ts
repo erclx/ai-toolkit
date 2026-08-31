@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { scanPhaseLabels } from '@/labels/phase'
 
 const FEATURE_HEAD = 'feat/phase-label-gate'
-const RELEASE_HEAD = 'release-please--branches--main--components--aitk'
+const RELEASE_HEAD = 'release-please--branches--main--components--canon'
 const RELEASE_TITLE = 'chore(main): release 3.46.0'
 
 describe('scanPhaseLabels', () => {
@@ -23,7 +23,7 @@ describe('scanPhaseLabels', () => {
   it('should pass a release body carrying a semver reference', () => {
     const result = scanPhaseLabels({
       title: RELEASE_TITLE,
-      body: '## [3.46.0](https://github.com/erclx/aitk/compare/v3.45.0...v3.46.0)',
+      body: '## [3.46.0](https://github.com/erclx/canon/compare/v3.45.0...v3.46.0)',
       headRefName: RELEASE_HEAD,
     })
 

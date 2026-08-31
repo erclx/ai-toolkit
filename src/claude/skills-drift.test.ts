@@ -18,7 +18,7 @@ function skillsRoot(): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-skills-drift-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-skills-drift-'))
 })
 
 afterEach(() => {

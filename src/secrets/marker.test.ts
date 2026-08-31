@@ -33,7 +33,7 @@ describe('isExempt', () => {
   })
 
   it('should refuse a near-miss spelling of the marker', () => {
-    expect(isExempt(['key = "x" // aitk-allow-secrets: fixture'], 0)).toBe(
+    expect(isExempt(['key = "x" // canon-allow-secrets: fixture'], 0)).toBe(
       false,
     )
   })

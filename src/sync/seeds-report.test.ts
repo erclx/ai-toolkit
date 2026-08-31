@@ -28,8 +28,8 @@ function entriesOf() {
 }
 
 beforeEach(() => {
-  TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-seeds-toolkit-'))
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-seeds-target-'))
+  TOOLKIT = mkdtempSync(join(tmpdir(), 'canon-seeds-toolkit-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-seeds-target-'))
 })
 
 afterEach(() => {

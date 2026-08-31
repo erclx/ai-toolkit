@@ -46,8 +46,8 @@ root="${CLAUDE_PROJECT_DIR:-.}"
 # be installed into, and reading the findings alone reports that as a clean file.
 unread=""
 record=""
-if command -v aitk >/dev/null 2>&1; then
-  record=$(cd "$root" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
+if command -v canon >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && canon markdown audit "$file" --json 2>/dev/null) || true
   [ -n "$record" ] || unread="record"
 else
   unread="runner"
@@ -71,11 +71,11 @@ nl=$'\n'
 msg=""
 
 if [ "$unread" = "runner" ]; then
-  msg=$(printf 'Standards-audit: nothing checked in %s. Found no `aitk` binary on PATH. Install one with `bun add -g @erclx/aitk`.' "$file")
+  msg=$(printf 'Standards-audit: nothing checked in %s. Found no `canon` binary on PATH. Install one with `bun add -g @erclx/canon`.' "$file")
 elif [ "$unread" = "record" ]; then
-  msg=$(printf 'Standards-audit: nothing checked in %s. `aitk markdown audit` returned no record, which it does when it declines to measure. It needs a git repository to build its corpus.' "$file")
+  msg=$(printf 'Standards-audit: nothing checked in %s. `canon markdown audit` returned no record, which it does when it declines to measure. It needs a git repository to build its corpus.' "$file")
 elif [ -n "$empty" ]; then
-  msg=$(printf 'Standards-audit: the shipped ban set is empty for %s, so %s was checked against a narrowed set. Reinstall the toolkit with `bun add -g @erclx/aitk`.' "$empty" "$file")
+  msg=$(printf 'Standards-audit: the shipped ban set is empty for %s, so %s was checked against a narrowed set. Reinstall the toolkit with `bun add -g @erclx/canon`.' "$empty" "$file")
 fi
 
 if [ -n "$hits" ]; then

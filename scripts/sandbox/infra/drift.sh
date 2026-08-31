@@ -14,11 +14,11 @@ use_config() {
   export SANDBOX_INJECT_GOV="true"
 }
 
-# Every arm runs unstamped. No target on disk carries `.claude/aitk/config.json`, so the
+# Every arm runs unstamped. No target on disk carries `.claude/canon/config.json`, so the
 # git-history fallback is the path a real project takes and the stamped path is
 # the rare one. An arm that stamped first would exercise the wrong branch.
 write_report() {
-  log_step "Running: aitk sync --check . --json"
+  log_step "Running: canon sync --check . --json"
   bun "$PROJECT_ROOT/src/cli.ts" sync --check . --json >"$REPORT"
   log_info "Report written to $REPORT"
 }
@@ -51,7 +51,7 @@ stage_setup() {
     log_info "  CLAUDE.md carries a section the seed does not"
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/stale/expect.toml"
-    log_info "         Check it with: aitk sandbox check infra:drift stale"
+    log_info "         Check it with: canon sandbox check infra:drift stale"
     ;;
 
   "retired")
@@ -70,7 +70,7 @@ stage_setup() {
     log_info "because the content belongs to the project."
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/retired/expect.toml"
-    log_info "         Check it with: aitk sandbox check infra:drift retired"
+    log_info "         Check it with: canon sandbox check infra:drift retired"
     ;;
 
   "tooling")
@@ -78,7 +78,7 @@ stage_setup() {
 
     log_step "Scenario ready: rules installed, tooling never recorded"
     log_info "Context: every target installed before the tooling record shipped"
-    log_info "  .claude/aitk/config.json carries no tooling chain"
+    log_info "  .claude/canon/config.json carries no tooling chain"
     log_info ""
     log_info "The report names tooling unmeasured rather than counting zero"
     log_info "changes against it. A target that never installed tooling and one"
@@ -86,7 +86,7 @@ stage_setup() {
     log_info "is a claim rather than the absence of one."
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/tooling/expect.toml"
-    log_info "         Check it with: aitk sandbox check infra:drift tooling"
+    log_info "         Check it with: canon sandbox check infra:drift tooling"
     ;;
 
   "unclaimed")
@@ -120,7 +120,7 @@ stage_setup() {
     log_info "the same path and only the user can tell them apart."
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/unclaimed/expect.toml"
-    log_info "         Check it with: aitk sandbox check infra:drift unclaimed"
+    log_info "         Check it with: canon sandbox check infra:drift unclaimed"
     ;;
   esac
 }

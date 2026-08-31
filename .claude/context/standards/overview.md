@@ -7,7 +7,7 @@ description: What the standards domain owns, the trees a standard can live in, t
 
 Owns the markdown docs defining developer workflow conventions, read by agents and developers alike. Standards cover workflow conventions, not code style. Code style belongs in governance rules.
 
-Nothing installs the corpus into a project and nothing mirrors it under `.claude/` here. A reader resolves one instead: `src/standards/read.ts` searches `standards/` at the working directory, then the corpus the package ships in its `files` array, so `aitk markdown audit` and `aitk standards <name>` both answer in a project that carries no copy at all. A project that authors standards of its own wins on the first root, since a package copy overriding it would discard that edit with nothing said. `.claude/context/standards/resolution.md` carries the routes and what closing each one removed.
+Nothing installs the corpus into a project and nothing mirrors it under `.claude/` here. A reader resolves one instead: `src/standards/read.ts` searches `standards/` at the working directory, then the corpus the package ships in its `files` array, so `canon markdown audit` and `canon standards <name>` both answer in a project that carries no copy at all. A project that authors standards of its own wins on the first root, since a package copy overriding it would discard that edit with nothing said. `.claude/context/standards/resolution.md` carries the routes and what closing each one removed.
 
 ## Layout
 
@@ -22,21 +22,21 @@ The entry is a folder on the sub-area condition rather than on length. `standard
 
 A split buys relief rather than compliance. Every sub-file arrived under the 150-line checkpoint, which is better than the sub-area grouping guaranteed, since the groups are uneven and the largest of them lands on the checkpoint exactly.
 
-Most oversized context entries elsewhere are already sub-files of a domain that split, so treat the headroom here as the thing to defend rather than as proof the checkpoint is settled. Read `aitk context audit` for the live per-file numbers rather than recording them here, since a figure written into prose goes stale on the next edit and the audit does not.
+Most oversized context entries elsewhere are already sub-files of a domain that split, so treat the headroom here as the thing to defend rather than as proof the checkpoint is settled. Read `canon context audit` for the live per-file numbers rather than recording them here, since a figure written into prose goes stale on the next edit and the audit does not.
 
 A sibling domain asking the same question applies the condition against its own tree rather than inheriting this outcome. Deciding a split for an entry nobody has measured is the failure the question exists to catch.
 
 ## Standards
 
-Run `aitk standards list` for the catalog of installable standards and their descriptions.
+Run `canon standards list` for the catalog of installable standards and their descriptions.
 
 `internal/standards/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set. The toolkit-local rule `.claude/rules/claude/595-tooling-reference.md` routes edits to it at that authoring path, which is where its two readers sit.
 
 ## CLI
 
-Run `aitk standards --help` for the verbs and what each one does. Flags and arguments live in `docs/agents/scripting.md`.
+Run `canon standards --help` for the verbs and what each one does. Flags and arguments live in `docs/agents/scripting.md`.
 
-`--json` emits `{standards: [{name, description, appliesTo, content}]}`. It carried a `target` naming where each standard installed, dropped when nothing installed any more: every value left was either a path only this repository has or a second spelling of what `aitk standards <name>` already reports, and `content` carries the document a consumer wanted the path for.
+`--json` emits `{standards: [{name, description, appliesTo, content}]}`. It carried a `target` naming where each standard installed, dropped when nothing installed any more: every value left was either a path only this repository has or a second spelling of what `canon standards <name>` already reports, and `content` carries the document a consumer wanted the path for.
 
 `appliesTo` is the paths a standard's `## Scope` statement declares, parsed by `read_applies_to` in `scripts/standards/list.sh`. It reads the backticked paths in the first sentence of the statement, resolves an attribute standard to `*`, and emits an empty array for a statement it cannot read.
 
@@ -47,7 +47,7 @@ The domain has no write verb. `<name>` prints one standard from `src/commands/st
 ## Workflow
 
 ```bash
-aitk standards markdown              # prints one standard, frame on stderr
-aitk standards markdown >house.md    # the document alone, since the frame is separate
-aitk standards list --json           # the catalog, with appliesTo per standard
+canon standards markdown              # prints one standard, frame on stderr
+canon standards markdown >house.md    # the document alone, since the frame is separate
+canon standards list --json           # the catalog, with appliesTo per standard
 ```

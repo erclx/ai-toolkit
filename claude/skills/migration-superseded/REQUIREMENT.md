@@ -19,7 +19,7 @@ The last is the two-speed release skew arriving as a confident wrong answer. `su
 
 - Take detection from the report's `superseded` array alone, and stop when the key is absent rather than treating it as empty
 - Resolve the governing standard by matching the replacement folder against the `appliesTo` the standards catalog declares, so a seed folder added later resolves without an edit to the body
-- Read the destination shape with `aitk standards <name>`, report the root it answered from, and propose nothing for a folder the catalog names no standard for
+- Read the destination shape with `canon standards <name>`, report the root it answered from, and propose nothing for a folder the catalog names no standard for
 - Separate a folder no standard governs from one whose governing standard could not be read, since the catalog derives `appliesTo` from prose and answers an unparsed scope statement with an empty array
 - Name the untrack command ahead of the ignore entry whenever a retired file is both tracked and ignored, and say when the check could not run
 - Report what the destination standard leaves open, such as a phase label the retired file never recorded, rather than supplying a value for it

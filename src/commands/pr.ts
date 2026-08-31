@@ -128,9 +128,9 @@ export function register(program: Command): void {
         '  2  at least one claimed path is absent from the diff',
         '',
         'Examples:',
-        '  aitk pr key-changes',
-        '  aitk pr key-changes 1265 --json',
-        '  aitk pr key-changes --body .claude/.tmp/body.md --base origin/main',
+        '  canon pr key-changes',
+        '  canon pr key-changes 1265 --json',
+        '  canon pr key-changes --body .claude/.tmp/body.md --base origin/main',
         '',
       ].join('\n'),
     )
@@ -299,7 +299,7 @@ async function runKeyChanges(
   const root = resolve(opts.root ?? process.cwd())
   const emitJson = opts.json ?? false
 
-  intro('aitk pr key-changes')
+  intro('canon pr key-changes')
 
   const source =
     opts.body === undefined

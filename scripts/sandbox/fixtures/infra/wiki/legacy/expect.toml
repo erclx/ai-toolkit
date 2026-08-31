@@ -1,5 +1,5 @@
-# What a correct `aitk wiki init` run leaves behind on the legacy arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# What a correct `canon wiki init` run leaves behind on the legacy arm.
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The arm's whole assertion, and a pair rather than a single path. The scaffold

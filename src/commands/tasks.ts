@@ -93,8 +93,8 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr or in the JSON record',
         '',
         'Examples:',
-        '  aitk tasks archive v28.1-trigger-escalation',
-        '  aitk tasks archive --pull-request 673 --json',
+        '  canon tasks archive v28.1-trigger-escalation',
+        '  canon tasks archive --pull-request 673 --json',
         '',
       ].join('\n'),
     )
@@ -129,8 +129,8 @@ export function register(program: Command): void {
         'session fixes the row the report names.',
         '',
         'Examples:',
-        '  aitk tasks validate',
-        '  aitk tasks validate --json',
+        '  canon tasks validate',
+        '  canon tasks validate --json',
         '',
       ].join('\n'),
     )
@@ -164,8 +164,8 @@ export function register(program: Command): void {
         'The archive gate reads the same answer, so neither can drift.',
         '',
         'Examples:',
-        '  aitk tasks plan-citations v28.1-trigger-escalation',
-        '  aitk tasks plan-citations v28.1-trigger-escalation --json',
+        '  canon tasks plan-citations v28.1-trigger-escalation',
+        '  canon tasks plan-citations v28.1-trigger-escalation --json',
         '',
       ].join('\n'),
     )
@@ -195,8 +195,8 @@ export function register(program: Command): void {
         'shared scratch, so a linked worktree records against the same board.',
         '',
         'Examples:',
-        '  aitk tasks pull-request 673 v28.1-trigger-escalation',
-        '  aitk tasks pull-request 673 --plan worktree-scratch-routing --json',
+        '  canon tasks pull-request 673 v28.1-trigger-escalation',
+        '  canon tasks pull-request 673 --plan worktree-scratch-routing --json',
         '',
       ].join('\n'),
     )
@@ -237,8 +237,8 @@ export function register(program: Command): void {
         'against the same positions is safe.',
         '',
         'Examples:',
-        '  aitk tasks outcome v28.1-trigger-escalation --close 1 --close 3',
-        '  aitk tasks outcome --plan worktree-scratch-routing --close 2 --json',
+        '  canon tasks outcome v28.1-trigger-escalation --close 1 --close 3',
+        '  canon tasks outcome --plan worktree-scratch-routing --close 2 --json',
         '',
       ].join('\n'),
     )
@@ -291,7 +291,7 @@ async function runPullRequest(
 
   if ('ok' in selector) {
     return reportRecord(
-      'aitk tasks pull-request',
+      'canon tasks pull-request',
       selector,
       emitJson,
       process.cwd(),
@@ -300,7 +300,7 @@ async function runPullRequest(
 
   if (!/^\d+$/.test(number)) {
     return reportRecord(
-      'aitk tasks pull-request',
+      'canon tasks pull-request',
       {
         ok: false,
         reason: 'bad-input',
@@ -326,14 +326,19 @@ async function runOutcome(
   const selector = selectorFor(task, opts.plan)
 
   if ('ok' in selector) {
-    return reportRecord('aitk tasks outcome', selector, emitJson, process.cwd())
+    return reportRecord(
+      'canon tasks outcome',
+      selector,
+      emitJson,
+      process.cwd(),
+    )
   }
 
   const raw = opts.close ?? []
 
   if (raw.length === 0) {
     return reportRecord(
-      'aitk tasks outcome',
+      'canon tasks outcome',
       {
         ok: false,
         reason: 'bad-input',
@@ -349,7 +354,7 @@ async function runOutcome(
 
   if (invalid.length > 0) {
     return reportRecord(
-      'aitk tasks outcome',
+      'canon tasks outcome',
       {
         ok: false,
         reason: 'bad-input',
@@ -405,7 +410,7 @@ function reportPullRequest(
   root: string,
 ): number {
   if (!outcome.ok) {
-    return reportRecord('aitk tasks pull-request', outcome, emitJson, root)
+    return reportRecord('canon tasks pull-request', outcome, emitJson, root)
   }
 
   if (emitJson) {
@@ -422,7 +427,7 @@ function reportPullRequest(
     return 0
   }
 
-  intro('aitk tasks pull-request')
+  intro('canon tasks pull-request')
   logStep(outcome.action === 'unchanged' ? 'Already recorded' : 'Recorded')
   logInfo(`${outcome.stem} names pull request #${outcome.number}`)
   if (outcome.action !== 'unchanged') logAdd(relative(root, outcome.path))
@@ -437,7 +442,7 @@ function reportOutcome(
   root: string,
 ): number {
   if (!outcome.ok) {
-    return reportRecord('aitk tasks outcome', outcome, emitJson, root)
+    return reportRecord('canon tasks outcome', outcome, emitJson, root)
   }
 
   if (emitJson) {
@@ -454,7 +459,7 @@ function reportOutcome(
     return 0
   }
 
-  intro('aitk tasks outcome')
+  intro('canon tasks outcome')
   logStep(outcome.closed.length > 0 ? 'Closed' : 'Nothing to close')
 
   for (const closed of outcome.closed) logAdd(closed)
@@ -496,7 +501,7 @@ function reportCitations(
       return 1
     }
 
-    intro('aitk tasks plan-citations')
+    intro('canon tasks plan-citations')
     logStep('Refused')
     logError(outcome.message)
     outro()
@@ -508,7 +513,7 @@ function reportCitations(
     return 0
   }
 
-  intro('aitk tasks plan-citations')
+  intro('canon tasks plan-citations')
   logStep(outcome.stem)
   logInfo(describeCitations(outcome))
   outro()
@@ -547,7 +552,7 @@ function reportValidation(
       return 1
     }
 
-    intro('aitk tasks validate')
+    intro('canon tasks validate')
     logStep('Refused')
     logError(outcome.message)
     outro()
@@ -555,7 +560,7 @@ function reportValidation(
   }
 
   if (!emitJson) {
-    intro('aitk tasks validate')
+    intro('canon tasks validate')
     logStep('Board')
     logInfo(
       `${outcome.rows} row(s) across the readiness groups, ${outcome.backlog} backlog line(s), ${outcome.tasks} task file(s)`,
@@ -694,7 +699,7 @@ function report(
     return outcome.ok ? 0 : 1
   }
 
-  intro('aitk tasks archive')
+  intro('canon tasks archive')
 
   if (!outcome.ok) {
     logStep('Refused')

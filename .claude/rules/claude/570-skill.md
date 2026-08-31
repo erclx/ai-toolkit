@@ -11,8 +11,8 @@ paths:
 
 ## Before editing
 
-- Confirm `aitk:create-skill`'s two creation-time questions are answered before a new `SKILL.md` lands, whether drafted by hand, by another skill, or by `aitk:create-skill` itself. Carry the third question into the sibling `REQUIREMENT.md`'s `Must not` section as a review criterion rather than a gate.
-- Report it rather than proceeding silently when `aitk:create-skill` does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+- Confirm `canon:create-skill`'s two creation-time questions are answered before a new `SKILL.md` lands, whether drafted by hand, by another skill, or by `canon:create-skill` itself. Carry the third question into the sibling `REQUIREMENT.md`'s `Must not` section as a review criterion rather than a gate.
+- Report it rather than proceeding silently when `canon:create-skill` does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
 
 ## After editing
 
@@ -21,4 +21,4 @@ paths:
 
 ## Authority
 
-- Follow the skill standard for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source. Read it with `aitk standards skill`.
+- Follow the skill standard for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source. Read it with `canon standards skill`.

@@ -64,7 +64,7 @@ EOF
   log_info "  3. Three deciding facts sit among five supporting ones: three retries, which"
   log_info "     statuses retry, and Retry-After winning over the schedule"
   log_info "  4. One hedge must survive: the ceiling may no longer match the read timeout"
-  log_info "Action:  /aitk:restate-plainly docs/retry.md"
+  log_info "Action:  /canon:restate-plainly docs/retry.md"
   log_info "Expect:  a plain restatement in chat and no file written, keeping the three"
   log_info "         deciding facts and the hedge, dropping the jitter arithmetic and the"
   log_info "         metrics section, and closing with a Cut: line naming what left."

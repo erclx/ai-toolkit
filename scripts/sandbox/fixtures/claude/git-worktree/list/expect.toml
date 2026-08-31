@@ -1,5 +1,5 @@
-# What a correct `/aitk:git-worktree` run reports on the list arm, over three
-# linked worktrees in three different states. Read by `aitk sandbox check`.
+# What a correct `/canon:git-worktree` run reports on the list arm, over three
+# linked worktrees in three different states. Read by `canon sandbox check`.
 # Patterns use TOML literal strings so a regex needs no backslash escaping.
 
 # `list` only reports, so the strongest tree assertion available is that

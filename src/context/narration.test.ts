@@ -12,7 +12,7 @@ import {
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-narration-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-narration-'))
 })
 
 afterEach(() => {

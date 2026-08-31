@@ -11,7 +11,7 @@ import {
 let ROOT: string
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-vocabulary-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-vocabulary-'))
 })
 
 afterEach(() => {

@@ -31,6 +31,6 @@ EOF
 
   log_step "Scenario ready: branch diff review"
   log_info "Context: on feat/orders, one commit ahead of main with three reviewable bugs"
-  log_info "Action:  /aitk:claude-review"
+  log_info "Action:  /canon:claude-review"
   log_info "Expect:  findings report against branch diff, no args needed"
 }

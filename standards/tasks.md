@@ -133,7 +133,7 @@ Add no fourth readiness group in place of this file. The three group names are t
 
 ## Validation
 
-`aitk tasks validate` reads the board against the tree, and what it checks, what it refuses on, and what it reports are at `docs/agents/tasks.md`. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on.
+`canon tasks validate` reads the board against the tree, and what it checks, what it refuses on, and what it reports are at `docs/agents/tasks.md`. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on.
 
 ## Filenames
 
@@ -221,7 +221,7 @@ One plan per task. A plan cited by two tasks is a misfile rather than a shape to
 
 `Pull request:` records which pull request carries the task's work, as a bare `#NNN` the way `Issue:` does. It is not an origin, so a task without one is well-formed. `git-pr` writes it when a pull request opens, which is the one step that always runs whether the chain drives it or a person does.
 
-The line is what lets a merge close its own task. Every merge on `main` is a squash carrying the number in its subject, so the number survives where a branch name does not, and `aitk tasks archive --pull-request <n>` resolves the task from it. Without the line the board can only be swept blind, and a blind sweep cannot tell a shipped task from an abandoned one. One task, one pull request: two tasks naming the same number refuse to archive rather than both moving.
+The line is what lets a merge close its own task. Every merge on `main` is a squash carrying the number in its subject, so the number survives where a branch name does not, and `canon tasks archive --pull-request <n>` resolves the task from it. Without the line the board can only be swept blind, and a blind sweep cannot tell a shipped task from an abandoned one. One task, one pull request: two tasks naming the same number refuse to archive rather than both moving.
 
 ## What goes in
 
@@ -241,7 +241,7 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns that move, and what it does and what it refuses on are at `docs/agents/tasks.md`.
+Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `canon tasks archive` owns that move, and what it does and what it refuses on are at `docs/agents/tasks.md`.
 
 The archive nests inside `.claude/tasks/` rather than sitting beside it as a flat `.claude/task-archive/`. Nesting is what lets a reader tell the two shapes apart on sight: the flat sibling is what a binary predating this convention still writes, so meeting one names an older checkout rather than a second archive to reconcile against this one.
 
@@ -249,6 +249,6 @@ One destination rather than a per-project choice is what lets the move happen wi
 
 Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation, so the sweep runs before the archive rather than after it. The sweep finds its work by scanning the live folder, and a task archived first is beyond its reach for good, leaving the plan with no live task citing it and an archived task pointing at a path nothing will retarget.
 
-The `claude-docs` sweep states that ordering in its own body rather than reading it back from a command, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `aitk` predates gets no record back and sweeps nothing. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
+The `claude-docs` sweep states that ordering in its own body rather than reading it back from a command, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `canon` predates gets no record back and sweeps nothing. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
 
 A task with an open outcome stays on the board. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. The sweep is gated on the same condition, so archiving around an open outcome also leaves the plan behind.

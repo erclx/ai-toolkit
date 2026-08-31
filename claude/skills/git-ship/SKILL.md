@@ -23,15 +23,15 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 
 ## Sequence
 
-1. Invoke `aitk:claude-memory-capture` to route what this session learned to the context entries that own it and write the residue to `.claude/memory/`
-2. Invoke `aitk:claude-docs` to sync internal planning docs against session decisions, folding in the routed facts
-3. Invoke `aitk:docs-sync` to sync public docs against changes since main
+1. Invoke `canon:claude-memory-capture` to route what this session learned to the context entries that own it and write the residue to `.claude/memory/`
+2. Invoke `canon:claude-docs` to sync internal planning docs against session decisions, folding in the routed facts
+3. Invoke `canon:docs-sync` to sync public docs against changes since main
 4. Run `git add -A` to stage any files the sync skills wrote
-5. Invoke `aitk:git-stage` to group staged changes and commit by concern
-6. Invoke `aitk:git-branch` to rename branch to match conventional format
-7. Invoke `aitk:git-pr` to push branch and open pull request
+5. Invoke `canon:git-stage` to group staged changes and commit by concern
+6. Invoke `canon:git-branch` to rename branch to match conventional format
+7. Invoke `canon:git-pr` to push branch and open pull request
 8. After the PR opens, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
-9. If step 1 wrote or updated at least one memory file, invoke `aitk:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If the pen got nothing, skip this step.
+9. If step 1 wrote or updated at least one memory file, invoke `canon:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If the pen got nothing, skip this step.
 
 A caller wrapping this sequence may act between step 7 and step 8, which is the one gap the order leaves open, since the pull request exists there and nothing has read its checks yet. `claude-autoship` marks the pull request draft in it. Nothing else may go there, and a caller that needs a step anywhere else in the sequence is asking for a change to this body rather than for a place to stand.
 

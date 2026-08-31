@@ -1,5 +1,5 @@
-# What `aitk sync --check --json` reports for tooling on a target that never
-# recorded a stack chain. Read by `aitk sandbox check`. Patterns use TOML literal
+# What `canon sync --check --json` reports for tooling on a target that never
+# recorded a stack chain. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 #
 # This is the arm that would have reported nothing before the change. Tooling sat

@@ -5,11 +5,11 @@ description: Deciding whether a changed set needs the review pass, the two tests
 
 # Review classification
 
-`aitk autoship classify` answers the one decision the ship chain used to make by reading a bulleted list out of a skill body. It takes the names a branch changed and returns whether the review pass can be skipped, which file decided it, and which of the two tests that file failed.
+`canon autoship classify` answers the one decision the ship chain used to make by reading a bulleted list out of a skill body. It takes the names a branch changed and returns whether the review pass can be skipped, which file decided it, and which of the two tests that file failed.
 
 ```bash
-aitk autoship classify docs/index.md README.md
-aitk autoship classify --json .claude/skills/deploy-check/SKILL.md
+canon autoship classify docs/index.md README.md
+canon autoship classify --json .claude/skills/deploy-check/SKILL.md
 ```
 
 | Option   | Behavior                                                   |
@@ -58,7 +58,7 @@ The set is data at `src/autoship/paths.ts`. That makes it permanently exempt fro
 | `1`  | refused, with `reason` naming the cause                      |
 | `2`  | review is needed, with `file` and `test` naming what decided |
 
-Branch on the record's `decision` rather than on the exit code. A shell function wrapping `aitk` takes its status from whatever it runs last, so every non-zero exit can reach a caller as zero.
+Branch on the record's `decision` rather than on the exit code. A shell function wrapping `canon` takes its status from whatever it runs last, so every non-zero exit can reach a caller as zero.
 
 An empty set refuses with `no-changes` rather than skipping. Both tests are universally quantified, so an empty set satisfies them vacuously, and reading that as prose-only would route a branch past review for having produced no output at all.
 
@@ -66,7 +66,7 @@ An empty set refuses with `no-changes` rather than skipping. Both tests are univ
 
 The decision was three sentences in `claude-autoship` Step 5, applied by a session reading a bulleted list of paths. It failed three times. A driven arm on 2026-08-30 staged `.claude/skills/deploy-check/SKILL.md`, which that list names, and the chain skipped review and opened a draft pull request anyway. The rule was correct and the session did not apply it, and the two fixes before that one were each a rewrite of the same prose.
 
-A rule a session can talk itself out of moves into a verb. That is the same argument the quiz-order draw in `aitk teach lesson` was decided on: an instruction is a hope where a verb is a check.
+A rule a session can talk itself out of moves into a verb. That is the same argument the quiz-order draw in `canon teach lesson` was decided on: an instruction is a hope where a verb is a check.
 
 ## The written fallback
 

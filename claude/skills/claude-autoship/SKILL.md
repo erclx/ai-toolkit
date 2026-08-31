@@ -31,11 +31,11 @@ The base equalling HEAD stays usable here, unlike in the four read-only siblings
 
 ## Step 0: take the role, then enter a worktree
 
-Invoke `aitk:claude-worker` first, whatever the worktree state. This session is about to build one branch under one plan, and that skill states the boundaries, the lifetime, and the channel obligations the role carries. A dispatched worker reaches the role here and nowhere else, since the launch names this chain rather than the role, and a hand-launched one reaches it on the same path.
+Invoke `canon:claude-worker` first, whatever the worktree state. This session is about to build one branch under one plan, and that skill states the boundaries, the lifetime, and the channel obligations the role carries. A dispatched worker reaches the role here and nowhere else, since the launch names this chain rather than the role, and a hand-launched one reaches it on the same path.
 
-Report it rather than proceeding silently when `aitk:claude-worker` does not resolve. It ships with the plugin, so a session running this chain from a project holding the CLI alone builds with no role asserted.
+Report it rather than proceeding silently when `canon:claude-worker` does not resolve. It ships with the plugin, so a session running this chain from a project holding the CLI alone builds with no role asserted.
 
-If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `aitk:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
+If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `canon:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
 
 If neither command resolves, stop: `❌ Not a git repository. Autoship needs git or a WorktreeCreate hook.`
 
@@ -89,7 +89,7 @@ Do not loop. Do not bypass hooks.
 
 ## Step 4: UI test (conditional)
 
-If the diff touches UI files (JSX, TSX, Vue, Svelte, HTML, or CSS under `src/`), invoke `aitk:claude-ui-test`.
+If the diff touches UI files (JSX, TSX, Vue, Svelte, HTML, or CSS under `src/`), invoke `canon:claude-ui-test`.
 
 If `claude-ui-test` produces a manual checklist, stop: `❌ UI requires visual verification. Checklist at .claude/review/ui-checklist-<slug>.md. Verify manually, then run /git-ship.`
 
@@ -100,13 +100,13 @@ If all UI changes are covered by e2e tests, continue.
 Classify the diff first. Take the union of `git diff --name-only <base>` and `git ls-files --others --exclude-standard`, resolving `<base>` per Diff baseline, then hand that set to the verb rather than reading it against the list below yourself:
 
 ```bash
-aitk autoship classify --json <path>...
+canon autoship classify --json <path>...
 ```
 
-The verb reads names only and touches git not at all, so the set stays the one this step already computed and no second baseline resolves to disagree with the first. Branch on the record's `decision` rather than on the exit code, which a shell function wrapping `aitk` can flatten to zero.
+The verb reads names only and touches git not at all, so the set stays the one this step already computed and no second baseline resolves to disagree with the first. Branch on the record's `decision` rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
 
 - `skip`. Every path reads as prose and none states agent behavior. Skip review entirely and continue to Step 7.
-- `review`. Invoke `aitk:claude-review`. The record names the `file` that decided it and the `test` it failed, `extension` for a path that is not prose and `behavior-path` for prose that states what an agent does.
+- `review`. Invoke `canon:claude-review`. The record names the `file` that decided it and the `test` it failed, `extension` for a path that is not prose and `behavior-path` for prose that states what an agent does.
 - `refused`, carrying reason `no-changes`. The changed set was empty, so take the stop below.
 
 Say in the run which of the two decided, the verb or the written fallback, since a reader otherwise cannot tell a classification from a judgment.
@@ -121,7 +121,7 @@ The verb ships with the CLI and this body ships with the plugin, so a target hol
 
 Never read an absent subcommand as a skip. Failing open is the exact defect the verb closes, and a shell that answers `command not found` reaching a body that skips on anything other than a `skip` record would ship every branch unreviewed.
 
-The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `aitk:claude-review`.
+The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `canon:claude-review`.
 
 Behavior paths carry two spellings, the one a surface authors at and the one it reaches a session at, so the rule reads the same in a toolkit and in a project that consumed one:
 
@@ -156,7 +156,7 @@ This chain owns the receipt's lifetime, which is what makes the Output block's c
 
 ## Step 7: ship
 
-Invoke `aitk:git-ship`. That body owns the sequence, being the verify gate, memory capture, both doc syncs, staging, the commit grouping, the branch rename, the pull request, the CI watch, and the scoped memory review, along with the reason each step sits where it does. This step used to restate that list and the two drifted apart with nothing comparing them, so read the order there and never here.
+Invoke `canon:git-ship`. That body owns the sequence, being the verify gate, memory capture, both doc syncs, staging, the commit grouping, the branch rename, the pull request, the CI watch, and the scoped memory review, along with the reason each step sits where it does. This step used to restate that list and the two drifted apart with nothing comparing them, so read the order there and never here.
 
 One thing this chain adds. Mark the pull request as a draft as soon as `git-ship`'s pull request step returns, ahead of its CI watch:
 

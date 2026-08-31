@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-ui-test` run leaves behind on the default arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# What a correct `/canon:claude-ui-test` run leaves behind on the default arm.
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 #
 # The e2e file is an ordinary project file and always landed inside the sandbox.

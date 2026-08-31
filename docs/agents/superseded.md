@@ -5,12 +5,12 @@ description: Reading where the tree still asserts a value a changed convention n
 
 # Superseded values
 
-`aitk gov superseded <superseded> <replacement>` reports where the tree still asserts a value the convention behind it no longer produces. It answers the case a diff cannot: a convention changes, and the declarations testing it keep asserting the old form with nothing pointing at them.
+`canon gov superseded <superseded> <replacement>` reports where the tree still asserts a value the convention behind it no longer produces. It answers the case a diff cannot: a convention changes, and the declarations testing it keep asserting the old form with nothing pointing at them.
 
 ```bash
-aitk gov superseded feature-feat- feature-
-aitk gov superseded feature-feat- feature- --json
-aitk gov superseded old-name new-name --root ../my-app
+canon gov superseded feature-feat- feature-
+canon gov superseded feature-feat- feature- --json
+canon gov superseded old-name new-name --root ../my-app
 ```
 
 | Option          | Behavior                                                   |
@@ -34,13 +34,13 @@ Matching is a literal substring, for the value and for the family stem below it 
 
 Binary files are skipped on a NUL byte rather than on an extension list, and so is any listed path that will not open. Both are counted. A run states the files it opened against the files git listed, because a count of what passed reads as a verdict on the repository unless it also says how much it left out.
 
-Pass an empty replacement to retire a value outright, as in `aitk gov superseded feature-feat- ""`. Findings report the same way, none is annotated, since a line cannot carry a replacement that does not exist, and no templated form is read, since there is no second value for a stem to diverge from.
+Pass an empty replacement to retire a value outright, as in `canon gov superseded feature-feat- ""`. Findings report the same way, none is annotated, since a line cannot carry a replacement that does not exist, and no templated form is read, since there is no second value for a stem to diverge from.
 
 ## The templated citation
 
-A citation naming a family as a pattern carries neither value. `aitk-*` and `internal-<X>` are the two forms this corpus writes, and a literal comparison matches neither, so a rename running the verb once per name reports clean while the family citations stay stale. Two of those on `#1250` had inverted, stating the old prefix as a guard, which left a rule instructing the next session to flag the correct naming as a mismatch.
+A citation naming a family as a pattern carries neither value. `canon-*` and `internal-<X>` are the two forms this corpus writes, and a literal comparison matches neither, so a rename running the verb once per name reports clean while the family citations stay stale. Two of those on `#1250` had inverted, stating the old prefix as a guard, which left a rule instructing the next session to flag the correct naming as a mismatch.
 
-Beside the literal comparison the run matches a family stem, derived from the segment the two values actually differ on, with everything they share carried ahead of it. `toolkit-operator` to `aitk-operator` derives `toolkit`, and `aitk-cli` to `aitk-shell` derives `aitk-cli` rather than `aitk`, which is what keeps a rename of one folder off every sibling in its family.
+Beside the literal comparison the run matches a family stem, derived from the segment the two values actually differ on, with everything they share carried ahead of it. `toolkit-operator` to `canon-operator` derives `toolkit`, and `canon-cli` to `canon-shell` derives `canon-cli` rather than `canon`, which is what keeps a rename of one folder off every sibling in its family.
 
 Three forms report, decided by the character after the stem and its separator:
 
@@ -50,17 +50,17 @@ Three forms report, decided by the character after the stem and its separator:
 | `placeholder` | `<stem>-<X>` | the family with a stand-in segment |
 | `prefix`      | `<stem>-`    | the family written bare            |
 
-The stem has to start a name. A letter, a digit, an underscore, or a separator directly before it means the stem sits mid-name, which is what a temp-directory prefix such as `aitk-check-toolkit-` looks like, and a path separator or a backtick before it means a citation, which is what `claude/skills/toolkit-*` looks like.
+The stem has to start a name. A letter, a digit, an underscore, or a separator directly before it means the stem sits mid-name, which is what a temp-directory prefix such as `canon-check-toolkit-` looks like, and a path separator or a backtick before it means a citation, which is what `claude/skills/toolkit-*` looks like.
 
 A hit under any of the three counts as a finding and moves the exit code. A stale templated citation is as real as a literal one, and reporting it outside the count would recreate the silence being fixed one report shape further along.
 
-Every hit in a markdown file carries the nearest heading above it. A line reads differently under the section holding it, and `Use the aitk-* prefix on an internal skill` is a prohibition under `## Must not` and an instruction anywhere else. A reviewer reading that line without its heading made exactly that misreading against this tree.
+Every hit in a markdown file carries the nearest heading above it. A line reads differently under the section holding it, and `Use the canon-* prefix on an internal skill` is a prohibition under `## Must not` and an instruction anywhere else. A reviewer reading that line without its heading made exactly that misreading against this tree.
 
 ## The exemption marker
 
-A declaration disagreeing with a convention for a stated reason carries `aitk-allow-superseded: <reason>` on its own line or the one directly above. The marker moves the line into the report's `Exempt` section, which is named rather than counted, so a reader weighing the report can reach the reason.
+A declaration disagreeing with a convention for a stated reason carries `canon-allow-superseded: <reason>` on its own line or the one directly above. The marker moves the line into the report's `Exempt` section, which is named rather than counted, so a reader weighing the report can reach the reason.
 
-Only a marker naming a reason counts. A bare token is a line that meant to say something and did not, and honoring it would let a typo mute a finding. This is the `aitk-allow-secret` shape, and both read the same placement rule through one helper.
+Only a marker naming a reason counts. A bare token is a line that meant to say something and did not, and honoring it would let a typo mute a finding. This is the `canon-allow-secret` shape, and both read the same placement rule through one helper.
 
 ## The blind spots
 
@@ -72,7 +72,7 @@ A value sweep closes most of the first class and no part of either one. The help
 
 ## The false-positive rate
 
-Over-reporting is the design here as it is for the literal half, and the corpus bounds it. Sweeping `toolkit-operator` to `aitk-operator` over this tree named one templated hit outside the change's own fixtures, a passage recording the retired `toolkit-` prefix as history, which reads correctly in place.
+Over-reporting is the design here as it is for the literal half, and the corpus bounds it. Sweeping `toolkit-operator` to `canon-operator` over this tree named one templated hit outside the change's own fixtures, a passage recording the retired `toolkit-` prefix as history, which reads correctly in place.
 
 A version reporting a page of hits teaches the next rename to skip the verb, which is worse than the blind spot being fixed. Read a report against that rate rather than against zero.
 
@@ -80,6 +80,6 @@ A version reporting a page of hits teaches the next rename to skip the verb, whi
 
 Exit codes are `0` when nothing asserts the superseded value or its family, `1` for a refusal, and `2` for at least one finding of either kind. It refuses an empty superseded value, which would match every line rather than a convention, a superseded value equal to its replacement, which means no convention changed, and a tree git cannot list, since an empty list passes each of its zero files. An empty replacement is not among them, because retiring a value is an ordinary reason to run this.
 
-Nothing wires this into `bun run check` or into a hook. A value sweep over-reports by construction, and gating a measure carrying a known false-positive class is what teaches contributors to route around the stage. `aitk gov test-order` is the sibling precedent.
+Nothing wires this into `bun run check` or into a hook. A value sweep over-reports by construction, and gating a measure carrying a known false-positive class is what teaches contributors to route around the stage. `canon gov test-order` is the sibling precedent.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the JSON record's `findings` array rather than the exit when a skill consumes this.

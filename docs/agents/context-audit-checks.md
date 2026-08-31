@@ -5,7 +5,7 @@ description: What each non-gating check reports, the unit each checkpoint is mea
 
 # Context audit checks
 
-What each finding from `aitk context audit` means. The command surface, its flags, and the two gating checks are in `context-audit.md`.
+What each finding from `canon context audit` means. The command surface, its flags, and the two gating checks are in `context-audit.md`.
 
 ## Required sections
 
@@ -29,7 +29,7 @@ An entry naming itself is left alone on separate grounds, since no split can str
 
 The check covers the folders a domain split into and stops at the flat folder above them. A split folder's entries are named for sub-areas of one domain, so a bare name matching one of them points at it. The flat folder's entries are named for whole domains, and a domain name is a common noun that a seed or another tree spells the same way, which is where both false positives measured against this corpus sat. What the exemption costs is the references a future split of the flat folder would strand, and it is taken because a report firing on correct prose teaches a reader to stop reading the section.
 
-It reports and never gates, which is the split the citation check already draws. An unresolved path is a fact and a form violation is a judgment with a measured false-positive rate, the same line `aitk markdown audit` draws between a ban and a weight checkpoint. The JSON record carries the findings per entry as `entries[].bareReferences`.
+It reports and never gates, which is the split the citation check already draws. An unresolved path is a fact and a form violation is a judgment with a measured false-positive rate, the same line `canon markdown audit` draws between a ban and a weight checkpoint. The JSON record carries the findings per entry as `entries[].bareReferences`.
 
 ## Length
 
@@ -45,7 +45,7 @@ Only the third is mechanical, and it is the provenance check already reported be
 
 It reports and never gates, which the standard settles rather than the usual judgment-against-fact line: there is no hard cap, so an entry that answers all three and is still long is a correct outcome. The JSON record carries the joined findings as `length`, each with a `causes` array in the standard's order, and the jurisdiction the join reads as `entries[].governed`. That flag is what parts a provenance list measured and empty from one never scanned, which the count alone cannot say. The join is published rather than left to a consumer, since deriving it means restating which question the provenance count answers.
 
-Depth and bullet weight are quoted from `standards/markdown.md`, which states both over every markdown file rather than over a context entry, so `aitk markdown audit` measures them and this command no longer does. They share `renderedHeight` with the length measure, since the two checkpoints sit in one section of that standard and a reader compares them. What the split costs is that a session wanting both numbers for one entry runs two commands, and what it buys is that either number can be had for a file in a folder this audit refuses to resolve.
+Depth and bullet weight are quoted from `standards/markdown.md`, which states both over every markdown file rather than over a context entry, so `canon markdown audit` measures them and this command no longer does. They share `renderedHeight` with the length measure, since the two checkpoints sit in one section of that standard and a reader compares them. What the split costs is that a session wanting both numbers for one entry runs two commands, and what it buys is that either number can be had for a file in a folder this audit refuses to resolve.
 
 ## Tables
 
@@ -97,7 +97,7 @@ A record stating no such rule is measured and reported and never gated, which is
 
 What the derivation costs where it does apply is that the ceiling rises when a decision is added and falls for nothing, so the check passes exactly when the file grew. It gates anyway, because a record that states a limit for itself and makes it computable from a count has turned it into a fact, which is what separates it from every judgment below. A rewrite of the declaring sentence past the clauses the check reads falls back to reporting rather than to a stale ceiling, so the failure shows up in the run's own output.
 
-The coverage report classifies each decision as carrying a countable claim, a structural invariant, or neither, then reports each testable entry against whether it names a check that exists. A countable claim carries a figure a run could recompute, and an invariant quantifies over a named tree closely enough that a walk could falsify it. A check is a `scripts/**.sh` path the entry spells that is on disk, or an `aitk` invocation matching a registered audit, so coverage reads the entry rather than the tree and a claim some check happens to cover without the entry saying so reads as unchecked.
+The coverage report classifies each decision as carrying a countable claim, a structural invariant, or neither, then reports each testable entry against whether it names a check that exists. A countable claim carries a figure a run could recompute, and an invariant quantifies over a named tree closely enough that a walk could falsify it. A check is a `scripts/**.sh` path the entry spells that is on disk, or a `canon` invocation matching a registered audit, so coverage reads the entry rather than the tree and a claim some check happens to cover without the entry saying so reads as unchecked.
 
 Three limits are stated on every run rather than hidden. The countable signal reads digits alone, so a measured claim written in words reads as uncounted. Entries are counted by heading, and one heading holding several decisions counts once. Nothing is stored, so an entry rewritten tomorrow is classified afresh the next time the verb runs and no verdict goes stale.
 

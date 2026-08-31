@@ -107,15 +107,15 @@ export function register(program: Command): void {
         'and the record claim classification are judgments under both.',
         '',
         'Depth and bullet weight are stated over every markdown file rather',
-        'than over a context entry, so `aitk markdown audit` measures them.',
+        'than over a context entry, so `canon markdown audit` measures them.',
         '',
         'Examples:',
-        '  aitk context audit',
-        '  aitk context audit --json',
-        '  aitk context audit --citations-only',
-        '  aitk context audit --folder context,diagrams',
-        '  aitk context audit --folder docs',
-        '  aitk context audit tooling/base/seeds --gate',
+        '  canon context audit',
+        '  canon context audit --json',
+        '  canon context audit --citations-only',
+        '  canon context audit --folder context,diagrams',
+        '  canon context audit --folder docs',
+        '  canon context audit tooling/base/seeds --gate',
         '',
       ].join('\n'),
     )
@@ -241,7 +241,7 @@ async function runAudit(
   if (gateOnly) {
     reportGate(citations)
   } else {
-    intro('aitk context audit')
+    intro('canon context audit')
     reportScope(folders, unresolved)
     reportCitations(citations, cited)
     reportReferenceForm(entries, folders)
@@ -333,7 +333,7 @@ function refuse(
   if (gateOnly) {
     frameError(message)
   } else {
-    intro('aitk context audit')
+    intro('canon context audit')
     logStep('Refused')
     logWarn(message)
     outro()
@@ -357,7 +357,7 @@ function reportGate(report: ScannedCitations): void {
   const count = report.unresolved.length
   if (count === 0) return
 
-  intro('aitk context audit')
+  intro('canon context audit')
   logError(
     count === 1
       ? '1 cited path does not resolve'
@@ -569,7 +569,7 @@ function reportLength(over: readonly LengthFinding[]): void {
     `Entries measure rendered lines at ${RENDER_WIDTH} columns, counting frontmatter and fenced blocks.`,
   )
   logInfo(
-    'A reference-heavy entry therefore ranks by its examples, which the depth check in `aitk markdown audit` excludes.',
+    'A reference-heavy entry therefore ranks by its examples, which the depth check in `canon markdown audit` excludes.',
   )
 
   if (over.length === 0) {

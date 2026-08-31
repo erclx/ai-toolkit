@@ -20,7 +20,7 @@ function catalogFor(id: string) {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-counts-catalogs-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-counts-catalogs-'))
 })
 
 afterEach(() => {

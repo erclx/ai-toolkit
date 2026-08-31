@@ -19,7 +19,7 @@ function seedSnippet(relPath: string, body = 'Body'): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-snippets-categories-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-snippets-categories-'))
   mkdirSync(snippetsSourceDir(root), { recursive: true })
 })
 

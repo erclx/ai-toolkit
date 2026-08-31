@@ -73,7 +73,7 @@ describe('command action exit codes', () => {
    * package therefore needs the CLI itself to sit outside the toolkit tree.
    */
   beforeAll(async () => {
-    workDir = await mkdtemp(join(tmpdir(), 'aitk-exit-code-'))
+    workDir = await mkdtemp(join(tmpdir(), 'canon-exit-code-'))
     emptyPath = join(workDir, 'empty-path')
     await mkdir(emptyPath)
 
@@ -352,7 +352,7 @@ describe('command action exit codes', () => {
 
 /**
  * Every audited verb refuses over a corpus this workDir does not carry.
- * `aitk audits run` reads each `--json` record over its exit alone, so a
+ * `canon audits run` reads each `--json` record over its exit alone, so a
  * refusal that prints nothing there reaches the aggregate as unparseable
  * output rather than as a reading it can act on. These pin the parseable
  * shape rather than the wording, which is what the catalog matches on.
@@ -361,7 +361,7 @@ describe('refusal records over an unmeasured corpus', () => {
   let workDir: string
 
   beforeAll(async () => {
-    workDir = await mkdtemp(join(tmpdir(), 'aitk-refusal-record-'))
+    workDir = await mkdtemp(join(tmpdir(), 'canon-refusal-record-'))
   }, SETUP_TIMEOUT_MS)
 
   afterAll(async () => {

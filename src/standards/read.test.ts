@@ -24,7 +24,7 @@ function writeStandard(relToRoot: string, content: string): void {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-standards-read-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-standards-read-'))
 })
 
 afterEach(() => {
@@ -65,14 +65,14 @@ describe('resolveStandard', () => {
 
     expect(resolved).toEqual({
       path: join(PROJECT_ROOT, 'standards', 'markdown.md'),
-      source: join('<aitk>', 'standards', 'markdown.md'),
+      source: join('<canon>', 'standards', 'markdown.md'),
     })
   })
 
   it('should spell the package source so nothing joins it to a project root', () => {
     // The field promises a repo-relative path everywhere else, and a package
     // copy is the one source that promise cannot cover.
-    expect(resolveStandard(ROOT, 'markdown.md')?.source).toContain('<aitk>')
+    expect(resolveStandard(ROOT, 'markdown.md')?.source).toContain('<canon>')
   })
 
   it('should take a name carrying no extension', () => {

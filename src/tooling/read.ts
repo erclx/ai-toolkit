@@ -8,7 +8,7 @@ import { PROJECT_ROOT } from '@/project-root'
  * and a package copy is the one source that promise cannot cover, so the
  * spelling has to be one nothing will join to a project root.
  */
-const PACKAGE_LABEL = '<aitk>'
+const PACKAGE_LABEL = '<canon>'
 
 export interface ReferenceRoot {
   /** Absolute `tooling/` directory to search. */

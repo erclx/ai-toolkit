@@ -7,7 +7,7 @@ description: Scope boundary for the executable surface and what a sandbox run do
 
 ## Gap
 
-Without this skill, a session adds a function `lib/` already owns, writes a sandbox scenario as a sibling file rather than an arm of the one that exists, tests uncommitted edits through the globally installed `aitk` and reads main's behavior as the branch's, and calls a change verified from a run whose environment cannot reproduce the trigger.
+Without this skill, a session adds a function `lib/` already owns, writes a sandbox scenario as a sibling file rather than an arm of the one that exists, tests uncommitted edits through the globally installed `canon` and reads main's behavior as the branch's, and calls a change verified from a run whose environment cannot reproduce the trigger.
 
 The last two are the expensive ones. Both return green, so neither reports that it measured the wrong thing, and the branch ships with a verification receipt that covers nothing.
 
@@ -15,7 +15,7 @@ The last two are the expensive ones. Both return green, so neither reports that 
 
 - Check `lib/` for the behavior before adding it, and consolidate the duplicate when adding surfaces one
 - Extend the scenario a skill already has with a new arm, keeping one scenario file per skill
-- Invoke a script through its worktree-local path while the edits are uncommitted, since the global `aitk` resolves to the main checkout
+- Invoke a script through its worktree-local path while the edits are uncommitted, since the global `canon` resolves to the main checkout
 - State what a run did not cover when the scenario's environment cannot reproduce the trigger, and queue the extension rather than treating green as proof
 
 ## Must not

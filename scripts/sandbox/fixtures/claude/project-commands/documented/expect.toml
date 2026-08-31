@@ -1,5 +1,5 @@
-# What a correct `/aitk:project-commands` run leaves behind on the documented arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# What a correct `/canon:project-commands` run leaves behind on the documented arm.
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # A clean run cost 7 turns on 2026-07-31. Set above that rather than at it. This

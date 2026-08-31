@@ -42,7 +42,7 @@ async function seedLessons(slug: string, files: readonly string[]) {
 }
 
 beforeEach(async () => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-lesson-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-lesson-'))
   await openWorkspace(ROOT, REQUEST)
 })
 

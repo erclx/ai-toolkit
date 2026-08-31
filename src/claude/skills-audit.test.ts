@@ -32,7 +32,7 @@ function conformingSkill(name: string, corpus = 'claude'): string {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-skills-audit-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-skills-audit-'))
 })
 
 afterEach(() => {

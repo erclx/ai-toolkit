@@ -1,5 +1,5 @@
 # What a correct `/claude-docs` run leaves behind on the anchor-sweep arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # Step 6 reports and never writes, so every file assertion here is a negative.

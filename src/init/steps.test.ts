@@ -101,7 +101,7 @@ describe('buildSteps', () => {
     expect(governance).toMatchObject({
       kind: 'skip',
       notice:
-        "Skipped: --skip governance. Run 'aitk gov install base ../app' to install rules.",
+        "Skipped: --skip governance. Run 'canon gov install base ../app' to install rules.",
     })
   })
 
@@ -114,7 +114,7 @@ describe('buildSteps', () => {
     expect(governance).toMatchObject({
       kind: 'skip',
       notice:
-        "Skipped: --skip governance. Run 'aitk gov install astro ../app' to install rules.",
+        "Skipped: --skip governance. Run 'canon gov install astro ../app' to install rules.",
     })
   })
 
@@ -128,7 +128,7 @@ describe('buildSteps', () => {
     expect(governance).toMatchObject({
       kind: 'skip',
       notice:
-        "Skipped: --skip governance. Run 'aitk gov install astro --add 260-shadcn ../app' to install rules.",
+        "Skipped: --skip governance. Run 'canon gov install astro --add 260-shadcn ../app' to install rules.",
     })
   })
 

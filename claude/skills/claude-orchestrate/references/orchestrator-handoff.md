@@ -3,16 +3,16 @@ title: Orchestrator handoff runbook
 description: The two sections an orchestrating session adds over the shared session map, how capture runs from a session that never commits, and the resume invocation the file carries out
 ---
 
-Write the pre-compaction handoff as orchestrator. Invoke `aitk:session-map` for the generic half, which is the filename, the three core sections, the write procedure, the drift step and the ref it reads, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
+Write the pre-compaction handoff as orchestrator. Invoke `canon:session-map` for the generic half, which is the filename, the three core sections, the write procedure, the drift step and the ref it reads, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
 
 Settle all three steps below before the door writes, so one write carries the core and the extension together. The door reports the map as written and knows nothing of this role, so its success line ends the generic half rather than this runbook, and a session that stops there ships a map missing both of the things this file exists to add.
 
-1. Tell the door this session does not commit, which is the caveat its capture step takes and passes to `aitk:claude-memory-capture`.
+1. Tell the door this session does not commit, which is the caveat its capture step takes and passes to `canon:claude-memory-capture`.
 2. Add `## Decisions taken under delegated authority` directly after `## State`, holding each decision and why it went that way, so nobody re-proposes it. It sits there rather than after the core because a decision is read against the state it was taken in.
 3. Close the file with the block below, resolving `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md` and `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` to absolute paths as you write it and pasting each in place of `<RESUME_RUNBOOK>` and `<POLL_RUNBOOK>`:
 
 ```markdown
-Resume by loading the orchestrator skill and asking it to resume after a compaction. This repository spells that `/aitk:claude-orchestrate` followed by the request. Following <RESUME_RUNBOOK> reaches the same place with no skill loaded at all.
+Resume by loading the orchestrator skill and asking it to resume after a compaction. This repository spells that `/canon:claude-orchestrate` followed by the request. Following <RESUME_RUNBOOK> reaches the same place with no skill loaded at all.
 
 That resume reads the board and stops. It restarts nothing, so the review poll is a second thing owed here, and <POLL_RUNBOOK> holds the prompt and the condition. Do not reach for `session-resume`, which reads tracked work and reports the newest map without restarting this loop.
 ```

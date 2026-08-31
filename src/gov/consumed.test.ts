@@ -46,7 +46,7 @@ function installedPath(...segments: string[]): string {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-gov-consumed-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-gov-consumed-'))
 })
 
 afterEach(() => {

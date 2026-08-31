@@ -99,13 +99,13 @@ describe('syncBranchName', () => {
   it('should name the branch at minute resolution', () => {
     const now = new Date(2026, 6, 29, 12, 42, 59)
 
-    expect(syncBranchName(now)).toBe('chore/aitk-sync-20260729-1242')
+    expect(syncBranchName(now)).toBe('chore/canon-sync-20260729-1242')
   })
 
   it('should pad single-digit month, day, hour, and minute', () => {
     const now = new Date(2026, 0, 5, 4, 7, 0)
 
-    expect(syncBranchName(now)).toBe('chore/aitk-sync-20260105-0407')
+    expect(syncBranchName(now)).toBe('chore/canon-sync-20260105-0407')
   })
 
   it('should produce the same name twice inside one minute', () => {

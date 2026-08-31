@@ -7,14 +7,14 @@ description: Resolving live peer sessions to the worktree and branch each holds,
 
 ## List
 
-`aitk sessions list` reports every live Claude Code session on the machine with the working directory and branch it holds.
+`canon sessions list` reports every live Claude Code session on the machine with the working directory and branch it holds.
 
 ```bash
-aitk sessions list
-aitk sessions list --json
-aitk sessions list --branch feat/parser --json
-aitk sessions list --branch chore/agents --repository ../caret --json
-aitk sessions list --self --json
+canon sessions list
+canon sessions list --json
+canon sessions list --branch feat/parser --json
+canon sessions list --branch chore/agents --repository ../caret --json
+canon sessions list --self --json
 ```
 
 | Option                | Behavior                                              |
@@ -69,7 +69,7 @@ The read refuses rather than returning an empty roster, on the same ground as `n
 
 ## What each surface can see
 
-The roster this verb reads and the channel a session sends messages on enumerate different populations, and neither contains the other. Read at one moment, `aitk sessions list` returned 6 rows against the 13 peers plus caller the agent listing reported. The roster held a background session at confirmed confidence on two reads a minute apart that the listing never carried, so a live session sat here with no way to reach it. Nine Remote Control sessions ran the other way, reachable there with no row here at all, since they leave no local process for the registry to record.
+The roster this verb reads and the channel a session sends messages on enumerate different populations, and neither contains the other. Read at one moment, `canon sessions list` returned 6 rows against the 13 peers plus caller the agent listing reported. The roster held a background session at confirmed confidence on two reads a minute apart that the listing never carried, so a live session sat here with no way to reach it. Nine Remote Control sessions ran the other way, reachable there with no row here at all, since they leave no local process for the registry to record.
 
 That bounds what a carried identifier buys. Resolving a `sessionId` to a name here can produce a name the send channel rejects, and `--self` answers nothing for a controller driving from Remote Control, which is the operator working from their phone rather than an edge case. A caller that cannot resolve an addressee reports the failed resolution instead of falling back to a guess.
 
@@ -111,7 +111,7 @@ Every row carries `statusUpdatedAt`, the stamp a client writes beside `status` a
 
 `statusDwellMs` falls back to the coarser `updatedAt` stamp when `statusUpdatedAt` is absent, so it is `null` only where a record carries neither. `statusUpdatedAt` itself is never backfilled from the fallback and stays `null` in that case, since it names the exact stamp rather than an estimate. A stamp ahead of the reading clock clamps the dwell to zero rather than reporting a negative one.
 
-The dwell is what separates a status that resolves on its own from one that does not. `busy` and `idle` transition without help, so a long dwell there is ordinary. `waiting` does not: a session in that state is blocked on something outside itself, and a dwell that keeps growing past the ordinary span of a prompt is a session stalled rather than paused. `aitk sessions list` renders the dwell beside the status at the coarsest unit that keeps it a whole number, and the JSON record carries both fields on every row.
+The dwell is what separates a status that resolves on its own from one that does not. `busy` and `idle` transition without help, so a long dwell there is ordinary. `waiting` does not: a session in that state is blocked on something outside itself, and a dwell that keeps growing past the ordinary span of a prompt is a session stalled rather than paused. `canon sessions list` renders the dwell beside the status at the coarsest unit that keeps it a whole number, and the JSON record carries both fields on every row.
 
 ## What the read depends on
 

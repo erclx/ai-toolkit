@@ -10,7 +10,7 @@ Provision a sandbox scenario from the current tree and launch Claude Code agains
    claude --plugin-dir $TREE/claude --model sonnet
    ```
 
-5. Do not run `aitk sandbox` from a linked worktree. It resolves to the main repo's scripts and writes to the main repo's `.sandbox/`, hiding uncommitted changes on the worktree branch.
+5. Do not run `canon sandbox` from a linked worktree. It resolves to the main repo's scripts and writes to the main repo's `.sandbox/`, hiding uncommitted changes on the worktree branch.
 6. Do not launch `claude` without `--plugin-dir $TREE/claude`. The default plugin resolution picks up the installed skills, not the worktree's edits.
 
 Stop if `./scripts/manage-sandbox.sh` does not exist (not a toolkit tree) or the scenario slug does not match a file under `scripts/sandbox/`.

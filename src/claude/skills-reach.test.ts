@@ -20,7 +20,7 @@ function write(rel: string, text: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-skills-reach-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-skills-reach-'))
 })
 
 afterEach(() => {
@@ -157,7 +157,7 @@ describe('citationsIn', () => {
   })
 
   it('should skip prose that is not a path at all', () => {
-    const text = 'Run `aitk claude skills audit` and read `--json`.'
+    const text = 'Run `canon claude skills audit` and read `--json`.'
 
     expect(citationsIn('claude/skills/x/SKILL.md', text, new Set())).toEqual([])
   })

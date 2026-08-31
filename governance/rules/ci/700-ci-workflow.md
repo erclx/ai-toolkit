@@ -41,4 +41,4 @@ paths:
 
 ## Authority
 
-- Load the `aitk:ci-workflow` skill for the workflow template and the per-project adaptation. Report it rather than proceeding silently when the skill does not resolve.
+- Load the `canon:ci-workflow` skill for the workflow template and the per-project adaptation. Report it rather than proceeding silently when the skill does not resolve.

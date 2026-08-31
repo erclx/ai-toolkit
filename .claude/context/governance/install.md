@@ -23,7 +23,7 @@ Sync matches an installed rule to its source by rule name rather than by relativ
 
 ### This repository's own rules are produced, not written
 
-The toolkit's `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `aitk gov regen` resolves it through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside. Recording the subset stops the producer from reading its own output to decide what that output should be.
+The toolkit's `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `canon gov regen` resolves it through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside. Recording the subset stops the producer from reading its own output to decide what that output should be.
 
 Registering a new rule for this repository means naming it somewhere the record resolves. Add it to a stack in `governance/stacks/`, to the `add` list in `internal/governance.toml`, or to `internal/rules/` when it governs toolkit authoring alone.
 
@@ -32,25 +32,25 @@ A rule whose source no stack names never installs, and the drift assertion still
 ## Gotchas
 
 - `runInstall` writes two stamp records after copying rules: `recordStamp` for the file hashes a sync would refresh, and `writeChainStamp` for the single stack name the operator gave, alongside `{domain: 'governance', toolkitRoot: PROJECT_ROOT}`. The second is what lets a later sync answer what the target's stack lists without re-deriving it from installed band folders, since `resolveRules` walks that stack's own `extends` ancestors when a reader asks it again.
-- `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
-- `aitk gov install` and `aitk gov sync` refuse to run against the toolkit root, because a target's rules are the operator's to edit. `aitk gov regen` runs against it on purpose, since the destination there is produced output.
+- `canon gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
+- `canon gov install` and `canon gov sync` refuse to run against the toolkit root, because a target's rules are the operator's to edit. `canon gov regen` runs against it on purpose, since the destination there is produced output.
 - `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts.
 - The payload builder behind `build` is `src/gov/payload.ts`, and frontmatter stripping is `src/frontmatter.ts`, which `docs` shares. Do not duplicate either inside `src/gov/`.
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
 
 ## CLI
 
-| Command            | What it does                                                      |
-| ------------------ | ----------------------------------------------------------------- |
-| `aitk gov install` | Bootstrap rules for a stack into `.claude/rules/`                 |
-| `aitk gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
-| `aitk gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
-| `aitk gov regen`   | Rebuild this repository's own `.claude/rules/` from its record    |
-| `aitk gov list`    | Emit catalog of stacks, rules, and rules no stack reaches         |
+| Command             | What it does                                                      |
+| ------------------- | ----------------------------------------------------------------- |
+| `canon gov install` | Bootstrap rules for a stack into `.claude/rules/`                 |
+| `canon gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
+| `canon gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
+| `canon gov regen`   | Rebuild this repository's own `.claude/rules/` from its record    |
+| `canon gov list`    | Emit catalog of stacks, rules, and rules no stack reaches         |
 
 Flags, arguments, and JSON shapes live in `docs/agents/index.md`. Every verb is TypeScript and carries a real commander option surface, so a mistyped flag fails with a suggestion.
 
-Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there would choose a whole stack for the caller.
+Commands that write files require confirmation before running, and `CANON_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there would choose a whole stack for the caller.
 
 ### Why `list` is TypeScript
 
@@ -63,14 +63,14 @@ Commands that write files require confirmation before running, and `AITK_NON_INT
 To set up a new project:
 
 ```bash
-aitk gov install react ../my-app
+canon gov install react ../my-app
 # resolves react → node → base, copies each rule to .claude/rules/<subdir>/<rule>.md
 ```
 
 To layer extra rules on top of a stack without creating a new stack definition:
 
 ```bash
-aitk gov install astro --add 200-react,260-shadcn,300-testing-ts ../my-app
+canon gov install astro --add 200-react,260-shadcn,300-testing-ts ../my-app
 # installs astro stack rules plus the three extras, deduped
 ```
 

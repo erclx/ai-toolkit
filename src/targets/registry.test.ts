@@ -1,6 +1,12 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   readTargetRegistry,
@@ -18,32 +24,72 @@ let FILE: string
  * folder. Restoring it is what keeps that true: deleting the key instead would
  * leave the rest of the file resolving to the home directory.
  */
-const SETUP_STATE_DIR = process.env.AITK_STATE_DIR
+const SETUP_STATE_DIR = process.env.CANON_STATE_DIR
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-targets-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-targets-'))
   FILE = join(ROOT, 'targets.json')
 })
 
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
-  process.env.AITK_STATE_DIR = SETUP_STATE_DIR
+  process.env.CANON_STATE_DIR = SETUP_STATE_DIR
   delete process.env.XDG_STATE_HOME
 })
 
 describe('stateDir', () => {
   it('should prefer the explicit override over every other source', () => {
-    process.env.AITK_STATE_DIR = '/explicit'
+    process.env.CANON_STATE_DIR = '/explicit'
     process.env.XDG_STATE_HOME = '/xdg'
 
     expect(stateDir()).toBe('/explicit')
   })
 
   it('should fall back to the XDG state home when no override is set', () => {
-    delete process.env.AITK_STATE_DIR
+    delete process.env.CANON_STATE_DIR
     process.env.XDG_STATE_HOME = '/xdg'
 
-    expect(registryPath()).toBe(join('/xdg', 'aitk', 'targets.json'))
+    expect(registryPath()).toBe(join('/xdg', 'canon', 'targets.json'))
+  })
+
+  it('should honor the retired override, which an existing operator exported', () => {
+    delete process.env.CANON_STATE_DIR
+    process.env.AITK_STATE_DIR = '/retired'
+
+    expect(stateDir()).toBe('/retired')
+    delete process.env.AITK_STATE_DIR
+  })
+})
+
+describe('registryPath', () => {
+  it('should resolve the retired folder when only it holds a registry', () => {
+    const home = mkdtempSync(join(tmpdir(), 'canon-state-'))
+    delete process.env.CANON_STATE_DIR
+    delete process.env.AITK_STATE_DIR
+    process.env.XDG_STATE_HOME = home
+
+    const retired = join(home, 'aitk', 'targets.json')
+    mkdirSync(dirname(retired), { recursive: true })
+    writeFileSync(retired, JSON.stringify({ version: 1, targets: [] }))
+
+    expect(registryPath()).toBe(retired)
+    rmSync(home, { recursive: true, force: true })
+  })
+
+  it('should prefer the current folder when both hold a registry', () => {
+    const home = mkdtempSync(join(tmpdir(), 'canon-state-'))
+    delete process.env.CANON_STATE_DIR
+    delete process.env.AITK_STATE_DIR
+    process.env.XDG_STATE_HOME = home
+
+    for (const folder of ['aitk', 'canon']) {
+      const path = join(home, folder, 'targets.json')
+      mkdirSync(dirname(path), { recursive: true })
+      writeFileSync(path, JSON.stringify({ version: 1, targets: [] }))
+    }
+
+    expect(registryPath()).toBe(join(home, 'canon', 'targets.json'))
+    rmSync(home, { recursive: true, force: true })
   })
 })
 
@@ -111,7 +157,7 @@ describe('readTargetRegistry', () => {
 
 describe('recordTarget', () => {
   it('should create the file and its folder on the first target recorded', () => {
-    const nested = join(ROOT, 'state', 'aitk', 'targets.json')
+    const nested = join(ROOT, 'state', 'canon', 'targets.json')
 
     expect(recordTarget('/repos/caret', new Date('2026-08-30'), nested)).toBe(
       'recorded',

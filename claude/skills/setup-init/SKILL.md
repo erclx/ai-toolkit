@@ -1,23 +1,23 @@
 ---
 name: setup-init
-description: Detects a new project's type and runs `aitk init` with a resolved stack in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
+description: Detects a new project's type and runs `canon init` with a resolved stack in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `canon` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
 ---
 
 # Init project
 
-Orchestrates the onboarding chain. Detects project type, resolves per-domain arguments, previews the chain, then runs `aitk init` with flags. The CLI holds the install logic. This skill only resolves and previews.
+Orchestrates the onboarding chain. Detects project type, resolves per-domain arguments, previews the chain, then runs `canon init` with flags. The CLI holds the install logic. This skill only resolves and previews.
 
 ## Scope
 
-- This skill and `aitk init` run once on a fresh scaffold, never on an existing project. They do not guard against clobbering existing configs. When tempted to add guards, mode switches, or an existing-project branch, stop. Extend the per-domain `aitk <domain> install` or `aitk sync` paths instead.
+- This skill and `canon init` run once on a fresh scaffold, never on an existing project. They do not guard against clobbering existing configs. When tempted to add guards, mode switches, or an existing-project branch, stop. Extend the per-domain `canon <domain> install` or `canon sync` paths instead.
 - The chain does not bootstrap the `index.md` system and does not provision Claude Code plugins. `setup-indexes` owns the first. `setup-plugins` owns the second, which installs once per machine rather than into a project, so no project-scoped chain can carry it. Name both in the report so a clean result does not read as onboarding complete.
 
 ## Declined states
 
 Three states reach this skill that the chain does not serve. Name the destination for each, so the refusal routes rather than ends. The first two stop the chain outright and the third runs it on a default the person may not want.
 
-- **An existing project.** Stop and hand off to `aitk-operator`. It reads what the target already carries before it names a command, which this chain never does, so any per-domain install picked here is a guess against configs nobody read. The Scope bullet above names the same commands as the authoring alternative, and this is the destination a person takes.
-- **An install wanting the `.claude/` folder alone.** Stop. Run `aitk claude init` for the seed docs, then invoke `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. Neither needs the tooling sync this chain runs.
+- **An existing project.** Stop and hand off to `canon-operator`. It reads what the target already carries before it names a command, which this chain never does, so any per-domain install picked here is a guess against configs nobody read. The Scope bullet above names the same commands as the authoring alternative, and this is the destination a person takes.
+- **An install wanting the `.claude/` folder alone.** Stop. Run `canon claude init` for the seed docs, then invoke `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. Neither needs the tooling sync this chain runs.
 - **A language the toolkit carries no stack for.** The chain still runs, on `base`, with the fallback marked in the preview. A project that wants none of what `base` carries declines there and takes `setup-gov` for the governance layer, which is language-neutral. Say so at the preview rather than resolving it here, since the fallback is a working default and only the person can say whether it fits.
 
 Do not add a stack, a mode switch, or an existing-project branch to satisfy one of these. Each destination already exists and routing to it costs a line.
@@ -26,11 +26,11 @@ Do not add a stack, a mode switch, or an existing-project branch to satisfy one 
 
 Run in parallel. Never hardcode stack, rule, snippet, or standards names.
 
-Run from the target project's current directory. Do not cd into the toolkit source tree. The `aitk` CLI is global.
+Run from the target project's current directory. Do not cd into the toolkit source tree. The `canon` CLI is global.
 
 ```bash
-aitk gov list --json 2>/dev/null
-aitk tooling list --json 2>/dev/null
+canon gov list --json 2>/dev/null
+canon tooling list --json 2>/dev/null
 ```
 
 ## Detect
@@ -45,7 +45,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 ## Resolve arguments
 
 - **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base` and carry the fallback into the preview.
-- **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match, and carry that fallback into the preview too.
+- **Tooling stack:** pick the closest tooling stack from `canon tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match, and carry that fallback into the preview too.
 - **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `paths` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
 - **Skip (`--skip`):** `wiki` installs by default. Add `--skip wiki` only when the user explicitly wants it left out.
 
@@ -76,10 +76,10 @@ A resolved name and a fallback read alike once written, so mark the fallback her
 
 Run the chain in order, starting immediately after the preview. Each step's permission dialog is the confirmation gate. Do not pause for additional confirmation. Run from the target project's current directory.
 
-Step 1: `aitk init` installs base tooling, claude seeds, governance rules, and wiki.
+Step 1: `canon init` installs base tooling, claude seeds, governance rules, and wiki.
 
 ```bash
-AITK_NON_INTERACTIVE=1 aitk init \
+CANON_NON_INTERACTIVE=1 canon init \
   --stack <stack> \
   --add <rules> \
   <target>
@@ -87,28 +87,28 @@ AITK_NON_INTERACTIVE=1 aitk init \
 
 Omit any flag whose resolved value is empty.
 
-Step 2: `aitk tooling sync <tooling-stack> --write` installs stack deps, scripts, gitignore entries, seeds, golden configs, and drops the reference doc. The extends chain is walked, so syncing `vite-react` also pulls `web` and `base` configs. Skip if the tooling stack is `base` (already synced by `aitk init`).
+Step 2: `canon tooling sync <tooling-stack> --write` installs stack deps, scripts, gitignore entries, seeds, golden configs, and drops the reference doc. The extends chain is walked, so syncing `vite-react` also pulls `web` and `base` configs. Skip if the tooling stack is `base` (already synced by `canon init`).
 
 `--write` is required. A headless run without it reports what it would replace and exits 1, since golden configs overwrite whatever the target holds at those paths. Scaffolding into a fresh target has nothing to lose, so pass it directly rather than reading a report first.
 
 ```bash
-AITK_NON_INTERACTIVE=1 aitk tooling sync <tooling-stack> <target> --write
+CANON_NON_INTERACTIVE=1 canon tooling sync <tooling-stack> <target> --write
 ```
 
-Monorepo with multiple language roots: run `aitk init` once at the repo root so `base` (husky, prettier, cspell, commitlint, CI) lands single, then sync each subtree with `--skip base` so the shared layer is not re-dropped.
+Monorepo with multiple language roots: run `canon init` once at the repo root so `base` (husky, prettier, cspell, commitlint, CI) lands single, then sync each subtree with `--skip base` so the shared layer is not re-dropped.
 
 ```bash
-AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react ./frontend --skip base --write
-AITK_NON_INTERACTIVE=1 aitk tooling sync python ./backend --skip base --write
+CANON_NON_INTERACTIVE=1 canon tooling sync vite-react ./frontend --skip base --write
+CANON_NON_INTERACTIVE=1 canon tooling sync python ./backend --skip base --write
 ```
 
-Without `--skip base`, each subtree re-drops husky, and git honors only one `core.hooksPath`, so the extra hook dirs silently break. Each subtree keeps its own framework configs, and its own stack reference reads through `aitk tooling reference <stack>`.
+Without `--skip base`, each subtree re-drops husky, and git honors only one `core.hooksPath`, so the extra hook dirs silently break. Each subtree keeps its own framework configs, and its own stack reference reads through `canon tooling reference <stack>`.
 
 Step 3: post-sync fixups. Golden configs arrive from sync, so no config generation is required. But a few items may need a one-time touch:
 
 - **ESLint version pin.** If `bun create vite` installed `eslint@^10` and the manifest pins `eslint@^9`, sync does not override a present dep. Run `bun add -d eslint@^9` if `bun run lint:fix` fails with `Class extends value undefined`.
 - **File naming.** `bun create vite`'s `App.tsx` violates the `KEBAB_CASE` rule. Rename to `app.tsx` and update the import in `main.tsx`.
-- **Docs.** Run `aitk tooling reference <tooling-stack>` and `aitk tooling reference web` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
+- **Docs.** Run `canon tooling reference <tooling-stack>` and `canon tooling reference web` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
 
 Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files. Generating from prose duplicates what sync already installed.
 

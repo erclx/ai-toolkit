@@ -26,7 +26,7 @@ function writeEntry(
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-render-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-render-'))
 })
 
 afterEach(() => {

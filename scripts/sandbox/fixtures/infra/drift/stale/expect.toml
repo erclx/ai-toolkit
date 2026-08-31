@@ -1,5 +1,5 @@
-# What `aitk sync --check --json` reports on a target whose layout is correct and
-# whose content is behind. Read by `aitk sandbox check`. Patterns use TOML literal
+# What `canon sync --check --json` reports on a target whose layout is correct and
+# whose content is behind. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 #
 # The scenario writes the report itself, so these assert on a file rather than on

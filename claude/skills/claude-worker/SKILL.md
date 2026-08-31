@@ -28,7 +28,7 @@ running and re-invoking it would restart the build.
 
 ## The board is read-only
 
-- Never write `.claude/tasks/priority.md` or `.claude/tasks/backlog.md`. The controlling session is their only writer apart from `aitk tasks archive`, and both are gitignored, so an overwrite drops a row with no history to recover it from.
+- Never write `.claude/tasks/priority.md` or `.claude/tasks/backlog.md`. The controlling session is their only writer apart from `canon tasks archive`, and both are gitignored, so an overwrite drops a row with no history to recover it from.
 - Report a row this build turns up rather than adding it. Picking a free label means reading every task file and every archive entry, which this session has not done, so a label it invents collides with one already taken.
 - Write the task file this build closes and the plan it ran under. The ban covers the shared board rather than the artifacts of the row in hand.
 
@@ -43,7 +43,7 @@ and nothing else.
 - Send nothing on progress. A worker reporting progress rebuilds, on this side of the channel, the poll the announcement retired on the other.
 
 Address the session the launch named. It names a `sessionId` rather than a name,
-so read `aitk sessions list --json`, find the row carrying that id, and send to
+so read `canon sessions list --json`, find the row carrying that id, and send to
 the `name` on it. Resolve that name at the moment of sending rather than at
 launch, since a name is derived from what a session turned out to be doing and
 has gone stale inside the hour that a build takes.
@@ -68,7 +68,7 @@ one, so say what you are waiting on in the same turn you stop, and expect a
 controller running no stall detector to find the question only when it next
 looks.
 
-Infer only where no operator is present. Read `aitk sessions list --json` and
+Infer only where no operator is present. Read `canon sessions list --json` and
 take the sessions holding no feature branch as the candidates, since a
 controlling session holds none. Say the addressee was inferred so the reader can
 correct it. Never filter that roster by name prefix: every self-dispatched

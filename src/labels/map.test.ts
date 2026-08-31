@@ -74,7 +74,7 @@ describe('readLabelMap', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-labels-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-labels-'))
   })
 
   afterEach(() => {

@@ -10,15 +10,15 @@ stage_setup() {
   log_step "Docs sandbox"
   log_info "list : downstream catalog, toolkit-internal context entries filtered out"
   log_info "get  : print one doc to stdout by exact name, from docs/ or .claude/context/"
-  log_info "aitk docs reads the toolkit's own docs/ and .claude/context/, no target needed"
+  log_info "canon docs reads the toolkit's own docs/ and .claude/context/, no target needed"
 
   select_or_route_scenario "Which scenario?" "list" "get"
 
   case "$SELECTED_OPTION" in
   "list")
-    log_step "Running: aitk docs list"
+    log_step "Running: canon docs list"
     bun "$PROJECT_ROOT/src/cli.ts" docs list
-    log_step "Running: aitk docs list --json | jq '.docs[0] | keys'"
+    log_step "Running: canon docs list --json | jq '.docs[0] | keys'"
     bun "$PROJECT_ROOT/src/cli.ts" docs list --json | jq '.docs[0] | keys'
     log_info "Expect keys: category, description, name, target"
     log_info "Expect docs topics: agents, ai-workflow, target-projects"
@@ -27,11 +27,11 @@ stage_setup() {
     log_info "Expect no toolkit-internal topics: ci, development, sandbox"
     ;;
   "get")
-    log_step "Running: aitk docs agents"
+    log_step "Running: canon docs agents"
     agents_doc=$(bun "$PROJECT_ROOT/src/cli.ts" docs agents)
     head -5 <<<"$agents_doc"
     log_info "Expect the agents folder index on stdout, frontmatter stripped"
-    log_step "Running: aitk docs tooling"
+    log_step "Running: canon docs tooling"
     tooling_doc=$(bun "$PROJECT_ROOT/src/cli.ts" docs tooling)
     head -5 <<<"$tooling_doc"
     log_info "Expect the tooling doc resolved from .claude/context/, not docs/"

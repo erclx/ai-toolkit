@@ -14,6 +14,7 @@ import {
   isLegacyStamped,
   legacyStampPath,
   readStamp,
+  retiredNameStampPath,
   type StampSource,
   stampedChain,
   stampedCommit,
@@ -46,7 +47,7 @@ function readRaw(target: string): Record<string, unknown> {
 }
 
 beforeEach(() => {
-  TARGET = mkdtempSync(join(tmpdir(), 'aitk-stamp-'))
+  TARGET = mkdtempSync(join(tmpdir(), 'canon-stamp-'))
 })
 
 afterEach(() => {
@@ -208,6 +209,46 @@ describe('readStamp', () => {
     )
 
     expect(readStamp(TARGET)?.domains.governance?.syncedAt).toBe('then')
+  })
+
+  it('should fall back to the stamp folder under the retired tool name', () => {
+    writeFixture(
+      retiredNameStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'renamed', files: {} } },
+      }),
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.syncedAt).toBe('renamed')
+  })
+
+  it('should prefer the retired tool name over the flat path when both exist', () => {
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'oldest', files: {} } },
+      }),
+    )
+    writeFixture(
+      retiredNameStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'newer', files: {} } },
+      }),
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.syncedAt).toBe('newer')
+  })
+
+  it('should report a stamp at the retired tool name as legacy', () => {
+    writeFixture(
+      retiredNameStampPath(TARGET),
+      JSON.stringify({ covers: [], domains: {} }),
+    )
+
+    expect(isLegacyStamped(TARGET)).toBe(true)
   })
 
   it('should prefer the current path over the retired one when both exist', () => {

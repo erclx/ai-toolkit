@@ -20,7 +20,7 @@ const DOMAIN_MARKERS: Record<SyncDomain, string> = {
  * Paths whose git status decides whether a domain contributed to the sync
  * commit. Governance carries the retired `.claude/GOV.md` because a sync that
  * removes it is still a governance change, and `claude` watches `.gitignore`
- * because that is the only file `aitk claude sync` writes.
+ * because that is the only file `canon claude sync` writes.
  */
 const DOMAIN_PATHS: Record<SyncDomain, readonly string[]> = {
   governance: ['.claude/rules/', '.claude/GOV.md'],

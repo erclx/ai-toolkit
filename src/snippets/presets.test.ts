@@ -13,7 +13,7 @@ function seedPresets(body: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-snippets-presets-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-snippets-presets-'))
 })
 
 afterEach(() => {

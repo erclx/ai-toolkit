@@ -11,7 +11,7 @@
 # repository for the same reason.
 #
 # Mints a short random per-run identifier the first time it is asked for, then
-# holds it in AITK_SANDBOX_RUN_ID for the rest of this process. A direct call
+# holds it in CANON_SANDBOX_RUN_ID for the rest of this process. A direct call
 # (not `$(...)`) exports it into the caller's own shell, which is what lets
 # `run.sh` mint once and have manage-sandbox.sh and the check it shells out to
 # both inherit the same id as ordinary children. A call already carrying the
@@ -19,10 +19,10 @@
 #
 # Twin of `mintSandboxRunId` in `src/commands/sandbox.ts`.
 mint_sandbox_run_id() {
-  if [ -z "${AITK_SANDBOX_RUN_ID:-}" ]; then
-    AITK_SANDBOX_RUN_ID="$(date +%s)-$$-$RANDOM"
+  if [ -z "${CANON_SANDBOX_RUN_ID:-}" ]; then
+    CANON_SANDBOX_RUN_ID="$(date +%s)-$$-$RANDOM"
   fi
-  export AITK_SANDBOX_RUN_ID
+  export CANON_SANDBOX_RUN_ID
 }
 
 # The base every per-run tree nests under, with no run id appended. Split out
@@ -30,7 +30,7 @@ mint_sandbox_run_id() {
 # such as `require_project_root` in `scripts/lib/ui.sh`, tests against this
 # prefix instead of a single resolved path that changes on every call.
 sandbox_dir_prefix() {
-  printf '%s/aitk/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
+  printf '%s/canon/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
 }
 
 # Twin of `sandboxTree` in `src/commands/sandbox.ts`. The exec boundary rules out
@@ -41,13 +41,13 @@ sandbox_dir_prefix() {
 # with neither told. `mint_sandbox_run_id` is what makes two such sessions
 # land on two different trees rather than one.
 resolve_sandbox_dir() {
-  if [ -n "${AITK_SANDBOX_DIR:-}" ]; then
-    printf '%s\n' "$AITK_SANDBOX_DIR"
+  if [ -n "${CANON_SANDBOX_DIR:-}" ]; then
+    printf '%s\n' "$CANON_SANDBOX_DIR"
     return 0
   fi
 
   mint_sandbox_run_id
-  printf '%s-%s\n' "$(sandbox_dir_prefix)" "$AITK_SANDBOX_RUN_ID"
+  printf '%s-%s\n' "$(sandbox_dir_prefix)" "$CANON_SANDBOX_RUN_ID"
 }
 
 # Collapses repeated separators, folds `.` and `..` segments, and strips every
@@ -151,7 +151,7 @@ assert_sandbox_dir_safe() {
   local root="${2:-${PROJECT_ROOT:-$PWD}}"
 
   if [ -z "$raw" ] || [ "${raw#/}" = "$raw" ]; then
-    printf 'AITK_SANDBOX_DIR must be an absolute path, got: %s\n' "${raw:-<empty>}"
+    printf 'CANON_SANDBOX_DIR must be an absolute path, got: %s\n' "${raw:-<empty>}"
     return 1
   fi
 
@@ -197,7 +197,7 @@ assert_sandbox_dir_safe() {
 
   case "$dir" in
   "$main_root"/*)
-    printf 'Sandbox at %s sits inside %s, which puts the toolkit CLAUDE.md back on the session ancestor chain.%s Point AITK_SANDBOX_DIR outside the repository.\n' "$raw" "$main_root" "$resolution"
+    printf 'Sandbox at %s sits inside %s, which puts the toolkit CLAUDE.md back on the session ancestor chain.%s Point CANON_SANDBOX_DIR outside the repository.\n' "$raw" "$main_root" "$resolution"
     return 1
     ;;
   esac

@@ -33,4 +33,4 @@ A seed-derived `development.md` moved out of `docs/` comes back on the next seed
 ## Out of scope
 
 - Classifying `CLAUDE.md` sections, which `migration-claude-md` proposes into this same `.claude/context/` folder. Run this skill first when both apply, so that skill's append-or-create check reads a folder the moves have already populated.
-- Regenerating `.claude/context/index.md`, which `aitk indexes regen` does once the user has applied the moves
+- Regenerating `.claude/context/index.md`, which `canon indexes regen` does once the user has applied the moves

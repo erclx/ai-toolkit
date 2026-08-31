@@ -18,7 +18,7 @@ function seedIndex(relativeDir: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-walk-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-walk-'))
 })
 
 afterEach(() => {

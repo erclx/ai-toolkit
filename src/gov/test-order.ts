@@ -45,7 +45,7 @@ export interface Scope {
 }
 
 /**
- * Every reason `aitk gov test-order` refuses for.
+ * Every reason `canon gov test-order` refuses for.
  *
  * None is an ordinary absence. A depth-1 checkout falls back to the root
  * commit and reports zero rather than reaching any of these, so what remains

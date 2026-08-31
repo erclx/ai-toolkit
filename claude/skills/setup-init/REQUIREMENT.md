@@ -37,9 +37,9 @@ The other is the refusal that ends rather than routes. An existing project, an i
 ## Out of scope
 
 - Installing governance rules alone: `setup-gov`. This skill installs governance beside tooling and the seeds.
-- Bootstrapping the `index.md` system: `setup-indexes`. Neither `aitk init` nor this chain performs it.
+- Bootstrapping the `index.md` system: `setup-indexes`. Neither `canon init` nor this chain performs it.
 - Provisioning Claude Code plugins: `setup-plugins`. Those install once per machine rather than into a project, so no project-scoped chain can carry them.
 - Running the verification scripts, which `setup-verify` owns and this chain invokes as its last step
-- Re-installing into a project that already has the files, which the per-domain `aitk <domain> install` and `aitk sync` commands own
-- Deciding which of those per-domain commands an existing project needs: `aitk-operator`. That skill reads the target before naming one, which this chain never does, so it is the destination rather than a guess made here.
-- Seeding the `.claude/` folder without the tooling chain, which `aitk claude init` does on its own and `setup-indexes` finishes
+- Re-installing into a project that already has the files, which the per-domain `canon <domain> install` and `canon sync` commands own
+- Deciding which of those per-domain commands an existing project needs: `canon-operator`. That skill reads the target before naming one, which this chain never does, so it is the destination rather than a guess made here.
+- Seeding the `.claude/` folder without the tooling chain, which `canon claude init` does on its own and `setup-indexes` finishes

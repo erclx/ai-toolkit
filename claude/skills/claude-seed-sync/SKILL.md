@@ -9,21 +9,21 @@ Surfaces drift between the toolkit's current seed docs and what was installed in
 
 ## Guards
 
-- If the `aitk` CLI is not on PATH, stop: `❌ aitk CLI not found. Install the toolkit first.`
-- If no `.claude/` directory exists at the project root, stop: `❌ No .claude/ directory found. Run aitk claude init first.`
+- If the `canon` CLI is not on PATH, stop: `❌ canon CLI not found. Install the toolkit first.`
+- If no `.claude/` directory exists at the project root, stop: `❌ No .claude/ directory found. Run canon claude init first.`
 
 ## Step 1: read toolkit sources and the drift report
 
 Run both in parallel from the project root:
 
 ```bash
-aitk claude seeds list --json 2>/dev/null
-aitk sync --check . --json 2>/dev/null
+canon claude seeds list --json 2>/dev/null
+canon sync --check . --json 2>/dev/null
 ```
 
 Seeds emit an array of `{name, source, target, content}`, where `target` is the path relative to the project root where the file installs.
 
-Seeds are the whole subject. No standard installs into a project, so there is no installed copy to audit and nothing to reconcile against the corpus. A standard a session needs is read with `aitk standards <name>`, which resolves against the copy inside the package.
+Seeds are the whole subject. No standard installs into a project, so there is no installed copy to audit and nothing to reconcile against the corpus. A standard a session needs is read with `canon standards <name>`, which resolves against the copy inside the package.
 
 ### Narrow the set by attribution
 
@@ -31,7 +31,7 @@ The report is what separates a file the project edited from one the toolkit move
 
 Keep every seed regardless of state. `CLAUDE.md` is the file a project edits most, and its `drifted` verdict is the case this skill exists for.
 
-Read the `aitk-cli` skill before naming a sync command in the output. It states which surfaces a sync overwrites, merges, or writes once.
+Read the `canon-cli` skill before naming a sync command in the output. It states which surfaces a sync overwrites, merges, or writes once.
 
 Fall back to the appearance heuristic in step 3 when the report cannot attribute, which is `historyUnavailable` set on the relevant section or the command failing outright. Say so in the summary block, because a fallback audit reports guesses rather than facts.
 
@@ -41,9 +41,9 @@ For each entry in the merged list, read the file at its `target` path from the p
 
 Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
 
-When detecting target-only files for `local-only` flagging, skip files the toolkit's own walkers regenerate from sibling frontmatter (today: any `index.md` produced by `aitk indexes regen`). They are absent from source catalogs by design, so flagging them as `local-only` is a false positive.
+When detecting target-only files for `local-only` flagging, skip files the toolkit's own walkers regenerate from sibling frontmatter (today: any `index.md` produced by `canon indexes regen`). They are absent from source catalogs by design, so flagging them as `local-only` is a false positive.
 
-Note on `settings.json`: the seed now ships only the PostToolUse hook block. If a target project's `.claude/settings.json` carries `attribution` or `permissions` keys, those are stale: the user-level `~/.claude/settings.json` (installed via `aitk claude setup`) owns them now. Flag those keys in the scope table for removal rather than diffing them as content drift.
+Note on `settings.json`: the seed now ships only the PostToolUse hook block. If a target project's `.claude/settings.json` carries `attribution` or `permissions` keys, those are stale: the user-level `~/.claude/settings.json` (installed via `canon claude setup`) owns them now. Flag those keys in the scope table for removal rather than diffing them as content drift.
 
 ## Step 3: diff per section
 

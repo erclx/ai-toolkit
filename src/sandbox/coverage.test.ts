@@ -29,7 +29,7 @@ function declaration(category: string, command: string, arm: string): void {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-coverage-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-coverage-'))
 })
 
 afterEach(() => {

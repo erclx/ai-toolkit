@@ -39,7 +39,7 @@ stage_setup() {
     log_info ""
     log_info "Action:  /claude-docs"
     log_info "Expect:  declared in fixtures/claude/docs/drift/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:docs drift"
+    log_info "         Check it with: canon sandbox check claude:docs drift"
     log_info "         Two prose expectations need a reader and report as unchecked."
     ;;
   "context-entries")
@@ -60,7 +60,7 @@ stage_setup() {
     log_info "         Step 4 reads the diff, maps src/features/chat/api-key-gate.tsx to web.md (which references that path)"
     log_info "         Rewrites the relevant section of .claude/context/web.md from the diff content"
     log_info "         Does NOT create new entries (no auto-creation per design)"
-    log_info "         Outputs a reminder line to run aitk indexes regen"
+    log_info "         Outputs a reminder line to run canon indexes regen"
     ;;
   "wireframe-coverage")
     rm -f .claude/wireframes/feature-name.md
@@ -110,7 +110,7 @@ stage_setup() {
     log_info ""
     log_info "Action:  /claude-docs"
     log_info "Expect:  declared in fixtures/claude/docs/anchor-sweep/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:docs anchor-sweep"
+    log_info "         Check it with: canon sandbox check claude:docs anchor-sweep"
     log_info "         Two reported entries, and .claude/ARCHITECTURE.md unwritten:"
     log_info "         no anchor refreshed, none added, no claim edited beside one"
     log_info "         Two expectations need a reader and report as unchecked."
@@ -137,7 +137,7 @@ stage_setup() {
     log_info ""
     log_info "Action:  /claude-docs"
     log_info "Expect:  declared in fixtures/claude/docs/board-sweep/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:docs board-sweep"
+    log_info "         Check it with: canon sandbox check claude:docs board-sweep"
     log_info "         Two plans archived, two Plan: lines retargeted, the control untouched"
     log_info "         Runs under the default turn cap. A clean run cost 28 on 2026-07-31."
     ;;
@@ -163,7 +163,7 @@ stage_setup() {
     log_info ""
     log_info "Action:  /claude-docs"
     log_info "Expect:  declared in fixtures/claude/docs/receipt-sweep/expect.toml"
-    log_info "         Check it with: aitk sandbox check claude:docs receipt-sweep"
+    log_info "         Check it with: canon sandbox check claude:docs receipt-sweep"
     log_info "         One receipt deleted, one decline folded into a **Why:** line, the control untouched"
     log_info "         One expectation needs a reader and reports as unchecked."
     ;;

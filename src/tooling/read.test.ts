@@ -19,7 +19,7 @@ function writeReference(relToRoot: string, content: string): void {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-tooling-read-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-tooling-read-'))
 })
 
 afterEach(() => {
@@ -50,14 +50,14 @@ describe('resolveReference', () => {
 
     expect(resolved).toEqual({
       path: join(PROJECT_ROOT, 'tooling', 'base', 'reference.md'),
-      source: join('<aitk>', 'tooling', 'base', 'reference.md'),
+      source: join('<canon>', 'tooling', 'base', 'reference.md'),
     })
   })
 
   it('should spell the package source so nothing joins it to a project root', () => {
     // The field promises a repo-relative path everywhere else, and a package
     // copy is the one source that promise cannot cover.
-    expect(resolveReference(ROOT, 'base')?.source).toContain('<aitk>')
+    expect(resolveReference(ROOT, 'base')?.source).toContain('<canon>')
   })
 
   it('should return undefined for a stack under no root', () => {

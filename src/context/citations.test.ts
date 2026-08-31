@@ -101,7 +101,7 @@ describe('collectCitations', () => {
 
 describe('auditCitations', () => {
   it('should report unavailable rather than clean outside a git repository', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'aitk-citations-'))
+    const root = mkdtempSync(join(tmpdir(), 'canon-citations-'))
 
     try {
       expect(await auditCitations(root, ['context'])).toEqual({
@@ -117,7 +117,7 @@ describe('auditCitations against a real tree', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-citations-tree-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-citations-tree-'))
     // A git hook exports GIT_DIR into every process it runs, and it takes
     // precedence over `cwd`, so an inherited environment initializes the
     // repository somewhere other than the fixture and every case reads empty.

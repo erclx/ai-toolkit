@@ -24,7 +24,7 @@ export interface Catalog {
 const REGISTER_IMPORT = /^import \{ register as /gm
 
 /**
- * Every top-level `aitk` command, read off the CLI entry point rather than a
+ * Every top-level `canon` command, read off the CLI entry point rather than a
  * catalog verb, because a command carries no `--json` listing of its own
  * siblings. `regen-hero.sh` reads its own `COMMAND_COUNT` through `gov counts`
  * rather than a second regex on `src/cli.ts`, so this is the one place that
@@ -56,7 +56,7 @@ function countSnippets(root: string): number {
  * design the plan settled on: a wider set widens the false-positive class
  * before the first run has measured how large that class already is. Each
  * reader here walks the filesystem directly rather than shelling out to its
- * own `aitk` verb, since this module already runs inside the process that
+ * own `canon` verb, since this module already runs inside the process that
  * would spawn it.
  */
 export const CATALOGS: readonly Catalog[] = [

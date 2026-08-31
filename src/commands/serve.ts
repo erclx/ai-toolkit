@@ -36,9 +36,9 @@ export function register(program: Command): void {
         'starts it in the background and reads the record off stdout.',
         '',
         'Examples:',
-        '  aitk serve .claude/teach',
-        '  aitk serve .claude/teach --entry 03-fde-system-design/index.html',
-        '  aitk serve dist --port 4000 --json',
+        '  canon serve .claude/teach',
+        '  canon serve .claude/teach --entry 03-fde-system-design/index.html',
+        '  canon serve dist --port 4000 --json',
         '',
       ].join('\n'),
     )
@@ -101,7 +101,7 @@ function report(outcome: ServeOutcome, emitJson: boolean): number {
       )
       return 1
     }
-    intro('aitk serve')
+    intro('canon serve')
     logError(outcome.detail)
     outro()
     return 1
@@ -122,7 +122,7 @@ function report(outcome: ServeOutcome, emitJson: boolean): number {
     return 0
   }
 
-  intro('aitk serve')
+  intro('canon serve')
   logStep('Serving')
   logInfo(displayPath(outcome.root))
   logStep('Open')

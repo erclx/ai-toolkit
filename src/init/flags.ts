@@ -10,7 +10,7 @@ interface InitOptionSpec {
 }
 
 /**
- * The option surface of `aitk init`, declared once so the flag list and the
+ * The option surface of `canon init`, declared once so the flag list and the
  * provenance check cannot drift apart. Reading the key from the spec is what
  * keeps a renamed flag from silently dropping out of `flagsProvided`.
  */

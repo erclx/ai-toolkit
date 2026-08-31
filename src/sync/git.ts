@@ -82,7 +82,7 @@ export function syncBranchName(now: Date): string {
   const day = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`
   const minute = `${pad(now.getHours())}${pad(now.getMinutes())}`
 
-  return `chore/aitk-sync-${day}-${minute}`
+  return `chore/canon-sync-${day}-${minute}`
 }
 
 export function commitMessage(domains: readonly SyncDomain[]): string {

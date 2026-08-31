@@ -53,7 +53,7 @@ The skill detects the phase from the user's phrasing and the review file state. 
 
 ### Index and location
 
-`.claude/memory/index.md` is generated from each entry's `title`, `description`, and sentence-case `category` by a `PostToolUse` hook, since the folder is gitignored and the whole-repo index walk never reaches it. An archive move is a shell `mv`, which the hook does not match, so the review calls `aitk indexes regen` itself after the last move.
+`.claude/memory/index.md` is generated from each entry's `title`, `description`, and sentence-case `category` by a `PostToolUse` hook, since the folder is gitignored and the whole-repo index walk never reaches it. An archive move is a shell `mv`, which the hook does not match, so the review calls `canon indexes regen` itself after the last move.
 
 `.claude/memory/` and `.claude/review/` always live at the main worktree root, never inside a linked worktree. The skill resolves the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-` before reading or writing.
 

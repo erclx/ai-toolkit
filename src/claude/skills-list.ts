@@ -52,7 +52,7 @@ export function resolveSkillsCorpus(root: string): SkillsCorpus | undefined {
  *
  * `requirement` reports whether the folder carries `REQUIREMENT.md`. Every skill
  * is meant to carry one, so a false is a gap rather than a recorded exemption.
- * `aitk claude skills audit` is what fails on it, across both corpora.
+ * `canon claude skills audit` is what fails on it, across both corpora.
  */
 export function listSkills(root: string): SkillListing[] {
   return listSkillsAt(join(root, 'claude', 'skills'))

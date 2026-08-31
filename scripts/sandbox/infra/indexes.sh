@@ -145,12 +145,12 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "regen")
     seed_folder
-    log_step "Running: aitk indexes regen"
+    log_step "Running: canon indexes regen"
     exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen
     ;;
   "nested")
     seed_nested_folder
-    log_step "Running: aitk indexes regen"
+    log_step "Running: canon indexes regen"
     bun "$PROJECT_ROOT/src/cli.ts" indexes regen
     log_step "Generated docs/index.md"
     pipe_output <docs/index.md
@@ -158,29 +158,29 @@ stage_setup() {
     ;;
   "dry-run")
     seed_folder
-    log_step "Running: aitk indexes regen --dry-run"
+    log_step "Running: canon indexes regen --dry-run"
     exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run
     ;;
   "json")
     seed_folder
-    log_step "Running: aitk indexes regen --dry-run --json"
+    log_step "Running: canon indexes regen --dry-run --json"
     exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run --json
     ;;
   "opt-out")
     seed_folder
     log_step "Setting auto: false on docs/index.md"
     sed -i '2i\auto: false' docs/index.md
-    log_step "Running: aitk indexes regen"
+    log_step "Running: canon indexes regen"
     exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen
     ;;
   "path")
     seed_folder
-    log_step "Running: aitk indexes regen docs/alpha.md"
+    log_step "Running: canon indexes regen docs/alpha.md"
     exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen docs/alpha.md
     ;;
   "lint-staged")
     seed_git_repo
-    log_step "Running: aitk indexes regen docs/alpha.md"
+    log_step "Running: canon indexes regen docs/alpha.md"
     bun "$PROJECT_ROOT/src/cli.ts" indexes regen docs/alpha.md
     log_step "git diff --cached --name-only"
     git diff --cached --name-only | pipe_output
@@ -190,7 +190,7 @@ stage_setup() {
     ;;
   "no-stage")
     seed_git_repo
-    log_step "Running: aitk indexes regen --no-stage docs/alpha.md"
+    log_step "Running: canon indexes regen --no-stage docs/alpha.md"
     bun "$PROJECT_ROOT/src/cli.ts" indexes regen --no-stage docs/alpha.md
     log_step "git diff --cached --name-only"
     git diff --cached --name-only | pipe_output

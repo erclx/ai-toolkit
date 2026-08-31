@@ -78,7 +78,12 @@ const RECORDS_BRANCH = 'main'
  * fixed identity keeps `push` from failing inside a git hook on a machine where
  * `user.email` was never configured.
  */
-const COMMIT_IDENTITY = ['-c', 'user.name=aitk', '-c', 'user.email=aitk@local']
+const COMMIT_IDENTITY = [
+  '-c',
+  'user.name=canon',
+  '-c',
+  'user.email=canon@local',
+]
 
 export const BACKUP_REFUSALS = [
   'no-repository',
@@ -398,7 +403,7 @@ export async function pullRecords(root: string): Promise<PullOutcome> {
     if (fetched.stderr.includes("couldn't find remote ref")) {
       return refuse(
         'no-remote-records',
-        `The records origin carries no ${RECORDS_BRANCH} branch yet. Run aitk records push from the machine holding the records.`,
+        `The records origin carries no ${RECORDS_BRANCH} branch yet. Run canon records push from the machine holding the records.`,
       )
     }
     return failed('fetch', fetched)
@@ -416,7 +421,7 @@ export async function pullRecords(root: string): Promise<PullOutcome> {
     if (dirty.text.length > 0) {
       return refuse(
         'local-changes',
-        `${countLines(dirty.text)} local record(s) are not in the records history. Run aitk records push first, or move them aside.`,
+        `${countLines(dirty.text)} local record(s) are not in the records history. Run canon records push first, or move them aside.`,
       )
     }
   }
@@ -429,7 +434,7 @@ export async function pullRecords(root: string): Promise<PullOutcome> {
     if (ahead.text.length > 0) {
       return refuse(
         'local-ahead',
-        `${countLines(ahead.text)} local commit(s) have not reached the records origin. Run aitk records push first.`,
+        `${countLines(ahead.text)} local commit(s) have not reached the records origin. Run canon records push first.`,
       )
     }
   }

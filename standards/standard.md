@@ -9,7 +9,7 @@ Applies to each authored standard in the folder. Skip for `index.md`, which is g
 
 ## Overview
 
-A standard is a target-facing authoring convention for one document type, or for one attribute carried across every document. Nothing installs it into a project, so a reader resolves it with `aitk standards <name>` or reads it at `standards/<name>.md`, and skills and developers consume it alike. This file governs itself, so every rule below applies to it.
+A standard is a target-facing authoring convention for one document type, or for one attribute carried across every document. Nothing installs it into a project, so a reader resolves it with `canon standards <name>` or reads it at `standards/<name>.md`, and skills and developers consume it alike. This file governs itself, so every rule below applies to it.
 
 ## Scope
 

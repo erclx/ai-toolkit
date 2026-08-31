@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-seed-sync` run leaves behind on the default arm,
-# through the propose pass alone. Read by `aitk sandbox check`. Patterns use TOML
+# What a correct `/canon:claude-seed-sync` run leaves behind on the default arm,
+# through the propose pass alone. Read by `canon sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 #
 # The skill's product is a proposal a reader judges, so the mechanical claims are

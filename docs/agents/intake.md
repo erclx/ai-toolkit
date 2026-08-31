@@ -7,13 +7,13 @@ description: Reading intake folder counts and items, the three read states an it
 
 ## List
 
-`aitk intake list` reports the intake folders under `.claude/intake/`, or the items one folder holds. It reads and never writes, because an answer belongs to the operator and a verb that filled one would decide what the folder exists to ask.
+`canon intake list` reports the intake folders under `.claude/intake/`, or the items one folder holds. It reads and never writes, because an answer belongs to the operator and a verb that filled one would decide what the folder exists to ask.
 
 A folder carries a two-digit ordinal ahead of its slug, as in `21-toolkit-overview`, so a listing sorts by when each opened. A bare slug still resolves: passing `toolkit-overview` matches the one folder whose name is an ordinal ahead of it, and the folder's real name is what every command reports back.
 
 ```bash
-aitk intake list
-aitk intake list toolkit-overview --unread --json
+canon intake list
+canon intake list toolkit-overview --unread --json
 ```
 
 | Option          | Behavior                                                                  |
@@ -38,11 +38,11 @@ The index is skipped, since it points at items and answers nothing itself. So is
 
 ## Answer
 
-`aitk intake answer` writes selections into the answer slots of one cluster file.
+`canon intake answer` writes selections into the answer slots of one cluster file.
 
 ```bash
-aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok
-aitk intake answer toolkit-overview --cluster 11-intake-skill.md --set 3d=ok --set 9="not worth it" --json
+canon intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok
+canon intake answer toolkit-overview --cluster 11-intake-skill.md --set 3d=ok --set 9="not worth it" --json
 ```
 
 | Option                | Behavior                                              |
@@ -75,7 +75,7 @@ The folder is shared scratch at the main worktree root, so `--root` defaults to 
 Skills branch on the reason rather than on the exit code:
 
 ```bash
-aitk intake list toolkit-overview --unread --json | jq -r '.clusters[] | .cluster'
+canon intake list toolkit-overview --unread --json | jq -r '.clusters[] | .cluster'
 ```
 
 For the folder layout, the item format, the answer contract, and retrieval, see `standards/intake.md`.

@@ -48,11 +48,11 @@ The seed at `tooling/claude/seeds/.claude/DESIGN.md` defines the target structur
 - **Motion**, one line on whether motion is used
 - **Iconography**, one line on icon style and source
 
-Table headers are load-bearing. The `aitk design render` parser matches columns by header name, so keep them intact during edits.
+Table headers are load-bearing. The `canon design render` parser matches columns by header name, so keep them intact during edits.
 
 ## Extract skill
 
-`aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `standards/markdown.md`, load the `write-human` skill for tone, fill the same seed, and end at the same render.
+`canon:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `standards/markdown.md`, load the `write-human` skill for tone, fill the same seed, and end at the same render.
 
 The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`. `standards/design.md` now specifies that tag, its two spellings, and what the renderer does with it. The skill body was the only specification until then, which left the parser stripping a token no standard described.
 
@@ -60,7 +60,7 @@ The skill is judgment-driven, not deterministic. It does not parse CSS or compil
 
 The greenfield path runs when nothing matches. It requires a `## Personality` paragraph in `.claude/REQUIREMENTS.md`, reads `.claude/ARCHITECTURE.md` for platform signals, and proposes token values from those inputs. Nearly every cell carries `? verify`, since the values are speculative until code or a designer anchors them. This path replaces the Claude Design onboarding quota cost for greenfield projects, and the first render usually shifts several tokens after review.
 
-Install in a target project via `aitk claude install` and invoke with `/aitk:claude-design-extract`.
+Install in a target project via `canon claude install` and invoke with `/canon:claude-design-extract`.
 
 ### The absorbed name
 
@@ -72,7 +72,7 @@ The scenario picks between `source`, which stages the tokenized notes app, and `
 
 ## Render command
 
-`aitk design render` reads `.claude/DESIGN.md` and writes an HTML plus CSS preview to `.claude/review/design/`. The HTML shows color swatches, typography samples, spacing bars, and border exemplars. The CSS holds tokens as custom properties for copy-paste into a project stylesheet.
+`canon design render` reads `.claude/DESIGN.md` and writes an HTML plus CSS preview to `.claude/review/design/`. The HTML shows color swatches, typography samples, spacing bars, and border exemplars. The CSS holds tokens as custom properties for copy-paste into a project stylesheet.
 
 A cell no source anchors shows a `? verify` marker beside its value, and a confidence line above the sections names how many cells are anchored against how many are tagged. `src/design/parse.test.ts` and `src/design/render.test.ts` cover both tag spellings, the count and the columns it reads, and the untagged render.
 
@@ -91,14 +91,14 @@ Typical sequence in a new project:
 
 1. Run the extract skill to draft `.claude/DESIGN.md`. It sources tokens from an existing codebase, or proposes them against a greenfield project with a personality paragraph.
 2. Review `? verify` cells and edit the file directly. The preview marks each one and counts them, so step 4 below is where they are found rather than the source file.
-3. Run `aitk design render` to regenerate the preview
+3. Run `canon design render` to regenerate the preview
 4. Open `.claude/review/design/index.html` in a browser
 5. Iterate on DESIGN.md until the preview matches intent
 
-The Stitch integration (`aitk design sync`, `generate`, `edit`, `variants`, `list`) sits on top of the same DESIGN.md file, consuming its tables via MCP. See `wiki/tools/stitch.md` for that surface.
+The Stitch integration (`canon design sync`, `generate`, `edit`, `variants`, `list`) sits on top of the same DESIGN.md file, consuming its tables via MCP. See `wiki/tools/stitch.md` for that surface.
 
 ## Related
 
-- `docs/agents/commands.md`: CLI flags and invocation contract for `aitk design`
+- `docs/agents/commands.md`: CLI flags and invocation contract for `canon design`
 - `docs/visual-design-workflow.md`: tier framework for prose-only, visual companion, and graphical source of truth
 - `wiki/tools/stitch.md`: Stitch MCP details for the downstream generation surface

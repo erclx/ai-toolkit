@@ -1,11 +1,11 @@
 ---
 name: youtube-transcripts
-description: Fetches a YouTube video transcript with metadata frontmatter into the current repo via `aitk transcripts`. Use when the user pastes a YouTube URL and asks to "grab the transcript", pull captions, or save a transcript for context. Do NOT use for downloading the video file, summarizing a transcript that already exists, or non-YouTube links.
+description: Fetches a YouTube video transcript with metadata frontmatter into the current repo via `canon transcripts`. Use when the user pastes a YouTube URL and asks to "grab the transcript", pull captions, or save a transcript for context. Do NOT use for downloading the video file, summarizing a transcript that already exists, or non-YouTube links.
 ---
 
 # YouTube transcripts
 
-Turn a pasted YouTube URL into a markdown file with YAML frontmatter and a cleaned prose body. The `aitk transcripts` command owns the fetch, VTT cleanup, and frontmatter. Do not reimplement that logic. The output format and field list live in the toolkit's `.claude/context/transcripts.md`, which a target does not receive.
+Turn a pasted YouTube URL into a markdown file with YAML frontmatter and a cleaned prose body. The `canon transcripts` command owns the fetch, VTT cleanup, and frontmatter. Do not reimplement that logic. The output format and field list live in the toolkit's `.claude/context/transcripts.md`, which a target does not receive.
 
 ## Guards
 
@@ -21,7 +21,7 @@ The command shells out to the `yt-dlp` binary. If a run fails with a `yt-dlp not
 From the project root, fetch the URL:
 
 ```bash
-aitk transcripts <url>
+canon transcripts <url>
 ```
 
 - Pass `--keep-timestamps` when the user wants `[mm:ss]` markers per line instead of prose.

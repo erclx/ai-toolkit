@@ -7,13 +7,13 @@ description: Validating the session records under .claude/ and the standards cor
 
 ## Validate
 
-`aitk records validate <kind>` reports where a file and the standard governing it disagree. Five kinds are gitignored folders under `.claude/`: `plans`, `groundwork`, `intake`, `memory`, and `teach`. The sixth is `standards`, the authoring corpus, which is tracked and installed rather than scratch.
+`canon records validate <kind>` reports where a file and the standard governing it disagree. Five kinds are gitignored folders under `.claude/`: `plans`, `groundwork`, `intake`, `memory`, and `teach`. The sixth is `standards`, the authoring corpus, which is tracked and installed rather than scratch.
 
 ```bash
-aitk records validate plans
-aitk records validate memory
-aitk records validate standards
-aitk records validate intake --json
+canon records validate plans
+canon records validate memory
+canon records validate standards
+canon records validate intake --json
 ```
 
 | Option          | Behavior                                                            |
@@ -25,7 +25,7 @@ It reads and never writes, and the reason splits by kind. A session record is pe
 
 `standards` reads the authoring root at `standards/` where it exists and a copy at `.claude/standards/` otherwise. The authoring root wins because it is the only tree anyone authors in and the only one the resolver answers from, so a finding fixed anywhere else is fixed where nothing reads it. No repository generates the second candidate any more, which leaves it as a floor under a target holding a copy an older toolkit installed. The walk stays flat, matching the catalog.
 
-Nothing fires it automatically. The five record folders are gitignored, so the standards-audit hook exits early on them and any check reading changed files from git never lists one. The corpus is tracked and still unreached, since the markdown audit reads content across the files git lists and rules on no filename. The verb runs at the moment a session claims the record is finished, which is the same placement `aitk tasks validate` takes over the board.
+Nothing fires it automatically. The five record folders are gitignored, so the standards-audit hook exits early on them and any check reading changed files from git never lists one. The corpus is tracked and still unreached, since the markdown audit reads content across the files git lists and rules on no filename. The verb runs at the moment a session claims the record is finished, which is the same placement `canon tasks validate` takes over the board.
 
 ### What each kind checks
 
@@ -67,19 +67,19 @@ The four record folders are shared scratch at the main worktree root, so `--root
 Skills branch on the findings rather than on the exit code:
 
 ```bash
-aitk records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
+canon records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
 ```
 
 For the shapes each check enforces, see `standards/plan.md`, `standards/groundwork.md`, `standards/intake.md`, `standards/memory.md`, and `standards/standard.md`.
 
 ## Migrate
 
-`aitk records migrate <kind>` rewrites the records a `validate` finding names a transform for. A standard that redefines its own required frontmatter breaks every record already written to the old shape, and this is the repair `validate` could only report until now.
+`canon records migrate <kind>` rewrites the records a `validate` finding names a transform for. A standard that redefines its own required frontmatter breaks every record already written to the old shape, and this is the repair `validate` could only report until now.
 
 ```bash
-aitk records migrate memory
-aitk records migrate memory --write
-aitk records migrate memory --json
+canon records migrate memory
+canon records migrate memory --write
+canon records migrate memory --json
 ```
 
 | Option          | Behavior                                                            |
@@ -88,7 +88,7 @@ aitk records migrate memory --json
 | `--write`       | Rewrite every record a transform can repair                         |
 | `--root <path>` | Project root, defaulting to the main worktree except on `standards` |
 
-It writes nothing until `--write` is passed, matching the write-flag contract `aitk tooling sync` carries: a session record has no history to undo a wrong repair from, so naming a kind is not consent to rewrite every record inside it. A dry run reports which records it would touch and exits non-zero either way, headless or not, since there is nothing to prompt for.
+It writes nothing until `--write` is passed, matching the write-flag contract `canon tooling sync` carries: a session record has no history to undo a wrong repair from, so naming a kind is not consent to rewrite every record inside it. A dry run reports which records it would touch and exits non-zero either way, headless or not, since there is nothing to prompt for.
 
 A transform runs only where the missing value is recoverable from the file itself. The one shipped today repairs a memory record missing `category` alone, deriving it from the same filename prefix `checkMemory` already reads it from. `title` and `description` are prose nobody wrote down, so a finding naming either carries no transform and stays for a session to fix by hand, and `validate` keeps reporting it. The transform re-reads the file rather than trusting a value captured at validate time, so a check and its repair cannot disagree about the same record.
 
@@ -96,11 +96,11 @@ Exit codes: `0` nothing carried a known transform, or `--write` repaired everyth
 
 ## Size
 
-`aitk records size` reports what each record folder holds and how much of it is recent. It reads the ten backed folders named under Push and pull, plus `.claude/.tmp`, and it gates nothing.
+`canon records size` reports what each record folder holds and how much of it is recent. It reads the ten backed folders named under Push and pull, plus `.claude/.tmp`, and it gates nothing.
 
 ```bash
-aitk records size
-aitk records size --json
+canon records size
+canon records size --json
 ```
 
 | Option          | Behavior                                      |
@@ -118,18 +118,18 @@ Nothing fails on a number here. A record folder has no correct size, so the read
 
 `.claude/.tmp` is read here and skipped by a backup, because deletable without loss is not the same as empty. The routing handoffs and the memory archive both sit there and both accumulate. `.claude/.records.git` stays out because it is the backup history rather than a record, and `.claude/worktrees/` stays out because each entry is a checkout of the project with its own removal verb, and one of them outweighs every record folder combined.
 
-The window counts read `mtime`, so what they report is a file written inside the window rather than one created there. An entry edited long after it landed reads as recent, which overstates growth and never understates it, and these folders are append-mostly so the two readings agree on nearly every file. The one reading that is wrong rather than early is a machine restored by `aitk records pull`, which resets the work tree hard and re-dates every file it writes, so a window taken there counts the restore. Nothing on the filesystem separates the two, since a restored file is new by every stamp it carries.
+The window counts read `mtime`, so what they report is a file written inside the window rather than one created there. An entry edited long after it landed reads as recent, which overstates growth and never understates it, and these folders are append-mostly so the two readings agree on nearly every file. The one reading that is wrong rather than early is a machine restored by `canon records pull`, which resets the work tree hard and re-dates every file it writes, so a window taken there counts the restore. Nothing on the filesystem separates the two, since a restored file is new by every stamp it carries.
 
 Exit codes: `0` the reading completed, `1` refused. The one refusal is `no-folder`, raised when the root holds no `.claude` directory at all.
 
 ## Push and pull
 
-`aitk records push` commits the backed record folders to a private remote and pushes them. `aitk records pull` fetches the other direction and writes them back. Both take `--json` and `--root` the way `validate` does, and both exit `0` on agreement and `1` on a refusal.
+`canon records push` commits the backed record folders to a private remote and pushes them. `canon records pull` fetches the other direction and writes them back. Both take `--json` and `--root` the way `validate` does, and both exit `0` on agreement and `1` on a refusal.
 
 ```bash
-aitk records push
-aitk records push --json
-aitk records pull
+canon records push
+canon records push --json
+canon records pull
 ```
 
 The backed folders are `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, all under `.claude/`. Eight of them are the Claude ignore group the claude manifest ships, minus three entries: `.claude/.tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.claude/.records.git/`, which is the history the rest are pushed into. `diagrams` is the one that group does not carry at all, since a target still tracks its own copies, which is why the list is spelled out rather than derived. Each name is a top-level record folder and every archive sits inside the one it archives, so the list stays at one entry per surface however many archives appear. It is a constant rather than configuration, and it deliberately does not match the six record kinds `validate` hardcodes.
@@ -146,7 +146,7 @@ git --git-dir=.claude/.records.git remote add origin <private-repo-url>
 printf '.claude/.records.git/\n' >> .gitignore
 ```
 
-The ignore line is repeated here rather than left to the install, because the person running these commands is the one who creates the directory and the rule is worth reading beside the command that needs it. The claude manifest ships `.claude/.records.git/` as the first entry of its group, so a project that ran `aitk claude sync` already carries it and this line is a no-op there. What the group buys is the project that never sets records up: it holds a rule for a directory it will never create, which costs nothing, and the backed-folder derivation above subtracts that entry from the group rather than from a list it does not sit in.
+The ignore line is repeated here rather than left to the install, because the person running these commands is the one who creates the directory and the rule is worth reading beside the command that needs it. The claude manifest ships `.claude/.records.git/` as the first entry of its group, so a project that ran `canon claude sync` already carries it and this line is a no-op there. What the group buys is the project that never sets records up: it holds a rule for a directory it will never create, which costs nothing, and the backed-folder derivation above subtracts that entry from the group rather than from a list it does not sit in.
 
 Point it at a private repository, and at one that is not a remote of the project. Records carry the memory pen, the review reports, and the groundwork trails, so a public project publishes all of it to anyone who fetches all refs. `push` compares the configured origin against every remote of the project and refuses on a match. A read of that list which fails refuses as well, since an empty list clears the comparison for every origin and a gate that passes on its own failure is no gate.
 

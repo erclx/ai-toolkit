@@ -12,9 +12,9 @@ import { afterAll } from 'vitest'
  * covers every test that reaches a sync, including ones written later that do
  * not know the write happens.
  */
-const STATE = mkdtempSync(join(tmpdir(), 'aitk-test-state-'))
+const STATE = mkdtempSync(join(tmpdir(), 'canon-test-state-'))
 
-process.env.AITK_STATE_DIR = STATE
+process.env.CANON_STATE_DIR = STATE
 
 afterAll(() => {
   rmSync(STATE, { recursive: true, force: true })

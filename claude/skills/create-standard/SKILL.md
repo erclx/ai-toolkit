@@ -17,7 +17,7 @@ Creates one standard file. Read these files in parallel:
 2. Confirm the slug and full content with the user before writing
 3. Write the file to `standards/<slug>.md`, creating the folder when it is absent
 
-`standards/` is the one write surface. It is the toolkit's authoring source in this repository and a project's own folder anywhere else, and both are the root `aitk standards <name>` resolves against first. No corpus installs into a project, so there is no second surface to pick between and no guard on a folder the skill can create itself.
+`standards/` is the one write surface. It is the toolkit's authoring source in this repository and a project's own folder anywhere else, and both are the root `canon standards <name>` resolves against first. No corpus installs into a project, so there is no second surface to pick between and no guard on a folder the skill can create itself.
 
 ## After writing
 

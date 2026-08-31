@@ -21,7 +21,7 @@ The ambiguity rules travel with that layer for the same reason. Compression is w
 
 - **The ban on abstract metaphor nouns.** The nouns it names are load-bearing terms in this corpus rather than decoration, and the count below is what decides it.
 - **Document mode as a selector.** The source has the writer pick a mode before drafting. In this corpus a document's shape is already fixed by the standard governing its type, so a mode selector adds a second authority over one question and the two will disagree.
-- **Any restatement of a banned word set.** The bans ship as package data that `aitk markdown audit` reads, and a copy here would be a second source for one list with a machine reading the other.
+- **Any restatement of a banned word set.** The bans ship as package data that `canon markdown audit` reads, and a copy here would be a second source for one list with a machine reading the other.
 - **A voice register per surface.** One baseline covers every surface. A surface needing a warmer register states its own voice and claims the yield, which lifts voice alone and leaves the bans, the rhythm rules, and the tells in force.
 
 The first of those four rests on a count. The source names `surface` among the nouns it bans, and tracked markdown in the authoring repository used `surface` 593 times, `harness` 95, `scaffolding` 17, and `primitive` 4, measured at `57ee7467` on 2026-08-19. Adopting the item either rewrites established vocabulary across the corpus or is ignored in silence, and a reader arriving later cannot tell which happened.

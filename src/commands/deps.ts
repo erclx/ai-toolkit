@@ -57,8 +57,8 @@ export function register(program: Command): void {
         '  2  at least one advisory was published',
         '',
         'Examples:',
-        '  aitk deps audit',
-        '  aitk deps audit --json',
+        '  canon deps audit',
+        '  canon deps audit --json',
         '',
       ].join('\n'),
     )
@@ -96,7 +96,7 @@ async function runAudit(
   const root = resolve(path ?? process.cwd())
   const emitJson = opts.json ?? false
 
-  intro('aitk deps audit')
+  intro('canon deps audit')
 
   const audit = await auditDependencies(root)
 

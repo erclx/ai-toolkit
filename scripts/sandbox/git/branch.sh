@@ -26,12 +26,12 @@ stage_setup() {
   log_step "Scenario ready: branch naming compliance"
 
   log_info "Test A (current branch): 'temp/wip-stuff'"
-  log_info "  Action: /aitk:git-branch"
+  log_info "  Action: /canon:git-branch"
   log_info "  Expect: Suggest rename to 'feat/wip-messy-work'"
 
   echo -e "${GREY}│${NC}" >&2
 
   log_info "Test B (toggle): 'git checkout feat/clean-feature'"
-  log_info "  Action: /aitk:git-branch"
+  log_info "  Action: /canon:git-branch"
   log_info "  Expect: '✅ Branch name already follows conventions'"
 }

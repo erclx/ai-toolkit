@@ -1,5 +1,5 @@
 # What a correct `/claude-teach` run leaves behind on the open arm.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The workspace is gitignored in every target, so nothing in a repository checks
@@ -53,7 +53,7 @@ manual = [
   "The success lines name things the learner can be asked to do rather than things they will understand. Semantic: both forms are bullets under the same heading, and the difference is the verb.",
   "Nothing in the mission or the glossary rests on recall without saying so. Unwired: the sandbox has no network, so the research step cannot run at all, and this arm asserts the workspace shape rather than the sourcing.",
   "Whether the opening pass should teach as well as open. Semantic: the measured run wrote a lesson, a reference page, a learning record, and the shared stylesheet on the same pass, and a run that opened the workspace and stopped satisfies every assertion above just as well. Nothing here decides which is correct.",
-  "The workspace was created through `aitk teach open` rather than by hand. Unwired: the claim is about which commands were invoked, which the envelope does not carry, so a run that ignored the verb and wrote the three files itself passes every assertion above. The skill body routes the open through the verb because a linked worktree gives a heredoc no way to derive the ordinal, and this arm stopped reaching that half once the body changed.",
+  "The workspace was created through `canon teach open` rather than by hand. Unwired: the claim is about which commands were invoked, which the envelope does not carry, so a run that ignored the verb and wrote the three files itself passes every assertion above. The skill body routes the open through the verb because a linked worktree gives a heredoc no way to derive the ordinal, and this arm stopped reaching that half once the body changed.",
 ]
 
 # The mission frontmatter. `date` is the day the workspace opened and it is the

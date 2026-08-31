@@ -42,7 +42,7 @@ export function register(program: Command): void {
   demo
     .command('compile')
     .description('Turn a screencast draft into a plan a run can drive')
-    .argument('<draft>', 'Screencast draft written by aitk-screencast')
+    .argument('<draft>', 'Screencast draft written by canon-screencast')
     .helpOption('-h, --help', 'Show this help message')
     .option('-o, --out <dir>', 'Directory the plan is written to', DEFAULT_OUT)
     .option('-s, --slug <slug>', 'Plan name, defaulting to the draft filename')
@@ -61,8 +61,8 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '',
         'Examples:',
-        '  aitk demo compile .claude/.tmp/screencast/inline-edit.md',
-        '  aitk demo compile draft.md --out demos --force',
+        '  canon demo compile .claude/.tmp/screencast/inline-edit.md',
+        '  canon demo compile draft.md --out demos --force',
         '',
       ].join('\n'),
     )
@@ -73,7 +73,7 @@ export function register(program: Command): void {
   demo
     .command('run')
     .description('Drive the application a plan names and write the recording')
-    .argument('<plan>', 'Plan written by aitk demo compile')
+    .argument('<plan>', 'Plan written by canon demo compile')
     .helpOption('-h, --help', 'Show this help message')
     .option('-o, --out <dir>', 'Directory to write into, overriding the plan')
     .option(
@@ -98,8 +98,8 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '',
         'Examples:',
-        '  aitk demo run demos/inline-edit.json',
-        '  aitk demo run demos/inline-edit.json --cursor ~/cursors/theme',
+        '  canon demo run demos/inline-edit.json',
+        '  canon demo run demos/inline-edit.json --cursor ~/cursors/theme',
         '',
       ].join('\n'),
     )
@@ -109,7 +109,7 @@ export function register(program: Command): void {
 }
 
 function runCompile(draftPath: string, opts: CompileOptions): number {
-  intro('aitk demo compile')
+  intro('canon demo compile')
 
   const source = resolve(process.cwd(), draftPath)
   if (!existsSync(source)) {
@@ -179,7 +179,7 @@ function runCompile(draftPath: string, opts: CompileOptions): number {
 }
 
 async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
-  intro('aitk demo run')
+  intro('canon demo run')
 
   const source = resolve(process.cwd(), planPath)
   if (!existsSync(source)) {

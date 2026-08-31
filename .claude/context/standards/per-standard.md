@@ -100,7 +100,7 @@ The three tests are read in order, so widening `## Up next` alone leaves its new
 
 The external kind names what would satisfy the condition rather than the condition alone. Without that clause the kind admits any excuse, including a row nobody has looked at, which collapses the group into a holding pen for whatever is stalled.
 
-`aitk tasks validate` resolves the `Task`, `Plan`, and `Touches` columns by header text and never reads the `Waiting on` cell, so the widened test holds on reading alone and the standard says so. A non-empty check is the alternative and every row already passes it, which buys a check that has never once fired. Every finding the validator does report compares a written claim against the tree, and an external condition puts no fact there to disagree with, unlike a plan pointer that resolves or two file sets that intersect.
+`canon tasks validate` resolves the `Task`, `Plan`, and `Touches` columns by header text and never reads the `Waiting on` cell, so the widened test holds on reading alone and the standard says so. A non-empty check is the alternative and every row already passes it, which buys a check that has never once fired. Every finding the validator does report compares a written claim against the tree, and an external condition puts no fact there to disagree with, unlike a plan pointer that resolves or two file sets that intersect.
 
 ## What the memory pen measured
 
@@ -140,7 +140,7 @@ Six skills write GitHub conversational text and every one already cites the stan
 
 Quoted text is exempt, which the rule has to say rather than leave to judgment. Two of the six consumers quote repository prose into a GitHub comment, so an instruction to rewrite a reference moved between destinations reaches inside a quotation and reports the source as having said something it never said.
 
-Nothing enforces it and nothing can. `aitk markdown audit` runs over repository files, where the backticked form is the correct one, so a check there would flag the compliant references in the tree and reach none of the published text that goes wrong. The rule joins the character and phase-label bans as something an author applies at publish time, and those at least have a verb behind them for the repository half.
+Nothing enforces it and nothing can. `canon markdown audit` runs over repository files, where the backticked form is the correct one, so a check there would flag the compliant references in the tree and reach none of the published text that goes wrong. The rule joins the character and phase-label bans as something an author applies at publish time, and those at least have a verb behind them for the repository half.
 
 ## The glossary standard and its one stated exception
 

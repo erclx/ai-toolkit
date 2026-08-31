@@ -1,6 +1,6 @@
 # Contributing
 
-aitk is a portfolio project. Issues are welcome. Pull requests are accepted by invitation only.
+canon is a portfolio project. Issues are welcome. Pull requests are accepted by invitation only.
 
 What follows is the local loop for an invited contributor, and for anyone running the CLI from a clone.
 
@@ -18,11 +18,11 @@ The [development notes](.claude/context/development/index.md) carry the full scr
 
 ## Where to author
 
-Standards and snippets author at `standards/` and `snippets/` in the repository root. Neither installs into a target project. A session reads a standard with `aitk standards <name>` and fires a snippet through its `@` reference off the live plugin symlink.
+Standards and snippets author at `standards/` and `snippets/` in the repository root. Neither installs into a target project. A session reads a standard with `canon standards <name>` and fires a snippet through its `@` reference off the live plugin symlink.
 
 Neither carries a consumed copy under `.claude/`, so the file at its authoring root is the only one to edit and the only one to cite from a file staying in this repository.
 
-Governance rules split the same way, though through a different mechanism. Author under `governance/rules/`, which `aitk gov install` writes into a target project's `.claude/rules/`.
+Governance rules split the same way, though through a different mechanism. Author under `governance/rules/`, which `canon gov install` writes into a target project's `.claude/rules/`.
 
 ## Commits
 

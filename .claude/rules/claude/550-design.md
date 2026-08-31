@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow the design standard for visual intent, the token tables, and the render contract. It is the single source. Read it with `aitk standards design`.
+- Follow the design standard for visual intent, the token tables, and the render contract. It is the single source. Read it with `canon standards design`.

@@ -5,14 +5,14 @@ description: Resolving every path a governance rule cites and every frontmatter 
 
 # Rule citations
 
-`aitk gov citations` resolves every path a rule cites and every frontmatter glob the internal corpus declares, naming the ones reaching nothing. It answers a failure no other stage sees: a rule points a reader at a file, the file moves, and nothing reports it until a session opens the path and finds an absence.
+`canon gov citations` resolves every path a rule cites and every frontmatter glob the internal corpus declares, naming the ones reaching nothing. It answers a failure no other stage sees: a rule points a reader at a file, the file moves, and nothing reports it until a session opens the path and finds an absence.
 
 A glob fails the same way and more quietly. A rule scoped at a directory that moved stops matching, so it never loads again, and a rule that never fires looks exactly like a rule nobody violated.
 
 ```bash
-aitk gov citations
-aitk gov citations --json
-aitk gov citations --root ../my-app
+canon gov citations
+canon gov citations --json
+canon gov citations --root ../my-app
 ```
 
 | Option          | Behavior                                                   |
@@ -34,13 +34,13 @@ A citation reaches a reader in one of three shapes, and each resolves against a 
 
 | Form       | Shape                    | Resolves against                   |
 | ---------- | ------------------------ | ---------------------------------- |
-| `standard` | `aitk standards <name>`  | `standards/<name>.md`              |
+| `standard` | `canon standards <name>` | `standards/<name>.md`              |
 | `path`     | a backticked path        | the root                           |
 | `sibling`  | a bare `<nnn>-<slug>.md` | the folder the citing rule sits in |
 
 `standard` is the live form and carries most of the corpus, which is what makes scoping this check to the two path shapes a check over almost nothing.
 
-A standard name resolves against the authoring root and nowhere else, matching `standardRoots` in `src/standards/read.ts`, which reads `standards/` at the working root and then the package corpus. The stage refuses a tree holding no rule corpus, so it runs only where those two roots are one directory. `internal/standards/` is deliberately not tried: `aitk standards <name>` never reaches it, so admitting it would pass a citation that refuses for the session opening it, which is a gate failing open.
+A standard name resolves against the authoring root and nowhere else, matching `standardRoots` in `src/standards/read.ts`, which reads `standards/` at the working root and then the package corpus. The stage refuses a tree holding no rule corpus, so it runs only where those two roots are one directory. `internal/standards/` is deliberately not tried: `canon standards <name>` never reaches it, so admitting it would pass a citation that refuses for the session opening it, which is a gate failing open.
 
 A `path` is anchored on the whole backticked span rather than on a trailing pattern inside it. Cutting `standards/tooling-reference.md` out of `internal/standards/tooling-reference.md` and resolving that against the standards root reports a file that exists as missing, which is a mistake made by hand while measuring this corpus before the stage was written.
 
@@ -77,7 +77,7 @@ What that leaves unreached is a glob that matches real files and still reaches n
 
 ## The exemption marker
 
-Everything the classifier can separate mechanically is separated there. For the residue, a line carries `aitk-allow-citation: <reason>` on itself or the one directly above, which moves it into the report's `Exempt` section. Only a marker naming a reason counts, since a bare token is a line that meant to say something and did not. This is the `aitk-allow-superseded` shape, and both read the same placement rule through one helper.
+Everything the classifier can separate mechanically is separated there. For the residue, a line carries `canon-allow-citation: <reason>` on itself or the one directly above, which moves it into the report's `Exempt` section. Only a marker naming a reason counts, since a bare token is a line that meant to say something and did not. This is the `canon-allow-superseded` shape, and both read the same placement rule through one helper.
 
 ## The blind spots
 

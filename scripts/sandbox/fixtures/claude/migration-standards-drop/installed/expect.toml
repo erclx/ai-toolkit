@@ -1,5 +1,5 @@
-# What a correct `/aitk:migration-standards-drop` run leaves behind on a target
-# holding an installed `.claude/standards/` tree. Read by `aitk sandbox check`.
+# What a correct `/canon:migration-standards-drop` run leaves behind on a target
+# holding an installed `.claude/standards/` tree. Read by `canon sandbox check`.
 # Patterns use TOML literal strings so a regex needs no backslash escaping.
 #
 # The skill proposes and writes nothing, so the tree assertions carry the whole
@@ -19,7 +19,7 @@
 max_turns = 30
 
 # The four pins separate a run that read the tree from one that recited the
-# skill body. `aitk gov sync` and `git rm -r` are the first two commands of the
+# skill body. `canon gov sync` and `git rm -r` are the first two commands of the
 # ordered block and the ordering between them stays in `manual`, since a
 # substring proves each appears and carries nothing about which came first.
 #
@@ -28,7 +28,7 @@ max_turns = 30
 # the catalog rather than on the filename. A run that skipped either read still
 # produces a plausible drop proposal and fails here.
 reply = [
-  "aitk gov sync",
+  "canon gov sync",
   "git rm -r",
   "standards-audit.sh",
   "billing",
@@ -53,7 +53,7 @@ absent = ["standards"]
 # Prose the checker cannot assert, each with the reason it stays here.
 manual = [
   "The sync is named ahead of the drop and the sweep after it. Semantic: three substrings prove the commands appear and carry no ordering, and the reverse order is the whole defect the block exists to prevent",
-  "The project-local skill's citation repoints to `aitk standards slug` rather than to the plugin-root form. Semantic: both spellings contain the word slug and the failing one is a path the run would present as correct, so no substring separates them",
+  "The project-local skill's citation repoints to `canon standards slug` rather than to the plugin-root form. Semantic: both spellings contain the word slug and the failing one is a path the run would present as correct, so no substring separates them",
   "`prose.md` was reported as a name the user places rather than repointed to a single standard. Semantic: a decline and a wrong one-to-one repoint both name prose, so the tokens do not separate them",
   "`slug.md` was called unchanged and `branch.md` drifted. Semantic: both filenames appear in a correct proposal whichever bucket each landed in",
   "The behind-version refusal was never exercised. Unwired: provisioning refuses on a stale binary, so the branch needs an arm that stages one",

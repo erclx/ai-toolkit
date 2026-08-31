@@ -2,7 +2,7 @@ extends = ""
 # All four folders whole. Every rule authored under them ships to a base
 # consumer, so adding one is a single edit rather than a file and a name here.
 # `snippets` carries the `@`-reference convention rule, which lost its only
-# other delivery path when `aitk snippets install` retired. `ci` carries the
+# other delivery path when `canon snippets install` retired. `ci` carries the
 # workflow rule, whose glob is the only inbound route to the `ci-workflow`
 # skill.
 rules = ["core", "claude", "snippets", "ci", "120-bash"]

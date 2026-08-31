@@ -8,7 +8,7 @@ The web layer covers web-universal tooling shared across Vite + React, Astro, an
 
 ## What ships as golden configs
 
-Golden config files live in `tooling/web/configs/` and are copied into the target on `aitk tooling sync web . --write`, replacing whatever sits at those paths. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
+Golden config files live in `tooling/web/configs/` and are copied into the target on `canon tooling sync web . --write`, replacing whatever sits at those paths. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
 
 - `eslint.config.js`: flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
 - `src/test/setup.ts`: `@testing-library/jest-dom` import, `cleanup` after each test.
@@ -106,7 +106,7 @@ Append rows:
 | `bun run test:e2e:changed` | Run Playwright E2E tests for specs the import graph reaches from the current diff. |
 | `bun run screenshot` | Build, preview, then capture screenshots. |
 
-`aitk tooling verify <stack>` is the only automated caller of `bun run screenshot`, running it for any stack whose `package.json` declares the script and asserting that PNG files land under `screenshots/`. It counts them with a recursive find carrying no depth limit, so the section folders the seed writes satisfy the assertion without a change to it. Do not flatten the layout to protect that check. No ship chain captures a screenshot, so the output path the seed writes is a contract that one verifier reads rather than a default a ship step depends on.
+`canon tooling verify <stack>` is the only automated caller of `bun run screenshot`, running it for any stack whose `package.json` declares the script and asserting that PNG files land under `screenshots/`. It counts them with a recursive find carrying no depth limit, so the section folders the seed writes satisfy the assertion without a change to it. Do not flatten the layout to protect that check. No ship chain captures a screenshot, so the output path the seed writes is a contract that one verifier reads rather than a default a ship step depends on.
 
 `governance/rules/ui/440-surface-capture.md` is what asks a session to run the capture after a route changes. It fires on route and page files rather than on every component, so a shared component changing every screen fires nothing and the operator runs the capture by hand.
 

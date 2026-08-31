@@ -7,7 +7,7 @@ function record(fields: Partial<SessionRecord> = {}): SessionRecord {
     pid: 100,
     sessionId: 'id-100',
     cwd: '/repo',
-    name: 'aitk-aa',
+    name: 'canon-aa',
     kind: 'interactive',
     status: 'idle',
     statusUpdatedAt: undefined,

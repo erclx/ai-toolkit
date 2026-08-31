@@ -38,7 +38,7 @@ export function buildSteps(
     steps.push({
       kind: 'skip',
       label: 'Governance',
-      notice: `Skipped: --skip governance. Run 'aitk ${recovery}' to install rules.`,
+      notice: `Skipped: --skip governance. Run 'canon ${recovery}' to install rules.`,
     })
   } else {
     steps.push({

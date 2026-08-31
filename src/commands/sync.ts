@@ -58,11 +58,11 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk sync',
-        '  aitk sync ../my-app',
-        '  aitk sync --check',
-        '  aitk sync --check --json',
-        '  aitk sync --check --exit-code',
+        '  canon sync',
+        '  canon sync ../my-app',
+        '  canon sync --check',
+        '  canon sync --check --json',
+        '  canon sync --check --exit-code',
         '',
       ].join('\n'),
     )
@@ -94,13 +94,13 @@ async function runCheck(target: string, options: SyncOptions): Promise<number> {
 }
 
 function renderCheck(report: CheckReport): void {
-  intro('aitk sync --check')
+  intro('canon sync --check')
 
   renderSkew(report)
 
   if (report.stampAtLegacyPath) {
     logWarn(
-      'Stamp found at the retired .claude/aitk.json. Move it to .claude/aitk/config.json.',
+      'Stamp found at a retired path. Move it to .claude/canon/config.json.',
     )
   }
 
@@ -108,7 +108,7 @@ function renderCheck(report: CheckReport): void {
     logStep('Not a toolkit project')
     logWarn('No .claude/ directory and no CLAUDE.md at the target.')
     logInfo(
-      'Run `aitk init` to install, or /aitk:setup-init to resolve a stack.',
+      'Run `canon init` to install, or /canon:setup-init to resolve a stack.',
     )
     outro()
     return
@@ -183,7 +183,7 @@ function renderCheck(report: CheckReport): void {
     // `install` re-resolves the whole stack rather than adding one rule, so
     // the remedy names both routes rather than assuming the reader wants all.
     logInfo(
-      'Run `aitk gov install <stack>` to take the whole stack again, or `--add <rule>` to take one.',
+      'Run `canon gov install <stack>` to take the whole stack again, or `--add <rule>` to take one.',
     )
   }
 
@@ -241,7 +241,7 @@ function renderTooling(report: CheckReport): void {
         : `Recorded chain names no stack this toolkit ships: ${tooling.chain.join(' < ')}.`,
     )
     logInfo(
-      'Run `aitk tooling sync <stack> --write` to record what this target holds.',
+      'Run `canon tooling sync <stack> --write` to record what this target holds.',
     )
     return
   }
@@ -260,7 +260,7 @@ function renderTooling(report: CheckReport): void {
     if (count > 0) logWarn(`${count} ${category}`)
   }
   logInfo(
-    'Run `aitk tooling sync --check` to see which files, `--write` to apply.',
+    'Run `canon tooling sync --check` to see which files, `--write` to apply.',
   )
 }
 
@@ -285,7 +285,7 @@ function renderSeeds(report: CheckReport): void {
     logWarn(`${entry.rel} (${entry.state})`)
   }
 
-  logInfo('Run /aitk:claude-seed-sync to reconcile these section by section.')
+  logInfo('Run /canon:claude-seed-sync to reconcile these section by section.')
 }
 
 /**
@@ -347,12 +347,12 @@ function renderMigrations(report: CheckReport): void {
 
   for (const candidate of migrations) {
     logWarn(candidate.reason)
-    logInfo(`Run /aitk:${candidate.skill} for a proposal.`)
+    logInfo(`Run /canon:${candidate.skill} for a proposal.`)
   }
 }
 
 async function runSync(target: string): Promise<number> {
-  intro('aitk sync')
+  intro('canon sync')
 
   const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
@@ -412,7 +412,7 @@ async function runSync(target: string): Promise<number> {
  * Each domain sync runs as its own process. They open their own frames and
  * prompt for their own changes, so stdin stays inherited. Claude is the one
  * exception: it runs headless because the combined pull request preview is the
- * single confirmation gate for the whole sync, and `aitk claude sync` writes
+ * single confirmation gate for the whole sync, and `canon claude sync` writes
  * only `.gitignore`.
  */
 async function runDomainSyncs(target: string): Promise<void> {

@@ -1,6 +1,6 @@
 ---
 name: setup-indexes
-description: Bootstraps the toolkit's `index.md` system in a target project. Scans for markdown-heavy folders, drafts `title` and `description` frontmatter, scaffolds `index.md` per chosen folder, and runs `aitk indexes regen` to validate. Use when asked to "set up indexes", "bootstrap indexes", "add index.md to this project", or "install indexes". Assumes the `aitk` CLI is on PATH.
+description: Bootstraps the toolkit's `index.md` system in a target project. Scans for markdown-heavy folders, drafts `title` and `description` frontmatter, scaffolds `index.md` per chosen folder, and runs `canon indexes regen` to validate. Use when asked to "set up indexes", "bootstrap indexes", "add index.md to this project", or "install indexes". Assumes the `canon` CLI is on PATH.
 ---
 
 # Indexes install
@@ -13,7 +13,7 @@ Read `.claude/context/indexes.md` from the toolkit if context on the system is n
 
 - Bootstrap un-indexed folders only. Skip folders that already contain an `index.md`.
 - All-or-nothing per chosen folder. Every `*.md` sibling in a chosen folder gets `title` and `description` injected, or none does. Partial migration creates folders that hard-error on regen.
-- This is where `setup-init` sends an install that wants the Claude layer without the tooling chain, once `aitk claude init` has seeded the docs. The work is the same either way, since the scan below prunes `.claude` and reads the project's own documentation folders whichever route reached it.
+- This is where `setup-init` sends an install that wants the Claude layer without the tooling chain, once `canon claude init` has seeded the docs. The work is the same either way, since the scan below prunes `.claude` and reads the project's own documentation folders whichever route reached it.
 
 ## Scan
 
@@ -82,16 +82,16 @@ Preserve existing content below the frontmatter block. If a sibling already has 
 Run from the project root:
 
 ```bash
-aitk indexes regen --dry-run --json
+canon indexes regen --dry-run --json
 ```
 
 Parse the JSON. On any `error` action, surface the file and reason and stop. On `would-write` for the bootstrapped folders, the dry-run is healthy. Run for real:
 
 ```bash
-aitk indexes regen --json
+canon indexes regen --json
 ```
 
-Count the `written` actions in that record and report the number. Read the real run the same way the dry run is read, since the exit carries nothing reliable back to a session. An operator's shell profile may wrap `aitk` in a function that runs the binary and then a second command and takes the second status, so a regen that errored on a sibling missing `title` arrives here as a clean pass.
+Count the `written` actions in that record and report the number. Read the real run the same way the dry run is read, since the exit carries nothing reliable back to a session. An operator's shell profile may wrap `canon` in a function that runs the binary and then a second command and takes the second status, so a regen that errored on a sibling missing `title` arrives here as a clean pass.
 
 ## Offer the convention seed
 
@@ -99,7 +99,7 @@ First check whether `CLAUDE.md` exists in the project root. If absent, do not sc
 
 ```plaintext
 No CLAUDE.md in the project. Skipping convention seed.
-To add the convention later, run `aitk tooling sync` or `aitk init`,
+To add the convention later, run `canon tooling sync` or `canon init`,
 then re-invoke this skill.
 ```
 
@@ -138,9 +138,9 @@ Convention seed: <installed | already present | declined | skipped (no CLAUDE.md
 
 Optional maintenance (opt in, the skill does not configure these):
 - lint-staged entry in .lintstagedrc.json:
-    "**/*.md": "aitk indexes regen"
+    "**/*.md": "canon indexes regen"
 - Claude Code PostToolUse hook on Edit and Write matching **/*.md running:
-    aitk indexes regen
+    canon indexes regen
 ```
 
 Replace bracketed values with the values from this run. Drop the "Folders bootstrapped" line if zero folders were chosen.
@@ -150,4 +150,4 @@ Replace bracketed values with the values from this run. Drop the "Folders bootst
 Both pages sit in the toolkit and install nowhere, so a target reads them there rather than in its own tree.
 
 - The toolkit's `.claude/context/indexes.md`: system rationale, frontmatter contract, when to adopt
-- The toolkit's `docs/agents/indexes.md`: `aitk indexes regen` flags, exit codes, JSON shape
+- The toolkit's `docs/agents/indexes.md`: `canon indexes regen` flags, exit codes, JSON shape

@@ -53,7 +53,7 @@ Read the census once before the loop, invoking the worktree-local CLI:
 bun src/cli.ts sandbox coverage --skills --json
 ```
 
-Use the local entry point for the reason the `Provisioning:` line does. A globally installed `aitk` resolves to the main checkout and would report main's skills against this branch. If the command fails, treat the census as holding nothing. Rules 2 through 4 then match nothing, internal skills still resolve at rule 5, and every plugin skill falls through to the prompt.
+Use the local entry point for the reason the `Provisioning:` line does. A globally installed `canon` resolves to the main checkout and would report main's skills against this branch. If the command fails, treat the census as holding nothing. Rules 2 through 4 then match nothing, internal skills still resolve at rule 5, and every plugin skill falls through to the prompt.
 
 For each changed skill path under `claude/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`, apply the first matching rule:
 
@@ -118,14 +118,14 @@ Print one block to chat:
 Sandbox check
 
 Provisioning:
-  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
+  CANON_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
 
 Queued (run manually after testing the current scenario):
-  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
-  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
+  CANON_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
+  CANON_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
 
 Headless verification (this session runs it):
-  scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>" <arm>
+  scripts/sandbox/run.sh <category>:<rest> "/canon:<skill-name>" <arm>
 
 Interactive re-test (copied to clipboard):
 cd <current-root>/.sandbox && claude --plugin-dir <current-root>/claude --model sonnet
@@ -144,7 +144,7 @@ Rules for the block:
 - An `EXEMPT` row prints its census `reason` as the hint, which is the whole value of reading the file. Print the reason verbatim rather than summarizing it, since a reader overturns an exemption by disagreeing with its stated grounds.
 - A row carrying a census verdict or `OUTSIDE-CENSUS` shows `none` in the scenario column. Five statuses now resolve to no scenario, so the label is what distinguishes them and the column no longer does.
 - For plugin skills, use `<skill-name>` as the item path and append `# /<skill-name>` as the invocation hint. For scripts under `scripts/`, use the path relative to the repo root (`scripts/core/regen-hero.sh`) and omit the hint. For `src/**` items, append `# Closest e2e: bun run check:install` as the hint.
-- `Provisioning:` shows exactly one scenario, the next to provision. Always invoke the local script, never `aitk sandbox`. `aitk` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
+- `Provisioning:` shows exactly one scenario, the next to provision. Always invoke the local script, never `canon sandbox`. `canon` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
 - `.sandbox/` is a single directory per repo root. Provisioning a second scenario overwrites the first, so the skill provisions one at a time and queues the rest.
 - `Queued:` lists every remaining distinct scenario as a full `manage-sandbox.sh` command, one per line, so the user can copy directly. Omit the section when there is only one scenario.
 - Omit `Provisioning:` and `Queued:` when no pairing carries a scenario, since there is nothing to provision.
@@ -152,7 +152,7 @@ Rules for the block:
 - Print the interactive re-test command flush-left as a single chained line (`cd … && claude --plugin-dir … --model sonnet`) so the user can paste it into any terminal
   - The `--plugin-dir` points at `<current-root>/claude` so unchanged sub-skills (those not dev-injected) stay available to chained skills like `claude-autoship`. Dev-injected skills under the sandbox's `.claude/skills/` still take priority.
 - Pipe the same chained command to the clipboard using the first available tool: `wl-copy`, `xclip -selection clipboard`, `pbcopy`, then `clip.exe`. If none are present, drop the `(copied to clipboard)` suffix from the heading and continue silently.
-- After the `Interactive re-test:` block, print one line: `Note: in the interactive session, invoke skills as /<skill-name>, not /aitk:<skill-name>. The project-scoped copy takes priority.` The headless prompt in Step 6 uses the qualified form for the opposite reason, so keep the two lines distinct.
+- After the `Interactive re-test:` block, print one line: `Note: in the interactive session, invoke skills as /<skill-name>, not /canon:<skill-name>. The project-scoped copy takes priority.` The headless prompt in Step 6 uses the qualified form for the opposite reason, so keep the two lines distinct.
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no Step 2 mapping pointed to. Omit the section when empty.
 
 If every pairing is `ALIGNED` or carries no scenario, prefix the block with `✅ All changed items have paired scenario edits.`. Still print the full block so the re-test command is available.
@@ -174,16 +174,16 @@ Verify the `Provisioning:` scenario through `scripts/sandbox/run.sh`, which driv
 Derive the arguments from the Step 2 mapping:
 
 - Target: `<category>:<rest>` from the scenario path `scripts/sandbox/<category>/<rest>.sh`
-- Prompt: `/aitk:<skill-name>` with no arguments. The qualified form resolves through `--plugin-dir` whether or not the branch changed the skill, and a bare `/<skill-name>` resolves only for the ones the sandbox injects.
+- Prompt: `/canon:<skill-name>` with no arguments. The qualified form resolves through `--plugin-dir` whether or not the branch changed the skill, and a bare `/<skill-name>` resolves only for the ones the sandbox injects.
 - Arm: required for a multi-arm scenario, omitted for a single-arm one
 
 ```bash
-scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>" <arm>
+scripts/sandbox/run.sh <category>:<rest> "/canon:<skill-name>" <arm>
 ```
 
 Resolve the arm at Step 4, before the report prints. Grep the scenario file for `select_or_route_scenario`, which is what a multi-arm scenario calls. Roughly half the catalog declares it, so treat the multi-arm case as ordinary rather than exceptional.
 
-A multi-arm scenario run with no arm never reaches the skill session. `run.sh` forwards the arm to `manage-sandbox.sh`, which sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE` only when it receives one, so an empty arm leaves both unset and `select_or_route_scenario` falls through to the picker. The picker aborts on a missing TTY, which is every agent-driven run, and it blocks on input when a TTY is attached. Passing `AITK_NON_INTERACTIVE=1` to dodge that is worse than not running, since the picker then takes the first arm and the verdict reports an arm nobody chose.
+A multi-arm scenario run with no arm never reaches the skill session. `run.sh` forwards the arm to `manage-sandbox.sh`, which sets `SANDBOX_SCENARIO` and `CANON_NON_INTERACTIVE` only when it receives one, so an empty arm leaves both unset and `select_or_route_scenario` falls through to the picker. The picker aborts on a missing TTY, which is every agent-driven run, and it blocks on input when a TTY is attached. Passing `CANON_NON_INTERACTIVE=1` to dodge that is worse than not running, since the picker then takes the first arm and the verdict reports an arm nobody chose.
 
 Do not guess the arm from the scenario file. Ask the user: `Arm for <category>:<rest>? (arm name, or "none" to skip verification)`. Accept `none` as the `no-mechanism` gate. This mirrors the question Step 2a already asks when a skill maps to no scenario.
 

@@ -21,7 +21,7 @@ Run these in parallel from `pwd`:
 - Read `CLAUDE.md`
 - `ls .claude/rules/ 2>/dev/null`: existing rule subdirs and numbers for placement
 - `ls .claude/context/ 2>/dev/null`: existing context entries for conflict checks
-- `aitk claude seeds list --json 2>/dev/null`: the base seed set. Read the `CLAUDE.md` entry's `content` as the always-load baseline. Skip this input when `aitk` is not installed.
+- `canon claude seeds list --json 2>/dev/null`: the base seed set. Read the `CLAUDE.md` entry's `content` as the always-load baseline. Skip this input when `canon` is not installed.
 
 ## Step 2: classify each section
 
@@ -68,7 +68,7 @@ Print one grouped proposal block. Omit empty groups.
 
 Scaffold each rule with create-rule, which carries the rule standard.
 Follow the context standard for each new context entry.
-Run aitk indexes regen after adding context entries.
+Run canon indexes regen after adding context entries.
 ```
 
 If every section classified as always-load, output: `✅ CLAUDE.md holds only always-load behavior. No moves proposed.`

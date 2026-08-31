@@ -65,7 +65,7 @@ const LINE_SUFFIX = /:\d+(?:-\d+)?$/
  *
  * Whitespace separates a backticked command from a backticked path, and it is
  * the whole answer to one of the four observed false-positive classes:
- * `aitk markdown audit .claude/rules --json` carries a slash and names no file.
+ * `canon markdown audit .claude/rules --json` carries a slash and names no file.
  * Angle brackets answer a second, since `.claude/plans/feature-<slug>.md`
  * describes a shape rather than naming a file. A glob and a caret describe a
  * shape too, `^src/` being a grep pattern one body spelled in Key Changes, and

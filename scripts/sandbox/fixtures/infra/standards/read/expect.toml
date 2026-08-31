@@ -1,5 +1,5 @@
-# What `aitk standards skill` leaves behind when it runs from a target holding
-# no standards folder of its own. Read by `aitk sandbox check`. Patterns use TOML
+# What `canon standards skill` leaves behind when it runs from a target holding
+# no standards folder of its own. Read by `canon sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 #
 # This is the arm for the last root in `src/standards/read.ts`, the package
@@ -12,7 +12,7 @@ paths = ["install/read-frame.log", "install/read-body.md"]
 
 # The premise, asserted rather than assumed from the banner. A resolve that
 # answered from the authoring root would report the same document and a content
-# pin on the body alone would pass, so the absence is what makes the `<aitk>`
+# pin on the body alone would pass, so the absence is what makes the `<canon>`
 # prefix below mean the package corpus won rather than a project copy.
 #
 # `.claude/standards` is named alongside it because a target left holding one
@@ -29,13 +29,13 @@ manual = [
   "No shipped skill body invokes this verb, so the arm covers the command rather than a caller. Semantic: an assertion over one sandbox cannot see the catalog it is not measuring",
 ]
 
-# The winning root. `<aitk>` is the one label no project path can produce, since
+# The winning root. `<canon>` is the one label no project path can produce, since
 # `standardRoots` spells the other two as `.claude/standards` and `standards`,
 # and both are relative to a root a report could join. A pattern naming the
 # standard without the prefix passes whichever root answered.
 [[content]]
 path = "install/read-frame.log"
-pattern = '<aitk>/standards/skill\.md'
+pattern = '<canon>/standards/skill\.md'
 
 # The read returned the document rather than the miss path, which prints a
 # warning and the catalog to stderr and writes nothing to stdout.

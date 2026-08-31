@@ -11,13 +11,13 @@ A seventh reads a measure and reports it. `## Audit set` at the end of this entr
 
 ## What sequences them
 
-`bun run check` resolves to `aitk gate run` and `bun run check:ci` to `aitk gate run --all --no-write`. Three things live in `src/gate/`: the stage table in `stages.ts`, the changed-file scoping and the run loop in `sequencer.ts`, and every threshold comparison in `measures.ts`. Each individual check stayed the script or the verb it already was, which is the whole line the move drew. A check whose behavior changed while its sequencing moved would make any regression impossible to attribute, and the checks are the part with no reported defects.
+`bun run check` resolves to `canon gate run` and `bun run check:ci` to `canon gate run --all --no-write`. Three things live in `src/gate/`: the stage table in `stages.ts`, the changed-file scoping and the run loop in `sequencer.ts`, and every threshold comparison in `measures.ts`. Each individual check stayed the script or the verb it already was, which is the whole line the move drew. A check whose behavior changed while its sequencing moved would make any regression impossible to attribute, and the checks are the part with no reported defects.
 
 Three properties are load bearing and each has a case in `src/gate/sequencer.test.ts`. Stages run in table order. A stage that finds a fact halts the run, which is what makes a regenerate-then-assert round reveal one surface at a time. A scoped stage that the changed set carries nothing for says so rather than printing a clean line.
 
 A port of this gate is verified by diffing its own frame against the frame the surface it replaced printed, over the same tree. That is what makes borrowed output worth piping on the pass side as well as the failure side, since a stage line carrying an empty capture is still a line the two runs have to agree on. Measured on 2026-08-31 across two runs, a clean tree and a tree carrying a seeded banned word, where 926 of 930 lines matched and the four that moved were the added command banner and a closed frame the shell script exited without printing.
 
-A stage is a list of checks, and a check is one of four kinds. A `command` is any binary. A `cli` runs this checkout's own `src/cli.ts`, since a globally installed `aitk` resolves to the main checkout whatever worktree is running. A `drift` regenerates nothing and asserts a pathspec against the index and the untracked set. A `measure` is a reading whose verdict is a comparison rather than an exit code, which covers Sandbox coverage, Manifest validation, Hero provenance, Standard success criteria, and Audit set below. Skill paths and Seed independence stay `command` checks, since a script that exits non-zero on a finding needs no comparison around it.
+A stage is a list of checks, and a check is one of four kinds. A `command` is any binary. A `cli` runs this checkout's own `src/cli.ts`, since a globally installed `canon` resolves to the main checkout whatever worktree is running. A `drift` regenerates nothing and asserts a pathspec against the index and the untracked set. A `measure` is a reading whose verdict is a comparison rather than an exit code, which covers Sandbox coverage, Manifest validation, Hero provenance, Standard success criteria, and Audit set below. Skill paths and Seed independence stay `command` checks, since a script that exits non-zero on a finding needs no comparison around it.
 
 Every check is an argument vector. The script this replaced held each one as text and handed it to `eval`, which made every stage a quoting question, and nothing in the set turned out to need a shell once the drift assertion stopped being one. What that closes is stated under `## Quoting a pathspec changes what it matches` in `.claude/context/scripts/core.md`.
 
@@ -31,7 +31,7 @@ The split is the sequencer's rather than each measure's. A measure returns the r
 
 ## Sandbox coverage
 
-`aitk sandbox coverage` reports which scenarios declare expectations, and until this stage existed the number moved only when someone thought to run it. The Sandbox coverage stage reads the same report and gates on it, so a scenario added with no expectation fails a push rather than sitting undeclared.
+`canon sandbox coverage` reports which scenarios declare expectations, and until this stage existed the number moved only when someone thought to run it. The Sandbox coverage stage reads the same report and gates on it, so a scenario added with no expectation fails a push rather than sitting undeclared.
 
 The gate is `SANDBOX_UNDECLARED_CEILING` in `src/gate/measures.ts`, an absolute count of scenarios declaring nothing, pinned at what a clean run reported when the stage landed. A floor under the declared count was the obvious shape and it passes the case the stage exists for, since adding an unarmed scenario leaves the declared count where it was. A ratio moves when a scenario is legitimately deleted. The ceiling does neither: deleting an unarmed scenario lowers it, and deleting an armed one leaves it alone.
 
@@ -61,7 +61,7 @@ The banned pattern is a bare `wiki/` with no exemption for a body that has a rea
 
 The Hero stage regenerates `assets/hero.html` and asserts no drift on it, then runs `assert_hero_stamp` over the image beside it. The drift assert cannot reach the PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
 
-`aitk capture` writes `assets/hero.stamp` from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both files where they sit on disk and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
+`canon capture` writes `assets/hero.stamp` from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both files where they sit on disk and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
 
 Both halves clear on a staged regeneration rather than on a committed one. `assert_no_drift` reads `git diff --exit-code` against the working tree and `git ls-files --others`, so `git add` of the three files satisfies it while nothing is committed, and `file_sha256` reads the path rather than a committed blob. A branch that regenerates the markup, runs the capture, and stages the triple therefore passes `bun run check` before its commit exists, which is what lets a ship chain verify ahead of the step that commits. Measured 2026-08-14.
 
@@ -75,7 +75,7 @@ Each digest covers a whole file rather than the five counts inside it. A templat
 
 The counts are regenerated from the standards and skills trees and from the CLI registration block, so any branch adding a standard, a skill, or a command group moves `assets/hero.html` whether or not it meant to touch the frame. Clearing the stage then costs a capture and all three files in the commit, which puts that branch in collision with any track holding `assets/` however its plan drew the file set. Read the collision off this stage rather than off the plan.
 
-The third source is the one a plan is least likely to predict, since the commands expose no `--json` catalog and the figure comes through `aitk gov counts`, which parses the registration list in `src/cli.ts` directly. Registering `aitk autoship` on 2026-08-31 took the count from 35 to 36 and cost that branch the capture and the staged triple against a plan that named neither.
+The third source is the one a plan is least likely to predict, since the commands expose no `--json` catalog and the figure comes through `canon gov counts`, which parses the registration list in `src/cli.ts` directly. Registering `canon autoship` on 2026-08-31 took the count from 35 to 36 and cost that branch the capture and the staged triple against a plan that named neither.
 
 `file_sha256` refuses on a machine carrying neither `sha256sum` nor `shasum`, and it refuses on stderr. Every caller reads it through a command substitution that captures stdout into the digest, so a message written there is swallowed and the stage reports a mismatch against a blank value, which names the image as wrong when the checker is what could not run.
 
@@ -85,11 +85,11 @@ Silence is the script's own doing rather than the stage's: `catalog()` sends eve
 
 ## Seed independence
 
-The Seed independence stage runs `scripts/core/check-seed-independence.sh`, which walks the `.md` files under every seed root and fails on the literal token `aitk`. Seed prose installs into a scaffolded project and is read there as instruction about that project, so a line naming this repository's CLI hands a target a verb it may not be able to run and tells the reader the file is about somewhere else.
+The Seed independence stage runs `scripts/core/check-seed-independence.sh`, which walks the `.md` files under every seed root and fails on the literal token `canon`. Seed prose installs into a scaffolded project and is read there as instruction about that project, so a line naming this repository's CLI hands a target a verb it may not be able to run and tells the reader the file is about somewhere else.
 
 Banning a token is blunt, and the alternative is a judgment no stage can make. The only false-positive class is a fenced example naming the toolkit on purpose, which no seed carries, and a rule admitting fenced mentions would parse markdown to answer a question the corpus has never asked.
 
-The match is a bare substring rather than a word boundary, and `grep -w` does not narrow it. A slash is a non-word character, so `grep -w aitk` still matches `.claude/aitk/config.json` with a boundary sitting either side. The bare substring is deliberate rather than unrefined, and the stage prefers a false positive to a missed citation because it gates.
+The match is a bare substring rather than a word boundary, and `grep -w` does not narrow it. A slash is a non-word character, so `grep -w canon` still matches `.claude/canon/config.json` with a boundary sitting either side. The bare substring is deliberate rather than unrefined, and the stage prefers a false positive to a missed citation because it gates.
 
 ### What the walk covers
 
@@ -107,15 +107,15 @@ Three outcomes separate a clean walk from one that measured nothing, matching `c
 
 The Standard success criteria stage runs `bun src/cli.ts standards audit --arrivals-only`, which fails a push when a standard new to the branch carries no `## Success criterion` section. It is scoped to arrival rather than to the corpus, since `standards/standard.md` forbids writing the section into an existing standard outside the change that exercises it, and a gate over the corpus would fail every push until someone closed all 26 known gaps at once, which is the sweep that rule exists to prevent.
 
-`--arrivals-only` prints nothing when every arriving standard carries the section, matching the Skill requirements stage's own silent-pass shape one domain over. The bare `aitk standards audit` a session runs by hand instead reports the whole corpus, so the same verb serves the gate and the reader without a second command to keep in sync.
+`--arrivals-only` prints nothing when every arriving standard carries the section, matching the Skill requirements stage's own silent-pass shape one domain over. The bare `canon standards audit` a session runs by hand instead reports the whole corpus, so the same verb serves the gate and the reader without a second command to keep in sync.
 
 ## Audit set
 
-The Audit set stage runs `aitk audits run --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every audit and the growth against `.claude/audits/baseline.json`.
+The Audit set stage runs `canon audits run --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every audit and the growth against `.claude/audits/baseline.json`.
 
 Growth reports for the reason the ceiling above gates. The standards behind the largest counts set no hard cap, so a rising number is a fact about the corpus and a judgment about whether it matters, and a push failing on a judgment teaches a reader to route around the stage.
 
-The baseline goes stale on `main` itself, so the branch report is not the reading a session wants. A branch inherits whatever growth `main` already carries and the stage attributes all of it to the run in front of the reader. Separating the two means running `bun src/cli.ts audits run` in the main worktree and diffing the two reports, which is the invocation the `auditSet` measure in `src/gate/measures.ts` uses. Reach for the source rather than the binary, since a hand-run `aitk audits run` reads whatever version is installed and `0.106.0` carries no `audits` command at all. Measured 2026-08-20 against baseline `bd2be81a` on `feat/intake-origin-report`, which reported five grown measures before its own fix landed and four of them read identically on `main`.
+The baseline goes stale on `main` itself, so the branch report is not the reading a session wants. A branch inherits whatever growth `main` already carries and the stage attributes all of it to the run in front of the reader. Separating the two means running `bun src/cli.ts audits run` in the main worktree and diffing the two reports, which is the invocation the `auditSet` measure in `src/gate/measures.ts` uses. Reach for the source rather than the binary, since a hand-run `canon audits run` reads whatever version is installed and `0.106.0` carries no `audits` command at all. Measured 2026-08-20 against baseline `bd2be81a` on `feat/intake-origin-report`, which reported five grown measures before its own fix landed and four of them read identically on `main`.
 
 A branch touching few files answers the same question without a second checkout. Restore those paths to the base commit with `git checkout <base> -- <paths>`, re-run `bun src/cli.ts audits run`, capture every growth line, then restore the branch with `git checkout HEAD -- <paths>`. Commit the branch's own work first, since the second restore discards anything uncommitted.
 
@@ -145,7 +145,7 @@ The `drift` check in `src/gate/sequencer.ts` pairs the diff with `git ls-files -
 
 ### The forced staging narrows the next review
 
-`claude-review` Step 2 uses `git diff --staged` as its scope whenever that is non-empty, so a review fired after a check reads only the regeneration. On one branch the staged set was three regenerated files while the branch carried fifteen, including every `src/` file the run existed to review. Both behaviors are documented and correct on their own, so nothing reports the gap, and it compounds when the base equals HEAD, which is every autoship run before its first commit. Check whether the staged set matches the branch before invoking a review, and say which scope was read. Nothing about this moved with the sequencing: the staging is the reader's own and the write side of the format stage is still what rewrites files under them, now reached as `aitk gate run` rather than `--no-write`.
+`claude-review` Step 2 uses `git diff --staged` as its scope whenever that is non-empty, so a review fired after a check reads only the regeneration. On one branch the staged set was three regenerated files while the branch carried fifteen, including every `src/` file the run existed to review. Both behaviors are documented and correct on their own, so nothing reports the gap, and it compounds when the base equals HEAD, which is every autoship run before its first commit. Check whether the staged set matches the branch before invoking a review, and say which scope was read. Nothing about this moved with the sequencing: the staging is the reader's own and the write side of the format stage is still what rewrites files under them, now reached as `canon gate run` rather than `--no-write`.
 
 ### A fence is exempt from the prose gate and not from the spell gate
 

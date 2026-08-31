@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-pr-review` run leaves behind on the
-# reviewer-request arm. Read by `aitk sandbox check`. Patterns use TOML
+# What a correct `/canon:claude-pr-review` run leaves behind on the
+# reviewer-request arm. Read by `canon sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 #
 # The diff is clean (the handler already validates the title), so the only

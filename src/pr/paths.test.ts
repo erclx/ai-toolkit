@@ -98,7 +98,7 @@ describe('extractKeyChangePaths', () => {
   it('should drop a backticked command carrying a slash (#1254)', () => {
     expect(
       pathsOf(
-        "- The orchestrator pins the wave and checks each target's branch with `aitk sessions list --branch chore/agents --repository <clone>`.",
+        "- The orchestrator pins the wave and checks each target's branch with `canon sessions list --branch chore/agents --repository <clone>`.",
       ),
     ).toEqual([])
   })
@@ -114,7 +114,7 @@ describe('extractKeyChangePaths', () => {
   it('should drop a file named for context after the claim (#1265)', () => {
     expect(
       pathsOf(
-        '- Add `aitk autoship classify` in `src/commands/autoship.ts`, following `src/commands/labels.ts` for the frame, the stream split, and the exit ladder.',
+        '- Add `canon autoship classify` in `src/commands/autoship.ts`, following `src/commands/labels.ts` for the frame, the stream split, and the exit ladder.',
       ),
     ).toEqual(['src/commands/autoship.ts'])
   })
@@ -138,7 +138,7 @@ describe('extractKeyChangePaths', () => {
   it('should drop a bare top-level folder nobody claims to have rewritten (#1250)', () => {
     expect(
       pathsOf(
-        '- Rename the eight internal skills under `.claude/skills/` from `aitk-<domain>` to `internal-<domain>`, matching the `internal/` folder that already marks the boundary.',
+        '- Rename the eight internal skills under `.claude/skills/` from `canon-<domain>` to `internal-<domain>`, matching the `internal/` folder that already marks the boundary.',
       ),
     ).toEqual(['.claude/skills/'])
   })

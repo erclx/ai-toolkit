@@ -1,5 +1,5 @@
 # What a correct `/claude-teach promote` run leaves behind.
-# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
 # The step proposes and waits, so the arm carries the confirmation in the

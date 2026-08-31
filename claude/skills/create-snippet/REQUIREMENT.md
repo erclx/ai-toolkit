@@ -11,7 +11,7 @@ Without this skill, a snippet is drafted the way any other markdown file is draf
 
 The write surface is the second failure. The toolkit authors at `snippets/` and a target project may still hold a stale `.claude/snippets/` copy from before that domain's install channel retired, so a session picks whichever folder it noticed first. A toolkit snippet written into the consumed copy fails the drift assertion that regenerates that folder. A snippet written there in a target project is correct and looks identical, which is why the surface has to be resolved from what the project has rather than guessed.
 
-Inside the project surface, a third failure sits one level deeper. A project-authored snippet sharing a name with a toolkit one used to be indistinguishable from it, back when `aitk snippets sync` walked that folder and could not tell which side owned the file. That verb retired with the domain's install channel, so nothing reads ownership by location there any more, but the `project/` subfolder still separates the two by eye, which is worth keeping even with no sync left to protect from.
+Inside the project surface, a third failure sits one level deeper. A project-authored snippet sharing a name with a toolkit one used to be indistinguishable from it, back when `canon snippets sync` walked that folder and could not tell which side owned the file. That verb retired with the domain's install channel, so nothing reads ownership by location there any more, but the `project/` subfolder still separates the two by eye, which is worth keeping even with no sync left to protect from.
 
 ## Must
 
@@ -35,5 +35,5 @@ Inside the project surface, a third failure sits one level deeper. A project-aut
 
 - Editing a snippet that already exists
 - A standard, which `create-standard` owns
-- Installing and syncing the snippets the toolkit ships, which the `aitk snippets` commands own
+- Installing and syncing the snippets the toolkit ships, which the `canon snippets` commands own
 - What a snippet is and how it is invoked, which the bundled snippet reference states

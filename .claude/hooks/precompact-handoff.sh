@@ -49,7 +49,7 @@ mkdir -p "$marker_dir" 2>/dev/null || exit 0
 cat >&2 <<'MSG'
 Compaction blocked once so the handoff is written first. A compaction keeps conclusions and drops the reasoning that produced them, and this session is the only one still holding that reasoning.
 
-Run the aitk:session-map skill, then run /compact again. This block fires once per session, so the next /compact proceeds whether or not a map was written.
+Run the canon:session-map skill, then run /compact again. This block fires once per session, so the next /compact proceeds whether or not a map was written.
 
 Where this session holds no reasoning a reader could not get faster from git, say so and write nothing. A map padded from the tree is worse than no map, because the next session trusts it.
 MSG

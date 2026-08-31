@@ -101,8 +101,8 @@ export function register(program: Command): void {
         'moves no ordinal, since dropping it hides the folder needing a fix.',
         '',
         'Examples:',
-        '  aitk teach list',
-        '  aitk teach list regular-expressions --json',
+        '  canon teach list',
+        '  canon teach list regular-expressions --json',
         '',
       ].join('\n'),
     )
@@ -146,7 +146,7 @@ export function register(program: Command): void {
         'already covers is refused, since a second one forks the records.',
         '',
         'Examples:',
-        '  aitk teach open regular-expressions --subject "Reading and writing regular expressions" \\',
+        '  canon teach open regular-expressions --subject "Reading and writing regular expressions" \\',
         '    --starting-point "Comfortable with the shell, has never written a group" \\',
         '    --success "Write a pattern matching a date" --success "Explain a backreference"',
         '',
@@ -191,8 +191,8 @@ export function register(program: Command): void {
         'repeated, because two entries split what rests on one source.',
         '',
         'Examples:',
-        '  aitk teach resource regular-expressions --read "MDN regular expressions=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions"',
-        '  aitk teach resource regular-expressions --lead "RE2 syntax=https://github.com/google/re2/wiki/Syntax" --json',
+        '  canon teach resource regular-expressions --read "MDN regular expressions=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions"',
+        '  canon teach resource regular-expressions --lead "RE2 syntax=https://github.com/google/re2/wiki/Syntax" --json',
         '',
       ].join('\n'),
     )
@@ -233,7 +233,7 @@ export function register(program: Command): void {
         'the subject has moved under is a revision of the entry it has.',
         '',
         'Examples:',
-        '  aitk teach glossary regular-expressions --term "capture group=A parenthesised part of a pattern whose match is kept" --first-seen 0002-groups.html',
+        '  canon teach glossary regular-expressions --term "capture group=A parenthesised part of a pattern whose match is kept" --first-seen 0002-groups.html',
         '',
       ].join('\n'),
     )
@@ -269,7 +269,7 @@ export function register(program: Command): void {
         'cannot settle into the first slot.',
         '',
         'Examples:',
-        '  aitk teach lesson regular-expressions --slug capture-groups --questions 3 --json',
+        '  canon teach lesson regular-expressions --slug capture-groups --questions 3 --json',
         '',
       ].join('\n'),
     )
@@ -342,7 +342,7 @@ async function runOpen(
 
   if (!opts.subject) {
     return reportRefusal(
-      'aitk teach open',
+      'canon teach open',
       badInput('No subject. Pass --subject <line>.'),
       emitJson,
       process.cwd(),
@@ -351,7 +351,7 @@ async function runOpen(
 
   if (!opts.startingPoint) {
     return reportRefusal(
-      'aitk teach open',
+      'canon teach open',
       badInput(
         'No starting point. Pass --starting-point <text>, so difficulty has a floor.',
       ),
@@ -386,7 +386,7 @@ async function runResource(
 
   if (raw.length === 0) {
     return reportRefusal(
-      'aitk teach resource',
+      'canon teach resource',
       badInput('No source given. Pass --read or --lead as <title>=<url>.'),
       emitJson,
       process.cwd(),
@@ -397,7 +397,7 @@ async function runResource(
 
   if ('invalid' in parsed) {
     return reportRefusal(
-      'aitk teach resource',
+      'canon teach resource',
       badInput(
         `Not a title and url: ${parsed.invalid.join(', ')}`,
         parsed.invalid,
@@ -432,7 +432,7 @@ async function runGlossary(
 
   if (raw.length === 0) {
     return reportRefusal(
-      'aitk teach glossary',
+      'canon teach glossary',
       badInput('No term given. Pass --term <term>=<definition>.'),
       emitJson,
       process.cwd(),
@@ -443,7 +443,7 @@ async function runGlossary(
 
   if ('invalid' in parsed) {
     return reportRefusal(
-      'aitk teach glossary',
+      'canon teach glossary',
       badInput(
         `Not a term and definition: ${parsed.invalid.join(', ')}`,
         parsed.invalid,
@@ -464,7 +464,7 @@ async function runGlossary(
 
   if (duplicated.length > 0) {
     return reportRefusal(
-      'aitk teach glossary',
+      'canon teach glossary',
       badInput(`Two definitions for ${[...new Set(duplicated)].join(', ')}.`),
       emitJson,
       process.cwd(),
@@ -488,7 +488,7 @@ async function runLesson(
 
   if (!opts.slug) {
     return reportRefusal(
-      'aitk teach lesson',
+      'canon teach lesson',
       badInput('No lesson slug. Pass --slug <kebab>.'),
       emitJson,
       process.cwd(),
@@ -497,7 +497,7 @@ async function runLesson(
 
   if (!opts.questions) {
     return reportRefusal(
-      'aitk teach lesson',
+      'canon teach lesson',
       badInput('No question count. Pass --questions <n>.'),
       emitJson,
       process.cwd(),
@@ -558,7 +558,7 @@ function reportList(
   root: string,
 ): number {
   if (!outcome.ok)
-    return reportRefusal('aitk teach list', outcome, emitJson, root)
+    return reportRefusal('canon teach list', outcome, emitJson, root)
 
   if (emitJson) {
     process.stdout.write(
@@ -572,7 +572,7 @@ function reportList(
     return 0
   }
 
-  intro('aitk teach list')
+  intro('canon teach list')
   logStep(outcome.workspaces.length > 0 ? 'Workspaces' : 'No workspaces')
 
   for (const workspace of outcome.workspaces) logInfo(describe(workspace))
@@ -601,7 +601,7 @@ function reportWorkspace(
   root: string,
 ): number {
   if (!outcome.ok)
-    return reportRefusal('aitk teach list', outcome, emitJson, root)
+    return reportRefusal('canon teach list', outcome, emitJson, root)
 
   const workspace = outcome.workspace
 
@@ -610,7 +610,7 @@ function reportWorkspace(
     return 0
   }
 
-  intro('aitk teach list')
+  intro('canon teach list')
   logStep(workspace.slug)
   logInfo(`${workspace.title ?? 'no title'}, opened ${workspace.opened ?? '?'}`)
   logInfo(workspace.path)
@@ -648,7 +648,7 @@ function reportOpen(
   root: string,
 ): number {
   if (!outcome.ok)
-    return reportRefusal('aitk teach open', outcome, emitJson, root)
+    return reportRefusal('canon teach open', outcome, emitJson, root)
 
   if (emitJson) {
     process.stdout.write(
@@ -663,7 +663,7 @@ function reportOpen(
     return 0
   }
 
-  intro('aitk teach open')
+  intro('canon teach open')
   logStep('Opened')
   logInfo(outcome.slug)
   for (const file of outcome.created) logAdd(file)
@@ -678,7 +678,7 @@ function reportResource(
   root: string,
 ): number {
   if (!outcome.ok) {
-    return reportRefusal('aitk teach resource', outcome, emitJson, root)
+    return reportRefusal('canon teach resource', outcome, emitJson, root)
   }
 
   if (emitJson) {
@@ -695,7 +695,7 @@ function reportResource(
     return 0
   }
 
-  intro('aitk teach resource')
+  intro('canon teach resource')
   logStep('Recorded')
   for (const source of outcome.read) logInfo(`read: ${source.title}`)
   for (const source of outcome.leads) logInfo(`lead: ${source.title}`)
@@ -711,7 +711,7 @@ function reportGlossary(
   root: string,
 ): number {
   if (!outcome.ok) {
-    return reportRefusal('aitk teach glossary', outcome, emitJson, root)
+    return reportRefusal('canon teach glossary', outcome, emitJson, root)
   }
 
   if (emitJson) {
@@ -727,7 +727,7 @@ function reportGlossary(
     return 0
   }
 
-  intro('aitk teach glossary')
+  intro('canon teach glossary')
   logStep('Defined')
   for (const term of outcome.defined) logInfo(term.term)
   logAdd(relative(root, outcome.path))
@@ -742,7 +742,7 @@ function reportLesson(
   root: string,
 ): number {
   if (!outcome.ok) {
-    return reportRefusal('aitk teach lesson', outcome, emitJson, root)
+    return reportRefusal('canon teach lesson', outcome, emitJson, root)
   }
 
   if (emitJson) {
@@ -763,7 +763,7 @@ function reportLesson(
     return 0
   }
 
-  intro('aitk teach lesson')
+  intro('canon teach lesson')
   logStep('Lesson')
   logInfo(outcome.lesson)
 

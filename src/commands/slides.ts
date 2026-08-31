@@ -95,7 +95,7 @@ function parseVariant(value: string | undefined): Variant | undefined {
 }
 
 function resolveMirror(value: string | undefined): string | undefined {
-  const mirror = value ?? process.env.AITK_SLIDES_MIRROR
+  const mirror = value ?? process.env.CANON_SLIDES_MIRROR
   return mirror ? resolve(process.cwd(), mirror) : undefined
 }
 

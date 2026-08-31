@@ -34,7 +34,7 @@ export interface MeasureContext {
   /** Any binary, run from the project root. */
   readonly run: RunCommand
   /**
-   * This checkout's own CLI rather than whatever `aitk` resolves to on PATH. A
+   * This checkout's own CLI rather than whatever `canon` resolves to on PATH. A
    * globally installed binary resolves to the main checkout no matter which
    * worktree is running, so a gate reading through it would measure the wrong
    * tree and report a pass over a branch it never opened.
@@ -70,11 +70,11 @@ const warn = (text: string): Emission => ({ kind: 'warn', text })
 const output = (text: string): Emission => ({ kind: 'output', text })
 
 /**
- * Rules no stack reaches, sorted the way `aitk gov list` emits them.
+ * Rules no stack reaches, sorted the way `canon gov list` emits them.
  * `260-shadcn` and `320-tanstack-query` are opt-in libraries a project may not
  * want. `505-at-references` used to sit here too, shipping with no stack on
  * purpose since a rule under `claude/` would reach every base consumer through
- * the folder-whole entry there. Its own install channel, `aitk snippets
+ * the folder-whole entry there. Its own install channel, `canon snippets
  * install`, retired with nothing left to deliver it, so `base` now carries
  * `snippets` as a folder-whole entry of its own and the rule reaches every base
  * consumer through that instead.
@@ -86,7 +86,7 @@ const output = (text: string): Emission => ({ kind: 'output', text })
 export const GOV_EXPECTED_UNREFERENCED = ['260-shadcn', '320-tanstack-query']
 
 /**
- * Scenarios declaring no expectation, taken from `aitk sandbox coverage`
+ * Scenarios declaring no expectation, taken from `canon sandbox coverage`
  * against a clean tree. Raising it is a deliberate edit that says which
  * scenario shipped unarmed and why.
  */
@@ -95,12 +95,12 @@ export const SANDBOX_UNDECLARED_CEILING = 47
 /**
  * The retained counts the audit stage compares each run against. Spelled here
  * rather than derived, because this stage only ever names the file in a remedy
- * a reader has to be able to open, and `aitk audits run` owns writing it.
+ * a reader has to be able to open, and `canon audits run` owns writing it.
  */
 export const AUDITS_BASELINE = '.claude/audits/baseline.json'
 
 export const HERO_STAMP_FAILURE =
-  'The hero set disagrees with the stamp written when the image was captured. Run aitk capture assets/hero.html and commit all three files together.'
+  'The hero set disagrees with the stamp written when the image was captured. Run canon capture assets/hero.html and commit all three files together.'
 
 function parseJson(payload: string): unknown {
   try {
@@ -342,12 +342,12 @@ export const standardCriteria: Measure = async (ctx) => {
     failure:
       run.exitCode === 2
         ? 'A standard new to this branch carries no ## Success criterion section. Run bun src/cli.ts standards audit.'
-        : 'aitk standards audit could not read which standards arrived on this branch. Run bun src/cli.ts standards audit --json to see why.',
+        : 'canon standards audit could not read which standards arrived on this branch. Run bun src/cli.ts standards audit --json to see why.',
   }
 }
 
 /**
- * `aitk sandbox coverage` moves only when a person runs it, so a scenario added
+ * `canon sandbox coverage` moves only when a person runs it, so a scenario added
  * with no expectation ships unnoticed.
  *
  * The gate is an absolute count of undeclared scenarios rather than a ratio or
@@ -398,7 +398,7 @@ export const sandboxCoverage: Measure = async (ctx) => {
   }
 }
 
-/** The flat scalars `aitk audits run --json` publishes for a caller to read. */
+/** The flat scalars `canon audits run --json` publishes for a caller to read. */
 interface AuditSummary {
   readonly grown?: number
   readonly shrunk?: number
@@ -592,7 +592,7 @@ async function collectPluginManifests(ctx: MeasureContext): Promise<string[]> {
  * the markup and never running the capture would pass every stage while
  * shipping an image with the old counts.
  *
- * `aitk capture` records a digest of the markup it rendered and one of the image
+ * `canon capture` records a digest of the markup it rendered and one of the image
  * it wrote, so this reads provenance rather than timing. Comparing the commit
  * that last touched each file passes any pair that moved together whatever the
  * two files hold, which is what a binary conflict resolved by taking either

@@ -14,7 +14,7 @@ Read these files in parallel:
 
 ## Guards
 
-- If `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is not present, stop: `❌ skill.md standard not found. Reinstall the aitk plugin.`
+- If `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is not present, stop: `❌ skill.md standard not found. Reinstall the canon plugin.`
 
 ## Steps
 

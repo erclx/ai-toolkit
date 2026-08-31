@@ -13,7 +13,7 @@ use_config() {
 # with no shared environment, so there is no sandbox-local registry to point
 # at instead. The spawned process bounds itself at six hours, comfortably past
 # any one drive and well under a day, so a record from an earlier drive dies
-# on its own and `aitk sessions list` stops carrying it as live rather than
+# on its own and `canon sessions list` stops carrying it as live rather than
 # needing a teardown hook the harness does not have. The pid in the record's
 # filename is what keeps a second drive from overwriting the first run's
 # record and orphaning its still-running process.

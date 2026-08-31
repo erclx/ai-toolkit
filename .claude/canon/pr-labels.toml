@@ -1,0 +1,115 @@
+# Pull request domain labels.
+#
+# `git-pr` reads this file, matches the paths a branch changed against the
+# prefixes below, and applies every label that matches. A project without this
+# file gets no labels and no warning.
+#
+# Each label named here has to exist on the remote before the first run that
+# matches it. Create one with `gh label create <name> --description "<text>"`.
+#
+# Label count is worth watching rather than capping. A pull request needing
+# three domain labels is one `git-split` should have split. Two is normal for a
+# change that touches a surface and its docs.
+#
+# `canon labels audit` detects a surface neither table below reaches, so a
+# directory added after this census is named rather than merging bare. It runs
+# inside `canon audits` as well, and it reports without gating, since whether an
+# uncovered surface deserves a label is a judgment. The remedy it asks for is
+# manual either way: give the surface a prefix on the row that owns its subject,
+# or add it to `[declined]` with the reason it earns no label.
+# `claude/skills/git-pr/references/labels.md` carries the matching rule and the
+# declined-path rule, and it ships wherever this map does.
+#
+# Building the report into `git-pr` was declined. That skill already reads the map
+# and the changed set, so the check would cost it nothing to run, which is exactly
+# what makes it the wrong home: it hands the ship chain a new failure mode from a
+# check nobody has designed. A verb is also where the match becomes testable,
+# which a skill body only states.
+#
+# What the check does not measure is a prefix reaching no path, so a row left
+# behind by a deleted folder stays in the map. That is the map going stale from
+# the other side and a second measure rather than this one.
+#
+# Matching is prefix-anchored, so a `.claude/` path earns no row written for an
+# authoring root: `snippets/` never matches `.claude/snippets/`. Every surface
+# living only under a dotted folder carries its own prefix on the row that owns
+# its subject. `internal/` splits across three rows for the same reason, holding
+# rules, standards, and snippets rather than a subject of its own, and its
+# consumed copy under `.claude/internal/` splits the same way.
+
+[domains]
+# The plugin surface: shipped skills, toolkit-internal skills, and the
+# marketplace entry a consumer adds.
+skills = ["claude/skills/", ".claude/skills/", ".claude-plugin/"]
+governance = ["governance/", ".claude/rules/", "internal/rules/", "internal/governance.toml"]
+standards = ["standards/", ".claude/standards/", "internal/standards/", ".claude/internal/standards/"]
+snippets = ["snippets/", ".claude/snippets/", "internal/snippets/", ".claude/internal/snippets/"]
+tooling = ["tooling/"]
+# Both halves of the migration boundary. `scripts/core/` and `scripts/sandbox/`
+# are left to the rows below, so a new `scripts/` folder goes bare until the
+# uncovered-surface check names it.
+cli = ["src/", "scripts/lib/", "scripts/tooling/", "scripts/eval/"]
+sandbox = ["scripts/sandbox/", "scripts/manage-sandbox.sh"]
+docs = ["docs/", "wiki/", "README.md", "examples/"]
+# `scripts/core/` reaches the whole folder, maintenance scripts included, and
+# the two hook families enforce what the verify gate cannot.
+ci = [".github/", "scripts/core/", ".husky/", ".claude/hooks/"]
+# Internal narrative and the always-loaded record, which `docs` does not reach.
+context = [
+  ".claude/context/",
+  ".claude/ARCHITECTURE.md",
+  ".claude/REQUIREMENTS.md",
+  ".claude/DESIGN.md",
+  ".claude/diagrams/",
+  "CLAUDE.md",
+]
+# Repository configuration belonging to no domain, this map included. The
+# toolkit-owned folder takes a folder prefix rather than this file's own path,
+# so a second file landing beside it is labelled without another census.
+repo = [
+  ".gitignore",
+  ".vscode/",
+  "cspell.json",
+  ".cspell/",
+  ".claude/canon/",
+  "vitest.config.ts",
+  "vitest.setup.ts",
+]
+
+# Deliberately unlabelled, measured across the 138 commits between `3a0fd695`,
+# which shipped the map, and `190af80b`. Against the rows as they stood before
+# this census, 54 of those commits carried no label: 53 releases and one commit
+# that edited this file, which the `repo` row above reached at the time.
+#
+# Replaying the range through `canon labels audit` reports 54 rather than 53, and
+# the extra is that same commit. The map has since moved to `.claude/canon/`, so
+# the `repo` row moved with it and no longer reaches the path the file used to
+# sit at. Reaching a path nothing carries any more is not worth a row, so the
+# number is recorded here instead: 53 are releases and every one is declined
+# below, and the 54th is an artifact of the relocation.
+#
+# These are data rather than prose because the check reads them. A path here is
+# a decision already taken and a path under neither table is a gap nobody has
+# gotten to, and a report that could not tell the two apart would be useful
+# about neither. Each key is the reason, and matching is prefix-anchored exactly
+# as it is above.
+[declined]
+# Release automation opens its own pull request and applies its own label, so a
+# domain label here would give every release a subject it does not have.
+# `claude/.claude-plugin/plugin.json` moved on 53 commits over that span and
+# every one was a release, which is what settles it as release-managed rather
+# than as a plugin surface.
+release-managed = [
+  "CHANGELOG.md",
+  "package.json",
+  ".release-please-manifest.json",
+  "claude/.claude-plugin/",
+]
+# Each is rewritten by a command rather than authored, and it travels in the
+# commit that changed its source, which already carries that source's label. A
+# row over any of them adds a second label to a mechanical edit.
+generated = ["assets/hero.png", "assets/hero.stamp", ".claude/audits/baseline.json"]
+# `assets/hero.html` is authored, so it is a reason of its own rather than a
+# fourth generated file. Giving it `docs` would spuriously label the 18 commits
+# that regenerated the image alongside an unrelated surface.
+rides-with-generated = ["assets/hero.html"]

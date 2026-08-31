@@ -31,7 +31,7 @@ function buildResult(action: RegenResult['action']): RegenResult {
 }
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'aitk-regen-'))
+  root = mkdtempSync(join(tmpdir(), 'canon-regen-'))
 })
 
 afterEach(() => {

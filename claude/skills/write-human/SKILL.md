@@ -1,6 +1,6 @@
 ---
 name: write-human
-description: Carries the voice, rhythm, sentence construction, and information density rules a banned-word list cannot express, plus the catalog of machine tells that survive a clean ban scan. Use when writing or revising prose a person will read, when a passage reads flat or uniform, or when asked to "make this read like a person", "fix the cadence", "this reads like AI wrote it", "vary the sentences", or "tighten this without gutting it". Do NOT use for banned words, characters, or spellings, which `markdown.md` states and `aitk markdown audit` gates, and do NOT use to restate text that already exists in plainer words, which is `restate-plainly`, whose body loads these rules from here.
+description: Carries the voice, rhythm, sentence construction, and information density rules a banned-word list cannot express, plus the catalog of machine tells that survive a clean ban scan. Use when writing or revising prose a person will read, when a passage reads flat or uniform, or when asked to "make this read like a person", "fix the cadence", "this reads like AI wrote it", "vary the sentences", or "tighten this without gutting it". Do NOT use for banned words, characters, or spellings, which `markdown.md` states and `canon markdown audit` gates, and do NOT use to restate text that already exists in plainer words, which is `restate-plainly`, whose body loads these rules from here.
 ---
 
 # Write human
@@ -9,7 +9,7 @@ Write prose that reads as though a person wrote it. A ban list subtracts words a
 
 Load this before drafting a passage rather than after. A revision pass recovers the words and never recovers the structure the draft already settled.
 
-The banned words, characters, and spellings sit in `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`. They stay in force here. This skill adds to them and never restates them, since `aitk markdown audit` reads them from the package and a second copy would drift.
+The banned words, characters, and spellings sit in `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`. They stay in force here. This skill adds to them and never restates them, since `canon markdown audit` reads them from the package and a second copy would drift.
 
 ## What yields and what does not
 
@@ -59,7 +59,7 @@ Skip that reference on a short original draft where nothing reads off. The catal
 2. Mark the sentence lengths and the openings in each paragraph, and rewrite the flattest run first.
 3. Check each paragraph for a sentence that adds no claim, and cut it rather than shortening it.
 4. Re-read for the tells the catalog names, if the passage came from a model.
-5. Run `aitk markdown audit <path>` for the mechanical half, and rewrite each hit rather than swapping the token for a near-synonym.
+5. Run `canon markdown audit <path>` for the mechanical half, and rewrite each hit rather than swapping the token for a near-synonym.
 
 Report each file written or updated by its full path from the project root.
 

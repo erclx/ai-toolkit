@@ -29,6 +29,6 @@ EOF
 
   log_step "Scenario ready: file an issue"
   log_info "Context: a repo with a GitHub remote and a capitalize helper that crashes on an empty string"
-  log_info "Action:  /aitk:git-issue log a bug: capitalize throws on an empty string"
+  log_info "Action:  /canon:git-issue log a bug: capitalize throws on an empty string"
   log_info "Expect:  agent files a bug issue on the remote and prints the issue URL"
 }

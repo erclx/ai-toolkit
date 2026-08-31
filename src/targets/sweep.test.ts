@@ -17,7 +17,7 @@ let ROOT: string
 /** Stamps a folder the way a current install leaves it. */
 function stamp(...segments: string[]): string {
   const target = join(ROOT, ...segments)
-  const path = join(target, '.claude', 'aitk', 'config.json')
+  const path = join(target, '.claude', 'canon', 'config.json')
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(path, JSON.stringify({ covers: [], domains: {} }))
   return target
@@ -35,7 +35,7 @@ function stampLegacy(...segments: string[]): string {
 const noOrigin = async (): Promise<string | null> => null
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-sweep-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-sweep-'))
 })
 
 afterEach(() => {
@@ -224,7 +224,7 @@ describe('originOf', () => {
   let root: string
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'aitk-sweep-origin-'))
+    root = mkdtempSync(join(tmpdir(), 'canon-sweep-origin-'))
     execSync('git init --quiet', { cwd: root, env: gitEnv() })
   })
 
@@ -250,7 +250,7 @@ describe('originOf', () => {
   })
 
   // A checkout cloned with a token puts the token in the userinfo component,
-  // and the key this returns reaches stdout on `aitk targets list --json`.
+  // and the key this returns reaches stdout on `canon targets list --json`.
   it('should strip a token-bearing userinfo component', async () => {
     expect(
       await withRemote(

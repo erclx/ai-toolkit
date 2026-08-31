@@ -1,5 +1,5 @@
-# What a correct `/aitk:claude-pr-review` run leaves behind on the
-# late-finding arm. Read by `aitk sandbox check`. Patterns use TOML literal
+# What a correct `/canon:claude-pr-review` run leaves behind on the
+# late-finding arm. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 #
 # The seed carries a first review with no commit since, and the newest reply

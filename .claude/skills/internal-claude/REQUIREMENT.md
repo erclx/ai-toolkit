@@ -21,13 +21,13 @@ The failures share one cause. The Claude surfaces reach a target through three c
 ## Must not
 
 - Reference a repo-local path from a body under `claude/skills/`, which resolves to nothing where that body runs
-- Use the `aitk-*` prefix on an internal skill. That prefix marks the toolkit-subject plugin family, and `internal-*` marks the internal tree.
+- Use the `canon-*` prefix on an internal skill. That prefix marks the toolkit-subject plugin family, and `internal-*` marks the internal tree.
 - Hand-copy a standard into a skill body. Cite it, so one owner keeps every copy current.
 
 ## Guards
 
 - Read a skill's sibling `REQUIREMENT.md` before changing it. When the change closes no gap that file states, change the requirement first or drop the change.
-- When a plan names an `aitk-*` folder under `.claude/skills/`, flag the mismatch before the folder exists rather than after the catalog carries it.
+- When a plan names a `canon-*` folder under `.claude/skills/`, flag the mismatch before the folder exists rather than after the catalog carries it.
 
 ## Out of scope
 

@@ -5,12 +5,12 @@ description: Reading the corpus against the Success criterion gate, why the chec
 
 # Standard success criteria
 
-`aitk standards audit` reads the corpus at `standards/` and reports which files carry a `## Success criterion` section against which do not, per `standards/standard.md`. It fails only on a standard new to the current branch, never on one already short the section.
+`canon standards audit` reads the corpus at `standards/` and reports which files carry a `## Success criterion` section against which do not, per `standards/standard.md`. It fails only on a standard new to the current branch, never on one already short the section.
 
 ```bash
-aitk standards audit
-aitk standards audit --json
-aitk standards audit --arrivals-only
+canon standards audit
+canon standards audit --json
+canon standards audit --arrivals-only
 ```
 
 | Option            | Behavior                                                     |
@@ -31,8 +31,8 @@ aitk standards audit --arrivals-only
 | `1`  | refused, with `reason` naming the cause                         |
 | `2`  | a standard new to this branch carries no `## Success criterion` |
 
-A project authoring no standards refuses with `no-corpus`, the ordinary state of most targets, the same absence `aitk claude skills audit` reads as its own `no-corpus`.
+A project authoring no standards refuses with `no-corpus`, the ordinary state of most targets, the same absence `canon claude skills audit` reads as its own `no-corpus`.
 
 ## What it does not measure
 
-Presence of the heading is the whole check. The section's content, the questions it must answer or the task it must let a reader complete, is a judgment `aitk standards audit` cannot read, so a standard carrying an empty or token section still passes.
+Presence of the heading is the whole check. The section's content, the questions it must answer or the task it must let a reader complete, is a judgment `canon standards audit` cannot read, so a standard carrying an empty or token section still passes.

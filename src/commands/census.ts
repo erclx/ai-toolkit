@@ -34,8 +34,8 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '',
         'Examples:',
-        '  aitk census',
-        '  aitk census src --json',
+        '  canon census',
+        '  canon census src --json',
         '',
       ].join('\n'),
     )
@@ -51,7 +51,7 @@ async function runCensus(
   const root = resolve(path ?? process.cwd())
   const emitJson = opts.json ?? false
 
-  intro('aitk census')
+  intro('canon census')
 
   const result = await census(root)
 

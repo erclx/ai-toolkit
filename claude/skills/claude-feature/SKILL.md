@@ -87,7 +87,7 @@ From a linked worktree the file-editing tools refuse that path, so the plan goes
 
 The file follows the template in `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every plan.
 
-Run `aitk records validate plans` after writing the file when the CLI is on PATH. It reports a section, a filename, or an answer slot that does not hold, and it writes nothing.
+Run `canon records validate plans` after writing the file when the CLI is on PATH. It reports a section, a filename, or an answer slot that does not hold, and it writes nothing.
 
 Then output in chat:
 

@@ -16,7 +16,7 @@ function git(...args: string[]): string {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-worktree-list-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-worktree-list-'))
   git('init', '--quiet', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')
@@ -57,7 +57,7 @@ describe('listWorktrees', () => {
   })
 
   it('should report no worktree outside a git repository', async () => {
-    const notARepo = mkdtempSync(join(tmpdir(), 'aitk-worktree-none-'))
+    const notARepo = mkdtempSync(join(tmpdir(), 'canon-worktree-none-'))
 
     try {
       expect(await listWorktrees(notARepo)).toEqual([])
@@ -110,7 +110,7 @@ describe('branchRefs', () => {
   // branch and a failed read have to answer differently or the caller reads a
   // failure as a clean branch.
   it('should separate an unreadable tree from a branch that does not exist', async () => {
-    const notARepo = mkdtempSync(join(tmpdir(), 'aitk-refs-none-'))
+    const notARepo = mkdtempSync(join(tmpdir(), 'canon-refs-none-'))
 
     try {
       expect(await branchRefs('feat/parser', notARepo)).toEqual({
@@ -123,7 +123,7 @@ describe('branchRefs', () => {
   })
 
   it('should read the directory it was given when the environment names another repository', async () => {
-    const other = mkdtempSync(join(tmpdir(), 'aitk-refs-other-'))
+    const other = mkdtempSync(join(tmpdir(), 'canon-refs-other-'))
     execaSync(
       'git',
       ['-C', other, 'init', '--quiet', '--initial-branch=main'],

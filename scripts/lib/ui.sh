@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
-  echo "aitk requires bash 4 or newer. Current: ${BASH_VERSION:-unknown}." >&2
+  echo "canon requires bash 4 or newer. Current: ${BASH_VERSION:-unknown}." >&2
   echo "Install via Homebrew: brew install bash" >&2
   exit 1
 fi
@@ -116,8 +116,8 @@ require_project_root() {
   local GREEN RED YELLOW WHITE GREY NC
   set_palette 2
   local sandbox in_sandbox=0
-  if [ -n "${AITK_SANDBOX_DIR:-}" ]; then
-    sandbox="$AITK_SANDBOX_DIR"
+  if [ -n "${CANON_SANDBOX_DIR:-}" ]; then
+    sandbox="$CANON_SANDBOX_DIR"
     [[ "$PWD" == "$sandbox" || "$PWD" == "$sandbox"/* ]] && in_sandbox=1
   else
     sandbox="$(sandbox_dir_prefix)"
@@ -133,6 +133,16 @@ require_project_root() {
   fi
 }
 
+# The retired spelling stays honored, and permanently. This variable is the
+# documented way to drive any command headlessly, so every skill body, CI job,
+# and operator script already written sets the old name, and those callers live
+# in repositories and plugin caches this release cannot reach. Dropping it
+# leaves them waiting on a TTY nobody is watching.
+is_non_interactive() {
+  # canon-keep-retired
+  [[ "${CANON_NON_INTERACTIVE:-}" == "1" || "${AITK_NON_INTERACTIVE:-}" == "1" ]]
+}
+
 ask() {
   local GREEN RED YELLOW WHITE GREY NC
   set_palette 2
@@ -145,7 +155,7 @@ ask() {
   if [ -n "$default_val" ]; then
     display_default=" (${default_val})"
   fi
-  if [[ "${AITK_NON_INTERACTIVE:-}" == "1" ]]; then
+  if is_non_interactive; then
     echo -e "${GREY}│${NC}" >&2
     echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${default_val}${NC}" >&2
     export "$var_name"="$default_val"
@@ -203,7 +213,7 @@ select_option() {
   local cur=0
   local count=${#options[@]}
 
-  if [[ "${AITK_NON_INTERACTIVE:-}" == "1" ]]; then
+  if is_non_interactive; then
     echo -e "${GREY}│${NC}" >&2
     echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[0]}${NC}" >&2
     export SELECTED_OPTION="${options[0]}"
@@ -211,7 +221,7 @@ select_option() {
   fi
 
   if [ ! -t 0 ]; then
-    log_error "${prompt_text} requires a TTY. Pass an argument or set AITK_NON_INTERACTIVE=1."
+    log_error "${prompt_text} requires a TTY. Pass an argument or set CANON_NON_INTERACTIVE=1."
   fi
 
   echo -e "${GREY}│${NC}" >&2

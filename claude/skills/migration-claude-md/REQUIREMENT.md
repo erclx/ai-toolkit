@@ -37,4 +37,4 @@ The skill also writes into `.claude/context/`, a folder `migration-context` move
 
 - Relocating `docs/` files, which `migration-context` proposes into this same `.claude/context/` folder. Run that skill first when both apply, so Step 3 reads a folder its moves have already populated.
 - Scaffolding the rule files it proposes, which `create-rule` does with the numbering and frontmatter
-- Regenerating `.claude/context/index.md`, which `aitk indexes regen` does once the user has applied the moves
+- Regenerating `.claude/context/index.md`, which `canon indexes regen` does once the user has applied the moves

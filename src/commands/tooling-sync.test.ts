@@ -30,7 +30,7 @@ const sync = (args: readonly string[], headless = true): Run => {
     [CLI, 'tooling', 'sync', 'base', target, ...args],
     {
       encoding: 'utf8',
-      env: buildEnv(headless ? { AITK_NON_INTERACTIVE: '1' } : {}),
+      env: buildEnv(headless ? { CANON_NON_INTERACTIVE: '1' } : {}),
     },
   )
 
@@ -95,18 +95,18 @@ describe('tooling sync write authorization', () => {
     sync(['--check'])
 
     expect(() =>
-      readFileSync(join(target, '.claude', 'aitk', 'config.json')),
+      readFileSync(join(target, '.claude', 'canon', 'config.json')),
     ).toThrow()
   })
 
   it('should write no install stamp when an up-to-date target is synced without --write', () => {
     sync(['--write'])
-    rmSync(join(target, '.claude', 'aitk', 'config.json'))
+    rmSync(join(target, '.claude', 'canon', 'config.json'))
 
     sync([])
 
     expect(() =>
-      readFileSync(join(target, '.claude', 'aitk', 'config.json')),
+      readFileSync(join(target, '.claude', 'canon', 'config.json')),
     ).toThrow()
   })
 })

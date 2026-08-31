@@ -78,7 +78,7 @@ function readTask(stem: string): Promise<string> {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-tasks-record-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-tasks-record-'))
 })
 
 afterEach(() => {

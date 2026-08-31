@@ -25,7 +25,7 @@ Decline where the session holds no reasoning a reader could not get faster from 
 
 ## Step 1: run the capture the procedure opens with
 
-Item 1 of `## Writing one` is a capture. Invoke `aitk:claude-memory-capture` and let it return before writing, so the map cites what was written instead of restating the same lesson in prose.
+Item 1 of `## Writing one` is a capture. Invoke `canon:claude-memory-capture` and let it return before writing, so the map cites what was written instead of restating the same lesson in prose.
 
 Pass on the caveat a caller states about committing. A caller that does not commit says so, and capture then skips routing and writes memory files alone, since a routed fact lands in a context entry and that is a tracked file. A caller stating nothing leaves capture to decide for itself, which is the ordinary run.
 
@@ -33,7 +33,7 @@ Carry through the line capture returns when a fact routed, so the session knows 
 
 ## Step 2: recover the commit the drift step reads
 
-Item 2 runs `aitk claude skills drift <ref>` against the commit this session started from, and nothing on the machine records that commit. Estimate how long the session has run, round the duration up, and read the ref item 3 recovers:
+Item 2 runs `canon claude skills drift <ref>` against the commit this session started from, and nothing on the machine records that commit. Estimate how long the session has run, round the duration up, and read the ref item 3 recovers:
 
 ```bash
 git log -1 --format=%H --before='<duration> ago'

@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow the architecture standard for the overview, named decision entries, and risks. It is the single source. Read it with `aitk standards architecture`.
+- Follow the architecture standard for the overview, named decision entries, and risks. It is the single source. Read it with `canon standards architecture`.

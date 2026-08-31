@@ -16,15 +16,15 @@ export function register(program: Command): void {
       [
         '',
         'Examples:',
-        '  aitk docs list',
-        '  aitk docs list --json',
-        '  aitk docs agents',
+        '  canon docs list',
+        '  canon docs list --json',
+        '  canon docs agents',
         '',
       ].join('\n'),
     )
     .action(async (topic: string | undefined) => {
       if (topic === undefined) {
-        intro('aitk docs')
+        intro('canon docs')
         await execScript('docs/list.sh', [])
         return
       }
@@ -40,7 +40,7 @@ export function register(program: Command): void {
  * caller capturing the output with `$(...)` receives the document alone.
  */
 function get(topic: string): number {
-  intro('aitk docs')
+  intro('canon docs')
 
   const resolved = resolveTopic(PROJECT_ROOT, topic)
 
@@ -48,7 +48,7 @@ function get(topic: string): number {
     logWarn(`Unknown topic: ${topic}`)
     logStep('Available topics')
     for (const name of listTopics(PROJECT_ROOT)) logInfo(name)
-    logError("Run 'aitk docs list' for descriptions.")
+    logError("Run 'canon docs list' for descriptions.")
     outro()
     return 1
   }

@@ -43,7 +43,7 @@ export interface DomainStamp {
    * nearest stack first, because a stack that extends another cannot be
    * reinstalled from its leaf alone, and a `--skip` run installs fewer layers
    * than the leaf's own chain would reproduce. Governance records the single
-   * stack `aitk gov install` was given, since `resolveRules` walks its
+   * stack `canon gov install` was given, since `resolveRules` walks its
    * ancestors internally and a reader needs only the leaf to ask it again.
    */
   readonly chain?: readonly string[]
@@ -56,25 +56,61 @@ export interface Stamp {
 }
 
 export function stampPath(target: string): string {
-  return join(target, '.claude', 'aitk', 'config.json')
+  return join(target, '.claude', 'canon', 'config.json')
 }
 
 /**
  * Where `106115ba` moved the stamp from. No migration shipped with that move,
  * so a target stamped before it still carries its config here, and `readStamp`
  * falls back to this path when the current one is absent.
+ *
+ * The old tool name is deliberate and this path never renames. It names what a
+ * target already has on disk, so rewriting it to the current spelling would
+ * point the fallback at a file that has never existed anywhere.
  */
 export function legacyStampPath(target: string): string {
+  // canon-keep-retired
   return join(target, '.claude', 'aitk.json')
 }
 
 /**
- * Whether `readStamp` would resolve to the retired path, so a caller can
- * report that a target's config still sits there. False when neither path
- * exists, since there is nothing to migrate off of.
+ * The stamp folder under the retired tool name, which is where every target
+ * stamped between `106115ba` and the rename carries its config. Retired for
+ * the same reason as the path above and kept readable on the same terms.
+ */
+export function retiredNameStampPath(target: string): string {
+  // canon-keep-retired
+  return join(target, '.claude', 'aitk', 'config.json')
+}
+
+/**
+ * Every spelling a stamp has been written under, current first. The order is
+ * the read order, so a target carrying more than one resolves to the newest.
+ *
+ * The fallback carries no end date. It costs two path reads on a command that
+ * already touches the filesystem, and dropping it later is a second breaking
+ * change aimed at exactly the targets that were slowest to migrate the first
+ * time.
+ */
+export function stampPaths(target: string): readonly string[] {
+  return [
+    stampPath(target),
+    retiredNameStampPath(target),
+    legacyStampPath(target),
+  ]
+}
+
+/**
+ * Whether `readStamp` would resolve to a retired path, so a caller can report
+ * that a target's config still sits at one. False when no path exists, since
+ * there is nothing to migrate off of.
  */
 export function isLegacyStamped(target: string): boolean {
-  return !existsSync(stampPath(target)) && existsSync(legacyStampPath(target))
+  if (existsSync(stampPath(target))) return false
+  return (
+    existsSync(retiredNameStampPath(target)) ||
+    existsSync(legacyStampPath(target))
+  )
 }
 
 export function hashContent(content: Buffer | string): string {
@@ -106,9 +142,8 @@ export function toStampKey(rel: string): string {
  * was read from.
  */
 export function readStamp(target: string): Stamp | undefined {
-  return existsSync(stampPath(target))
-    ? readStampFile(stampPath(target))
-    : readStampFile(legacyStampPath(target))
+  const found = stampPaths(target).find((path) => existsSync(path))
+  return found === undefined ? undefined : readStampFile(found)
 }
 
 function readStampFile(path: string): Stamp | undefined {

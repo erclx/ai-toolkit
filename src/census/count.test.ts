@@ -35,7 +35,7 @@ function measured(result: Awaited<ReturnType<typeof census>>): CensusResult {
 }
 
 beforeEach(() => {
-  ROOT = mkdtempSync(join(tmpdir(), 'aitk-census-'))
+  ROOT = mkdtempSync(join(tmpdir(), 'canon-census-'))
   git('init', '--initial-branch=main')
   git('config', 'user.email', 'test@example.com')
   git('config', 'user.name', 'Test')

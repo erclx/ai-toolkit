@@ -49,7 +49,7 @@ function runList(opts: ListOptions): number {
     return 0
   }
 
-  intro('aitk snippets list')
+  intro('canon snippets list')
 
   const showCategories = opts.entries !== true
   const showEntries = opts.categories !== true

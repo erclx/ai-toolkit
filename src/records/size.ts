@@ -100,7 +100,7 @@ function day(ms: number): string {
  * file.
  *
  * The one reading that is wrong rather than early is a machine restored by
- * `aitk records pull`, which resets the work tree hard and re-dates every file
+ * `canon records pull`, which resets the work tree hard and re-dates every file
  * it writes. A window taken there counts the restore. Nothing separates the two
  * from the filesystem, since a restored file is new by every stamp it carries,
  * so the caveat is published rather than corrected.

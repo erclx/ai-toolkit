@@ -5,7 +5,7 @@ import { join } from 'node:path'
  * Three states rather than two. An arm with no declaration is `unchecked`: it
  * cannot pass, since nothing was asserted, and it does not fail, since failing
  * every undeclared arm would make the harness unusable while expectations roll
- * out. `aitk sandbox coverage` is what keeps the count from hiding.
+ * out. `canon sandbox coverage` is what keeps the count from hiding.
  */
 export type VerdictState = 'pass' | 'fail' | 'unchecked'
 
@@ -172,7 +172,7 @@ function contentArray(value: unknown): ContentAssertion[] {
     // `max_turns` after its content blocks parses clean and silently asserts
     // neither. The `claude/ui-test` arm shipped that way: a turn ceiling that
     // never ran and five manual entries that never reached the unchecked count,
-    // while `aitk sandbox coverage` counted the arm as armed. Nothing at the
+    // while `canon sandbox coverage` counted the arm as armed. Nothing at the
     // top level can see the difference, so the check belongs here.
     const stray = Object.keys(record).filter(
       (key) => key !== 'path' && key !== 'pattern',

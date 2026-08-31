@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { describeSkew, latestOf, readSkew } from '@/version/skew'
 
-const INSTALLED = { name: '@erclx/aitk', version: '0.110.0' }
+const INSTALLED = { name: '@erclx/canon', version: '0.110.0' }
 
 function publishes(version: string) {
   return async () => version
@@ -104,7 +104,7 @@ describe('readSkew', () => {
 describe('describeSkew', () => {
   const BEHIND = {
     state: 'behind',
-    name: '@erclx/aitk',
+    name: '@erclx/canon',
     installed: '0.110.0',
     latest: '0.111.0',
   } as const
@@ -115,18 +115,18 @@ describe('describeSkew', () => {
       '/home/u/.bun/install/global/node_modules',
     )
 
-    expect(line).toContain('aitk upgrade')
+    expect(line).toContain('canon upgrade')
   })
 
   it('should send a source checkout to pull rather than to a verb that refuses', () => {
-    const line = describeSkew(BEHIND, '/home/u/repos/ai/aitk')
+    const line = describeSkew(BEHIND, '/home/u/repos/ai/canon')
 
-    expect(line).not.toContain('aitk upgrade')
+    expect(line).not.toContain('canon upgrade')
     expect(line).toContain('pull')
   })
 
   it('should name both versions whichever remedy it picks', () => {
-    const line = describeSkew(BEHIND, '/home/u/repos/ai/aitk')
+    const line = describeSkew(BEHIND, '/home/u/repos/ai/canon')
 
     expect(line).toContain('0.110.0')
     expect(line).toContain('0.111.0')
@@ -135,7 +135,7 @@ describe('describeSkew', () => {
   it('should carry the reason when the state is unknown', () => {
     const line = describeSkew({
       state: 'unknown',
-      name: '@erclx/aitk',
+      name: '@erclx/canon',
       installed: '0.110.0',
       reason: 'Registry lookup failed: offline',
     })

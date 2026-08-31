@@ -45,9 +45,9 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '',
         'Examples:',
-        '  aitk comments scan',
-        '  aitk comments scan src --json',
-        '  aitk comments scan --since v0.5.0',
+        '  canon comments scan',
+        '  canon comments scan src --json',
+        '  canon comments scan --since v0.5.0',
         '',
       ].join('\n'),
     )
@@ -82,7 +82,7 @@ async function runScan(
   const emitJson = opts.json ?? false
   const languages = parseLanguages(opts.languages)
 
-  intro('aitk comments scan')
+  intro('canon comments scan')
 
   if (typeof languages === 'string') {
     logStep('Refused')
