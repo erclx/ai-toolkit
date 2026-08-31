@@ -1,32 +1,52 @@
 ---
 title: Operating model
-description: Orchestrator and worker roles for building across parallel sessions
+description: Orchestrator, planner, and worker roles for building across parallel sessions
 category: Workflow
 ---
 
 # Operating model
 
 A way to build fast and reliably across parallel Claude Code sessions without a
-loop and without losing the human review gate. One warm session plans and
-reviews. Cold worker sessions build. The human launches workers and merges.
+loop and without losing the human review gate. One warm session holds the
+cross-feature call and reviews. Planning runs there or in a session of its own.
+Cold worker sessions build. The human launches workers and merges.
 
 This page covers the roles and the loop. For the worktree mechanism (isolation, merge
 order, port collisions), see [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md).
 
-## Two roles
+## Three roles
 
-The split is by vantage, not by capability. Both are Claude Code sessions.
+The split is by vantage, not by capability. All three are Claude Code sessions.
 
-| Role         | Session                               | Owns                                                    | Does not                      |
-| ------------ | ------------------------------------- | ------------------------------------------------------- | ----------------------------- |
-| Orchestrator | One warm, long-lived session          | Planning, deep PR review, merge order                   | Edit tracked files, merge PRs |
-| Worker       | One cold worktree session per feature | Implement, self-check, open PR, answer the orchestrator | Write the shared board, merge |
+| Role         | Session                               | Owns                                                    | Does not                          |
+| ------------ | ------------------------------------- | ------------------------------------------------------- | --------------------------------- |
+| Orchestrator | One warm, long-lived session          | The cross-feature call, deep PR review, merge order     | Edit tracked files, merge PRs     |
+| Planner      | One session per row, warm or cold     | Measure the row against the tree, write one plan        | Enter a worktree, write the board |
+| Worker       | One cold worktree session per feature | Implement, self-check, open PR, answer the orchestrator | Write the shared board, merge     |
 
 Each role is asserted explicitly rather than inferred. The orchestrator loads
-`claude-orchestrate` at the start of its session, and a worker loads
-`claude-worker`, which `claude-autoship` invokes at Step 0 so a dispatched build
-and a hand-launched one reach it on the same path. Both are framing and
+`claude-orchestrate` at the start of its session, a worker loads `claude-worker`,
+which `claude-autoship` invokes at Step 0 so a dispatched build and a
+hand-launched one reach it on the same path, and a planner loads
+`claude-planner` from the launch that dispatches it. All three are framing and
 boundaries rather than logic.
+
+The planner is the one role the orchestrator also performs. Per-row planning
+runs warm inside the orchestrator's own session or cold in a dispatched one, and
+the boundary between them is the cross-feature call: which rows collide, what
+merges before what, and whether a row should run at all stay with the
+orchestrator, because a session reading the board sees blockers and file sets
+and can write a confident merge order off a partial picture. Two trials on
+2026-08-31 measured a cold planner against four rows and it reported ten things
+the task files got wrong, which is why the per-row measurement is free to go
+cold. No plan from either trial has been built, so a cold plan's value to the
+worker reading it is still unmeasured.
+
+A dispatched planner owes two messages: the plan's path as the file lands, with
+what the task file got wrong beside it, and a block before that block becomes an
+interactive prompt. The plan file is its only write. A stale count, a moved line,
+or a path that no longer resolves is reported rather than repaired, since the
+task file and the board stay the orchestrator's to write.
 
 Refusing is part of the worker's job rather than a failure of it. A worker that
 halts on a plan question it may not answer, or argues back against an
@@ -49,7 +69,7 @@ and no later session recovers that vantage.
 
 One feature travels this path end to end.
 
-1. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
+1. The next feature is planned with `claude-feature`, writing a plan to `.claude/plans/`. The orchestrator runs it warm when the row turns on a contract other features consume or a shared wiring seam, and dispatches a planner under `claude-planner` otherwise. A cold planner measures the row against the tree rather than trusting what the row claims, and it reads what is in flight from open pull requests rather than from branches and worktrees, which this repository leaves behind after a squash merge.
 2. Orchestrator checks the branch is unclaimed and the plan's file set is disjoint from every track in flight, then dispatches a background worker with `claude --bg` against the plan, naming the branch and the model on the launch rather than leaving the worker to derive either. No count caps how many run at once. The branch travels as the argument to the worker's own worktree call, which is the one place the name is read rather than inferred. It falls back to naming the invocation for a human to run through `claude-worktree` and `claude-autoship` when the check refuses, the sets overlap, or a stated reason serializes the plan behind a track already in flight. Either way, the worker enters its own worktree, builds, self-checks, opens a PR, and stops at the PR boundary.
 3. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 4. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target then with `canon sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.

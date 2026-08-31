@@ -71,6 +71,11 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
     expect: 'claude-orchestrate',
   },
   {
+    prompt:
+      'I am writing the plan for a row another session will build. What may I write, and where do I read what is already in flight?',
+    expect: 'claude-planner',
+  },
+  {
     prompt: 'Post a formal review with findings on that open pull request.',
     expect: 'claude-pr-review',
   },

@@ -80,7 +80,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 Scaffolding your first project? Start with target projects, then the AI workflow loop. Everything else answers questions that arrive later.
 
 - [AI workflow](docs/ai-workflow.md): feature-development loop inside a toolkit-managed project
-- [Operating model](docs/operating-model.md): orchestrator and worker roles for building across parallel sessions
+- [Operating model](docs/operating-model.md): orchestrator, planner, and worker roles for building across parallel sessions
 - [Visual design workflow](docs/visual-design-workflow.md): tiered guide for design and wireframe authoring
 - [Target projects](docs/target-projects.md): scaffold, add a domain later, sync upstream drift
 - [Agents](docs/agents/index.md): CLI flags, exit codes, and JSON output shapes

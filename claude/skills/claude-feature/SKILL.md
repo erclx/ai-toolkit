@@ -89,6 +89,8 @@ The file follows the template in `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. 
 
 Run `canon records validate plans` after writing the file when the CLI is on PATH. It reports a section, a filename, or an answer slot that does not hold, and it writes nothing.
 
+Run `canon markdown audit .claude/plans/feature-<slug>.md` beside it, naming the file. `.claude/plans/` is gitignored and the audit's default path set is what git lists, so no other gate ever opens a plan, and six ban hits landed across four plans written without this call. Rewrite the sentence carrying a hit rather than swapping the token for a near-synonym.
+
 Then output in chat:
 
 ```markdown
