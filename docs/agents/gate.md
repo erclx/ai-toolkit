@@ -5,7 +5,7 @@ description: Running the gate this repository verifies a branch with, what the s
 
 # Merge gate
 
-`aitk gate run` runs every stage that guards a branch here, in order, stopping at the first stage that finds a fact. `bun run check` and `bun run check:ci` are the two callers, and no other entry point exists.
+`aitk gate run` runs every stage that guards a branch here, in order, stopping at the first stage that finds a fact. `bun run check` and `bun run check:ci` resolve to it, and `scripts/core/update.sh` calls it with `--nested` after a dependency update.
 
 ```bash
 aitk gate run

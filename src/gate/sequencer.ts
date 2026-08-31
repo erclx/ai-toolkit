@@ -223,8 +223,10 @@ async function runCheck(check: Check, ctx: GateContext): Promise<CheckOutcome> {
  *
  * The diff alone passes a regen that emitted a file nobody ever committed, so
  * the listing beside it is what makes the assert cover an arrival as well as an
- * edit. Two checks rather than one because that is what the two git reads are,
- * and folding them would lose which of the two a failure came from.
+ * edit. Either read failing yields the stage's one remedy line rather than a
+ * message of its own, which is what the shell this replaces did with the same
+ * string on both of its calls: the remedy is the same either way, since the
+ * fix is to stage what the regen wrote.
  */
 async function runDrift(
   pathspec: string,

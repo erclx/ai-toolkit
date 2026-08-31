@@ -56,7 +56,7 @@ The test strips every inherited `GIT_*` variable before building its fixtures. G
 ### Stage gotchas
 
 - Nine stages call this checkout's CLI, and each reaches it through `cliRunner` in `src/gate/sequencer.ts` rather than through a globally installed `aitk`, which resolves to the main checkout no matter which worktree is running and would have the gate measure the wrong tree. The rule used to be a habit each stage kept and is now one function every stage borrows.
-- The bash and TypeScript stages no longer split the table into an upper and a lower half, since the sequencer starts every process itself and the interpreter is already running. What the grouping buys now is a reader's, so the stages calling the CLI still sit together in `STAGES`.
+- Every stage pays its own process, the CLI ones a bun startup apiece, which is what the shell script paid too. The upper and lower halves the old file split into bought a reader an ordering they could hold rather than any saved startup, so the stages calling the CLI still sit together in `STAGES` for that reason alone.
 
 ### The seed-standards stage
 

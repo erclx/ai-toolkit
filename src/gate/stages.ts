@@ -15,9 +15,10 @@ import {
  *
  * The script this replaces held every check as text and handed it to `eval`,
  * which made each stage a quoting question: whether the string wanted a shell
- * or was an argument list that should never see one. Nothing in the set
- * depended on expansion once the two asserts below stopped being shell, so the
- * whole table is vectors and the hazard is gone rather than carried forward.
+ * or was an argument list that should never see one. Nothing in the set turned
+ * out to depend on expansion once the drift assertion stopped being a shell
+ * line, so the whole table is vectors and the hazard is gone rather than
+ * carried forward.
  */
 export type Check =
   /** Any binary on PATH, or a script named by path under the project root. */
@@ -112,9 +113,9 @@ const script = (name: string, failure: string): Check => ({
  *
  * Order is the product here rather than an accident of the file. The four
  * regenerating stages run before anything reads what they wrote, the stages
- * calling this checkout's CLI sit together so the interpreter starts once for
- * the group rather than at intervals, and the three scoped stages sit last
- * where a skip costs the run nothing it already paid for.
+ * calling this checkout's CLI sit together so a reader meets one group rather
+ * than the same kind of stage at intervals, and the three scoped stages sit
+ * last where a skip costs the run nothing it already paid for.
  *
  * A stage halts the run when one of its checks fails, so clearing a
  * regenerate-then-assert stage reveals the next one behind it rather than the
