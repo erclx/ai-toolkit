@@ -105,6 +105,12 @@ Every report states how liveness was decided, on a pass as well as a failure.
 
 The registry holds one record per session and is never pruned, so it accumulates thousands of entries. On the `unverified` path a stale record whose pid has been reused reads as live, which is why the field is reported rather than assumed.
 
+## The status dwell
+
+Every row carries `statusUpdatedAt`, the stamp a client writes beside `status` at the moment it last changed, and `statusDwellMs`, the elapsed milliseconds since that stamp. Both are `null` where the record predates the field, and a stamp ahead of the reading clock clamps the dwell to zero rather than reporting a negative one.
+
+The dwell is what separates a status that resolves on its own from one that does not. `busy` and `idle` transition without help, so a long dwell there is ordinary. `waiting` does not: a session in that state is blocked on something outside itself, and a dwell that keeps growing past the ordinary span of a prompt is a session stalled rather than paused. `aitk sessions list` renders the dwell beside the status at the coarsest unit that keeps it a whole number, and the JSON record carries both fields on every row.
+
 ## What the read depends on
 
 The records live under the Claude Code configuration directory, which the verb resolves from `CLAUDE_CONFIG_DIR` and falls back to `~/.claude`. Their location, their filenames, and the fields inside them are a client implementation detail rather than a published interface, so a client change can move them. The verb reports an absent registry as a refusal rather than as a machine running no sessions, which is what surfaces the move instead of burying it in an empty roster.

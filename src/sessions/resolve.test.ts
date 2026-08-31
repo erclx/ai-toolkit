@@ -209,6 +209,52 @@ describe('resolveSessions', () => {
 
     expect(report.kind === 'resolved' && report.sessions).toHaveLength(0)
   })
+
+  it("should report the dwell elapsed since the record's own status stamp", async () => {
+    seed(100, { statusUpdatedAt: 1_000 })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+      now: () => 61_000,
+    })
+
+    expect(report.kind === 'resolved' && report.sessions[0]).toMatchObject({
+      statusUpdatedAt: new Date(1_000).toISOString(),
+      statusDwellMs: 60_000,
+    })
+  })
+
+  it('should report an absent status stamp as an absent dwell rather than as zero', async () => {
+    seed(100, { statusUpdatedAt: undefined })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+    })
+
+    expect(report.kind === 'resolved' && report.sessions[0]).toMatchObject({
+      statusUpdatedAt: null,
+      statusDwellMs: null,
+    })
+  })
+
+  it('should clamp a stamp ahead of the clock to zero rather than a negative dwell', async () => {
+    seed(100, { statusUpdatedAt: 120_000 })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+      now: () => 60_000,
+    })
+
+    expect(
+      report.kind === 'resolved' && report.sessions[0]?.statusDwellMs,
+    ).toBe(0)
+  })
 })
 
 /** A resolved row, which the self read matches against rather than a record. */
@@ -221,6 +267,8 @@ function row(pid: number, sessionId: string | null): ResolvedSession {
     kind: 'interactive',
     status: 'idle',
     startedAt: null,
+    statusUpdatedAt: null,
+    statusDwellMs: null,
     repository: '/repo/.git',
     worktree: `/repo/worktrees/w${pid}`,
     branch: 'feat/parser',

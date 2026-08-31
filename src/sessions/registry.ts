@@ -21,6 +21,14 @@ export interface SessionRecord {
   readonly sessionId: string | undefined
   readonly kind: string | undefined
   readonly status: string | undefined
+  /**
+   * The epoch millisecond the client last changed `status`, stamped on every
+   * record a client of this vintage writes. Declared here rather than read
+   * opportunistically off the parsed object, since this file is what states
+   * what the domain reads and an undeclared field read anyway is the drift
+   * this domain exists downstream of.
+   */
+  readonly statusUpdatedAt: number | undefined
   readonly startedAt: number | undefined
   /**
    * The process start time the client stamped at launch, compared against the

@@ -124,6 +124,13 @@ export function register(program: Command): void {
         'cannot rule out a pid handed to an unrelated process, so a roster',
         'reported that way is a candidate list rather than an identity.',
         '',
+        'The JSON record also carries "statusUpdatedAt" (the stamp the client',
+        'wrote beside "status", or null where its record predates the field)',
+        'and "statusDwellMs" (the elapsed milliseconds since that stamp,',
+        'computed at read time and clamped at zero against clock skew). The',
+        'framed listing renders the same dwell beside the status, at the',
+        'coarsest unit that keeps it a whole number.',
+        '',
         'Examples:',
         '  aitk sessions list',
         '  aitk sessions list --json',
@@ -349,10 +356,28 @@ function reportSessions(
         const held =
           session.branch ??
           `unresolved: ${REASONS[session.unresolved ?? ''] ?? 'unknown'}`
-        return `${session.name}  ${session.status}  ${held}\n  ${session.cwd}`
+        const dwell = formatDwell(session.statusDwellMs)
+        const status = dwell ? `${session.status} ${dwell}` : session.status
+        return `${session.name}  ${status}  ${held}\n  ${session.cwd}`
       })
       .join('\n'),
   )
+}
+
+/**
+ * Renders the dwell at the coarsest unit that keeps it a whole number, since a
+ * reader scanning a roster wants an age at a glance rather than a millisecond
+ * count. An absent dwell renders as nothing, folding a status carrying no
+ * stamp back to the bare status line the reader already knew.
+ */
+function formatDwell(ms: number | null): string {
+  if (ms === null) return ''
+  const seconds = Math.round(ms / 1000)
+  if (seconds < 60) return `${seconds}s`
+  const minutes = Math.round(seconds / 60)
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.round(minutes / 60)
+  return `${hours}h`
 }
 
 function reportClaim(claim: ClaimReport): void {
