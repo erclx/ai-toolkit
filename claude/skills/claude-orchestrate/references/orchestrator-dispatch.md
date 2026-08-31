@@ -71,31 +71,41 @@ The worktree call comes first and carries the branch as its argument, which is t
 
 Naming the branch in prose instead was tried and closes nothing, because no tier of that ladder reads the prompt. A worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there. Four workers took the right branch that way, by inference rather than by contract, which is the same judgment both live disagreements came from.
 
-### Put the slash commands bare and first
+### The prompt expands its leading slash command and nothing after it
 
-The client executes a slash command in a launch prompt as user input at session
-start, which is the route the launch block above relies on and the one no
-dispatch has been refused at. `claude-autoship` carries
-`disable-model-invocation: true` and has since `#365`, and seven other shipped
-skills carry it too.
+The client expands the first slash command in a launch prompt as a user
+invocation, which is the route `disable-model-invocation: true` permits. Every
+later command in the same prompt reaches the session as prose, leaving the model
+to invoke it through the `Skill` tool, and that route answers a flagged skill
+inconsistently. `claude-autoship` has carried the flag since `#365` and seven
+other shipped skills carry it too.
 
-The route a worker takes for itself is the `Skill` tool, and that one is not
-reliable for those eight. Both readings are from 2026-08-31: one dispatched
-worker was refused at `claude-autoship`, stopped and asked rather than routing
-around the guard, which was correct, and its branch lost the run, while another
-reached the same skill that way and shipped. Nothing here explains the split, so
-treat the tool route as something a dispatch may not depend on rather than as
-something it can count on.
+The block above therefore leads with the call that does not need the user route
+and leaves the one that does to the tool. Three workers made the same tool call
+against the same plugin cache on 2026-08-31. One was answered with the body and
+shipped, and two were refused with `Skill canon:claude-autoship cannot be used
+with Skill tool due to disable-model-invocation`. Prefixing separated nothing,
+since one refused call carried the namespace and the other did not, so nothing a
+dispatcher writes predicts which answer a launch gets.
 
-So write the commands bare and first, exactly as the block above does, and add no
-commentary about how to run them. Prose describing a command is prose and the
-client executes none of it, so a sentence added ahead of the calls to explain the
-route converts both into text and the session starts having run neither. That is
-what broke the refused dispatch above, rather than the flag alone.
+Read that as a route a dispatch may not depend on rather than one that usually
+works. The refusal closes the fallback in the same message, telling the session
+not to replicate the workflow by other means, so a refused worker has no route
+left and stops with a clean worktree. Both failed dispatches produced nothing
+rather than a degraded run, which is the correct outcome and not a thing to
+soften.
 
 Recovery belongs to whoever writes the next prompt, since a blocked session
 cannot replay its own launch. Re-dispatch onto the same branch with the autoship
-call named as the explicit next action.
+call leading the prompt, which puts the one command the first launch left as
+prose in the position the client expands.
+
+A launch that leads with `/canon:claude-autoship <plan>` and names no worktree
+call is the candidate for closing this on the first dispatch, since that chain's
+Step 0 enters the worktree itself and `claude-worktree` carries no flag to
+refuse the tool route. Nobody has run it. Treat it as untested rather than as the
+shape to switch to, because a launch expansion cannot be read from inside the
+session it launched.
 
 ### What the brief may carry
 
