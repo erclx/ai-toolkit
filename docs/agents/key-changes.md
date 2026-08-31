@@ -13,13 +13,16 @@ aitk pr key-changes 1265 --json
 aitk pr key-changes --body .claude/.tmp/pr/body.md --base origin/main
 ```
 
+The positional is the pull request to read, defaulting to the one open on this branch.
+
 | Option          | Behavior                                                           |
 | --------------- | ------------------------------------------------------------------ |
-| `[number]`      | Pull request to read, defaulting to the one open on this branch    |
 | `--body <path>` | Read the body from a file, taking the changed set from git instead |
 | `--base <ref>`  | Far side of the range when `--body` supplies the body              |
 | `--root <path>` | Repository to read, defaulting to the cwd                          |
 | `--json`        | Add a machine-readable record on stdout, keeping the frame         |
+
+`--body` decides where both halves come from, so a number passed beside it is never read. The body comes off disk and the changed set from the local range, which is the shape a fixture and a body still being drafted both need.
 
 Without `--body` the body, the file list, and the head commit come back from one `gh pr view` call, because the three have to describe the same commit and reading them apart leaves a window where a push between them compares a body against another head's files.
 

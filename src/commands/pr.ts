@@ -60,8 +60,7 @@ const REFUSALS: Record<Refusal, string> = {
     'gh is not on the path, so no pull request body could be read. Pass --body <path> to read one off disk instead.',
   'gh-failed':
     'gh could not answer for this branch. Name the pull request number, or pass --body <path>.',
-  'gh-truncated':
-    `gh returned the first ${GH_VIEW_FILE_CAP} changed files and the paginated read that would complete the set failed, so a claim could be accused of naming a file this read never saw.`,
+  'gh-truncated': `gh returned the first ${GH_VIEW_FILE_CAP} changed files and the paginated read that would complete the set failed, so a claim could be accused of naming a file this read never saw.`,
   'unreadable-body': 'The file named by --body could not be read.',
   'unreadable-tree':
     'git could not list this repository, so no path could be judged whole rather than partial.',
@@ -88,7 +87,10 @@ export function register(program: Command): void {
     )
     .argument('[number]', 'Pull request to read, defaulting to this branch')
     .helpOption('-h, --help', 'Show this help message')
-    .option('--body <path>', 'Read the body from a file rather than the API')
+    .option(
+      '--body <path>',
+      'Read the body from a file rather than the API, ignoring any number',
+    )
     .option(
       '--base <ref>',
       'Far side of the range when --body supplies the body',
