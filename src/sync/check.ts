@@ -91,7 +91,7 @@ export interface UpstreamCommit {
   readonly subject: string
 }
 
-/** Pending changes per category, from the same scan `aitk tooling sync` reads. */
+/** Pending changes per category, from the same scan `canon tooling sync` reads. */
 export interface ToolingCounts {
   readonly configs: number
   readonly seeds: number
@@ -135,9 +135,10 @@ const UNMEASURED_TOOLING: ToolingReport = {
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
   /**
-   * True when the stamp `readStamp` found sits at the retired
-   * `.claude/aitk.json` path rather than the current one. Read only: nothing
-   * in the check migrates a target's config as a side effect of reporting it.
+   * True when the stamp `readStamp` found sits at one of the retired paths,
+   * `.claude/aitk/config.json` or `.claude/aitk.json`, rather than the current
+   * one. Read only: nothing in the check migrates a target's config as a side
+   * effect of reporting it.
    */
   readonly stampAtLegacyPath: boolean
   /** False when the target is not a toolkit project, so every section stays empty. */
@@ -173,7 +174,7 @@ export interface CheckReport {
   readonly reverse: ReverseReport
   /**
    * The binary running the check, not the target. It reports on an unmanaged
-   * target too, since a reader told to run `aitk init` is better off knowing
+   * target too, since a reader told to run `canon init` is better off knowing
    * first whether the binary about to install is the current one.
    *
    * `hasDrift` deliberately ignores it. A registry lookup inside a check that
