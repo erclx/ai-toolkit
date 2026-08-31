@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.52.0](https://github.com/erclx/aitk/compare/v3.51.1...v3.52.0) (2026-08-31)
+
+
+### Features
+
+* **sessions:** report a stalled worker via the status dwell ([#1275](https://github.com/erclx/aitk/issues/1275)) ([280f6ef](https://github.com/erclx/aitk/commit/280f6ef1437afa34813a22b0d92caa717b8af593))
+
 ## [3.51.1](https://github.com/erclx/aitk/compare/v3.51.0...v3.51.1) (2026-08-31)
 
 
