@@ -23,7 +23,7 @@ A `cat <<'EOF' > file` heredoc was refused twice more against a main-root path, 
 
 ### The two write routes
 
-Two write kinds therefore take two routes. Creating a whole file is a heredoc through `Bash`, which is why a plan, a review report, and a memory entry need no code behind them. A body the verification above refuses falls back to `Write` into the worktree followed by a two-argument `cp` out to the main root, which carries no syntax to inspect and needs no verb. Changing a line inside a file that already exists has no shell route, because the stream editors that would do it are banned for rewriting the line they anchored to and for exiting zero on a non-match, so it runs through an `canon` verb resolving the main root in-process.
+Two write kinds therefore take two routes. Creating a whole file is a heredoc through `Bash`, which is why a plan, a review report, and a memory entry need no code behind them. A body the verification above refuses falls back to `Write` into the worktree followed by a two-argument `cp` out to the main root, which carries no syntax to inspect and needs no verb. Changing a line inside a file that already exists has no shell route, because the stream editors that would do it are banned for rewriting the line they anchored to and for exiting zero on a non-match, so it runs through a `canon` verb resolving the main root in-process.
 
 `canon tasks pull-request` and `canon tasks outcome` cover the two the board takes, and `mainWorktreeRoot()` in `src/worktree.ts` is the resolver all of them share. A skill with a structured edit no verb covers reads the file and writes it back whole instead.
 

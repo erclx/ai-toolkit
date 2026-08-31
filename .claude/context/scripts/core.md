@@ -5,7 +5,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 
 # Core scripts
 
-`scripts/core/` holds repo maintenance: the scripts a contributor runs by `bun run` name and the guard stages `check` fires on every push. Nothing here is an `canon` verb, so the catalog below is the discoverable surface.
+`scripts/core/` holds repo maintenance: the scripts a contributor runs by `bun run` name and the guard stages `check` fires on every push. Nothing here is a `canon` verb, so the catalog below is the discoverable surface.
 
 What sequences those guards is not here. `bun run check` resolves to `canon gate run`, and the stage table, the changed-file scoping, and every threshold comparison sit in `src/gate/`, described in `.claude/context/development/gates.md`. Each check stayed the script it already was, so this folder is what the gate runs rather than what decides when to run it.
 
@@ -75,7 +75,7 @@ The test strips every inherited `GIT_*` variable before building its fixtures. G
 
 `check-color-source.sh` takes that treatment too, exiting 1 when `scripts/lib/ui.sh` is absent rather than reporting a tree it never measured. Its walk stops at `scripts/` on purpose, since the seed scripts under `tooling/*/configs/scripts/` have to keep escapes of their own: a target that installs them has no shared library to source. It matches SGR alone, which leaves the cursor and erase sequences an interactive prompt writes legal.
 
-The walk sat inside `find -L claude/ -type f` in a process substitution whose status nothing read, so a missing `claude/` made `find` fail, the loop ran zero times, and the guard exited 0 without walking anything. Seeding a violation turned it red, which is why it looked verified: proving a gate goes red on a planted violation does not prove it goes red when its input never arrives, and the right probe is removing the input root. The same shape reaches a consumer reading structured output, since both standards-audit hooks read findings out of an `canon markdown audit --json` record and the verb writes no record at all outside a git repository, so the hook reported a file clean that it had never checked. Assert the whole payload arrived before reading any field out of it.
+The walk sat inside `find -L claude/ -type f` in a process substitution whose status nothing read, so a missing `claude/` made `find` fail, the loop ran zero times, and the guard exited 0 without walking anything. Seeding a violation turned it red, which is why it looked verified: proving a gate goes red on a planted violation does not prove it goes red when its input never arrives, and the right probe is removing the input root. The same shape reaches a consumer reading structured output, since both standards-audit hooks read findings out of a `canon markdown audit --json` record and the verb writes no record at all outside a git repository, so the hook reported a file clean that it had never checked. Assert the whole payload arrived before reading any field out of it.
 
 ### Quoting a pathspec changes what it matches
 

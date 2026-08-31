@@ -73,7 +73,7 @@ The pass that produced the skill also measured the ratio. Of 58 items carrying a
 
 ## What a skill carries
 
-A file a skill body cites has to arrive by the channel the skill itself travels on. Skills load live from the plugin root while standards, snippets, and governance rules are copied by an `canon` command, so a body naming an installed path is a dependency crossing that boundary and resolves only for a project that ran the matching install. Nothing reports the break, because an unresolved path produces no error until a session opens it.
+A file a skill body cites has to arrive by the channel the skill itself travels on. Skills load live from the plugin root while standards, snippets, and governance rules are copied by a `canon` command, so a body naming an installed path is a dependency crossing that boundary and resolves only for a project that ran the matching install. Nothing reports the break, because an unresolved path produces no error until a session opens it.
 
 The three orchestrator runbooks settled the rule. They were snippets cited by `claude-orchestrate` as `@.claude/snippets/claude/<name>.md`, and they now sit in that skill's `references/` cited with `${CLAUDE_SKILL_DIR}`, which resolves from any working directory in any target. What this narrows to is a test on readership rather than on topic: a file one skill reads ships inside it, and a file several surfaces reach stays in the catalog that publishes it.
 
@@ -113,7 +113,7 @@ The front door reaches it through the audit offers, which now carry five rows. F
 
 ## A prefix marks whose surface the skill owns, not where it writes
 
-Four prefixes carry a family and each one answers the same question. `internal-` is a skill only this repository runs, `canon-` is a skill whose subject is the toolkit or which wraps an `canon` verb, `claude-` maintains a Claude workflow surface, and the act families (`git-`, `setup-`, `migration-`, `create-`) name what the session is doing rather than what it is doing it to. The axis was unwritten until 2026-08-28, when the sixteen-folder rename forced it, and a family picking a fifth answer is what recording it is meant to prevent.
+Four prefixes carry a family and each one answers the same question. `internal-` is a skill only this repository runs, `canon-` is a skill whose subject is the toolkit or which wraps a `canon` verb, `claude-` maintains a Claude workflow surface, and the act families (`git-`, `setup-`, `migration-`, `create-`) name what the session is doing rather than what it is doing it to. The axis was unwritten until 2026-08-28, when the sixteen-folder rename forced it, and a family picking a fifth answer is what recording it is meant to prevent.
 
 The collision is what made the axis unavoidable rather than merely untidy. Eight internal skills held `canon-` as project skills while the plugin namespace resolves as `canon:`, so the prefix naming the product was spoken for by the one family that never ships. `standards/skill.md` puts project ahead of plugin, so a genuine collision would have resolved in the internal family's favour with nothing reporting it. `internal-` won over `toolkit-` and over a bare domain name because it matches `internal/`, the folder `598-authoring-layout.md` already governs, so the prefix teaches the boundary instead of restating it. What it costs is that the family still names its domain second, so nothing improves about scanning it.
 

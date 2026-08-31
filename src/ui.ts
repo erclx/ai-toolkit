@@ -135,8 +135,22 @@ export function frameSuccess(command: string, target: string): void {
   )
 }
 
+/**
+ * The retired spelling is still honored, and permanently.
+ *
+ * This variable is the documented way to drive any command headlessly, so
+ * every skill body, CI job, and operator script already written sets the old
+ * name. Those callers live in other repositories and in plugin caches this
+ * release cannot reach, and the failure mode of dropping the fallback is a
+ * command that quietly waits for a TTY nobody is watching rather than one that
+ * refuses and says why.
+ */
 export function isNonInteractive(): boolean {
-  return process.env.CANON_NON_INTERACTIVE === '1'
+  return (
+    process.env.CANON_NON_INTERACTIVE === '1' ||
+    // canon-keep-retired
+    process.env.AITK_NON_INTERACTIVE === '1'
+  )
 }
 
 /**

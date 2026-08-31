@@ -4,7 +4,7 @@
 
 # Infrastructure
 # The sandbox provisions to $XDG_STATE_HOME/canon/sandbox now. This covers a tree
-# left by an older checkout or by an CANON_SANDBOX_DIR pointed back inside.
+# left by an older checkout or by a CANON_SANDBOX_DIR pointed back inside.
 .sandbox/
 
 # Dependencies

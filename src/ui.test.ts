@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   frameSuccess,
   intro,
+  isNonInteractive,
   logInfo,
   logWarn,
   outro,
@@ -200,6 +201,51 @@ describe('the help text', () => {
     })
     expect(result.stdout).toContain('Usage:')
     expect(result.stdout).not.toMatch(SGR)
+  })
+})
+
+describe('isNonInteractive', () => {
+  const saved = {
+    canon: process.env.CANON_NON_INTERACTIVE,
+    retired: process.env.AITK_NON_INTERACTIVE,
+  }
+
+  afterEach(() => {
+    restore('CANON_NON_INTERACTIVE', saved.canon)
+    restore('AITK_NON_INTERACTIVE', saved.retired)
+  })
+
+  function restore(name: string, value: string | undefined): void {
+    if (value === undefined) delete process.env[name]
+    else process.env[name] = value
+  }
+
+  it('should read the current variable', () => {
+    process.env.CANON_NON_INTERACTIVE = '1'
+    delete process.env.AITK_NON_INTERACTIVE
+
+    expect(isNonInteractive()).toBe(true)
+  })
+
+  it('should read the retired variable, which every existing caller still sets', () => {
+    delete process.env.CANON_NON_INTERACTIVE
+    process.env.AITK_NON_INTERACTIVE = '1'
+
+    expect(isNonInteractive()).toBe(true)
+  })
+
+  it('should be false when neither is set', () => {
+    delete process.env.CANON_NON_INTERACTIVE
+    delete process.env.AITK_NON_INTERACTIVE
+
+    expect(isNonInteractive()).toBe(false)
+  })
+
+  it('should be false when the value is not 1', () => {
+    process.env.CANON_NON_INTERACTIVE = 'yes'
+    delete process.env.AITK_NON_INTERACTIVE
+
+    expect(isNonInteractive()).toBe(false)
   })
 })
 

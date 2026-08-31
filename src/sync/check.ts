@@ -135,10 +135,12 @@ const UNMEASURED_TOOLING: ToolingReport = {
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
   /**
-   * True when the stamp `readStamp` found sits at one of the retired paths,
-   * `.claude/aitk/config.json` or `.claude/aitk.json`, rather than the current
-   * one. Read only: nothing in the check migrates a target's config as a side
-   * effect of reporting it.
+   * True when the stamp `readStamp` found sits at one of the retired paths
+   * rather than the current one. Read only: nothing in the check migrates a
+   * target's config as a side effect of reporting it.
+   *
+   * canon-keep-retired
+   * The two are `.claude/aitk/config.json` and `.claude/aitk.json`.
    */
   readonly stampAtLegacyPath: boolean
   /** False when the target is not a toolkit project, so every section stays empty. */

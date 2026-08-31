@@ -2,6 +2,7 @@ aanerud
 ababab
 affordances
 agentic
+# canon-keep-retired: the changelog and the eval transcripts still spell it
 aitk
 anchorable
 anthropics

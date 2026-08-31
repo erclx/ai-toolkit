@@ -69,6 +69,7 @@ export function stampPath(target: string): string {
  * point the fallback at a file that has never existed anywhere.
  */
 export function legacyStampPath(target: string): string {
+  // canon-keep-retired
   return join(target, '.claude', 'aitk.json')
 }
 
@@ -78,6 +79,7 @@ export function legacyStampPath(target: string): string {
  * the same reason as the path above and kept readable on the same terms.
  */
 export function retiredNameStampPath(target: string): string {
+  // canon-keep-retired
   return join(target, '.claude', 'aitk', 'config.json')
 }
 

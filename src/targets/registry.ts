@@ -1,4 +1,10 @@
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 
@@ -48,7 +54,25 @@ const VERSION = 1
  * into the home directory of whoever runs it.
  */
 export function stateDir(): string {
-  const override = process.env.CANON_STATE_DIR
+  return stateDirNamed('canon')
+}
+
+/**
+ * Where this machine's state sat before the rename. Read below when the
+ * current folder holds no registry, and never written to by anything here.
+ */
+export function retiredStateDir(): string {
+  // canon-keep-retired
+  return stateDirNamed('aitk')
+}
+
+/**
+ * The override honors the retired variable too, since an operator who exported
+ * it is the same operator whose registry sits under the retired folder.
+ */
+function stateDirNamed(folder: string): string {
+  // canon-keep-retired
+  const override = process.env.CANON_STATE_DIR ?? process.env.AITK_STATE_DIR
   if (override !== undefined && override !== '') return override
 
   const state = process.env.XDG_STATE_HOME
@@ -57,11 +81,29 @@ export function stateDir(): string {
       ? state
       : join(homedir(), '.local', 'state')
 
-  return join(base, 'canon')
+  return join(base, folder)
 }
 
+/**
+ * The registry this machine uses, current path first and the retired one
+ * behind it.
+ *
+ * The rename moved the folder and nothing migrates it, so a machine that has
+ * been recording targets for months would otherwise answer with an empty
+ * registry the first time it ran the renamed binary. Empty is
+ * indistinguishable from a machine that never installed anything, which is
+ * exactly the confident wrong answer this record exists to prevent.
+ *
+ * Resolving one path for both the read and the write is deliberate. A machine
+ * already holding the retired file keeps using it rather than being migrated
+ * underneath, which mirrors how `readStamp` treats a target's retired config.
+ */
 export function registryPath(): string {
-  return join(stateDir(), 'targets.json')
+  const current = join(stateDir(), 'targets.json')
+  if (existsSync(current)) return current
+
+  const retired = join(retiredStateDir(), 'targets.json')
+  return existsSync(retired) ? retired : current
 }
 
 function isRecord(value: Partial<TargetRecord>): value is TargetRecord {

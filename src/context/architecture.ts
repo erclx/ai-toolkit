@@ -104,7 +104,7 @@ function codeSpans(text: string): string[] {
 /**
  * Names the executable checks an entry spells.
  *
- * A script has to exist on disk and an `canon` invocation has to match a
+ * A script has to exist on disk and a `canon` invocation has to match a
  * registered audit, because an entry naming a check that was removed is an
  * uncovered claim wearing a covered one's words.
  */

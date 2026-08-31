@@ -23,7 +23,7 @@
 # assertion goes green on exactly the truncation it exists to catch. A
 # declaration at or under the cap sits below that number and fires.
 #
-# The run needs an `canon` on PATH carrying the `teach` verbs. A first attempt
+# The run needs a `canon` on PATH carrying the `teach` verbs. A first attempt
 # reached the machine's global install at 0.98.0, which has none of them, and the
 # session refused and wrote nothing, failing every assertion for a reason the arm
 # is not about.

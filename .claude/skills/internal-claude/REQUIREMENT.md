@@ -27,7 +27,7 @@ The failures share one cause. The Claude surfaces reach a target through three c
 ## Guards
 
 - Read a skill's sibling `REQUIREMENT.md` before changing it. When the change closes no gap that file states, change the requirement first or drop the change.
-- When a plan names an `canon-*` folder under `.claude/skills/`, flag the mismatch before the folder exists rather than after the catalog carries it.
+- When a plan names a `canon-*` folder under `.claude/skills/`, flag the mismatch before the folder exists rather than after the catalog carries it.
 
 ## Out of scope
 

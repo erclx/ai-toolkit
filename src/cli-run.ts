@@ -13,7 +13,7 @@ export function cliPath(root: string): string {
 }
 
 /**
- * Spawns an `canon` subcommand as its own process, by path rather than through
+ * Spawns a `canon` subcommand as its own process, by path rather than through
  * the global binary, so a linked worktree exercises its own code.
  *
  * Both callers want a separately failable child rather than an in-process call:

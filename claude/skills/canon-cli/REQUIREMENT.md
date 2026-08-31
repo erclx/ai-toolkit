@@ -7,7 +7,7 @@ description: Why the overwrite contract is stated before a sync runs, and why th
 
 ## Gap
 
-Without this skill, a session runs an `canon` sync and finds out afterward what it did. The command names give nothing away. `install` and `sync` differ per domain, some surfaces overwrite unconditionally, some merge, some are written once and never touched again, and none of that is visible from the command line the user typed.
+Without this skill, a session runs a `canon` sync and finds out afterward what it did. The command names give nothing away. `install` and `sync` differ per domain, some surfaces overwrite unconditionally, some merge, some are written once and never touched again, and none of that is visible from the command line the user typed.
 
 The damage lands on the files a project owns. A golden config carrying local edits is replaced without a warning anyone saw, and a standards install overwrites every standard in a project that only needed the two it had drifted on. The user learns which category a file was in by losing the edit.
 
