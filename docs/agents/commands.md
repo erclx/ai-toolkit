@@ -68,7 +68,11 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 
 `aitk serve` ships and drives no browser, which is what separates it from the two that do. A generated page loses its stylesheet and its script to an editor preview and to a `file://` open, so the link is the delivery rather than a convenience, and every generated surface here reaches a reader through one. It binds `127.0.0.1` and never a wildcard, because what it is pointed at is routinely a gitignored record tree. It sends `cache-control: no-store`, since a preview exists to be edited and reloaded and a cached stylesheet reads as a fix that did not work.
 
-A port already in use is the ordinary case rather than a refusal, so it walks forward to the next free one and reports which it took. That is why a caller reads `url` off the `--json` record instead of composing one from the port it asked for.
+A port already in use is the ordinary case rather than a refusal, so it walks forward to the next free one and reports which it took. That is why a caller reads `url` off the `--json` record instead of composing one from the port it asked for. Only contention is walked past, and any other bind failure is raised rather than retried, since twenty attempts at a port nothing could bind report a range being full and name a cause the code never checked.
+
+A request naming a directory is redirected to its trailing-slash form rather than answered in place. A browser resolves a relative asset against the last slash of the URL it is on, so answering `/lesson` directly leaves the page asking for `/course.css` instead of `/lesson/course.css`, and it renders unstyled through the server that exists to prevent exactly that.
+
+Containment is tested after symlinks are followed rather than on the path as written. Resolving a request lexically clears a link that points outside the served root, and this repository is a live instance of that shape, since `claude/standards` and `claude/snippets` are links out of `claude/`. An `--entry` that escapes the root refuses with `no-entry` before a port is taken, because `url` is the field a caller hands to a reader.
 
 `aitk demo` is the second browser command and the one that ships, since its purpose is running in a target rather than regenerating what this repository commits. It needs a browser binary the package does not carry, installed once with `bunx playwright install chromium`.
 

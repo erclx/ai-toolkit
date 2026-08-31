@@ -1,4 +1,4 @@
-import { existsSync, statSync } from 'node:fs'
+import { existsSync, realpathSync, statSync } from 'node:fs'
 import { join, resolve, sep } from 'node:path'
 
 /**
@@ -122,6 +122,29 @@ export function resolveWithin(
 }
 
 /**
+ * Re-tests containment after following symlinks. `resolveWithin` is lexical
+ * and `resolve` does not follow a link, so a link inside the root clears that
+ * test while the file it points at sits outside. This repository is a live
+ * instance, since `claude/standards` and `claude/snippets` are links out of
+ * `claude/`.
+ *
+ * Only a path that exists is checked, because a link can be followed only once
+ * there is something on the other end, and a path that resolves to nothing is
+ * a 404 rather than an escape.
+ */
+function escapesThroughLink(root: string, target: string): boolean {
+  if (!existsSync(target)) return false
+  try {
+    const realRoot = realpathSync(root)
+    const realTarget = realpathSync(target)
+    return realTarget !== realRoot && !realTarget.startsWith(realRoot + sep)
+  } catch {
+    /* Unreadable resolves to no answer, and no answer is refused. */
+    return true
+  }
+}
+
+/**
  * Picks a listening port, starting at the requested one and walking forward.
  * A busy port is the ordinary case rather than a failure, since a preview of
  * one workspace is routinely open while another is started.
@@ -144,8 +167,14 @@ function listen(
        * hostname and a port never is, and the request is the honest fallback.
        */
       return { server, port: server.port ?? port }
-    } catch {
-      /* In use. The next port is tried rather than reported. */
+    } catch (error) {
+      /**
+       * Contention is the one cause worth walking past. A permission failure
+       * or an unavailable interface swallowed here would be retried twenty
+       * times and then reported as a port range being full, which names a
+       * cause nothing checked.
+       */
+      if ((error as NodeJS.ErrnoException).code !== 'EADDRINUSE') throw error
     }
   }
   return undefined
@@ -155,9 +184,9 @@ export async function respond(
   root: string,
   request: Request,
 ): Promise<Response> {
-  const { pathname } = new URL(request.url)
+  const { pathname, search } = new URL(request.url)
   const target = resolveWithin(root, pathname)
-  if (!target) {
+  if (!target || escapesThroughLink(root, target)) {
     return new Response('Forbidden\n', {
       status: 403,
       headers: { 'content-type': 'text/plain; charset=utf-8' },
@@ -166,6 +195,18 @@ export async function respond(
 
   let path = target
   if (existsSync(path) && statSync(path).isDirectory()) {
+    /**
+     * A browser resolves a relative asset against the last slash of the URL it
+     * is on, so answering a directory in place leaves `/lesson` asking for
+     * `/course.css` rather than `/lesson/course.css` and the page renders
+     * unstyled. The redirect moves the base before the index is served.
+     */
+    if (!pathname.endsWith('/')) {
+      return new Response(null, {
+        status: 301,
+        headers: { location: `${pathname}/${search}` },
+      })
+    }
     path = join(path, DEFAULT_ENTRY)
   }
 
@@ -200,6 +241,17 @@ export function startServer(
     return refuse('not-a-directory', `${dir} is not a directory`)
 
   const entry = (options.entry ?? DEFAULT_ENTRY).replace(/^\/+/, '')
+
+  /**
+   * Checked before a port is taken, since `url` is the field a caller is told
+   * to read and hand to a reader. An entry the containment test rejects would
+   * otherwise be reported as a link the server then refuses. An entry that is
+   * merely absent is not this case and does not refuse, which `entryExists`
+   * reports instead.
+   */
+  const entryPath = resolveWithin(root, entry)
+  if (!entryPath) return refuse('no-entry', `${entry} escapes ${dir}`)
+
   const first = options.port ?? DEFAULT_PORT
   const bound = listen(root, first)
   if (!bound) {
@@ -209,7 +261,6 @@ export function startServer(
     )
   }
 
-  const entryPath = resolveWithin(root, entry)
   return {
     ok: true,
     root,
@@ -217,7 +268,7 @@ export function startServer(
     port: bound.port,
     entry,
     url: `http://${SERVE_HOST}:${bound.port}/${entry}`,
-    entryExists: entryPath !== undefined && existsSync(entryPath),
+    entryExists: existsSync(entryPath),
     stop: async () => {
       await bound.server.stop(true)
     },

@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { connect } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -195,6 +201,76 @@ describe('startServer', () => {
     ).then((r) => r.text())
 
     expect(body).toBe('<h1>workspace</h1>')
+  })
+
+  it('should redirect a directory request to its trailing-slash form', async () => {
+    seed('workspace/index.html', '<h1>workspace</h1>')
+    const server = start(ROOT, { port: 0 })
+
+    const response = await fetch(
+      `http://${SERVE_HOST}:${server.port}/workspace`,
+      { redirect: 'manual' },
+    )
+
+    expect(response.status).toBe(301)
+    expect(response.headers.get('location')).toBe('/workspace/')
+  })
+
+  /**
+   * The outcome the redirect exists for. Serving the index at the directory
+   * URL leaves the browser resolving `course.css` against the parent, so the
+   * page renders unstyled, which is the failure this whole verb exists to
+   * close.
+   */
+  it('should land a directory request on the url a relative asset resolves against', async () => {
+    seed('workspace/index.html', '<h1>workspace</h1>')
+    seed('workspace/course.css', 'body { color: red }')
+    const server = start(ROOT, { port: 0 })
+
+    const response = await fetch(
+      `http://${SERVE_HOST}:${server.port}/workspace`,
+    )
+
+    expect(response.url).toBe(`http://${SERVE_HOST}:${server.port}/workspace/`)
+  })
+
+  /**
+   * `resolve` is lexical and does not follow links, so a containment test
+   * built on it clears a path that `Bun.file` then reads straight out of the
+   * root. This repository is a live instance, since `claude/standards` and
+   * `claude/snippets` are symlinks out of `claude/`.
+   */
+  it('should refuse a file reached through a symlink out of the root', async () => {
+    const outside = mkdtempSync(join(tmpdir(), 'aitk-serve-outside-'))
+    writeFileSync(join(outside, 'private.txt'), 'secret')
+    symlinkSync(outside, join(ROOT, 'escape'), 'dir')
+    const server = start(ROOT, { port: 0 })
+
+    const status = await fetch(
+      `http://${SERVE_HOST}:${server.port}/escape/private.txt`,
+    ).then((response) => response.status)
+    rmSync(outside, { recursive: true, force: true })
+
+    expect(status).toBe(403)
+  })
+
+  it('should serve a symlink that stays inside the root', async () => {
+    seed('assets/course.css', 'body { color: red }')
+    symlinkSync(join(ROOT, 'assets'), join(ROOT, 'shared'), 'dir')
+    const server = start(ROOT, { port: 0 })
+
+    const status = await fetch(
+      `http://${SERVE_HOST}:${server.port}/shared/course.css`,
+    ).then((response) => response.status)
+
+    expect(status).toBe(200)
+  })
+
+  it('should refuse an entry that escapes the root', () => {
+    const outcome = startServer(ROOT, { entry: '../../etc/passwd', port: 0 })
+
+    expect(outcome.ok).toBe(false)
+    if (!outcome.ok) expect(outcome.reason).toBe('no-entry')
   })
 
   it('should answer 404 for a file that is not there', async () => {
