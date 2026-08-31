@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.48.1](https://github.com/erclx/aitk/compare/v3.48.0...v3.48.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **sandbox:** scope the default tree to the run provisioning it ([#1267](https://github.com/erclx/aitk/issues/1267)) ([7186e93](https://github.com/erclx/aitk/commit/7186e932df0d10d4334f2b028da8b789b6973409))
+* **skills:** git-worktree cleanup skips a tree a live session holds ([#1266](https://github.com/erclx/aitk/issues/1266)) ([5bcb810](https://github.com/erclx/aitk/commit/5bcb810c1f3a360e698741d7086c053736efeb03))
+
 ## [3.48.0](https://github.com/erclx/aitk/compare/v3.47.1...v3.48.0) (2026-08-31)
 
 

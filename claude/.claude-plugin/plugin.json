@@ -1,7 +1,7 @@
 {
   "name": "aitk",
   "description": "Automated governance, versioning, and discovery tools for Claude Code.",
-  "version": "3.48.0",
+  "version": "3.48.1",
   "author": {
     "name": "Eric Le",
     "url": "https://github.com/erclx"
