@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.47.1](https://github.com/erclx/aitk/compare/v3.47.0...v3.47.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **gov:** reach a citation that names a family as a pattern ([#1262](https://github.com/erclx/aitk/issues/1262)) ([52fd318](https://github.com/erclx/aitk/commit/52fd318b650cda68adde1b3c63633149bc2e83a9))
+
 ## [3.47.0](https://github.com/erclx/aitk/compare/v3.46.0...v3.47.0) (2026-08-31)
 
 
