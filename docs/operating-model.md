@@ -73,6 +73,14 @@ They collide only if the worker also runs a deep pass. Keep the worker's review
 light and let the orchestrator own the deep, independent one. The human read at
 merge is the final gate. No layer repeats another.
 
+The orchestrator's pass also reads the pull request body against itself, which is
+a vantage the worker never has. This repository squash-merges, so the body
+becomes the commit message and the record on the trunk once the branch is gone.
+`aitk pr key-changes` compares the paths the body's Key Changes claims against
+its own changed-file list, and a claim the diff does not carry is a finding on
+the body rather than on a file. See
+[Key Changes bijection](agents/key-changes.md).
+
 ## The review channel
 
 Findings travel on the PR. `claude-pr-review` posts them there.
