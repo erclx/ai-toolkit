@@ -1,9 +1,8 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { detectRegistryLeak, runCli } from '@/process/harness'
-import { registryPath } from '@/targets/registry'
+import { detectStateLeak, runCli, snapshotStateDir } from '@/process/harness'
 
 let cwd: string
 
@@ -47,33 +46,32 @@ describe('runCli', () => {
   })
 })
 
-describe('detectRegistryLeak', () => {
+describe('detectStateLeak', () => {
   it('should read no leak when both snapshots match', () => {
-    expect(detectRegistryLeak(undefined, undefined)).toBe(false)
-    expect(detectRegistryLeak('{"targets":[]}', '{"targets":[]}')).toBe(false)
+    expect(detectStateLeak(undefined, undefined)).toBe(false)
+    expect(detectStateLeak('a/targets.json:12', 'a/targets.json:12')).toBe(
+      false,
+    )
   })
 
   it('should detect a leak when the snapshot changes', () => {
-    expect(detectRegistryLeak(undefined, '{"targets":[]}')).toBe(true)
+    expect(detectStateLeak(undefined, 'a/targets.json:12')).toBe(true)
     expect(
-      detectRegistryLeak('{"targets":[]}', '{"targets":[{"path":"x"}]}'),
+      detectStateLeak(
+        'a/targets.json:12',
+        'a/sandbox/scratch.txt:3\na/targets.json:12',
+      ),
     ).toBe(true)
   })
 })
 
 describe('containment', () => {
-  it("should leave this machine's real target registry untouched by gov install and gov sync", () => {
-    const before = existsSync(registryPath())
-      ? readFileSync(registryPath(), 'utf8')
-      : undefined
+  it("should leave this machine's real toolkit state untouched by gov install and gov sync", () => {
+    const before = snapshotStateDir()
 
     runCli(['gov', 'install', 'base', cwd], { cwd })
     runCli(['gov', 'sync', cwd], { cwd })
 
-    const after = existsSync(registryPath())
-      ? readFileSync(registryPath(), 'utf8')
-      : undefined
-
-    expect(after).toBe(before)
+    expect(snapshotStateDir()).toBe(before)
   })
 })

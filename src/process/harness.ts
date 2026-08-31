@@ -1,8 +1,8 @@
-import { readFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
+import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { PROJECT_ROOT } from '@/project-root'
-import { registryPath } from '@/targets/registry'
+import { stateDir } from '@/targets/registry'
 
 const CLI = join(PROJECT_ROOT, 'src/cli.ts')
 
@@ -24,32 +24,62 @@ export interface RunCliOptions {
 
 /**
  * Thrown when a case reaches past its declared temporary directory into this
- * machine's real toolkit state. `gov install` and `gov sync` both record the
- * target they ran against into `stateDir()/targets.json`, so a case that
- * inherits the real `HOME` unmodified writes a row for a directory `afterEach`
- * is about to delete, and nothing but this check would ever say so.
+ * machine's real toolkit state. `stateDir()` in `src/targets/registry.ts`
+ * holds both the target registry `gov install` and `gov sync` record into and
+ * the sandbox tree `aitk sandbox` provisions into, so a case that inherits the
+ * real `HOME` unmodified writes into whichever of the two a verb touches, and
+ * nothing but this check would ever say so.
  */
 export class ContainmentViolation extends Error {}
 
 /**
- * Compares two snapshots of the real machine's target registry and reports
- * whether a spawn changed it. A pure comparison over the two reads rather
- * than the read itself, so the detection logic is testable without touching
- * the filesystem or spawning anything.
+ * Compares two snapshots of this machine's real toolkit state directory and
+ * reports whether a spawn changed it. A pure comparison over the two reads
+ * rather than the read itself, so the detection logic is testable without
+ * touching the filesystem or spawning anything.
  */
-export function detectRegistryLeak(
+export function detectStateLeak(
   before: string | undefined,
   after: string | undefined,
 ): boolean {
   return before !== after
 }
 
-function readRealRegistry(): string | undefined {
-  try {
-    return readFileSync(registryPath(), 'utf8')
-  } catch {
-    return undefined
+/**
+ * A sorted `path:size` listing of every file under this machine's real
+ * `stateDir()`, walked recursively rather than read one level deep, so a
+ * write nested inside an existing folder, such as a file the sandbox tree
+ * already holds, shows up the same as a new top-level entry. Reading a single
+ * known file, such as the target registry alone, would miss every sibling
+ * `stateDir()` grows, which is what left the sandbox tree unwatched.
+ */
+export function snapshotStateDir(): string {
+  const root = stateDir()
+  const rows: string[] = []
+
+  function walk(dir: string): void {
+    let names: string[]
+    try {
+      names = readdirSync(dir)
+    } catch {
+      return
+    }
+
+    for (const name of names.sort()) {
+      const full = join(dir, name)
+      let info: ReturnType<typeof statSync>
+      try {
+        info = statSync(full)
+      } catch {
+        continue
+      }
+      if (info.isDirectory()) walk(full)
+      else rows.push(`${full}:${info.size}`)
+    }
   }
+
+  walk(root)
+  return rows.join('\n')
 }
 
 /**
@@ -63,16 +93,21 @@ function readRealRegistry(): string | undefined {
  * builds, so every spawn drops the `GIT_` prefix before adding the headless
  * flag every case needs to avoid a picker blocking on stdin.
  *
- * `AITK_STATE_DIR` gets the same treatment as `GIT_DIR`, pointed at a folder
- * under the case's own `cwd` rather than dropped, since dropping it alone
- * would still resolve through the inherited `HOME` to this machine's real
- * `~/.local/state/aitk`. A case explicitly passing its own value through
+ * `AITK_STATE_DIR` and `AITK_SANDBOX_DIR` get the same treatment as `GIT_DIR`,
+ * each pointed at a folder under the case's own `cwd` rather than dropped,
+ * since dropping either alone would still resolve through the inherited
+ * `HOME` to this machine's real `~/.local/state/aitk`. `stateDir()` and
+ * `sandboxTree()` resolve the same three ways and share that parent, so both
+ * overrides move together. A case explicitly passing its own value through
  * `options.env` still wins, matching `AITK_NON_INTERACTIVE` below.
  *
- * The registry snapshot before and after the spawn is what actually catches
- * an escape past that redirection, since a default can be wrong in a way a
- * case never asserts on its own. `ContainmentViolation` fails loud rather
- * than leaving a dead row for a reviewer to find on a real machine.
+ * The `stateDir()` snapshot before and after the spawn is what actually
+ * catches an escape past that redirection, since a default can be wrong in a
+ * way a case never asserts on its own, and it is what `AITK_SANDBOX_DIR`
+ * rides for free: the sandbox tree already sits under `stateDir()`, so
+ * walking the whole directory catches a leak there with no override of its
+ * own to add. `ContainmentViolation` fails loud rather than leaving a dead
+ * row for a reviewer to find on a real machine.
  */
 export function runCli(
   args: readonly string[],
@@ -82,7 +117,7 @@ export function runCli(
     Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_')),
   )
 
-  const before = readRealRegistry()
+  const before = snapshotStateDir()
 
   const result = spawnSync('bun', [CLI, ...args], {
     cwd: options.cwd,
@@ -92,14 +127,15 @@ export function runCli(
       ...inherited,
       AITK_NON_INTERACTIVE: '1',
       AITK_STATE_DIR: join(options.cwd, '.aitk-state'),
+      AITK_SANDBOX_DIR: join(options.cwd, '.aitk-state', 'sandbox'),
       ...options.env,
     },
   })
 
-  const after = readRealRegistry()
-  if (detectRegistryLeak(before, after)) {
+  const after = snapshotStateDir()
+  if (detectStateLeak(before, after)) {
     throw new ContainmentViolation(
-      `A case wrote into this machine's real target registry at ${registryPath()}. ` +
+      `A case wrote into this machine's real toolkit state at ${stateDir()}. ` +
         'Every process-tier case must stay inside the directory it declared.',
     )
   }
