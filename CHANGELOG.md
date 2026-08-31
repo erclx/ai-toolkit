@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.51.1](https://github.com/erclx/aitk/compare/v3.51.0...v3.51.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **claude:** give the receipt's lifetime to the chain that writes it ([#1274](https://github.com/erclx/aitk/issues/1274)) ([6ee1d23](https://github.com/erclx/aitk/commit/6ee1d23fa472ab9bf2e168b4be6767b332b5a818))
+
 ## [3.51.0](https://github.com/erclx/aitk/compare/v3.50.0...v3.51.0) (2026-08-31)
 
 
