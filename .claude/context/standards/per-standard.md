@@ -38,6 +38,10 @@ The plan and intake answer contracts invert each other and both files state the 
 
 A blank `- Answer:` accepts the suggestion because a plan is written and read in one sitting with every question already surfaced, while an empty `You:` means unread because an intake folder is read over weeks and silence there is far more likely to be absence than assent.
 
+The operator-call line's separator varies in the corpus and the standard fixes only one of the two. `standards/plan.md` writes `- Suggested: needs your call, <why>` with a comma, and the live folder also writes it with a full stop, measured against `feature-autoship-entry-guard.md` on 2026-08-31, so a reader parsing the phrase strips both rather than the comma alone. `reasonOf` in `src/tasks/answers.ts` is the first such reader, and it came out of a run reporting a stray mark where the reason should have started.
+
+Reading the phrase also means reading the `Questions` section rather than the file. A plan discussing the operator-call form in its own `Risks` carries the exact phrase in backticks, which `feature-dispatch-answer-gate.md` does, so a whole-file match reads that plan as waiting on its own author. `splitPlanSections` holds the read to the section, and it is the split `checkQuestionContract` already runs, which is what leaves one definition of a question for both readers.
+
 `558-plan` routes `.claude/plans/**` and joins `base`, following `556-groundwork` and `557-intake`. That one glob covers the archive as well, since a shipped plan moves into `.claude/plans/archive/` rather than to a folder of its own, so the second `paths` entry the rule used to carry came off with the move. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
 
 ## Where an execution-time deviation goes
