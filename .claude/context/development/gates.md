@@ -53,7 +53,9 @@ Writing the stamp inside the render rather than in a wrapper is what makes it wo
 
 Each digest covers a whole file rather than the five counts inside it. A template edit changes what the image shows without moving any count, and hashing bytes keeps the stage ignorant of what the markup renders, which is what lets it stay correct as the frame grows fields.
 
-The counts are regenerated from the standards and skills trees, so any branch adding a standard or a skill moves `assets/hero.html` whether or not it meant to touch the frame. Clearing the stage then costs a capture and all three files in the commit, which puts that branch in collision with any track holding `assets/` however its plan drew the file set. Read the collision off this stage rather than off the plan.
+The counts are regenerated from the standards and skills trees and from the CLI registration block, so any branch adding a standard, a skill, or a command group moves `assets/hero.html` whether or not it meant to touch the frame. Clearing the stage then costs a capture and all three files in the commit, which puts that branch in collision with any track holding `assets/` however its plan drew the file set. Read the collision off this stage rather than off the plan.
+
+The third source is the one a plan is least likely to predict, since the commands expose no `--json` catalog and the figure comes through `aitk gov counts`, which parses the registration list in `src/cli.ts` directly. Registering `aitk autoship` on 2026-08-31 took the count from 35 to 36 and cost that branch the capture and the staged triple against a plan that named neither.
 
 `file_sha256` refuses on a machine carrying neither `sha256sum` nor `shasum`, and it refuses on stderr. Every caller reads it through a command substitution that captures stdout into the digest, so a message written there is swallowed and the stage reports a mismatch against a blank value, which names the image as wrong when the checker is what could not run.
 
