@@ -66,15 +66,22 @@ process_group_alive() {
 # a survivor is something to report rather than a reason to abandon the verdict
 # the run already took.
 #
-# The group has to be one the run created. `run.sh` starts its session under
-# `set -m` so the session leads a group of its own, and compares that group
-# against its own before calling here, since signalling the group the harness
-# inherited would reap the operator's terminal.
+# The group has to be one the run created, and the refusal below is what makes
+# that property travel with the function rather than living in one caller.
+# `run.sh` reads the harness group once and reports `inherited` when the session
+# failed to lead a group of its own, which is a diagnosis; this is the floor
+# under it, and under every caller after it, because the cost of getting the
+# argument wrong is the operator's own shell.
 #
 # What it cannot reach is a dispatch that called `setsid` on its way out, which
 # leaves the group before this reads it. That is the half the shim covers.
 reap_process_group() {
   local pgid="$1"
+
+  if [ "$pgid" = "$(ps -o pgid= -p $$ 2>/dev/null | tr -d ' ')" ]; then
+    printf 'refused-own-group\n'
+    return 0
+  fi
 
   if ! process_group_alive "$pgid"; then
     printf 'clear\n'

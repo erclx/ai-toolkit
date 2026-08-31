@@ -181,6 +181,63 @@ record_run() {
   fi
 }
 
+# The one place that decides whether a group is safe to signal, so the ordinary
+# path and the trap below cannot disagree about it. Sets `reap_state` for the
+# merged record and reports on stderr, and runs at most once per run.
+#
+# Every read is guarded because the trap can fire before the session started, or
+# before `main` declared any of these. An absent group is `no-session` rather
+# than a clean reap, since the two mean opposite things.
+reap_session_group() {
+  if [ "${reap_done:-0}" -eq 1 ]; then
+    return 0
+  fi
+  reap_done=1
+
+  if [ -z "${session_pgid:-}" ]; then
+    reap_state=no-session
+    return 0
+  fi
+
+  if [ "$session_pgid" = "${harness_pgid:-}" ]; then
+    reap_state=inherited
+    log_warn "The session ran in this shell's own process group, so nothing was signalled."
+    return 0
+  fi
+
+  reap_state="$(reap_process_group "$session_pgid")"
+
+  case "$reap_state" in
+  reaped-term | reaped-kill)
+    log_warn "The session left a process behind. Reaped its group ($reap_state)."
+    ;;
+  survived)
+    log_warn "A process in the session's group survived SIGKILL. Check pgid $session_pgid by hand."
+    ;;
+  refused-own-group)
+    log_warn "The reap refused a group matching this shell's own. Nothing was signalled."
+    ;;
+  esac
+  return 0
+}
+
+# Reaps and cleans up on every path out of `main`, which is what the ordinary
+# path alone could not do. A session that dispatches a child and then exits
+# non-zero is the ordinary shape of a run going wrong, and before this it took an
+# early exit that never reached the reap, leaving the child running. The trap
+# also collects the shim directory on any `set -e` failure between the install
+# and the verdict.
+run_cleanup() {
+  reap_session_group
+
+  if [ -n "${shim_dir:-}" ]; then
+    rm -rf "$shim_dir"
+    shim_dir=""
+  fi
+
+  close_timeline
+}
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} run.sh <cat:cmd> <prompt> [scenario]"
@@ -209,7 +266,12 @@ main() {
   fi
 
   open_timeline "canon skill-test"
-  trap close_timeline EXIT
+  trap run_cleanup EXIT
+
+  # Declared here rather than where they are first written, so the trap reads
+  # them under `main`'s own scope on every path out, including one taken before
+  # the session started.
+  local reap_state=no-session reap_done=0 shim_dir="" session_pgid="" harness_pgid=""
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
     log_error "Run this from inside the toolkit repository."
@@ -269,7 +331,7 @@ main() {
   # the refusal and this invocation does not. Routing the harness through the
   # shim too was the alternative and it reads the arm's own prompt as arguments,
   # so a prompt naming `--bg` would refuse the run the shim exists to allow.
-  local real_claude shim_dir
+  local real_claude
   real_claude="$(command -v claude)"
   shim_dir="$(mktemp -d)"
   install_dispatch_shim "$shim_dir" "$real_claude"
@@ -303,7 +365,6 @@ main() {
   # this equals its pid, and a shell where that did not happen would leave the
   # session in the group the harness itself runs in. Comparing the two before
   # signalling is what keeps the reap off the operator's terminal.
-  local session_pgid harness_pgid
   harness_pgid="$(ps -o pgid= -p $$ 2>/dev/null | tr -d ' ' || true)"
   session_pgid="$(ps -o pgid= -p "$session_pid" 2>/dev/null | tr -d ' ' || true)"
   [ -n "$session_pgid" ] || session_pgid="$session_pid"
@@ -316,9 +377,10 @@ main() {
 
   # `set -e` took this exit for the run while the invocation sat in a command
   # substitution, and a backgrounded job reports through `wait` instead, so the
-  # same failure now has to be spelled out or it passes unnoticed.
+  # same failure now has to be spelled out or it passes unnoticed. A session that
+  # dispatched a child and then died is the ordinary shape of this, so the reap
+  # and the shim both go out through the trap rather than being skipped here.
   if [ "$session_code" -ne 0 ]; then
-    rm -rf "$shim_dir"
     log_warn "The session exited $session_code before a verdict could be taken."
     exit "$session_code"
   fi
@@ -372,25 +434,12 @@ main() {
     "${watched_flag[@]}" --json)" || verdict_code=$?
 
   # After the verdict, which is the last thing that reads what the run left
-  # behind. Nothing here fails the run: a survivor is a fact about the machine
-  # rather than a claim about the skill, and the verdict is already taken.
-  local reap_state=inherited
-  if [ "$session_pgid" != "$harness_pgid" ]; then
-    reap_state="$(reap_process_group "$session_pgid")"
-  fi
+  # behind, and ahead of the trap so the outcome reaches the merged record.
+  # Nothing here fails the run: a survivor is a fact about the machine rather
+  # than a claim about the skill, and the verdict is already taken.
+  reap_session_group
   rm -rf "$shim_dir"
-
-  case "$reap_state" in
-  inherited)
-    log_warn "The session ran in this shell's own process group, so nothing was signalled."
-    ;;
-  reaped-term | reaped-kill)
-    log_warn "The session left a process behind. Reaped its group ($reap_state)."
-    ;;
-  survived)
-    log_warn "A process in the session's group survived SIGKILL. Check pgid $session_pgid by hand."
-    ;;
-  esac
+  shim_dir=""
 
   # The envelope stays on stdout so existing readers keep working, with the
   # verdict merged in. An agent reads the verdict here rather than parsing the
@@ -427,6 +476,11 @@ main() {
   # appeared while the run was in flight, and what the reap found. `watched`
   # false means the registry was absent, which makes an empty `new` say nothing
   # at all rather than say the run dispatched nothing.
+  #
+  # `reap` carries `clear` for a group that was already empty, `reaped-term` or
+  # `reaped-kill` for one this run signalled, `survived` for one that outlived
+  # `SIGKILL`, `inherited` for a session that never led a group of its own, and
+  # `no-session` for a run that stopped before the session began.
   local sessions_watched_json=false
   if [ "$sessions_watched" -eq 1 ]; then
     sessions_watched_json=true

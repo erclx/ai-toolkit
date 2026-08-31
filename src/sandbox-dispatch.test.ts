@@ -120,6 +120,16 @@ describe('reap_process_group', () => {
     expect(run.stdout).toBe('clear')
   })
 
+  // The safety property travels with the function rather than living in one
+  // caller, because the cost of a later caller passing the wrong group id is the
+  // operator's own shell.
+  it('should refuse a group id matching the calling shell', () => {
+    const run = sh(`own=$(ps -o pgid= -p $$ | tr -d ' ')
+      reap_process_group "$own"`)
+
+    expect(run.stdout).toBe('refused-own-group')
+  })
+
   it('should reap a survivor that takes SIGTERM', () => {
     const run = sh(`set -m
       ( exec sleep 30 ) >/dev/null 2>&1 &
