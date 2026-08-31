@@ -188,11 +188,18 @@ main() {
   [[ "$target" != *":"* ]] && log_error "Invalid target. Use <category>:<command>, e.g. git:commit."
   [ -z "$prompt" ] && log_error "Missing prompt. Pass the skill invocation, e.g. \"/aitk:git-commit\"."
 
-  log_step "Provisioning $target"
-  bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2
+  # Minted here, in this shell rather than inside a `$(...)` capture, so the
+  # export survives into the two children below: manage-sandbox.sh resolves
+  # the same tree during provisioning, and the `sandbox check` at the end
+  # resolves it again to score what that provisioning produced.
+  mint_sandbox_run_id
 
   local sandbox
   sandbox="$(resolve_sandbox_dir)"
+  log_step "Sandbox: $sandbox"
+
+  log_step "Provisioning $target"
+  bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2
 
   local before after envelope writes escapes
   before="$(mktemp)"

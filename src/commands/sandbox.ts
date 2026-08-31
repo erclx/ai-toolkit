@@ -1,5 +1,4 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { execScript } from '@/exec'
@@ -22,6 +21,7 @@ import {
   type RunEnvelope,
   type Verdict,
 } from '@/sandbox/expect'
+import { sandboxTree } from '@/sandbox/tree'
 import {
   frameError,
   intro,
@@ -62,29 +62,6 @@ function reportAbsentScenarioTree(): boolean {
   process.exitCode = 1
 
   return true
-}
-
-/**
- * The provisioned tree, as opposed to `SANDBOX_DIR` above, which holds the
- * scenario scripts. It sits outside the toolkit worktree so the toolkit's own
- * `CLAUDE.md` stays off the ancestor chain of the session `run.sh` spawns with
- * cwd here.
- *
- * Twin of `resolve_sandbox_dir` in `scripts/lib/sandbox-path.sh`. The exec
- * boundary rules out a shared constant, so a change to the default lands on both
- * sides.
- */
-function sandboxTree(): string {
-  const override = process.env.AITK_SANDBOX_DIR
-  if (override !== undefined && override !== '') return override
-
-  const state = process.env.XDG_STATE_HOME
-  const base =
-    state !== undefined && state !== ''
-      ? state
-      : join(homedir(), '.local', 'state')
-
-  return join(base, 'aitk', 'sandbox')
 }
 
 /**

@@ -115,9 +115,15 @@ guard_root() {
 require_project_root() {
   local GREEN RED YELLOW WHITE GREY NC
   set_palette 2
-  local sandbox
-  sandbox="$(resolve_sandbox_dir)"
-  if [[ "$PWD" == "$sandbox" || "$PWD" == "$sandbox"/* ]]; then
+  local sandbox in_sandbox=0
+  if [ -n "${AITK_SANDBOX_DIR:-}" ]; then
+    sandbox="$AITK_SANDBOX_DIR"
+    [[ "$PWD" == "$sandbox" || "$PWD" == "$sandbox"/* ]] && in_sandbox=1
+  else
+    sandbox="$(sandbox_dir_prefix)"
+    [[ "$PWD" == "$sandbox" || "$PWD" == "$sandbox"/* || "$PWD" == "$sandbox"-* ]] && in_sandbox=1
+  fi
+  if [ "$in_sandbox" -eq 1 ]; then
     echo -e "${GREY}┌${NC}" >&2
     log_error "Execution restricted: Command cannot be run from inside the sandbox environment."
   fi

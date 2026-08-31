@@ -10,15 +10,44 @@
 # reports no writes at all. `scripts/eval/run.sh` keeps its fixture outside the
 # repository for the same reason.
 #
-# Twin of `SANDBOX_DIR` in `src/commands/sandbox.ts`. The exec boundary rules out
+# Mints a short random per-run identifier the first time it is asked for, then
+# holds it in AITK_SANDBOX_RUN_ID for the rest of this process. A direct call
+# (not `$(...)`) exports it into the caller's own shell, which is what lets
+# `run.sh` mint once and have manage-sandbox.sh and the check it shells out to
+# both inherit the same id as ordinary children. A call already carrying the
+# variable, inherited from such a parent, reuses it rather than minting a new one.
+#
+# Twin of `mintSandboxRunId` in `src/commands/sandbox.ts`.
+mint_sandbox_run_id() {
+  if [ -z "${AITK_SANDBOX_RUN_ID:-}" ]; then
+    AITK_SANDBOX_RUN_ID="$(date +%s)-$$-$RANDOM"
+  fi
+  export AITK_SANDBOX_RUN_ID
+}
+
+# The base every per-run tree nests under, with no run id appended. Split out
+# of `resolve_sandbox_dir` so a caller that needs to recognize any run's tree,
+# such as `require_project_root` in `scripts/lib/ui.sh`, tests against this
+# prefix instead of a single resolved path that changes on every call.
+sandbox_dir_prefix() {
+  printf '%s/aitk/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
+}
+
+# Twin of `sandboxTree` in `src/commands/sandbox.ts`. The exec boundary rules out
 # a shared constant, so a change to the default lands on both sides.
+#
+# A bare fall-through with no per-run component is one path per machine, so
+# two sessions resolving the default at once would provision over each other
+# with neither told. `mint_sandbox_run_id` is what makes two such sessions
+# land on two different trees rather than one.
 resolve_sandbox_dir() {
   if [ -n "${AITK_SANDBOX_DIR:-}" ]; then
     printf '%s\n' "$AITK_SANDBOX_DIR"
     return 0
   fi
 
-  printf '%s/aitk/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
+  mint_sandbox_run_id
+  printf '%s-%s\n' "$(sandbox_dir_prefix)" "$AITK_SANDBOX_RUN_ID"
 }
 
 # Collapses repeated separators, folds `.` and `..` segments, and strips every

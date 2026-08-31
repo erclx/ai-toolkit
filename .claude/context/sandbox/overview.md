@@ -12,7 +12,7 @@ Owns the scenarios that provision isolated project states for testing scripts, c
 - `scripts/sandbox/` owns the scenario scripts, one folder per category
 - `scripts/sandbox/<category>/` owns one file per command, each holding one or more named scenarios
 - `scripts/sandbox/fixtures/` owns file content staged into the sandbox, one tree per scenario arm
-- `$XDG_STATE_HOME/aitk/sandbox` owns the provisioned project state, outside the repository and recreated per run
+- `$XDG_STATE_HOME/aitk/sandbox-<run-id>` owns the provisioned project state, outside the repository and unique to the run that provisioned it
 
 Run `aitk sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added. `fixtures/` sits alongside the categories but holds no scenarios, so both pickers filter it out by name.
 
@@ -63,7 +63,15 @@ Location and inheritance are separable, which is what lets both harnesses sit ou
 
 ### The sandbox path and its guard
 
-The sandbox tree lives at `$XDG_STATE_HOME/aitk/sandbox`, defaulting to `~/.local/state/aitk/sandbox`, and `AITK_SANDBOX_DIR` overrides it. Two definitions hold the path, `resolve_sandbox_dir` in `scripts/lib/sandbox-path.sh` and `sandboxTree` in `src/commands/sandbox.ts`, and the exec boundary is why there are two rather than one.
+The sandbox tree lives at `$XDG_STATE_HOME/aitk/sandbox-<run-id>`, defaulting to `~/.local/state/aitk/sandbox-<run-id>`, and `AITK_SANDBOX_DIR` overrides the whole path. Two definitions hold it, `resolve_sandbox_dir` in `scripts/lib/sandbox-path.sh` and `sandboxTree` in `src/commands/sandbox.ts`, and the exec boundary is why there are two rather than one.
+
+### The per-run id
+
+`<run-id>` comes from `mint_sandbox_run_id` and `mintSandboxRunId`, the twins' own twin functions. Each mints a short random suffix the first time a process asks for the default and holds it in `AITK_SANDBOX_RUN_ID` for the rest of that process, so a child inheriting the environment resolves the same tree its parent did rather than minting a second one.
+
+`run.sh` mints once, before it provisions, which is what lets its own provisioning step and the `sandbox check` it runs afterward agree. `.claude/context/sandbox/running.md` carries the collision this replaced and what it costs a caller who resolves the tree standalone.
+
+### The guard
 
 Inside the worktree, the toolkit's own `CLAUDE.md` loaded through the ancestor chain of the session `run.sh` spawns, beside the seeded copy the scenario installed. Both carry the rule sending shared session scratch to the main worktree root and nothing decided which root won, so a skill's output landed in the toolkit on roughly one run in two.
 
