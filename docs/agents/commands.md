@@ -22,7 +22,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon indexes regen`       | Regenerate `index.md` files from sibling frontmatter                                                                                                                  |
 | `canon docs [topic]`        | Emit toolkit reference docs (`list`, or a topic by name)                                                                                                              |
 | `canon design render`       | Render `.claude/DESIGN.md` tokens to HTML and CSS                                                                                                                     |
-| `canon slides render`       | Render a `.claude/SLIDES.md` source into a PowerPoint deck                                                                                                            |
+| `canon slides render`       | Render a `.claude/SLIDES.md` source into a PowerPoint deck, reporting any unrecognized layout name on stderr                                                          |
 | `canon slides list`         | List the available slide layouts (`--json` for the catalog)                                                                                                           |
 | `canon feedback`            | Write toolkit feedback from stdin to `.claude/review/feedback/`, or open a GitHub issue with `--github`                                                               |
 | `canon transcripts <url>`   | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                                                                                                 |

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   addFooter,
   type DeckNav,
+  isKnownLayout,
   LAYOUTS,
   renderDeckSlide,
   renderToc,
@@ -166,5 +167,18 @@ describe('renderDeckSlide', () => {
       theme,
     )
     expect(texts).toContain('still shown')
+    expect(isKnownLayout('mystery')).toBe(false)
+  })
+})
+
+describe('isKnownLayout', () => {
+  it('accepts every name in the catalog', () => {
+    for (const layout of LAYOUTS) {
+      expect(isKnownLayout(layout.name)).toBe(true)
+    }
+  })
+
+  it('rejects a name outside the catalog', () => {
+    expect(isKnownLayout('mystery')).toBe(false)
   })
 })

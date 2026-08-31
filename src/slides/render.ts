@@ -4,16 +4,23 @@ import PptxGenJS from 'pptxgenjs'
 import {
   addFooter,
   type DeckNav,
+  isKnownLayout,
   renderDeckSlide,
   renderToc,
 } from '@/slides/layouts'
 import { type Deck, parseSlidesDoc } from '@/slides/parse'
 import { buildTheme, type Variant } from '@/slides/styles'
 
+export interface UnrecognizedLayout {
+  value: string
+  slideNumbers: number[]
+}
+
 export interface RenderResult {
   pptxPath: string
   mirrorPath?: string
   slideCount: number
+  unrecognizedLayouts: UnrecognizedLayout[]
 }
 
 export interface RenderOptions {
@@ -35,16 +42,22 @@ export async function renderSlidesDoc(
   if (deck.meta.title) pptx.title = deck.meta.title
 
   const nav = buildNav(deck)
-  for (const slide of deck.slides) {
+  const unrecognizedSlideNumbers = new Map<string, number[]>()
+  deck.slides.forEach((slide, index) => {
     const target = pptx.addSlide()
     target.background = { color: theme.background }
+    if (!isKnownLayout(slide.layout)) {
+      const slideNumbers = unrecognizedSlideNumbers.get(slide.layout) ?? []
+      slideNumbers.push(index + 1)
+      unrecognizedSlideNumbers.set(slide.layout, slideNumbers)
+    }
     if (slide.layout === 'toc') {
       renderToc(target, slide, theme, nav)
     } else {
       renderDeckSlide(target, slide, theme)
     }
     addFooter(target, slide, theme, nav)
-  }
+  })
 
   mkdirSync(outDir, { recursive: true })
   const fileName = outputName(sourcePath)
@@ -54,7 +67,16 @@ export async function renderSlidesDoc(
   const mirrorPath = options.mirror
     ? mirrorDeck(pptxPath, options.mirror, fileName)
     : undefined
-  return { pptxPath, mirrorPath, slideCount: deck.slides.length }
+  const unrecognizedLayouts = Array.from(
+    unrecognizedSlideNumbers,
+    ([value, slideNumbers]) => ({ value, slideNumbers }),
+  )
+  return {
+    pptxPath,
+    mirrorPath,
+    slideCount: deck.slides.length,
+    unrecognizedLayouts,
+  }
 }
 
 function mirrorDeck(

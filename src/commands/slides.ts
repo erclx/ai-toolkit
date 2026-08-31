@@ -48,6 +48,12 @@ export function register(program: Command): void {
           process.stderr.write(
             `${GREY}│${NC} ${GREEN}✓${NC} ${result.slideCount} slides\n${GREY}│${NC} ${GREEN}✓${NC} ${result.pptxPath}\n`,
           )
+          const validNames = LAYOUTS.map((layout) => layout.name).join(', ')
+          for (const { value, slideNumbers } of result.unrecognizedLayouts) {
+            process.stderr.write(
+              `${GREY}│${NC} ${RED}✗${NC} unrecognized layout "${value}" on slide ${slideNumbers.join(', ')}. Valid layouts: ${validNames}\n`,
+            )
+          }
           if (result.mirrorPath) {
             process.stderr.write(
               `${GREY}│${NC} ${GREEN}✓${NC} mirrored to ${result.mirrorPath}\n`,
