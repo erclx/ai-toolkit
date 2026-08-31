@@ -32,6 +32,12 @@ export const LAYOUTS: LayoutInfo[] = [
   { name: 'quote', description: 'Large pull quote with attribution' },
 ]
 
+const LAYOUT_NAMES = new Set(LAYOUTS.map((layout) => layout.name))
+
+export function isKnownLayout(name: string): boolean {
+  return LAYOUT_NAMES.has(name)
+}
+
 const W = 13.333
 const H = 7.5
 const MX = 0.7
