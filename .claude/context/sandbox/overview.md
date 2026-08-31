@@ -143,7 +143,7 @@ aitk() {
 
 ### A scenario faking a live session writes to the real registry
 
-A scenario needing a live session record for a roster read, such as testing occupancy against `aitk sessions list`, has no sandbox-local registry to point at. Provisioning and the later spawned `claude -p` run are separate script invocations with no shared environment, the same split that gives `run.sh` its own `GIT_TERMINAL_PROMPT=0` export above, so an env var set during provisioning cannot repoint `CLAUDE_CONFIG_DIR` for the spawned session. Such a scenario writes to the real `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions/` on the host instead, and its spawned background process and record file both outlive the run with no automated teardown.
+A scenario needing a live session record for a roster read, such as testing occupancy against `aitk sessions list`, has no sandbox-local registry to point at. Provisioning and the later spawned `claude -p` run are separate script invocations with no shared environment, the same split that gives `run.sh` its own `GIT_TERMINAL_PROMPT=0` export above, so an env var set during provisioning cannot repoint `CLAUDE_CONFIG_DIR` for the spawned session. Such a scenario writes to the real `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions/` on the host instead. Bound the spawned process well under a day so it exits on its own once no run needs it, since the record then drops out of `aitk sessions list`'s live roster automatically rather than sitting there for every consumer that reads it until someone removes it by hand. Key the record's filename on the process's pid, so a second drive gets its own record instead of overwriting the first run's and orphaning its still-running process.
 
 ## Standing limits
 

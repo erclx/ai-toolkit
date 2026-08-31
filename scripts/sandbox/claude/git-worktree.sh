@@ -11,9 +11,12 @@ use_config() {
 # writes to is the real one at CLAUDE_CONFIG_DIR (or $HOME/.claude/sessions):
 # provisioning and the later `claude -p` run are separate script invocations
 # with no shared environment, so there is no sandbox-local registry to point
-# at instead. The spawned process and the record file both outlive this
-# script on purpose, since the roster has to read them as live from the next
-# invocation, and neither is cleaned up automatically.
+# at instead. The spawned process bounds itself at six hours, comfortably past
+# any one drive and well under a day, so a record from an earlier drive dies
+# on its own and `aitk sessions list` stops carrying it as live rather than
+# needing a teardown hook the harness does not have. The pid in the record's
+# filename is what keeps a second drive from overwriting the first run's
+# record and orphaning its still-running process.
 register_occupant() {
   local worktree_path
   worktree_path="$(cd "$1" && pwd)"
@@ -22,24 +25,25 @@ register_occupant() {
   sessions_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions"
   mkdir -p "$sessions_dir"
 
-  sleep infinity >/dev/null 2>&1 &
+  sleep 21600 >/dev/null 2>&1 &
   disown
   local occupant_pid=$!
 
-  cat <<EOF >"$sessions_dir/sandbox-occupant.json"
+  local record_file="$sessions_dir/sandbox-occupant-$occupant_pid.json"
+  cat <<EOF >"$record_file"
 {
   "pid": $occupant_pid,
   "cwd": "$worktree_path",
   "name": "sandbox-occupant",
-  "sessionId": "sandbox-occupant",
+  "sessionId": "sandbox-occupant-$occupant_pid",
   "kind": "bg",
   "status": "idle",
   "startedAt": $(($(date +%s%N) / 1000000))
 }
 EOF
 
-  log_info "Registered a fake occupant session at $sessions_dir/sandbox-occupant.json (pid $occupant_pid)."
-  log_info "Not cleaned up automatically: kill $occupant_pid and remove that file when done."
+  log_info "Registered a fake occupant session at $record_file (pid $occupant_pid)."
+  log_info "Self-limiting: the process exits after six hours, and the dead record drops out of the live roster on its own."
 }
 
 stage_setup() {
