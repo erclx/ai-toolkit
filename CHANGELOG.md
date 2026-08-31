@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.46.0](https://github.com/erclx/aitk/compare/v3.45.0...v3.46.0) (2026-08-31)
+
+
+### Features
+
+* **serve:** add a preview server and govern generated surfaces ([#1256](https://github.com/erclx/aitk/issues/1256)) ([c065551](https://github.com/erclx/aitk/commit/c06555127aba3dfa83f0e8b0fecd335bcff4b23c))
+
 ## [3.45.0](https://github.com/erclx/aitk/compare/v3.44.0...v3.45.0) (2026-08-30)
 
 
