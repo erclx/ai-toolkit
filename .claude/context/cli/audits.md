@@ -477,12 +477,16 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - A `Touches` cell naming a bare folder goes to a third array, `claims`, moving no exit code the way the untested rows do. A row rewriting a whole directory has no other way to say so, so the claim states its reach rather than reading as a defect, and a measure failing on a legitimate cell teaches a reader to skip it.
 - Folder against file is decided by asking the tree for a path that resolves, and by the extension only for a path the row has yet to create. The name alone reads a file carrying no extension, such as a hook script, as a folder claim.
 - The claims scan stops at `## Run now`, where the collision check stops, and the board carried a parked case when that was decided. A cell in another group describes unplanned work as a sentence and is rewritten once a plan exists, so a claim read off one reports on prose rather than on a file set, which is the shape that teaches a reader to skip a report.
+- Shape runs ahead of every other check, since a row failing it carries no dependable fields for the rest to read. A blank or prose line ends the table above it, so a row stranded there is checked against the line behind it rather than treated as a continuation, and a row that clears that test is still checked cell by cell against its own header.
+- Ordering reads a `## Needs a plan` row's stated position off the same walk that already reads its other fields, rather than opening a second pass over the file. The phrase is prose anchored to `<ordinal> here` or the bare word `last`, so a cell stating neither is unordered rather than wrong, and a gap, a duplicate, and a sequence starting somewhere other than first all surface as the same disagreement between a stated position and a real one.
 
 ## The record validator
 
 - `aitk records validate <kind>` extends the board validator's shape to the other gitignored session records, taking `plans`, `groundwork`, or `intake` as an argument rather than shipping a verb per folder. The folders share every property that makes them unreachable, so one verb over a kind argument was chosen over four siblings, and memory, standards, and teach each arrived later as a kind rather than as a command.
 - `src/records/validate.ts` parses and checks while `src/commands/records.ts` renders, the split `tasks` already uses
-- `.claude/tasks/` is a fifth folder with every property the reason above names, and it keeps its own verb anyway. What separates it is the checks rather than the corpus. A record kind reads a file or a folder and reports where its shape and its standard disagree, while the board's five checks all read one table against the rest of the tree:
+- `.claude/tasks/` is a fifth folder with every property the reason above names, and it keeps its own verb anyway. What separates it is the checks rather than the corpus. A record kind reads a file or a folder and reports where its shape and its standard disagree, while the board's seven checks read one table against itself or against the rest of the tree:
+  - a row's cell count against its own table's header, and a row stranded behind a table a blank line already closed
+  - a `## Needs a plan` row's stated position against where it actually sits
   - a row mapping to a task file and back
   - a task sitting in two readiness groups
   - a `Plan:` pointer resolving

@@ -119,19 +119,25 @@ aitk tasks validate
 aitk tasks validate --json
 ```
 
-Five checks run. Plan and Collisions reach one half each of the `## Run now` test the board standard states. Mapping and Grouping test the folder contract and hold for every group. Blockers reaches the rows outside `## Run now`:
+Seven checks run. Plan and Collisions reach one half each of the `## Run now` test the board standard states. Mapping and Grouping test the folder contract and hold for every group, and Shape holds for every group too, ahead of the four. Ordering reaches only the `## Needs a plan` rows, and Blockers reaches every row outside `## Run now`:
 
-| Check      | What it reports                                                                      |
-| ---------- | ------------------------------------------------------------------------------------ |
-| Plan       | A `## Run now` row whose Plan column carries no link, or one resolving to no file    |
-| Mapping    | A row or backlog line naming no task file, and a task file neither surface names     |
-| Grouping   | A task carrying a row in more than one readiness group, or on both surfaces          |
-| Collisions | Two `## Run now` rows whose Touches columns name a path in common                    |
-| Blockers   | A parked row whose blocker has stopped holding, or whose cited task resolves nowhere |
+| Check      | What it reports                                                                                                      |
+| ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| Shape      | A row whose cell count disagrees with its table's header, or one stranded behind a table a blank line already closed |
+| Plan       | A `## Run now` row whose Plan column carries no link, or one resolving to no file                                    |
+| Mapping    | A row or backlog line naming no task file, and a task file neither surface names                                     |
+| Grouping   | A task carrying a row in more than one readiness group, or on both surfaces                                          |
+| Ordering   | A `## Needs a plan` row whose stated position disagrees with where it actually sits                                  |
+| Collisions | Two `## Run now` rows whose Touches columns name a path in common                                                    |
+| Blockers   | A parked row whose blocker has stopped holding, or whose cited task resolves nowhere                                 |
+
+Shape runs before any other check reads a row, since a row failing it carries no dependable fields for the rest to check. A blank or prose line closes the table above it, so the walk treats the next pipe line as a fresh header candidate rather than as a continuation. That candidate counts as a header only when the line behind it is a separator carrying the same cell count, and one that fails is `row-untabled`, stranded behind a table that already closed. Cell count still has to match the header on every row that clears that test, and a row whose count disagrees is `row-misshapen`, the shape a dropped pipe or a merged column produces.
 
 Mapping spans two surfaces, because a task sits on `priority.md` when it would plausibly be planned soon and on `backlog.md` otherwise. A task file either surface names is accounted for, a file neither names is `row-missing`, and a file both name is `row-duplicated` for the reason a task in two groups is: it claims two things about itself and only one can hold. One check across both is what lets a task move between them without the move reading as a dropped file.
 
 A backlog line is a bullet carrying a link to a sibling task, since the backlog is a flat unordered list rather than a table. A bullet holding prose is skipped rather than reported, which keeps the file's own intro out of the findings, and the task that bullet meant to name is still reported as reaching neither surface. A project carrying no `backlog.md` reads as an empty backlog rather than a refusal, which leaves the one-to-one mapping this check ran before the second surface existed.
+
+Ordering reads only a `## Needs a plan` row whose `Waiting on` cell states a position at all. That phrase is prose rather than data, anchored to `<ordinal> here` or the bare word `last`, so a cell stating neither reads as unordered rather than as a violation. The vocabulary stops at `first` through `twentieth` plus `last`, since a parser strict enough to catch a gap would otherwise flag a row phrased correctly and differently. A row that does state a position is checked against where it actually sits, and that one comparison catches a gap, a duplicate, and a sequence starting somewhere other than first alike.
 
 The collision check is the one a person cannot run by eye. Paths come from the backticked spans in the Touches column, a span naming no file is dropped, and a directory collides with any file beneath it. A `## Run now` row whose column parses to nothing is reported rather than skipped, since a row stating no file set makes a claim nothing can check.
 

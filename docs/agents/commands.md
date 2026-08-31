@@ -29,7 +29,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk tasks archive`       | Move a shipped task off the board, clear its ordering row, and regenerate the index                                                                                   |
 | `aitk tasks pull-request`  | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)                                                                              |
 | `aitk tasks outcome`       | Mark outcomes `[x]` on a task by position, repeating `--close` (`--json`)                                                                                             |
-| `aitk tasks validate`      | Report board rows whose plan, task file, group, file set, or blocker does not hold (`--json`)                                                                         |
+| `aitk tasks validate`      | Report board rows whose shape, order, plan, task file, group, file set, or blocker does not hold (`--json`)                                                           |
 | `aitk intake list`         | Report intake folder counts, or one folder's items, keeping what is unread with `--unread` (`--json`)                                                                 |
 | `aitk intake answer`       | Write selections into one cluster's answer slots, repeating `--set <item>=<answer>` (`--json`)                                                                        |
 | `aitk teach list`          | Report learning workspaces and the ordinal a new one takes, or what one workspace holds (`--json`)                                                                    |
