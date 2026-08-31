@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.48.0](https://github.com/erclx/aitk/compare/v3.47.1...v3.48.0) (2026-08-31)
+
+
+### Features
+
+* **labels:** fail a pull request whose body carries a phase label ([#1260](https://github.com/erclx/aitk/issues/1260)) ([3ec624b](https://github.com/erclx/aitk/commit/3ec624b69191fb6e1da15a743c766392654d322c))
+
 ## [3.47.1](https://github.com/erclx/aitk/compare/v3.47.0...v3.47.1) (2026-08-31)
 
 
