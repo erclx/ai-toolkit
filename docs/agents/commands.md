@@ -41,6 +41,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk records size`        | Report what each record folder holds and how much of it is recent, heaviest first (`--json`)                                                                          |
 | `aitk records push`        | Commit the nine backed record folders and push them to a private records remote (`--json`)                                                                            |
 | `aitk records pull`        | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                                               |
+| `aitk migrate rename`      | Rewrite every unprotected `aitk` token to `canon` and move the paths that carry the name, reporting the plan without `--write` (`--scope`, `--json`)                  |
 | `aitk sessions list`       | Resolve live sessions to the worktree and branch each holds, filtered by `--branch` (`--json`)                                                                        |
 | `aitk worktrees list`      | Report which worktrees are reclaimable, keyed on the pull request having merged, with every refusal and the removal route named (`--json`)                            |
 | `aitk comments scan`       | Measure comment density by language and comment kind, with a trend recomputed from git                                                                                |

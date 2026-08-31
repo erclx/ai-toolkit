@@ -1,0 +1,115 @@
+import { $ } from 'bun'
+import { readFile, mkdir, rmdir, writeFile } from 'node:fs/promises'
+import { dirname, join, relative } from 'node:path'
+import { gitEnv } from '@/git-env'
+import type { RenamePlan, RenameSource } from '@/migrate/plan'
+
+/**
+ * A file whose bytes carry a NUL is read as binary and its content is left
+ * alone, which lets the path still move. Reporting the empty string rather
+ * than a flag keeps the planner pure: an unchanged content rewrite is already
+ * how it expresses "path only", so binary needs no branch of its own there.
+ */
+export async function readSources(
+  root: string,
+  paths: readonly string[],
+): Promise<RenameSource[]> {
+  const sources: RenameSource[] = []
+
+  for (const path of paths) {
+    const bytes = await readFile(join(root, path)).catch(() => undefined)
+    if (bytes === undefined) continue
+
+    const binary = bytes.includes(0)
+    sources.push({ path, text: binary ? '' : bytes.toString('utf8') })
+  }
+
+  return sources
+}
+
+export interface ApplyResult {
+  readonly written: number
+  readonly moved: number
+  readonly failed: readonly string[]
+}
+
+/**
+ * Writes the plan. Content lands first and the move follows, so a failed move
+ * leaves the rewrite on a path that still exists rather than stranding content
+ * at a destination nothing points at yet.
+ *
+ * `git mv` rather than a filesystem rename, so the history follows the file and
+ * a reviewer reading the pull request sees a rename instead of a delete beside
+ * an add.
+ */
+export async function applyRename(
+  root: string,
+  plan: RenamePlan,
+): Promise<ApplyResult> {
+  let written = 0
+  let moved = 0
+  const failed: string[] = []
+
+  for (const entry of plan.entries) {
+    if (entry.text !== undefined) {
+      await writeFile(join(root, entry.path), entry.text)
+      written += 1
+    }
+
+    if (entry.movesTo === undefined) continue
+
+    await mkdir(dirname(join(root, entry.movesTo)), { recursive: true })
+    const result = await $`git -C ${root} mv ${entry.path} ${entry.movesTo}`
+      .env(gitEnv())
+      .quiet()
+      .nothrow()
+
+    if (result.exitCode === 0) moved += 1
+    else failed.push(entry.path)
+  }
+
+  await pruneEmptyParents(
+    root,
+    plan.entries
+      .filter((entry) => entry.movesTo !== undefined)
+      .map((entry) => dirname(entry.path)),
+  )
+
+  return { written, moved, failed }
+}
+
+/**
+ * Removes the directories a move emptied.
+ *
+ * Git tracks files rather than directories, so moving the last file out of one
+ * leaves the directory on disk with nothing in it and nothing in the diff to
+ * say so. A renamed skill folder that keeps its old shell beside the new one
+ * reads to a person, and to a plugin loader walking the tree, as though the
+ * rename only half happened.
+ *
+ * `rmdir` refuses a directory that still holds anything, which is the guard:
+ * a folder with an untracked file in it stays, and the refusal is ignored
+ * rather than reported because it means the folder was not empty to begin
+ * with.
+ */
+async function pruneEmptyParents(
+  root: string,
+  directories: readonly string[],
+): Promise<void> {
+  const deepestFirst = [...new Set(directories)].sort(
+    (left, right) => right.length - left.length,
+  )
+
+  for (const directory of deepestFirst) {
+    let current = directory
+
+    while (current !== '.' && !current.startsWith('..')) {
+      const removed = await rmdir(join(root, current))
+        .then(() => true)
+        .catch(() => false)
+      if (!removed) break
+
+      current = relative(root, join(root, current, '..'))
+    }
+  }
+}

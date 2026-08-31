@@ -26,6 +26,7 @@ import { register as teach } from '@/commands/teach'
 import { register as comments } from '@/commands/comments'
 import { register as context } from '@/commands/context'
 import { register as markdown } from '@/commands/markdown'
+import { register as migrate } from '@/commands/migrate'
 import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
 import { register as worktrees } from '@/commands/worktrees'
@@ -182,6 +183,7 @@ comments(program)
 context(program)
 markdown(program)
 records(program)
+migrate(program)
 sessions(program)
 targets(program)
 worktrees(program)
