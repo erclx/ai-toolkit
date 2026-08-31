@@ -5,6 +5,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readdirSync,
+  readFileSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -416,6 +417,46 @@ describe('tasks-index.sh archive exclusion', () => {
       },
     )
   }
+})
+
+// CLAUDE_PROJECT_DIR is the session's own worktree rather than the main root,
+// so a naive read would log a pull request opened from a linked worktree into
+// a folder that dies with the worktree, losing exactly the row the log exists
+// to keep. The hook strips the worktree segment back to the main root before
+// writing, the way tasks-index.sh and memory-index.sh already derive theirs.
+describe('pr-create-log.sh root resolution', () => {
+  const hook = join(ROOT, '.claude/hooks/pr-create-log.sh')
+
+  it.concurrent(
+    'should log under the main root rather than a linked worktree',
+    async ({ expect }) => {
+      const project = join(fixture, 'project')
+      const worktreeRoot = join(project, '.claude/worktrees/demo')
+      const result = await run(
+        hook,
+        payloadFor({
+          session_id: 'pr-create-log-worktree-root',
+          tool_input: { command: 'gh pr create --title x --body y' },
+          tool_response: {
+            stdout: 'https://github.com/example/repo/pull/99\n',
+          },
+        }),
+        undefined,
+        worktreeRoot,
+      )
+
+      expect(result.code).toBe(0)
+      expect(
+        existsSync(join(worktreeRoot, '.claude/.tmp/pr-create-log/log.md')),
+      ).toBe(false)
+      expect(
+        readFileSync(
+          join(project, '.claude/.tmp/pr-create-log/log.md'),
+          'utf8',
+        ),
+      ).toContain('pr=https://github.com/example/repo/pull/99')
+    },
+  )
 })
 
 // Both copies shell out to the audit verb, and this one resolves two runners

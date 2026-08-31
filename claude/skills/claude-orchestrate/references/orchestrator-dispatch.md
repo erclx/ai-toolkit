@@ -99,6 +99,12 @@ when it is still there, or `git worktree add .claude/worktrees/<slug>/
 <branch>` when it was cleaned up, so `<slug>` is that directory name either
 way.
 
+`EnterWorktree` refuses that path in the ordinary case, because the original
+build session stays registered against its own worktree after going idle and
+holds a harness-level lock the roster does not report. Work in the folder
+directly with `Bash`, `Read`, and `Edit` instead of retrying the tool, which
+is the route two workers already took today on two different branches.
+
 ```bash
 claude --bg --model <model> -n "worker-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /aitk:claude-worker, then /aitk:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
 ```
@@ -110,6 +116,12 @@ Take this shape wherever a review needs answering and no live session already
 holds the branch. Where one does, message it to run `claude-address-review`
 instead, per the loop's own step 6, since a session already there needs no
 second one dispatched onto the same branch.
+
+That check is blind to a session working through the direct-path fallback
+above, since a session that never runs `EnterWorktree` never moves its
+registered branch off `main`, so `aitk sessions list --branch` reports nothing
+holding it. A dispatch landing on a branch worked that way collides with
+nothing the check can see.
 
 ## Fall back to the human
 
