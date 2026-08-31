@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.56.0](https://github.com/erclx/aitk/compare/v3.55.0...v3.56.0) (2026-08-31)
+
+
+### Features
+
+* **worker:** announce the address-review pass and log pr creation ([#1287](https://github.com/erclx/aitk/issues/1287)) ([841786e](https://github.com/erclx/aitk/commit/841786eb81821d63b8ec0c010e35adf53115eb49))
+
 ## [3.55.0](https://github.com/erclx/aitk/compare/v3.54.0...v3.55.0) (2026-08-31)
 
 
