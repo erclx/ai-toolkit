@@ -70,7 +70,9 @@ Leave a box unchecked only for the human-only cases the reference defines, and n
 
 ### Pre-publish scan
 
-Before running the final command, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/../../standards/pr.md`.
+Before running the final command, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so run the scan regardless of what backs it downstream. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/../../standards/pr.md`.
+
+A `pull_request` workflow job now backs the phase-label half for this repository, running `aitk labels scan` against the opened title and body. A project holding an older `aitk` carries no such job and reaches no check at all, so the scan above stays required rather than optional.
 
 ### Resolving the pull request
 

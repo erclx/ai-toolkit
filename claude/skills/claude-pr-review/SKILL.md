@@ -29,7 +29,7 @@ reader scanning the thread finds the current verdict where the last one sat.
 
 ## Step 1: resolve the PR and read context
 
-Resolve the PR: `gh pr view --json number,headRefName,headRefOid,title` for the current branch, or use a PR number the user names. The first seven characters of `headRefOid` are `<short-sha>`, which names the body file in Step 4.
+Resolve the PR: `gh pr view --json number,headRefName,headRefOid,title,body` for the current branch, or use a PR number the user names. The first seven characters of `headRefOid` are `<short-sha>`, which names the body file in Step 4.
 
 Read these in parallel from the project root, skipping any that do not exist:
 
@@ -159,6 +159,8 @@ X critical, Y should-fix, Z minor. Reviewed against project docs and the board.
 ```
 
 A stale ticked box goes in a `**PR body**` block, in place of a `**`path/to/file.ext`**` block and ahead of every one of those, since it precedes the code the diff carries rather than sitting inside it.
+
+Run `aitk labels scan --title "<title>" --body "<body>" --head <headRefName>` against the PR under review, since Step 1 already holds all three and this pass is the last human-shaped gate before merge. A hit lands in the same `**PR body**` block, `should-fix`, naming each token the scan returns. This reads the pull request being reviewed, distinct from the comment this pass is about to post, which the scan later in this step still covers.
 
 A later pass carrying findings keeps that shape and changes only the summary line:
 
