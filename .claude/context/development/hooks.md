@@ -99,6 +99,10 @@ The hook writes to the shared git config as a side effect of an unrelated `Bash`
 
 The flag read comes first and costs one process, ahead of the payload parse, because every invocation but a handful stops there. That measured at roughly 2ms against 3.6ms for `dev-command-reminder.sh` on the same matcher, so the two stay separate hooks.
 
+### The pull-request creation log
+
+`pr-create-log.sh` is the first hook registered on `PostToolUse` for the `Bash` matcher, where `dev-command-reminder.sh` and `bare-flag-repair.sh` sit on `PreToolUse` instead. It filters for a command containing `gh pr create` rather than narrowing at the matcher, the same shape those two take for testing the command string over the tool name. On a match it greps `tool_response.stdout` for the pull request URL `gh pr create` prints on success, which is what tells a creation apart from a failed or refused call, then appends a line to `.claude/.tmp/pr-create-log/log.md` and hands back an `additionalContext` reminder naming the channel obligation `claude-worker` states. The hook cannot know whether a session sent the announcement, only that a pull request now exists to announce, so the log is a denominator for the next wave's miss rate rather than a record of the send itself.
+
 ### Silencing a hook discards the guarantee it carries
 
 A hook that is the only enforcer of a rule cannot discard its command's output, because the reflexive `>/dev/null 2>&1 || exit 0` makes the documented guarantee false. The task index hook suppressed a regen failure while `standards/tasks.md` promised a missing frontmatter field surfaces on the next edit, and the folder is gitignored so `bun run check` cannot reach it and no gate stage would ever have gone red. Before silencing a hook, name the stage that catches the same failure. Where none exists, capture into a variable, exit 0 on success, and emit the error lines as `additionalContext`.

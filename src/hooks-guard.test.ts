@@ -266,6 +266,17 @@ beforeAll(() => {
           tool_name: 'Write',
         }),
     },
+    'pr-create-log.sh': {
+      expect: 'announce it to the controller now, per claude-worker',
+      payload: (nonce) =>
+        payloadFor({
+          session_id: nonce,
+          tool_input: { command: 'gh pr create --title x --body y' },
+          tool_response: {
+            stdout: 'https://github.com/example/repo/pull/42\n',
+          },
+        }),
+    },
     'precompact-handoff.sh': {
       code: 2,
       expect: 'Run the aitk:session-map skill',

@@ -81,6 +81,36 @@ The last bullet is the one under pressure, since the dispatch that first proved 
 
 Report the dispatch as loudly as the human-launch line it replaces: name the branch, the model, the task, and the session name, so a person reading the transcript can follow what fired without watching it happen.
 
+## Dispatch to address a review
+
+`claude-address-review` is a single pass, not a chain, so a launch naming it
+alone reaches no `claude-worker` and takes no role, which owes no message
+either. `#1251`'s replacement session was launched that way, onto the branch a
+review had already posted findings against, and it answered by posting a
+thread reply and telling its controller nothing. Reach the role directly on
+this launch instead of wrapping a second chain around one skill that has none
+of its own.
+
+The branch already exists here, opened by whatever built it, so this shape
+skips the plan-derived name the build shape resolves above. Take `<branch>`
+off the pull request's own head ref. Enter the worktree the original build
+left on disk, `.claude/worktrees/<slug>/`, with `EnterWorktree`'s `path` form
+when it is still there, or `git worktree add .claude/worktrees/<slug>/
+<branch>` when it was cleaned up, so `<slug>` is that directory name either
+way.
+
+```bash
+claude --bg --model <model> -n "worker-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /aitk:claude-worker, then /aitk:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
+```
+
+`<dispatcher-id>` and `<model>` resolve the same way the build shape resolves
+them above.
+
+Take this shape wherever a review needs answering and no live session already
+holds the branch. Where one does, message it to run `claude-address-review`
+instead, per the loop's own step 6, since a session already there needs no
+second one dispatched onto the same branch.
+
 ## Fall back to the human
 
 Hand the row to the human-launch line in step 4 instead of dispatching when any of these hold, and name which one: the collision check refused, the row's file set overlaps a track already out, or a stated reason holds the row behind one.

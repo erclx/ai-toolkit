@@ -86,13 +86,19 @@ reply that changes an outcome, such as a worker naming the plan question that
 already declined a finding, still belongs back on the PR, since the session
 holding it ends and the thread is what a later reader opens.
 
-Two messages travel the other way and the worker owes both. It announces its own
-pull request as the ship chain opens one, naming the number, the branch, and the
-task it closes. That is the one transition only that session can observe, since
-a worker that finishes goes idle rather than exiting, and one sat unnoticed for
-eighteen minutes before the announcement existed.
+Three messages travel the other way and the worker owes all three. It announces
+its own pull request as the ship chain opens one, naming the number, the
+branch, and the task it closes. That is the one transition only that session
+can observe, since a worker that finishes goes idle rather than exiting, and
+one sat unnoticed for eighteen minutes before the announcement existed.
 
-The second reports a block before that block becomes an interactive prompt. A
+It announces again when an address-review pass finishes, naming what it
+addressed and the pull request's new CI state. That transition is the other
+one only the worker can observe, and it replaces the same idle-poll gap on the
+review's return leg, after a worker once addressed a posted review by
+answering on the thread alone and telling its controller nothing.
+
+The third reports a block before that block becomes an interactive prompt. A
 queued message drains at the next tool round and a session already waiting on
 input never reaches one, so an answer relayed to an open prompt renders beneath
 the question and changes nothing. Nothing is sent on progress, which would
