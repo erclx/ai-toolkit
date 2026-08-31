@@ -448,6 +448,123 @@ describe('checkExpectation with a scope beside assertions that ran', () => {
   })
 })
 
+/**
+ * Undeclared is every arm today, so the first case is what keeps them
+ * unaffected by a mechanism only one arm has opted into.
+ */
+describe('checkExpectation on escape scope', () => {
+  function scopedExpectation(escapeScope: readonly string[]): Expectation {
+    return {
+      paths: [],
+      absent: [],
+      content: [],
+      writeScope: [],
+      escapeScope,
+      reply: [],
+      manual: [],
+      maxTurns: undefined,
+    }
+  }
+
+  it('should assert nothing when the arm declares no escape scope', () => {
+    const verdict = checkExpectation(
+      {
+        ...scopedExpectation([]),
+        escapeScope: undefined,
+        absent: ['missing.md'],
+      },
+      { sandboxDir: sandbox, escapes: ['/main/.claude/plans/feature-x.md'] },
+    )
+
+    expect(verdict.results).toEqual([
+      { ok: true, message: 'absent: missing.md' },
+    ])
+    expect(verdict.skipped).toEqual([])
+  })
+
+  it('should pass outright when a declared scope saw zero escapes', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: [],
+    })
+
+    expect(verdict.state).toBe('pass')
+    expect(verdict.results).toContainEqual({
+      ok: true,
+      message: 'no escape during this run',
+    })
+  })
+
+  it('should fail an escape against an empty declared scope', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: ['/main/.claude/plans/feature-x.md'],
+    })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.results).toContainEqual({
+      ok: false,
+      message: 'unbounded escape: /main/.claude/plans/feature-x.md',
+    })
+  })
+
+  it('should pass an escape matching a declared glob', () => {
+    const verdict = checkExpectation(
+      scopedExpectation(['/main/.claude/tasks/**']),
+      {
+        sandboxDir: sandbox,
+        escapes: ['/main/.claude/tasks/session-worker.md'],
+      },
+    )
+
+    expect(verdict.state).toBe('pass')
+    expect(verdict.results).toContainEqual({
+      ok: true,
+      message: 'declared escape: /main/.claude/tasks/session-worker.md',
+    })
+  })
+
+  it('should skip rather than assert when no escape data was supplied', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+    })
+
+    expect(verdict.skipped).toContain(
+      'escape scope: no escape data supplied, pass --escapes',
+    )
+  })
+
+  it('should skip rather than pass when no watched root held a target', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: [],
+      escapesWatched: false,
+    })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.results).toEqual([
+      { ok: false, message: 'no assertion ran against this sandbox' },
+    ])
+    expect(verdict.skipped).toContain(
+      'escape scope: no watched root held a target, unmeasured',
+    )
+  })
+
+  it('should still pass outright when a watched root held a target and saw zero escapes', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: [],
+      escapesWatched: true,
+    })
+
+    expect(verdict.state).toBe('pass')
+    expect(verdict.results).toContainEqual({
+      ok: true,
+      message: 'no escape during this run',
+    })
+  })
+})
+
 describe('checkExpectation with data the caller did not supply', () => {
   it('should skip write scope rather than drop it when writes are absent', () => {
     seedCorrectTree()
@@ -624,6 +741,14 @@ describe('countMechanicalAssertions', () => {
 
     expect(countMechanicalAssertions(expectation)).toBe(5)
   })
+
+  it('should count a declared escape scope once regardless of its length', () => {
+    const empty = parseExpectation('escape_scope = []\n')
+    const populated = parseExpectation('escape_scope = ["a/**", "b/**"]\n')
+
+    expect(countMechanicalAssertions(empty)).toBe(1)
+    expect(countMechanicalAssertions(populated)).toBe(1)
+  })
 })
 
 describe('parseExpectation', () => {
@@ -657,10 +782,16 @@ describe('parseExpectation', () => {
       absent: [],
       content: [],
       writeScope: [],
+      escapeScope: undefined,
       reply: [],
       manual: [],
       maxTurns: undefined,
     })
+  })
+
+  it('should distinguish an absent escape scope from a declared empty one', () => {
+    expect(parseExpectation('').escapeScope).toBeUndefined()
+    expect(parseExpectation('escape_scope = []\n').escapeScope).toEqual([])
   })
 })
 

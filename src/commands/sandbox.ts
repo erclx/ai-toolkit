@@ -76,6 +76,8 @@ const CLEAN_ENVELOPE: RunEnvelope = { isError: false, turns: 0, denials: 0 }
 interface CheckOptions {
   readonly envelope?: string
   readonly writes?: string
+  readonly escapes?: string
+  readonly escapesWatched?: boolean
   readonly json?: boolean
   readonly strict?: boolean
 }
@@ -152,11 +154,13 @@ function readEnvelope(path: string | undefined): RunEnvelope | undefined {
 }
 
 /**
- * Undefined when no file was given, which is not the same as a run that wrote
- * nothing. The write-scope assertion needs that distinction: an empty list is a
- * finding, an absent list is a gap in what the caller supplied.
+ * Shared by `--writes` and `--escapes`, which are both a newline-delimited
+ * path list written by `run.sh`. Undefined when no file was given, which is
+ * not the same as a run that produced no paths. Write scope and escape scope
+ * both need that distinction: an empty list is a finding, an absent list is a
+ * gap in what the caller supplied.
  */
-function readWrites(path: string | undefined): string[] | undefined {
+function readPathList(path: string | undefined): string[] | undefined {
   if (path === undefined) return undefined
   if (!existsSync(path)) return []
 
@@ -360,7 +364,12 @@ function runCheck(
     expectFilePath(PROJECT_ROOT, parsed.category, parsed.command, arm ?? ''),
     {
       sandboxDir,
-      writes: readWrites(options.writes),
+      writes: readPathList(options.writes),
+      escapes: readPathList(options.escapes),
+      escapesWatched:
+        options.escapes === undefined
+          ? undefined
+          : options.escapesWatched === true,
       envelope: readEnvelope(options.envelope),
     },
   )
@@ -404,6 +413,14 @@ export function register(program: Command): void {
     .helpOption('-h, --help', 'Show this help message')
     .option('--envelope <file>', 'Run envelope JSON from claude -p')
     .option('--writes <file>', 'Newline-delimited paths the session wrote')
+    .option(
+      '--escapes <file>',
+      'Newline-delimited paths written to a watched toolkit root, for escape scope',
+    )
+    .option(
+      '--escapes-watched',
+      'At least one watched root held a target this run, so a zero-escape file is a clean watch rather than one with nothing to watch',
+    )
     .option('--json', 'Emit the verdict as JSON on stdout')
     .option('--strict', 'Exit non-zero when the arm declares no expectation')
     .addHelpText(

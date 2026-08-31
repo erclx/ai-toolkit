@@ -19,6 +19,13 @@ export interface Expectation {
   readonly absent: readonly string[]
   readonly content: readonly ContentAssertion[]
   readonly writeScope: readonly string[]
+  /**
+   * Undefined means the arm makes no claim about escapes, which is every arm
+   * today. Present, even as `[]`, means the arm asserts a bound: the empty
+   * form declares that a correct run produces none, so `stringArray`'s
+   * collapse of "absent" and "empty" into one `[]` would erase that claim.
+   */
+  readonly escapeScope?: readonly string[]
   readonly reply: readonly string[]
   readonly manual: readonly string[]
   readonly maxTurns?: number
@@ -54,15 +61,23 @@ export interface Verdict {
 }
 
 /**
- * `writes` and `envelope` are absent when the caller supplied no data for them,
- * which is not the same as a run that wrote nothing or reported nothing. The
- * assertion kinds that depend on them report as skipped rather than silently
- * dropping out of the count, so the cheap standalone path cannot claim more
- * coverage than it had.
+ * `writes`, `escapes`, and `envelope` are absent when the caller supplied no
+ * data for them, which is not the same as a run that wrote nothing, escaped
+ * nowhere, or reported nothing. The assertion kinds that depend on them report
+ * as skipped rather than silently dropping out of the count, so the cheap
+ * standalone path cannot claim more coverage than it had.
  */
 export interface CheckInput {
   readonly sandboxDir: string
   readonly writes?: readonly string[]
+  readonly escapes?: readonly string[]
+  /**
+   * Whether any watched escape root held one of the four directories this run.
+   * Undefined when the caller supplied no escapes at all, which already skips.
+   * False is what separates a watch that ran and found nothing from one with
+   * nothing to watch, both of which produce the same empty `escapes` list.
+   */
+  readonly escapesWatched?: boolean
   readonly envelope?: RunEnvelope
 }
 
@@ -187,6 +202,10 @@ export function parseExpectation(source: string): Expectation {
     absent: stringArray(parsed.absent),
     content: contentArray(parsed.content),
     writeScope: stringArray(parsed.write_scope),
+    escapeScope:
+      parsed.escape_scope === undefined
+        ? undefined
+        : stringArray(parsed.escape_scope),
     reply: stringArray(parsed.reply),
     manual: stringArray(parsed.manual),
     maxTurns:
@@ -205,6 +224,7 @@ export function countMechanicalAssertions(expectation: Expectation): number {
     expectation.absent.length +
     expectation.content.length +
     expectation.writeScope.length +
+    (expectation.escapeScope === undefined ? 0 : 1) +
     expectation.reply.length
   )
 }
@@ -326,7 +346,7 @@ function checkWriteScope(
   // none, and without this the declaration vanishes from the verdict entirely:
   // no result, no skipped entry, and no contribution to the unchecked count that
   // exists to surface exactly this. The `undefined` branch above cannot stand in,
-  // since `run.sh` always passes `--writes` and `readWrites` returns `[]` for an
+  // since `run.sh` always passes `--writes` and `readPathList` returns `[]` for an
   // empty file. An arm whose output escaped the snapshot reads as a clean run,
   // which is the vacuous pass the harness exists to remove.
   if (writes.length === 0) {
@@ -343,6 +363,65 @@ function checkWriteScope(
       globs.some((glob) => glob.match(path))
         ? { ok: true, message: `in scope: ${path}` }
         : { ok: false, message: `wrote outside declared scope: ${path}` },
+    ),
+    skipped: [],
+  }
+}
+
+/**
+ * `run.sh` watches two toolkit roots for a write to shared session scratch
+ * during a run, and reports every one it finds as an unattributed escape with
+ * no arm able to fail on it. An arm whose skill legitimately reaches outside
+ * the sandbox tree declares the destinations here, and the harness asserts
+ * them instead of trusting the skill to bound itself.
+ *
+ * Declaring the scope inverts the empty case against `checkWriteScope`. A
+ * write-scope declaration exists to bound required output, so a run that wrote
+ * nothing skips rather than passing on a fabricated zero. An escape-scope
+ * declaration exists to bound a side effect nothing requires, so zero escapes
+ * is the outcome a correct run produces and reports as a pass outright,
+ * provided a watched root held something to watch. `run.sh`'s `snapshot_root`
+ * returns an empty manifest both when a watch ran clean and when none of the
+ * four watched directories existed under a root, and the two produce the same
+ * empty `escapes` list. `watched` is what tells them apart: a run that had
+ * nothing to watch reports unmeasured rather than passing on a diff it never
+ * had the target to take.
+ */
+function checkEscapeScope(
+  expectation: Expectation,
+  escapes: readonly string[] | undefined,
+  watched: boolean | undefined,
+): KindOutcome {
+  if (expectation.escapeScope === undefined) return { results: [], skipped: [] }
+
+  if (escapes === undefined) {
+    return {
+      results: [],
+      skipped: ['escape scope: no escape data supplied, pass --escapes'],
+    }
+  }
+
+  if (escapes.length === 0) {
+    if (watched === false) {
+      return {
+        results: [],
+        skipped: ['escape scope: no watched root held a target, unmeasured'],
+      }
+    }
+
+    return {
+      results: [{ ok: true, message: 'no escape during this run' }],
+      skipped: [],
+    }
+  }
+
+  const globs = expectation.escapeScope.map((glob) => new Bun.Glob(glob))
+
+  return {
+    results: escapes.map((path) =>
+      globs.some((glob) => glob.match(path))
+        ? { ok: true, message: `declared escape: ${path}` }
+        : { ok: false, message: `unbounded escape: ${path}` },
     ),
     skipped: [],
   }
@@ -431,6 +510,11 @@ export function checkExpectation(
   input: CheckInput,
 ): Verdict {
   const scope = checkWriteScope(expectation, input.writes)
+  const escapeScope = checkEscapeScope(
+    expectation,
+    input.escapes,
+    input.escapesWatched,
+  )
   const reply = checkReply(expectation, input.envelope)
   const envelope = checkEnvelope(expectation, input.envelope)
 
@@ -440,9 +524,15 @@ export function checkExpectation(
     ...checkContent(expectation, input.sandboxDir),
     ...reply.results,
     ...scope.results,
+    ...escapeScope.results,
     ...envelope.results,
   ]
-  const skipped = [...scope.skipped, ...reply.skipped, ...envelope.skipped]
+  const skipped = [
+    ...scope.skipped,
+    ...escapeScope.skipped,
+    ...reply.skipped,
+    ...envelope.skipped,
+  ]
 
   const failed = results.filter((result) => !result.ok).length
 

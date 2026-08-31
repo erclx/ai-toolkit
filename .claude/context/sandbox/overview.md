@@ -39,6 +39,22 @@ The scoping a permission layer would supply comes from `write_scope` instead, as
 
 What `write_scope` cannot do is prevent the write, and it cannot see a write outside the sandbox tree at all. `run.sh` watches the toolkit roots separately and reports what it finds there as `escapes` rather than folding them into the scope, since a file the session put outside the tree is not in it to be asserted over. `.claude/context/scripts/eval.md` holds the underlying blind spot as one finding across both harnesses, since the eval fixture snapshot has the same shape.
 
+### A per-arm escape scope for the one arm meant to reach past the tree
+
+`claude:aitk-rollout` is the only catalog entry whose skill's own job is dispatching a nested `claude --bg` session, and the one bound on it before this row was a line of narration asking the driven model to dispatch nothing. `run.sh`'s escape watch never enforced that, since it only ever reported a write under the four scratch directories as an unattributed warning, so a dispatch that reached the toolkit's own `.claude/plans/` or `.claude/tasks/` would have passed the arm cleanly.
+
+`escape_scope` in an arm's `expect.toml` closes that with the mechanism `write_scope` already models: a set of globs matched against what `escape_roots` and `ESCAPE_SCRATCH_DIRS` found, checked by the same harness that finds them rather than left to the skill's own restraint. Declaring the key, even at `escape_scope = []`, turns the warning into a mechanical result. A write matching a declared glob passes as expected, and everything else fails the arm outright, which is what "the harness asserts them" means in practice.
+
+The alternative was accepting the exposure and stating it in prose, declined because the accidental bound this arm leaned on had already weakened once on its own, when a `targets.json` appeared on this machine as a side effect of an unrelated test.
+
+`claude:aitk-rollout` declares `escape_scope = []` for the reason its fixture already gives: the arm's narration tells the run to dispatch no worker, so every tested path is the refusal, and a correct run touches none of the eight watched destinations. A future arm that actually drives the dispatch widens the scope from what that run measures rather than from a guess at what a worker touches, the same discipline `write_scope`'s own comment states for the same fixture.
+
+Two things a scoped pass does not say. It says nothing about a write outside the watch's own reach, being a home directory, a sibling worktree, or the machine-level target and session registries a live dispatch would actually touch, since those sit past what `escape_roots` names at all. It says nothing about whether the write it did see belongs to this run rather than a sibling's, since the harness still cannot attribute one. `.claude/context/sandbox/coverage.md` carries what a reader can and cannot conclude from either kind of pass.
+
+### An empty manifest cannot say whether it watched anything
+
+`snapshot_root` in `run.sh` returns an empty manifest both when a watch ran clean and when none of the four scratch directories existed under a root, and the two produce the same empty `escapes` list, so `checkEscapeScope` could not tell a real pass from a watch with nothing to watch. `run.sh` now sets a flag whenever any root held one of the four directories at snapshot time and passes it through `--escapes-watched`, and `checkEscapeScope` reports unmeasured rather than passing when no root did. A run whose watched roots held something and still saw nothing still passes outright, which is the case the declaration exists to check.
+
 ### The checker and its verdicts
 
 An assertion kind whose input the caller did not supply reports as unchecked rather than dropping out of the count. Omitting `--writes` would otherwise let write scope vanish silently from the cheap standalone path, which is the path most likely to be trusted. A verdict never reports `pass` having asserted nothing, since the declaration counts globs while the verdict counts writes and the two diverge at zero.
