@@ -15,6 +15,7 @@ import { register as docs } from '@/commands/docs'
 import { register as design } from '@/commands/design'
 import { register as slides } from '@/commands/slides'
 import { register as capture } from '@/commands/capture'
+import { register as serve } from '@/commands/serve'
 import { register as demo } from '@/commands/demo'
 import { register as inventory } from '@/commands/inventory'
 import { register as feedback } from '@/commands/feedback'
@@ -61,6 +62,7 @@ function showHelp(): void {
     `${GREY}│${NC}    design [cmd]       ${GREY}# Design system commands (render)${NC}`,
     `${GREY}│${NC}    slides [cmd]       ${GREY}# Slide deck commands (render, list)${NC}`,
     `${GREY}│${NC}    capture [source]   ${GREY}# Render HTML capture sources to PNG${NC}`,
+    `${GREY}│${NC}    serve [dir]        ${GREY}# Serve a directory over localhost and print the preview link${NC}`,
     `${GREY}│${NC}    demo [cmd]         ${GREY}# Record a running app (compile, run)${NC}`,
     `${GREY}│${NC}    inventory [subj]   ${GREY}# Report one computed property across every route${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/feedback/${NC}`,
@@ -108,6 +110,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk slides render`,
     `${GREY}│${NC}    aitk slides list --json`,
     `${GREY}│${NC}    aitk capture assets/install.html`,
+    `${GREY}│${NC}    aitk serve .claude/teach`,
     `${GREY}│${NC}    aitk inventory focus --json`,
     `${GREY}│${NC}    pbpaste | aitk feedback`,
     `${GREY}│${NC}    aitk transcripts https://youtu.be/VIDEO_ID`,
@@ -160,6 +163,7 @@ docs(program)
 design(program)
 slides(program)
 capture(program)
+serve(program)
 demo(program)
 inventory(program)
 feedback(program)

@@ -63,7 +63,12 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                                            |
 | `aitk inventory [subject]` | Walk every route a project declares and group its elements by the property each computes, as a listing rather than a gate (`--json`)                                 |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                                                |
+| `aitk serve [dir]`         | Serve a directory on the loopback interface and print the link that opens it, running until interrupted (`--port`, `--entry`, `--json`)                              |
 | `aitk upgrade`             | Reinstall the CLI globally with the package manager the install path names (`--json`)                                                                                |
+
+`aitk serve` ships and drives no browser, which is what separates it from the two that do. A generated page loses its stylesheet and its script to an editor preview and to a `file://` open, so the link is the delivery rather than a convenience, and every generated surface here reaches a reader through one. It binds `127.0.0.1` and never a wildcard, because what it is pointed at is routinely a gitignored record tree. It sends `cache-control: no-store`, since a preview exists to be edited and reloaded and a cached stylesheet reads as a fix that did not work.
+
+A port already in use is the ordinary case rather than a refusal, so it walks forward to the next free one and reports which it took. That is why a caller reads `url` off the `--json` record instead of composing one from the port it asked for.
 
 `aitk demo` is the second browser command and the one that ships, since its purpose is running in a target rather than regenerating what this repository commits. It needs a browser binary the package does not carry, installed once with `bunx playwright install chromium`.
 

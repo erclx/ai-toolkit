@@ -13,6 +13,8 @@ It also produces one output where two are needed. A page written to be worked th
 
 A session that does record something records the wrong thing. It writes what was taught rather than what the learner retrieved, and a tally of errors carries none of the misconception a later session would work against.
 
+The lesson then reaches nobody. It is a page carrying a stylesheet and a script, and the only thing a session hands over is a file path, which an editor preview opens with neither. The learner reads unstyled markup and takes it for the lesson, or opens nothing at all, and either way the session reports the lesson as delivered. A path is also the wrong unit once a workspace holds several pages, since the learner wants the one they are on rather than the folder it sits in.
+
 The durable half then has nowhere to go. A reference page and a glossary carry no learner and are ordinary reference prose, so they belong wherever the project already keeps prose on that subject, and a workspace holding them is a gitignored folder one person reads. A session moving them by hand picks a destination from the reader's activity rather than from who owns the subject, drops a page into a corpus without the source line that corpus requires, and has nothing stopping it from carrying a lesson across.
 
 Two failures land specifically on where the folder sits. A workspace resolved against the current directory forks into a copy per linked worktree, so the learning records split and no session sees the whole history. A body naming only the destination path reports success and loses the write, because the file-editing tools refuse a main-root path from a linked worktree and offer a worktree copy instead.
@@ -28,6 +30,7 @@ Two failures land specifically on where the folder sits. A workspace resolved ag
 - Split the output by lifetime, sending the worked-through half to lessons and the looked-up half to reference pages in the format the authoring gates read
 - Record the wrong answer itself rather than the count, since that is what the next session places the learner from
 - Report progress against the mission's success lines, so a mission can be called finished
+- Hand the learner a link that opens the workspace in a real browser on every run, reading it back from the verb that served it rather than composing one, since the port a preview lands on is not the port it asked for
 - Propose a destination for each durable page by who owns its subject, and wait for the operator rather than routing on the session's own reading
 - Hand each confirmed page off through a named file of its own, so one skill owns the durable writes and no other producer's unread work is discarded with it
 - Name what the destination expects that the page does not carry yet, since the workspace runs none of the gates the destination does

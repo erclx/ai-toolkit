@@ -61,6 +61,7 @@
     "astro": "^6.1.9",
     "cspell": "^8.17.1",
     "husky": "^9.1.7",
+    "marked": "^18.0.11",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "^5.9.3",
