@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/erclx/canon/compare/v4.0.0...v4.1.0) (2026-08-31)
+
+
+### Features
+
+* **slides:** report an unrecognized layout name on render ([#1294](https://github.com/erclx/canon/issues/1294)) ([4d0935a](https://github.com/erclx/canon/commit/4d0935aca5cc35c5d53d4753c41dc19f1be25b33))
+
 ## [4.0.0](https://github.com/erclx/canon/compare/v3.57.0...v4.0.0) (2026-08-31)
 
 
