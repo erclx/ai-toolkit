@@ -214,6 +214,23 @@ describe('planAnswers', () => {
     expect(outcome.launchable).toBe(false)
   })
 
+  it('should refuse a plan sitting in the archive as already shipped', async () => {
+    mkdirSync(join(ROOT, '.claude', 'plans', 'archive'), { recursive: true })
+    await writeFile(
+      join(ROOT, '.claude', 'plans', 'archive', 'feature-gate.md'),
+      planBody([{ suggested: 'a technical default settles it.' }]),
+      'utf8',
+    )
+
+    const outcome = await planAnswers(
+      ROOT,
+      '.claude/plans/archive/feature-gate.md',
+    )
+
+    expect(outcome.ok).toBe(false)
+    expect(outcome.ok === false && outcome.reason).toBe('archived')
+  })
+
   it('should name every base it looked under when nothing resolves', async () => {
     const outcome = await planAnswers(ROOT, '../plans/feature-absent.md')
 

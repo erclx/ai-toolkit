@@ -192,7 +192,7 @@ export function register(program: Command): void {
         '',
         'Exit codes:',
         '  0  the plan is launchable',
-        '  1  refused, with the reason on stderr or in the JSON record',
+        '  1  refused as no-plan, archived, or bad-input',
         '  2  the plan waits on the operator, and open names every slot',
         '',
         'A blank Answer accepts the Suggested line above it, so only',

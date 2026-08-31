@@ -1,9 +1,11 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, join, relative, resolve } from 'node:path'
+import { isUnder } from '@/paths'
 import { readQuestions, splitPlanSections } from '@/records/validate'
 
 const PLANS_DIR = join('.claude', 'plans')
+const PLANS_ARCHIVE_DIR = join(PLANS_DIR, 'archive')
 const TASKS_DIR = join('.claude', 'tasks')
 
 /**
@@ -17,7 +19,7 @@ const OPERATOR_CALL = 'needs your call'
 const SUGGESTED_PREFIX = '- Suggested:'
 const ANSWER_PREFIX = '- Answer:'
 
-export const ANSWER_REFUSALS = ['no-plan', 'bad-input'] as const
+export const ANSWER_REFUSALS = ['no-plan', 'archived', 'bad-input'] as const
 
 export type AnswerRefusal = (typeof ANSWER_REFUSALS)[number]
 
@@ -55,9 +57,14 @@ export type AnswersOutcome = PlanAnswers | AnswersRefused
  * The second base is the one a dispatcher actually has to hand. A board row
  * writes its `Plan:` link relative to `.claude/tasks/`, so the href reads
  * `../plans/feature-<slug>.md`, and resolving that against the root alone lands
- * a directory above the repository and refuses a plan that exists. It is the
- * same pair `resolveLivePlan` reads a task's own line through, so the two agree
- * on which file a citation names.
+ * a directory above the repository and refuses a plan that exists.
+ *
+ * `resolveLivePlan` reads a task's own line against the same two bases and is
+ * not this function. It tries the board first and tests containment under the
+ * live plans folder, where this tries the root first and tests nothing, so the
+ * two agree on the spellings a board writes and part company outside them.
+ * Sharing the bases is what makes a board link resolve for both, and the
+ * archive exclusion in `planAnswers` is stated separately for that reason.
  *
  * Root order is what keeps the documented forms unchanged. A reference that
  * resolves from the root is taken there, and the board base is reached only by
@@ -155,6 +162,17 @@ export async function planAnswers(
     const looked = candidates.map((entry) => relative(root, entry)).join(' or ')
 
     return refuse('no-plan', `No plan at ${looked}.`, [reference])
+  }
+
+  // An archived plan answers every question and would report as launchable, so
+  // the name would clear a dispatch that `claude-autoship` Step 1 then refuses
+  // as already-shipped work. Catching it here is a step earlier than the worker.
+  if (isUnder(path, join(root, PLANS_ARCHIVE_DIR))) {
+    return refuse(
+      'archived',
+      `${relative(root, path)} sits in the plans archive, so it describes work that already shipped.`,
+      [reference],
+    )
   }
 
   const sections = splitPlanSections(await readFile(path, 'utf8'))

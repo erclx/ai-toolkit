@@ -17,7 +17,8 @@ Run `canon tasks plan-answers <plan> --json` and read `launchable` off the recor
 
 - `launchable: true`: the plan answers itself, so proceed to the branch check.
 - `launchable: false`: the row is not dispatchable. Report every entry in `open`, each carrying the question label and the reason its suggestion gave for needing a person, and hand the row to the human-launch line below. Never fill the slot on the operator's behalf, which is the one move the plan standard forbids outright.
-- The command refuses, or the record carries no `launchable` key: treat the row as unverified rather than clear, name what could not be read, and fall back to the human. A gate that reads nothing and proceeds is the gate not running.
+- `reason: archived`: the row's plan sits in `.claude/plans/archive/` and describes work that already shipped. Repoint the row at a live plan rather than dispatching, since `claude-autoship` Step 1 refuses the same file and the worker would meet that refusal after the launch spent.
+- The command refuses for any other reason, or the record carries no `launchable` key: treat the row as unverified rather than clear, name what could not be read, and fall back to the human. A gate that reads nothing and proceeds is the gate not running.
 
 Branch on `launchable` rather than on the exit code, which a shell function wrapping `canon` can flatten to zero and so read a held row as a clear one.
 

@@ -75,14 +75,16 @@ canon tasks plan-answers .claude/plans/feature-dispatch-answer-gate.md
 canon tasks plan-answers ../plans/feature-dispatch-answer-gate.md
 ```
 
-A relative path resolves against the project root first and against `.claude/tasks/` second, which is the pair `canon tasks plan-citations` already reads a task's own `Plan:` line through. The third form above is what a board row writes, since its link is relative to the board, and a dispatcher copying the reference out of the row it is dispatching has that spelling to hand rather than either of the other two. A refusal names every base it looked under.
+A relative path resolves against the project root first and against `.claude/tasks/` second. The third form above is what a board row writes, since its link is relative to the board, and a dispatcher copying the reference out of the row it is dispatching has that spelling to hand rather than either of the other two. A refusal names every base it looked under.
+
+`canon tasks plan-citations` reads a task's `Plan:` line against those same two bases in the opposite order, and tests that the target lands under the live plans folder, which this verb does not. Both answer the same file for every spelling a board writes. Liveness is a separate refusal here: a plan resolving inside `.claude/plans/archive/` returns `archived` rather than a launchable reading, since it answers every question and describes work that already shipped.
 
 | Option          | Effect                                      |
 | --------------- | ------------------------------------------- |
 | `--json`        | Emit a machine-readable record on stdout    |
 | `--root <path>` | Board root, defaulting to the main worktree |
 
-The record carries `launchable` and `open`, the questions still waiting, each with the `label` that names it and the `why` its suggestion gave for needing a person. Exit codes: `0` launchable, `1` refused with `no-plan` or `bad-input`, `2` waiting on the operator.
+The record carries `launchable` and `open`, the questions still waiting, each with the `label` that names it and the `why` its suggestion gave for needing a person. Exit codes: `0` launchable, `1` refused with `no-plan`, `archived`, or `bad-input`, `2` waiting on the operator.
 
 A blank `- Answer:` is not a waiting question. The plan standard fixes an empty slot as accepting the `- Suggested:` line above it, so the one shape this reads is `- Suggested: needs your call, <why>` over an empty slot, which is what that standard writes where the answer turns on preference rather than on a technical default. A verb reading every blank slot as open would report every plan in the folder.
 
