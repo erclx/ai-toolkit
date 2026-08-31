@@ -41,10 +41,37 @@ nothing else.
 - Send a block out as a message before it becomes an interactive prompt. A session already waiting on input never reaches the tool round that drains an inbound message, so a relayed answer arrives under the open question and changes nothing.
 - Send nothing on progress. A worker reporting progress rebuilds, on this side of the channel, the poll the announcement retired on the other.
 
-Address the session the launch named. Fall back to `aitk sessions list --json`
-and the `orchestrator-` prefix when the launch named nobody, which is what an
-operator's own launch looks like, and say the addressee was inferred so the
-reader can correct it.
+Address the session the launch named. It names a `sessionId` rather than a name,
+so read `aitk sessions list --json`, find the row carrying that id, and send to
+the `name` on it. Resolve that name at the moment of sending rather than at
+launch, since a name is derived from what a session turned out to be doing and
+has gone stale inside the hour that a build takes.
+
+Ask the operator when the launch named nobody and a person is there to answer.
+Put the candidate rows to them through the structured question surface, so they
+pick a row rather than recalling a name. The ask halts the build, and the halt
+is the cheaper error: a worker that cannot reach its controller has nothing
+useful to do with the message it owes, where sending to the wrong session
+reports success and loses it. A halt is only as visible as whatever watches for
+one, so say what you are waiting on in the same turn you stop, and expect a
+controller running no stall detector to find the question only when it next
+looks.
+
+Infer only where no operator is present. Read `aitk sessions list --json` and
+take the sessions holding no feature branch as the candidates, since a
+controlling session holds none. Say the addressee was inferred so the reader can
+correct it. Never filter that roster by name prefix: every self-dispatched
+worker is named `worker-<slug>`, so a prefix scan returns a sibling or this
+session itself, which is the defect that sent messages owed to a controller
+somewhere else.
+
+Report a resolution that returns nothing rather than falling back to a guess.
+The roster and the send channel enumerate different populations in both
+directions, measured at one moment: a live background session sat on the roster
+that the agent listing did not carry, and nine sessions were addressable there
+with no roster row at all. Those nine were driving through Remote Control, which
+writes no local process record, so a controller working from a phone is exactly
+the case this read answers nothing for.
 
 ## Refusing is part of the job
 

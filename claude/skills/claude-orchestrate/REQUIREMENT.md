@@ -82,7 +82,9 @@ The session also records nothing of what it learns. Both other callers of memory
 - Check a candidate branch is unclaimed by an existing worktree or a live session before dispatching a background worker for it, since the measured failure this closes is a worker colliding with someone else's work already sitting in the row
 - Dispatch only a candidate whose file set is disjoint from every track in flight, compared at the file path rather than a folder above it, since a count knows nothing about what two workers write
 - Hold a candidate whose sets are disjoint when a stated reason serializes it, and write that reason on the hold, since disjointness is necessary and not sufficient
-- Name each self-dispatched worker with the `orchestrator-` prefix, since that is what separates one from an operator's own launch in a session listing
+- Name each self-dispatched worker with the `worker-` prefix, since that is the role the name marks and no controlling session has ever carried it
+- Pass `-n` explicitly on every self-dispatch, since a launch that omits it leaves the client to derive a name and the fallback is a fragment of the session's own identifier
+- Carry the dispatcher's `sessionId` in the launch prompt, since a worker owed two messages has no property on the roster that resolves a controller and a name goes stale inside the window it builds in
 - Report each self-dispatch and the row it fired against loudly enough to follow, since a person no longer watches the launch step happen
 - Stop dispatching once `## Run now` is empty or every row in it reads claimed, rather than waking again to fire on a board nobody is clearing
 
