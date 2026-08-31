@@ -421,6 +421,29 @@ describe('readCitations', () => {
     expect(finding?.line).toBe(5)
   })
 
+  it('should anchor a glob past a description line that names the same path', async () => {
+    // `596-claude-md.md` names CLAUDE.md in its description and again as a
+    // glob, and a substring scan finds the description first.
+    write(
+      join('internal', 'rules', 'claude', '596-claude-md.md'),
+      [
+        '---',
+        'description: Enforce the shape of CLAUDE.md and its seed',
+        'paths:',
+        "  - 'CLAUDE.md'",
+        '---',
+        '',
+        '- Seed rules live here.',
+      ].join('\n'),
+    )
+    write('CLAUDE.md', '# Project')
+    git('add', '--all')
+
+    const report = measured(await readCitations(ROOT))
+
+    expect(report.globs[0]?.line).toBe(4)
+  })
+
   it('should accept an internal glob that matches a file', async () => {
     writeInternalRule('claude/597-wiki.md', '- Wiki pages live here.', [
       'wiki/**/*.md',

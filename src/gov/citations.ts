@@ -294,24 +294,41 @@ function isGoverned(cited: string, declared: readonly string[]): boolean {
 }
 
 /**
+ * A `paths:` list entry, with the glob captured and its quoting dropped.
+ *
+ * Anchored on the entry shape rather than searched for as a substring. A bare
+ * scan for the glob text finds it in the `description:` line first wherever a
+ * rule names what it governs in prose, which is how `596-claude-md.md` reported
+ * its `CLAUDE.md` glob against line 2 instead of line 4.
+ */
+const LIST_ENTRY = /^\s*-\s*(?:'([^']*)'|"([^"]*)"|(\S.*?))\s*$/
+
+/**
  * Where each declared glob sits, so a finding names a line a reader can click.
  *
  * The values come from the YAML parse and the line numbers from a scan of the
- * same block, rather than from a second parse of the list syntax. A quoted
- * entry, a bare one, and a flow sequence all reach the parse identically and
- * only the first two are what this corpus writes.
+ * frontmatter block alone, rather than from a second parse of the list syntax.
+ * A quoted entry, a bare one, and a flow sequence all reach the parse
+ * identically, and only the first two are what this corpus writes, so a flow
+ * sequence resolves its value and reports no line.
  */
 function locateGlobs(text: string): { line: number; glob: string }[] {
   const declared = governedPaths(text)
   if (declared.length === 0) return []
 
   const lines = text.split('\n')
+  const close = lines.findIndex(
+    (line, index) => index > 0 && FRONTMATTER_DELIMITER.test(line),
+  )
+  const block = close === -1 ? lines : lines.slice(0, close)
   const taken = new Set<number>()
 
   return declared.map((glob) => {
-    const at = lines.findIndex(
-      (line, index) => !taken.has(index) && line.includes(glob),
-    )
+    const at = block.findIndex((line, index) => {
+      if (taken.has(index)) return false
+      const entry = line.match(LIST_ENTRY)
+      return entry !== null && (entry[1] ?? entry[2] ?? entry[3]) === glob
+    })
     if (at !== -1) taken.add(at)
     return { line: at + 1, glob }
   })
