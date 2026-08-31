@@ -12,13 +12,22 @@ IFS= read -r -d '' -t 2 input
 event=$(printf '%s' "$input" | jq -r '.hook_event_name // empty')
 [ "$event" = "PreCompact" ] || exit 0
 
-# The matcher in settings.json is the documented separator between a manual and
-# an automatic compaction, and no event-specific payload field is documented for
-# this event. Reading `trigger` where it exists hardens a wildcard registration
-# without depending on a field that may never arrive, so an absent one carries
-# on and only a present `auto` stops here.
+# Each trigger gets the one channel that reaches a session on it. Blocking is
+# manual-only: on `auto` the client suppresses the notification and discards the
+# blocking reason, so a block there stops the compaction and tells nobody. Exit-0
+# stdout is read on both, merged into the instructions the summarizer is given,
+# which is why `auto` writes to stdout and carries on. An absent `trigger` takes
+# the manual path, since a payload that names no trigger is the one this hook
+# cannot afford to answer with silence.
 trigger=$(printf '%s' "$input" | jq -r '.trigger // empty')
-[ "$trigger" = "auto" ] && exit 0
+if [ "$trigger" = "auto" ]; then
+  cat <<'MSG'
+Preserve the reasoning, not only the conclusions. For every decision this session reached, keep what was measured or read to reach it, the alternative that was rejected and the ground it was rejected on, and any finding that turned out to be wrong.
+
+Keep an open question open rather than resolving it into whichever answer the session was leaning towards. A conclusion whose reasoning is dropped reads as settled to whoever picks the session up, and it cannot be re-argued from a summary alone.
+MSG
+  exit 0
+fi
 
 session=$(printf '%s' "$input" | jq -r '.session_id // "none"')
 key=$(printf '%s' "$session" | tr -c 'A-Za-z0-9' '_')
@@ -33,10 +42,10 @@ marker="$marker_dir/$key"
 mkdir -p "$marker_dir" 2>/dev/null || exit 0
 : >"$marker" 2>/dev/null || exit 0
 
-# This event carries no `additionalContext` and its exit-0 output reaches the
-# debug log alone, so blocking is the only channel that reaches the session at
-# all. Exit 2 makes the stderr text the blocking reason, which is why the
-# message goes there rather than to stdout.
+# This event carries no `additionalContext`, and stdout reaches the summarizer
+# rather than the session, so blocking is the only channel that puts text in
+# front of the session itself. Exit 2 makes the stderr text the blocking reason,
+# which is why the message goes there rather than to stdout.
 cat >&2 <<'MSG'
 Compaction blocked once so the handoff is written first. A compaction keeps conclusions and drops the reasoning that produced them, and this session is the only one still holding that reasoning.
 

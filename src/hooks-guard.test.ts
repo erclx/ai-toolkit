@@ -581,11 +581,13 @@ describe('seeds standards-audit.sh runner', () => {
   )
 })
 
-// The block is the only channel this event has, so the cases deciding whether
-// it is safe are the ones the acting case above cannot reach: an automatic
-// compaction has to pass through untouched, and a manual one has to stop asking
-// after the first refusal. Blocking every `/compact` would trap the session
-// that answered and the session that declined alike.
+// Each trigger reaches the session by a different channel, so the cases
+// deciding whether the hook is safe are the ones the acting case above cannot
+// reach: an automatic compaction has to instruct the summarizer without ever
+// blocking, and a manual one has to stop asking after the first refusal.
+// Blocking every `/compact` would trap the session that answered and the
+// session that declined alike, and blocking an automatic one stops a compaction
+// nobody is told about.
 describe('.claude/hooks/precompact-handoff.sh', () => {
   const hook = join(ROOT, '.claude/hooks/precompact-handoff.sh')
 
@@ -593,23 +595,55 @@ describe('.claude/hooks/precompact-handoff.sh', () => {
     JSON.stringify({ hook_event_name: 'PreCompact', ...fields })
 
   it.concurrent(
-    'should leave an automatic compaction untouched',
+    'should instruct the summarizer rather than block an automatic compaction',
     async ({ expect }) => {
       const result = await run(
         hook,
         payload({ session_id: 'precompact-auto', trigger: 'auto' }),
       )
 
+      expect(result.stdout).toContain('Preserve the reasoning')
       expect(result.stderr).toBe('')
-      expect(result.stdout).toBe('')
       expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should instruct on every automatic compaction rather than once',
+    async ({ expect }) => {
+      // A precompute pass fires this hook with a payload identical to the real
+      // compaction's and drops its own record when refused, so it re-arms and
+      // fires again. Anything counted per session is drained by firings the
+      // session never sees, which is why the automatic path counts nothing.
+      const once = payload({ session_id: 'precompact-arms', trigger: 'auto' })
+
+      const first = await run(hook, once)
+      const second = await run(hook, once)
+
+      expect(second.stdout).toBe(first.stdout)
+      expect(second.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should block a compaction whose payload names no trigger',
+    async ({ expect }) => {
+      // An absent trigger is the payload the hook cannot answer with silence,
+      // so it takes the manual path and asks.
+      const result = await run(hook, payload({ session_id: 'precompact-bare' }))
+
+      expect(result.stderr).toContain('Run the aitk:session-map skill')
+      expect(result.code).toBe(2)
     },
   )
 
   it.concurrent(
     'should block a manual compaction once and let the next one through',
     async ({ expect }) => {
-      const once = payload({ session_id: 'precompact-repeat' })
+      const once = payload({
+        session_id: 'precompact-repeat',
+        trigger: 'manual',
+      })
 
       const first = await run(hook, once)
       const second = await run(hook, once)
@@ -624,10 +658,14 @@ describe('.claude/hooks/precompact-handoff.sh', () => {
   it.concurrent(
     'should keep the blocking reason off stdout',
     async ({ expect }) => {
-      // Exit 2 makes stderr the blocking reason, and stdout on this event
-      // reaches the debug log alone. Writing there would put the message
-      // where nobody reads it while the block itself stayed unexplained.
-      const result = await run(hook, payload({ session_id: 'precompact-out' }))
+      // Exit 2 makes stderr the blocking reason, and stdout on this event is
+      // merged into the summarizer's instructions. Writing there would address
+      // the summary of a compaction that is not going to happen, while the
+      // block itself stayed unexplained.
+      const result = await run(
+        hook,
+        payload({ session_id: 'precompact-out', trigger: 'manual' }),
+      )
 
       expect(result.stdout).toBe('')
       expect(result.code).toBe(2)
