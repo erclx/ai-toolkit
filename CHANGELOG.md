@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.55.0](https://github.com/erclx/aitk/compare/v3.54.0...v3.55.0) (2026-08-31)
+
+
+### Features
+
+* **orchestrate:** push a notification when a worker stalls ([#1285](https://github.com/erclx/aitk/issues/1285)) ([e87ce90](https://github.com/erclx/aitk/commit/e87ce90cf8549febd9626755a20413feccf06c01))
+
 ## [3.54.0](https://github.com/erclx/aitk/compare/v3.53.0...v3.54.0) (2026-08-31)
 
 
