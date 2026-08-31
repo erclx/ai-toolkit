@@ -126,9 +126,9 @@ The condition on that was something identifying a finite verb rather than guessi
 
 Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, and cadence is a distribution whose healthy range moves with the surface, so all four report under every code.
 
-`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `scripts/core/verify.sh` is right to warn and skip. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
+`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `aitk gate run` is right to warn and skip. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
 
-`2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `aitk context audit` and the `verify.sh` seed stage already draw between the same two codes.
+`2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `aitk context audit` and the gate's own seed stage already draw between the same two codes.
 
 A banned character is a fact rather than a judgment, which is the test that admits it to a gate. What held it back was that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order was to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change, and the gate is the last of the four.
 
@@ -148,7 +148,7 @@ A hit the closed set cannot separate from correct prose is the case with no thir
 
 ### Where the rules are enforced
 
-Four surfaces apply the ban sets and three of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, the seed copy a project installs does the same, and the `Markdown bans` stage in `scripts/core/verify.sh` runs it across the whole corpus before a push. Each hook parsed its own copy of the word bans in awk before that, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
+Four surfaces apply the ban sets and three of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, the seed copy a project installs does the same, and the `Markdown bans` stage in `aitk gate run` runs it across the whole corpus before a push. Each hook parsed its own copy of the word bans in awk before that, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
 
 The seed copy moved onto the verb when the sets became data, since its awk had nothing left to parse. It resolves one runner where the toolkit copy resolves two, looking for no checkout source, and a machine carrying no `aitk` gets a report naming the binary to install rather than a silent pass. `scripts/core/check-seed-independence.sh` scopes its walk to markdown and leaves the seed hooks outside it, which its own comment records as deliberate.
 

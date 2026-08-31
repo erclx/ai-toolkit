@@ -64,6 +64,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk census [path]`       | Report tracked file count, a breakdown by extension, and a line total that skips whatever reads as binary (`--json`)                                                  |
 | `aitk audits run`          | Run every audit as one set, report per check under one verdict, and compare each count to the recorded baseline (`--json`, `--record`)                                |
 | `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                                             |
+| `aitk gate run`            | Run every stage that guards a branch here, scoping shell, types, and tests to the changed set (`--all`, `--no-write`, `--nested`, `--json`)                           |
 | `aitk inventory [subject]` | Walk every route a project declares and group its elements by the property each computes, as a listing rather than a gate (`--json`)                                  |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                                                 |
 | `aitk serve [dir]`         | Serve a directory on the loopback interface and print the link that opens it, running until interrupted (`--port`, `--entry`, `--json`)                               |
@@ -116,6 +117,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `labels`    | `audit`                                                                                                                               |
 | `autoship`  | `classify`                                                                                                                            |
 | `audits`    | `run`, `list`                                                                                                                         |
+| `gate`      | `run`                                                                                                                                 |
 
 Common patterns:
 

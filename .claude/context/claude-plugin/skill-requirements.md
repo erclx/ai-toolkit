@@ -21,7 +21,7 @@ The unit is the skill rather than the family. A single file covering the whole `
 
 Which skills carry the file is a fact two commands report. `aitk claude skills list --json` carries `requirement` per entry across the shipped corpus, and `aitk claude skills audit` measures presence across both corpora and fails on an absence. Read coverage from either rather than from a count written here, which goes stale the moment a skill is added.
 
-The two resolve their root differently, and the difference decides which one answers a question. The listing reads the shipped corpus rather than the cwd, so a dev-linked `aitk` reports `main` no matter which worktree runs it, which is what makes it useless for verifying a branch. The audit reads the directory it is pointed at, defaulting to the cwd, so it measures the tree in hand. `verify.sh` runs it under `--requirements-only` on every push, which is the enforcement the rule went without while the standard required the file.
+The two resolve their root differently, and the difference decides which one answers a question. The listing reads the shipped corpus rather than the cwd, so a dev-linked `aitk` reports `main` no matter which worktree runs it, which is what makes it useless for verifying a branch. The audit reads the directory it is pointed at, defaulting to the cwd, so it measures the tree in hand. The merge gate runs it under `--requirements-only` on every push, which is the enforcement the rule went without while the standard required the file.
 
 ## The admission test that was replaced
 

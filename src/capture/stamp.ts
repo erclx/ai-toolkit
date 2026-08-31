@@ -6,9 +6,10 @@ const STAMP_EXTENSION = '.stamp'
 
 /**
  * Provenance for one rendered PNG: the markup it came from and a digest over
- * each side of the pair. `assert_hero_stamp` in `scripts/core/verify.sh` reads
- * both digests back with awk, so the field names, the colon, and the single
- * space after it are a contract across two languages rather than formatting.
+ * each side of the pair. `assertStampField` in `src/gate/measures.ts` reads both
+ * digests back off the first whitespace-separated token, so the field names, the
+ * colon, and the space after it are a contract between the writer and the gate
+ * rather than formatting.
  *
  * Both sides are recorded because either can move alone. The markup digest
  * catches an edit committed with no capture, and the image digest catches a PNG

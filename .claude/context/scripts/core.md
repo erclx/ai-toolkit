@@ -7,11 +7,12 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 
 `scripts/core/` holds repo maintenance: the scripts a contributor runs by `bun run` name and the guard stages `check` fires on every push. Nothing here is an `aitk` verb, so the catalog below is the discoverable surface.
 
+What sequences those guards is not here. `bun run check` resolves to `aitk gate run`, and the stage table, the changed-file scoping, and every threshold comparison sit in `src/gate/`, described in `.claude/context/development/gates.md`. Each check stayed the script it already was, so this folder is what the gate runs rather than what decides when to run it.
+
 ## The catalog
 
 - `bootstrap.sh`, run as `bun run bootstrap`: installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent and re-runnable
-- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the ignore-parity, skill-path, plugin-boundary, seed-independence, context-citation, seed-standards, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
-- `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then verify
+- `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then `aitk gate run --nested`
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
 - `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context, framing entirely to stderr
 - `regen-indexes.sh`: thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI
@@ -23,6 +24,8 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `check-seed-independence.sh`: walks the `.md` under every root `collect_seed_roots` discovers and fails on the literal token `aitk`, so seed prose a target reads as instruction about itself never names a binary that target may not have. The walk is scoped to `tooling/*/seeds/` alone, so a citation landing in `governance/rules/` passes CI unflagged even when the rule carries content moved out of the seed and ships to every target the same way, and a moved bullet's independence has to be checked by hand against the same standard.
 - `check-color-source.sh`: walks `scripts/` and fails when any `.sh` other than `scripts/lib/ui.sh` spells an SGR escape, so one answer sits behind every bash writer
 - `check-ignore-parity.sh`: compares the `.claude/` patterns in this repository's `.gitignore` against the `# Claude` array the claude manifest ships, so the ignore set a target receives cannot drift from the one the toolkit runs on. It holds the sanctioned divergences and the reason for each, and `.claude/context/tooling.md` carries why the comparison exists
+- `repair-bare-flag.sh`: sources `repair_bare_flag` and runs it, which is how the gate reaches that rule without holding a second copy of the guard that spares a genuinely bare repository
+- `list-seed-roots.sh`: prints every `tooling/*/seeds` carrying a `.claude/`, which is how the seed-standards stage reads the same discovery `check-seed-independence.sh` reads
 
 ## What the hero frame chooses and what it samples
 
@@ -32,11 +35,13 @@ The rules column still samples, but only over rules a stack names. A rule no sta
 
 The command count in the stats row reads `grep -c '^import { register as ' src/cli.ts`, since the commands have no `--json` catalog and `--help` is hand-authored ASCII that drifts from what is registered. A command added without that import shape leaves the frame's count low and nothing reports it.
 
-## Reading a JSON payload in a stage
+## Reading a JSON payload from bash
 
-`bun --eval` exits 0 when its script throws while stdin is a pipe, and exits 1 on the same throw with no pipe attached, measured on Bun 1.3.14. A stage piping a catalog into it and branching on `$?` therefore reads a parse failure as a success. A throw also prints nothing, so the empty output then reads as whichever clean result an empty string means in that stage, which is how a broken catalog reports as a clean sweep.
+`bun --eval` exits 0 when its script throws while stdin is a pipe, and exits 1 on the same throw with no pipe attached, measured on Bun 1.3.14. A script piping a catalog into it and branching on `$?` therefore reads a parse failure as a success. A throw also prints nothing, so the empty output then reads as whichever clean result an empty string means, which is how a broken catalog reports as a clean sweep.
 
-Print a sentinel from inside the eval and branch on that instead. The `Unreferenced rules` stage prefixes `ok:` on success and `unreadable:` in a `catch`, which covers a payload that is not JSON and a payload missing the key on one path. The `stale` grep idiom the drift stages use does not reach here, since those match a scalar and this key holds an array of names.
+Print a sentinel from inside the eval and branch on that instead, covering a payload that is not JSON and a payload missing the key on one path. The `stale` grep idiom the drift assertions use does not reach an array of names, which is what forced the sentinel where it was used.
+
+No stage carries either shape now. Every reading that needed a payload moved to `src/gate/measures.ts`, where a `try` around `JSON.parse` separates the two states with nothing to carry between processes, and the guidance stays here for the next script that reaches for the interpreter.
 
 ## Verification
 
@@ -44,29 +49,29 @@ CI runs every stage through `bun run check:ci`, which passes `--all`. The local 
 
 `repair_bare_flag` runs ahead of every stage rather than as one of them, because Claude Code's worktree entry leaves `core.bare` set in the shared config and that flag breaks the git reads that scope the run. It writes only when the flag is set and the repository's common dir is named `.git`, which spares a genuinely bare repository that keeps its objects at the root. `claude-worktree` carries the same repair at entry, and this copy covers the entries that never go through the skill. See `.claude/context/claude-plugin/skill-procedures.md` for the split and `wiki/claude/claude-worktrees.md` for the upstream issue.
 
-It lives in `scripts/lib/worktree.sh` rather than inline in `verify.sh` so `src/worktree-repair.test.ts` can source it, which is the one bash function in the repo under test. The function takes its target root as an argument defaulting to `PROJECT_ROOT`, since a test cannot set that for a sourced function without leaking it across cases. The test builds six repository shapes and the `basename` guard is what it exists to pin: deleting that line leaves five cases passing and fails only the genuinely-bare one, which is the case where an unguarded repair does damage. Tests gate on `^src/` locally, so an edit to the lib alone runs them only under `check:ci`, which passes `--all`.
+It lives in `scripts/lib/worktree.sh` rather than inline in the gate so `src/worktree-repair.test.ts` can source it, which is the one bash function in the repo under test. `scripts/core/repair-bare-flag.sh` is the two-line caller `aitk gate run` reaches it through, which is what kept the rule in one place when the sequencing moved into TypeScript. The function takes its target root as an argument defaulting to `PROJECT_ROOT`, since a test cannot set that for a sourced function without leaking it across cases. The test builds six repository shapes and the `basename` guard is what it exists to pin: deleting that line leaves five cases passing and fails only the genuinely-bare one, which is the case where an unguarded repair does damage. Tests gate on `^src/` locally, so an edit to the lib alone runs them only under `check:ci`, which passes `--all`.
 
 The test strips every inherited `GIT_*` variable before building its fixtures. Git hooks export `GIT_DIR`, so the suite passed standalone and failed under `pre-push` until it did: `git -C real-bare.git` resolved against the toolkit's own repository rather than the fixture, and the genuinely-bare case reported the wrong flag. Any future test that shells out to git needs the same scrub, and the failure is invisible to a normal `bun run test`.
 
 ### Stage gotchas
 
-- Three stages in `verify.sh` call TypeScript, context citations, the seed-standards gate, and the skill-requirement gate, in that order. Each invokes `bun src/cli.ts` rather than `aitk`, because a globally installed `aitk` resolves to the main checkout no matter which worktree is running and the gate would then measure the wrong tree.
-- Every stage above the group is pure bash by construction, so the bun startup on every push is cost the citation stage introduced and the two below it reuse. A later TypeScript stage belongs beside them rather than higher up, which is what keeps that split readable.
+- Nine stages call this checkout's CLI, and each reaches it through `cliRunner` in `src/gate/sequencer.ts` rather than through a globally installed `aitk`, which resolves to the main checkout no matter which worktree is running and would have the gate measure the wrong tree. The rule used to be a habit each stage kept and is now one function every stage borrows.
+- The bash and TypeScript stages no longer split the table into an upper and a lower half, since the sequencer starts every process itself and the interpreter is already running. What the grouping buys now is a reader's, so the stages calling the CLI still sit together in `STAGES`.
 
 ### The seed-standards stage
 
-- The seed-standards stage discovers its roots rather than listing them, walking `tooling/*/seeds/` and keeping the ones carrying a `.claude/`, so a new stack is covered without a script edit.
+- The seed-standards stage discovers its roots rather than listing them, reading `scripts/core/list-seed-roots.sh` for the same `collect_seed_roots` walk `check-seed-independence.sh` reads, so a new stack is covered without an edit to either caller and the two cannot disagree about which roots exist.
 - It reports the entries it measured per root and warns on a root that measured none, rather than printing one verdict for the set. A root can resolve an audited folder and hold no entry in it, which `tooling/claude/seeds` does today, and a single pass line over that reads as coverage of a tree nothing opened.
 - The count comes from `--gate --json`, whose record lands on stdout while the frame stays on stderr, so a passing run prints the counts alone and a failing one is re-run for its frame
 - It branches on the audit's exit code rather than on pass against fail, because 1 and 2 mean opposite things there. 2 is a seed breaking the standard it seeds and fails the push. 1 is the audit refusing, which a seed root carrying a `.claude/` but no audited folder produces, and it warns instead.
 - Treating the two alike red-failed a new stack that seeded `.claude/settings.json` alone, reporting a standards violation against a tree holding nothing a standard governs, which is the case discovery exists to make cheap
-- That re-run is the one place in the script where a command's non-zero exit is discarded with `|| true`. It exits non-zero by construction, having already failed once, and `set -e` would otherwise take the script down before `log_error` names which seed root broke.
+- That re-run used to be the one place in the script discarding a non-zero exit with `|| true`, since it exits non-zero by construction and `set -e` would otherwise take the run down before the remedy was named. The measure reads the exit code as a value instead, so the whole idiom is gone along with the three other places that needed it.
 
 ### The plugin boundary stage
 
 - `check-plugin-boundary.sh` collects violations and passes on an empty collection, so a missing `claude/` or a missing `realpath` would report the boundary clean or blame a leak for an absent tool. Both are guarded up front and exit 1 naming the cause. Anything added to that walk needs the same treatment, since a producer that fails and a tree that is clean both arrive as zero rows.
 
-`check-ignore-parity.sh` takes it on both sides of its comparison, since an unreadable `.gitignore` and an array the parse missed each arrive as an empty list that satisfies parity vacuously. Its own reason for being a standalone script rather than a function beside `assert_hero_stamp` is that a stage needing unit coverage cannot live inside `verify.sh`, which calls `main "$@"` at the bottom, so sourcing it to reach one function runs the whole check. A standalone script takes `PROJECT_ROOT` from the environment and a Vitest file points it at a fixture tree, which is the shape `src/worktree-port.test.ts` already uses against a seed script.
+`check-ignore-parity.sh` takes it on both sides of its comparison, since an unreadable `.gitignore` and an array the parse missed each arrive as an empty list that satisfies parity vacuously. Its own reason for being a standalone script was that a stage needing unit coverage could not live inside a shell script calling `main "$@"` at the bottom, since sourcing it to reach one function ran the whole check. That constraint is gone now that the gate is a command, and the script stays: it is the check itself rather than the sequencing, which is the line the move drew. A standalone script takes `PROJECT_ROOT` from the environment and a Vitest file points it at a fixture tree, which is the shape `src/worktree-port.test.ts` already uses against a seed script.
 
 `check-color-source.sh` takes that treatment too, exiting 1 when `scripts/lib/ui.sh` is absent rather than reporting a tree it never measured. Its walk stops at `scripts/` on purpose, since the seed scripts under `tooling/*/configs/scripts/` have to keep escapes of their own: a target that installs them has no shared library to source. It matches SGR alone, which leaves the cursor and erase sequences an interactive prompt writes legal.
 
@@ -74,7 +79,7 @@ The walk sat inside `find -L claude/ -type f` in a process substitution whose st
 
 ### Quoting a pathspec changes what it matches
 
-Quoting a glob passed to `git diff --` changes what it matches. `'claude/skills/*/references'` quoted returns nothing, because git pattern-matches the whole path and a file one level deeper never matches, while unquoted the shell expands to real directory paths and a literal directory pathspec does cover its contents. Reproducing the skill-references gate in `scripts/core/verify.sh` by hand returned an empty set against a file that was in fact modified, which reads as proof the file sits outside scope. The gate leaves its glob unquoted, saw the file, and failed. Copy a script's quoting exactly when checking by hand, and append `/*` or name the directory literally when a hand-run scope check is what is wanted.
+Quoting a glob passed to `git diff --` changes what it matches. `'claude/skills/*/references'` quoted returns nothing, because git pattern-matches the whole path and a file one level deeper never matches, while unquoted the shell expands to real directory paths and a literal directory pathspec does cover its contents. Reproducing the skill-references gate by hand returned an empty set against a file that was in fact modified, which reads as proof the file sits outside scope. The gate passed the glob straight to git, saw the file, and failed. That hazard is a hand-run one now rather than one the gate carries: a `drift` check in `src/gate/stages.ts` spells its pathspec as one argument and no shell ever sees it, so what git receives is what the table says. Append `/*` or name the directory literally when a hand-run scope check is what is wanted.
 
 ### The poll compares snapshots rather than reading the remote
 

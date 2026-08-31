@@ -29,9 +29,9 @@ One job runs all of it, which is the carve-out `ci-workflow` states rather than 
 
 The job name stays `🛡️ Static Checks` even though the job now runs the test suite. Required status checks resolve against the job name, so renaming it would break branch protection until the rule is updated to match.
 
-Mode selection goes through `VERIFY_WRITE` rather than a flag, matching the existing `VERIFY_NESTED` pattern, and CI names the `check:ci` script rather than setting the variable inline. Each mode runs exactly one format stage. The local run formats in place, so the check pass that used to follow it verified prettier and shfmt converged on their own output rather than verifying the repository.
+Mode selection goes through `--no-write` and CI names the `check:ci` script rather than setting anything inline. It was an environment variable, `VERIFY_WRITE`, while the gate was a shell script, and the flag replaced it when the sequencing moved into a command: the two questions a caller answers are what to run and whether to write, and splitting one across a flag and the other across the environment left the surface half discoverable. Each mode runs exactly one format stage. The local run formats in place, so the check pass that used to follow it verified prettier and shfmt converged on their own output rather than verifying the repository.
 
-Scope selection goes through an `--all` argument rather than a third environment variable, because it describes what to run rather than which mode to run in. An unknown argument exits 1 and `--help` prints the argument list, so the surface stays discoverable without reading the script.
+Scope selection goes through an `--all` argument, because it describes what to run rather than which mode to run in. An unknown argument exits 1 and `--help` prints the flags and the exit codes, so the surface stays discoverable without reading the table.
 
 ### Triggers and stage selection
 
@@ -41,7 +41,7 @@ The `Checkout` step passes `fetch-depth: 0` for the same reason. `actions/checko
 
 The push trigger exists to give the README's CI badge a default-branch run to report. A badge filtered to `main` reads `no status` while the workflow runs on pull requests alone, and an unfiltered one reports whichever branch happened to run last. The second cost is the useful one: a squash merge now runs the full gate against the merged result, which no pull request run observes.
 
-The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
+The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In the stage table it sits before the tests for the same reason, since it reports in about a second and the suite does not.
 
 `phase-label-gate.yml` runs `aitk labels scan` against `$GITHUB_EVENT_PATH`, since a pull request body is the one thing no stage in `bun run check` can see. It sits outside `verify.yml` rather than as a second job there, and the split turns on `types:` rather than on cost: this check exists to catch a title or body edited with no new commit, which needs `edited` on the trigger, and adding that to the shared trigger would re-run the whole Static Checks job on every such edit.
 
@@ -127,36 +127,43 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 ## Checks
 
-Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched. Two stages qualify that, and the table marks both.
+Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `aitk gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the prose below the table names each.
 
-| Stage                     | Command                                                  | What it asserts                                                                                    |
-| ------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
-| Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
-| Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/rules` matches source                                                                     |
-| Hero                      | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and both stamp digests match the pair beside them        |
-| Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
-| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
-| Context citations         | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                                  |
-| Seed standards            | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds, skipped per root carrying no `.claude/` |
-| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                                      |
-| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`         | a standard new to the branch carries a `## Success criterion` section                              |
-| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `verify.sh` pins                                 |
-| Plugin manifests          | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed, skipped when the tree carries none           |
-| Spelling                  | `bun run check:spell`                                    | cspell passes against dictionaries                                                                 |
-| Shell                     | `bun run check:shell`                                    | shellcheck passes at warning level                                                                 |
-| Types                     | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                               |
-| Tests                     | `bun run test`                                           | the vitest suite passes                                                                            |
+| Stage                     | Command                                                  | What it asserts                                                                             |
+| ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                                |
+| Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                         |
+| Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/rules` matches source                                                              |
+| Hero                      | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and both stamp digests match the pair beside them |
+| Tooling paths             | `scripts/core/regen-tooling-paths.sh`                    | the shipped overwrite contract names what the stacks hold                                   |
+| Ignore parity             | `scripts/core/check-ignore-parity.sh`                    | the ignore set a target receives matches this repository's own                              |
+| Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                    |
+| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                         |
+| Seed independence         | `scripts/core/check-seed-independence.sh`                | no seed prose names the toolkit CLI                                                         |
+| Unreferenced rules        | `bun src/cli.ts gov list --json`                         | reports rules no stack reaches, and fails on none of them                                   |
+| Context citations         | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                           |
+| Rule citations            | `bun src/cli.ts gov citations`                           | every path a rule cites and every internal frontmatter glob resolves                        |
+| Markdown bans             | `bun src/cli.ts markdown audit --json`                   | no markdown carries a banned character, word, or spelling                                   |
+| Seed standards            | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds                                   |
+| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                               |
+| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`         | a standard new to the branch carries a `## Success criterion` section                       |
+| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `src/gate/measures.ts` pins               |
+| Audit set                 | `bun src/cli.ts audits run --json`                       | reports the judgment half of every audit and its growth, and fails on none of it            |
+| Plugin manifests          | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed                                        |
+| Spelling                  | `bun run check:spell`                                    | cspell passes against dictionaries                                                          |
+| Shell                     | `bun run check:shell`                                    | shellcheck passes at warning level                                                          |
+| Types                     | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                        |
+| Tests                     | `bun run test`                                           | the vitest suite passes                                                                     |
 
-Two rows can report a skip under `check:ci`, and both condition on discovery rather than on the environment: a seed root that carries no `.claude/` seeds nothing a standard governs, and a tree carrying no manifest has nothing to validate. Sandbox coverage skips on a contributor's machine alone. A coverage command that does not report under CI fails the stage, on the same reasoning Plugin manifests uses for an absent `claude` binary. Shell, types, and tests skip on the changed-file set locally and never in CI, which is what `--all` buys.
+Two rows report rather than gate on their own reading, Unreferenced rules and Audit set, because every finding either carries is a judgment and a push failing on one teaches a contributor to route around the stage. Both still print what they found.
 
-Rebuild this table from the `log_step` calls in `verify.sh` rather than editing rows, since it once named half the stages and editing preserves whatever produced that. The format stage is the one row that rebuild misses, because it prints its own heading through a bare `echo` on both sides of the `WRITE` conditional and calls no `log_step`, so add it by hand at the top.
+The third is Sandbox coverage, which fails under `check:ci` when the scenario tree does not report and warns on a contributor's machine, on the reasoning Plugin manifests uses for an absent `claude` binary. Shell, types, and tests skip on the changed-file set locally and never in CI, which is what `--all` buys.
 
-The table names the `else` side, since `check:ci` runs with `VERIFY_WRITE=false` and the write side heads its output `Formatting` instead. A rebuild that trusts the grep alone drops it and reintroduces an undercount of one. Nothing compares the table to the script, so the next stage added leaves it wrong again.
+Rebuild this table from `STAGES` in `src/gate/stages.ts` rather than editing rows, since it once named half the stages and editing preserves whatever produced that. Both format stages are entries in that table now, so the rebuild reaches them the way it reaches every other row, and the hand-added row the old rebuild needed is gone. This table names the check side, since `check:ci` passes `--no-write` and the write side heads its output `Formatting` instead. Nothing compares the table to the table it describes, so the next stage added leaves it wrong again.
 
 ### The regeneration stages
 
-The three drift stages, Indexes, Consumed copies, and Hero, regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
+The four drift stages, Indexes, Consumed copies, Hero, and Tooling paths, regenerate and then assert twice through the `drift` check in `src/gate/sequencer.ts`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
 
 Regeneration runs in both modes, so `check:ci` writes to the working tree even though it never formats. Only the format stage changes behavior between modes.
 

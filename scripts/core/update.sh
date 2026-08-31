@@ -21,11 +21,11 @@ main() {
   bun update --interactive
 
   log_step "Verifying project health"
-  if [ -f "$SCRIPT_DIR/verify.sh" ]; then
-    VERIFY_NESTED=true "$SCRIPT_DIR/verify.sh"
+  if [ -f "$PROJECT_ROOT/src/cli.ts" ]; then
+    bun "$PROJECT_ROOT/src/cli.ts" gate run --nested
     log_info "All checks passed"
   else
-    log_warn "Verification script not found, skipping."
+    log_warn "Verification entry point not found, skipping."
   fi
 
   echo -e "${GREY}└${NC}\n"
