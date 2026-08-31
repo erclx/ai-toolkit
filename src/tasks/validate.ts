@@ -37,6 +37,9 @@ export const FINDING_KINDS = [
   'task-unresolved',
   'row-missing',
   'row-duplicated',
+  'row-misshapen',
+  'row-untabled',
+  'row-misordered',
   'touches-unstated',
   'touches-collided',
   'blocker-settled',
@@ -95,6 +98,8 @@ export interface BoardRow {
   readonly touches: readonly string[] | undefined
   /** Absent when the group fixes no `Waiting on` column, which is `## Run now`. */
   readonly waiting: string | undefined
+  /** The ordinal phrase a `Waiting on` cell states about its own position, undefined when the cell carries none. */
+  readonly ordinal: OrdinalWord | 'last' | undefined
 }
 
 export interface ValidateReport {
@@ -216,23 +221,107 @@ function isGroup(heading: string): heading is BoardGroup {
   return (BOARD_GROUPS as readonly string[]).includes(heading)
 }
 
+const ORDINAL_WORDS = [
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+  'seventh',
+  'eighth',
+  'ninth',
+  'tenth',
+  'eleventh',
+  'twelfth',
+  'thirteenth',
+  'fourteenth',
+  'fifteenth',
+  'sixteenth',
+  'seventeenth',
+  'eighteenth',
+  'nineteenth',
+  'twentieth',
+] as const
+
+type OrdinalWord = (typeof ORDINAL_WORDS)[number]
+
+const ORDINAL_HERE = new RegExp(
+  `\\b(${ORDINAL_WORDS.join('|')})\\s+here\\b`,
+  'i',
+)
+const LAST_AT_END = /\blast\.?\s*$/i
+
+/**
+ * Reads the ordinal phrase a `Waiting on` cell states about its own position,
+ * searching the whole cell for `<ordinal> here` or the bare word `last` rather
+ * than anchoring to where the cell opens. The phrase sits at the end of the
+ * sentence on every row that carries one, as in `nothing, cleared 2026-08-31
+ * when it merged. Third here`. The two-word phrase is safe to find anywhere,
+ * since it needs both a closed vocabulary word and `here` beside it, but a
+ * bare `last` is one of the commonest words in English and this corpus writes
+ * it constantly, as in `the last of the two instruments this rename needs`.
+ * Anchoring it to the end of the cell is what keeps that prose out of the
+ * findings, since every row that actually declares itself last puts the word
+ * there and nowhere else. A cell carrying neither reads as unordered rather
+ * than as an error, which keeps a legitimately-phrased row out of the
+ * findings.
+ */
+function readOrdinal(cell: string): OrdinalWord | 'last' | undefined {
+  const here = ORDINAL_HERE.exec(cell)
+  if (here?.[1]) return here[1].toLowerCase() as OrdinalWord
+
+  return LAST_AT_END.test(cell) ? 'last' : undefined
+}
+
+function isRowLine(line: string): boolean {
+  return line.trimStart().startsWith('|')
+}
+
+/**
+ * Whether a header candidate genuinely opens a table, meaning the line right
+ * behind it is a separator carrying the same cell count. A row landing where a
+ * blank line already closed the table above it looks identical to a fresh
+ * header until this read, since both are the first pipe line the walk has
+ * seen since the reset.
+ */
+function opensTable(
+  header: readonly string[],
+  next: string | undefined,
+): boolean {
+  if (next === undefined || !isRowLine(next)) return false
+  const cells = splitCells(next)
+  return isSeparator(cells) && cells.length === header.length
+}
+
 /**
  * Parses the ordering file into rows keyed by readiness group. Columns are read
  * from each table's own header rather than by position, so a group whose shape
  * differs from this repository's is reported for what it lacks instead of
  * having its second cell read as something it never was.
+ *
+ * The walk carries one more piece of state than a header: whether the table
+ * that header opened is still open. A blank or prose line closes it, so a row
+ * stranded behind that close is read as one candidate header among many rather
+ * than as a continuation of the table above, and each surviving row's cell
+ * count is checked against the header it actually followed.
  */
 export function readBoard(text: string): {
   readonly rows: readonly BoardRow[]
   readonly groups: readonly BoardGroup[]
+  readonly findings: readonly Finding[]
 } {
   const rows: BoardRow[] = []
   const groups: BoardGroup[] = []
+  const findings: Finding[] = []
+
+  const lines = text.split('\n')
 
   let group: BoardGroup | undefined
   let header: string[] | undefined
 
-  for (const line of text.split('\n')) {
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i] ?? ''
     const heading = /^##\s+(.+?)\s*$/.exec(line)
     if (heading) {
       const title = heading[1]
@@ -242,13 +331,39 @@ export function readBoard(text: string): {
       continue
     }
 
-    if (!group || !line.trimStart().startsWith('|')) continue
+    if (!group) continue
+
+    if (!isRowLine(line)) {
+      header = undefined
+      continue
+    }
 
     const cells = splitCells(line)
     if (isSeparator(cells)) continue
 
     if (!header) {
+      if (!opensTable(cells, lines[i + 1])) {
+        findings.push({
+          kind: 'row-untabled',
+          group,
+          subject: line.trim(),
+          message:
+            'sits outside a table. The table above it already closed at the line before it.',
+        })
+        continue
+      }
+
       header = cells
+      continue
+    }
+
+    if (cells.length !== header.length) {
+      findings.push({
+        kind: 'row-misshapen',
+        group,
+        subject: line.trim(),
+        message: `carries ${cells.length} cell(s) against the ${header.length}-cell header above it.`,
+      })
       continue
     }
 
@@ -260,6 +375,7 @@ export function readBoard(text: string): {
     const task = taskAt >= 0 ? (cells[taskAt] ?? '') : ''
     const target = linkTarget(task)
     const plan = planAt >= 0 ? linkTarget(cells[planAt] ?? '') : undefined
+    const waiting = waitingAt >= 0 ? (cells[waitingAt] ?? '') : undefined
 
     rows.push({
       group,
@@ -267,11 +383,46 @@ export function readBoard(text: string): {
       stem: target ? stemOf(target) : undefined,
       plan,
       touches: touchesAt >= 0 ? readPaths(cells[touchesAt] ?? '') : undefined,
-      waiting: waitingAt >= 0 ? (cells[waitingAt] ?? '') : undefined,
+      waiting,
+      ordinal: waiting ? readOrdinal(waiting) : undefined,
     })
   }
 
-  return { rows, groups }
+  return { rows, groups, findings }
+}
+
+/**
+ * Reports a `## Needs a plan` row whose stated ordinal disagrees with where it
+ * actually sits in that group. Reading the sequence for gaps and duplicates on
+ * its own would detect less, since row position is contiguous by
+ * construction, and a hand-renumbered sequence is exactly a case where the
+ * prose and the position have come apart.
+ */
+function checkOrdinals(rows: readonly BoardRow[]): Finding[] {
+  const findings: Finding[] = []
+  const parked = rows.filter((row) => row.group === 'Needs a plan')
+
+  parked.forEach((row, index) => {
+    if (!row.ordinal) return
+
+    const position = index + 1
+    const expected =
+      row.ordinal === 'last'
+        ? parked.length
+        : ORDINAL_WORDS.indexOf(row.ordinal) + 1
+
+    if (expected === position) return
+
+    const phrase = row.ordinal === 'last' ? 'last' : `${row.ordinal} here`
+    findings.push({
+      kind: 'row-misordered',
+      group: row.group,
+      subject: subjectOf(row),
+      message: `declares itself "${phrase}", but sits at position ${position} of ${parked.length} in ${row.group}.`,
+    })
+  })
+
+  return findings
 }
 
 /**
@@ -805,7 +956,11 @@ export async function validateBoard(
     return refuse('no-ordering', `No ordering file at ${ordering}.`)
   }
 
-  const { rows, groups } = readBoard(await readFile(ordering, 'utf8'))
+  const {
+    rows,
+    groups,
+    findings: shapeFindings,
+  } = readBoard(await readFile(ordering, 'utf8'))
 
   if (groups.length === 0) {
     return refuse(
@@ -826,9 +981,11 @@ export async function validateBoard(
   const parked = await checkParked(rows, root, trunk)
 
   const findings = [
+    ...shapeFindings,
     ...checkMapping(rows, backlog, stems, dir),
     ...checkPlans(rows, dir, root),
     ...checkCollisions(rows),
+    ...checkOrdinals(rows),
     ...parked.findings,
   ]
 

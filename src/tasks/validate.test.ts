@@ -169,13 +169,14 @@ describe('readBoard', () => {
       '',
     ])
 
-    const { rows, groups } = readBoard(text)
+    const { rows, groups, findings } = readBoard(text)
 
     expect(groups).toEqual(['Run now', 'Up next'])
     expect(rows.map((row) => [row.group, row.stem])).toEqual([
       ['Run now', 'v1.0-first'],
       ['Up next', 'v2.0-second'],
     ])
+    expect(findings).toEqual([])
   })
 
   it('should leave touches absent when the group fixes no such column', () => {
@@ -201,7 +202,7 @@ describe('readBoard', () => {
       '',
     ])
 
-    expect(readBoard(text)).toEqual({ rows: [], groups: [] })
+    expect(readBoard(text)).toEqual({ rows: [], groups: [], findings: [] })
   })
 
   it('should read a column by its header rather than by its position', () => {
@@ -218,6 +219,81 @@ describe('readBoard', () => {
       plan: '../plans/p.md',
       touches: ['src/a.ts'],
     })
+  })
+
+  it('should report a row whose cell count disagrees with its header', () => {
+    const text = boardBody([
+      '## Run now',
+      '',
+      '| Task | Touches | Plan |',
+      '| ---- | ------- | ---- |',
+      '| [v1.0-first](v1.0-first.md) `src/a.ts` | [p](../plans/p.md) |',
+      '',
+    ])
+
+    const { rows, findings } = readBoard(text)
+
+    expect(rows).toEqual([])
+    expect(findings).toMatchObject([
+      { kind: 'row-misshapen', group: 'Run now' },
+    ])
+  })
+
+  it('should report a row landing after the blank line that closed its table', () => {
+    const text = boardBody([
+      '## Run now',
+      '',
+      '| Task | Touches | Plan |',
+      '| ---- | ------- | ---- |',
+      '| [v1.0-first](v1.0-first.md) | `src/a.ts` | [p](../plans/p.md) |',
+      '',
+      '| [v2.0-second](v2.0-second.md) | `src/b.ts` | [p](../plans/p.md) |',
+      '',
+    ])
+
+    const { rows, findings } = readBoard(text)
+
+    expect(rows.map((row) => row.stem)).toEqual(['v1.0-first'])
+    expect(findings).toMatchObject([{ kind: 'row-untabled', group: 'Run now' }])
+  })
+
+  it('should read the ordinal phrase from the end of the cell rather than only its start', () => {
+    const text = boardBody([
+      '## Needs a plan',
+      '',
+      '| Task | Waiting on |',
+      '| ---- | ---------- |',
+      '| [v3.0-third](v3.0-third.md) | nothing, cleared 2026-08-31 when it merged. Third here |',
+      '',
+    ])
+
+    expect(readBoard(text).rows[0]?.ordinal).toBe('third')
+  })
+
+  it('should not read an ordinal out of a cell whose only "here" follows a non-ordinal word', () => {
+    const text = boardBody([
+      '## Needs a plan',
+      '',
+      '| Task | Waiting on |',
+      '| ---- | ---------- |',
+      '| [v3.0-third](v3.0-third.md) | Untestable from here, re-confirmed 2026-08-30 |',
+      '',
+    ])
+
+    expect(readBoard(text).rows[0]?.ordinal).toBeUndefined()
+  })
+
+  it('should not read an ordinal out of a cell carrying the word "last" with no ordinal beside it', () => {
+    const text = boardBody([
+      '## Needs a plan',
+      '',
+      '| Task | Waiting on |',
+      '| ---- | ---------- |',
+      '| [v3.0-third](v3.0-third.md) | the last of the two instruments this rename needs, and nothing else |',
+      '',
+    ])
+
+    expect(readBoard(text).rows[0]?.ordinal).toBeUndefined()
   })
 })
 
@@ -900,6 +976,55 @@ describe('validateBoard', () => {
           'cites no task and no file, so neither half of its blocker is mechanical.',
       },
     ])
+  })
+
+  it('should report a needs a plan sequence carrying a gap, a duplicate, and a start other than first', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v9.0-a')
+    await seedTask('v9.1-b')
+    await seedTask('v9.2-c')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first' }]),
+        '## Needs a plan',
+        '',
+        '| Task | Waiting on |',
+        '| ---- | ---------- |',
+        '| [v9.0-a](v9.0-a.md) | nothing, behind the merge-gate port. Second here |',
+        '| [v9.1-b](v9.1-b.md) | nothing, beside the compaction row. Second here |',
+        '| [v9.2-c](v9.2-c.md) | nothing yet. Fourth here |',
+        '',
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      { kind: 'row-misordered', subject: 'v9.0-a' },
+      { kind: 'row-misordered', subject: 'v9.2-c' },
+    ])
+  })
+
+  it('should pass a needs a plan sequence whose ordinals match their position', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v9.0-a')
+    await seedTask('v9.1-b')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first' }]),
+        '## Needs a plan',
+        '',
+        '| Task | Waiting on |',
+        '| ---- | ---------- |',
+        '| [v9.0-a](v9.0-a.md) | nothing, behind the merge-gate port. First here |',
+        '| [v9.1-b](v9.1-b.md) | Untestable from here, re-confirmed 2026-08-30. Last |',
+        '',
+      ]),
+    )
+
+    expect(await validateBoard(ROOT)).toMatchObject({ findings: [] })
   })
 
   it('should report a needs a plan row stating no file set as untested', async () => {
