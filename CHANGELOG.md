@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/erclx/canon/compare/v4.1.0...v4.2.0) (2026-08-31)
+
+
+### Features
+
+* **claude:** add the claude-planner role and its dispatch shape ([#1296](https://github.com/erclx/canon/issues/1296)) ([29f2191](https://github.com/erclx/canon/commit/29f2191dcca16b6a83d4174e01ae013863f053a4))
+* **targets:** report the retired stamp per checkout, add --record ([#1295](https://github.com/erclx/canon/issues/1295)) ([d74da14](https://github.com/erclx/canon/commit/d74da14c925991c05e3cd646b09593ebf7355d71))
+
 ## [4.1.0](https://github.com/erclx/canon/compare/v4.0.0...v4.1.0) (2026-08-31)
 
 
