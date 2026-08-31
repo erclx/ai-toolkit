@@ -20,7 +20,7 @@ function isScope(value: string): value is Scope {
 }
 
 /**
- * Reports rather than writes without `--write`, matching `aitk records
+ * Reports rather than writes without `--write`, matching `canon records
  * migrate`. A rename touching this many files has no undo short of the branch
  * it ran on, so the safe outcome sits on the default path.
  */
@@ -163,9 +163,9 @@ export function register(program: Command): void {
         'aitk-sandbox is a separate repository and is left alone.',
         '',
         'Examples:',
-        '  aitk migrate rename',
-        '  aitk migrate rename --write',
-        '  aitk migrate rename --scope target --json',
+        '  canon migrate rename',
+        '  canon migrate rename --write',
+        '  canon migrate rename --scope target --json',
         '',
       ].join('\n'),
     )
