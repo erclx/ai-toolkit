@@ -72,7 +72,10 @@ Name the plan by its path or by its slug, which resolve to the same file:
 ```bash
 canon tasks plan-answers dispatch-answer-gate
 canon tasks plan-answers .claude/plans/feature-dispatch-answer-gate.md
+canon tasks plan-answers ../plans/feature-dispatch-answer-gate.md
 ```
+
+A relative path resolves against the project root first and against `.claude/tasks/` second, which is the pair `canon tasks plan-citations` already reads a task's own `Plan:` line through. The third form above is what a board row writes, since its link is relative to the board, and a dispatcher copying the reference out of the row it is dispatching has that spelling to hand rather than either of the other two. A refusal names every base it looked under.
 
 | Option          | Effect                                      |
 | --------------- | ------------------------------------------- |

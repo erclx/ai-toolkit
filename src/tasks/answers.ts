@@ -4,6 +4,7 @@ import { isAbsolute, join, relative, resolve } from 'node:path'
 import { readQuestions, splitPlanSections } from '@/records/validate'
 
 const PLANS_DIR = join('.claude', 'plans')
+const TASKS_DIR = join('.claude', 'tasks')
 
 /**
  * The suggestion the plan standard fixes for a question that turns on the
@@ -47,20 +48,33 @@ export interface PlanAnswers {
 export type AnswersOutcome = PlanAnswers | AnswersRefused
 
 /**
- * Resolves the two spellings a caller reaches a plan by, which are the path a
- * board row writes and the bare slug a branch carries. A reference naming a
- * folder or an extension is taken as given, and everything else is a slug.
+ * The spellings a caller reaches a plan by, in the order they are tried. A bare
+ * slug names the live folder outright, and a path is resolved against the
+ * project root and against the board directory both.
+ *
+ * The second base is the one a dispatcher actually has to hand. A board row
+ * writes its `Plan:` link relative to `.claude/tasks/`, so the href reads
+ * `../plans/feature-<slug>.md`, and resolving that against the root alone lands
+ * a directory above the repository and refuses a plan that exists. It is the
+ * same pair `resolveLivePlan` reads a task's own line through, so the two agree
+ * on which file a citation names.
+ *
+ * Root order is what keeps the documented forms unchanged. A reference that
+ * resolves from the root is taken there, and the board base is reached only by
+ * a path the root could not answer.
  */
-export function planPath(root: string, reference: string): string {
+export function planCandidates(root: string, reference: string): string[] {
   if (reference.includes('/') || reference.endsWith('.md')) {
-    return isAbsolute(reference) ? reference : resolve(root, reference)
+    if (isAbsolute(reference)) return [reference]
+
+    return [resolve(root, reference), resolve(join(root, TASKS_DIR), reference)]
   }
 
   const slug = reference.startsWith('feature-')
     ? reference.slice('feature-'.length)
     : reference
 
-  return join(root, PLANS_DIR, `feature-${slug}.md`)
+  return [join(root, PLANS_DIR, `feature-${slug}.md`)]
 }
 
 function suggestionOf(body: readonly string[]): string | undefined {
@@ -132,10 +146,15 @@ export async function planAnswers(
     return refuse('bad-input', 'No plan named. Pass a plan path or its slug.')
   }
 
-  const path = planPath(root, reference)
+  const candidates = planCandidates(root, reference)
+  const path = candidates.find((candidate) => existsSync(candidate))
 
-  if (!existsSync(path)) {
-    return refuse('no-plan', `No plan at ${relative(root, path)}.`, [reference])
+  if (!path) {
+    // Naming every base keeps a task-relative link from reporting the one place
+    // it does not resolve, since `relative` hands that spelling straight back.
+    const looked = candidates.map((entry) => relative(root, entry)).join(' or ')
+
+    return refuse('no-plan', `No plan at ${looked}.`, [reference])
   }
 
   const sections = splitPlanSections(await readFile(path, 'utf8'))

@@ -3,7 +3,11 @@ import { writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { type AnswersOutcome, planAnswers, planPath } from '@/tasks/answers'
+import {
+  type AnswersOutcome,
+  planAnswers,
+  planCandidates,
+} from '@/tasks/answers'
 
 let ROOT: string
 
@@ -199,30 +203,66 @@ describe('planAnswers', () => {
     assertOk(outcome)
     expect(outcome.plan).toBe(join('.claude', 'plans', 'feature-gate.md'))
   })
+
+  it('should read the task-relative link a board row writes', async () => {
+    await writePlan('gate', [{ suggested: 'needs your call, either.' }])
+
+    const outcome = await planAnswers(ROOT, '../plans/feature-gate.md')
+
+    assertOk(outcome)
+    expect(outcome.plan).toBe(join('.claude', 'plans', 'feature-gate.md'))
+    expect(outcome.launchable).toBe(false)
+  })
+
+  it('should name every base it looked under when nothing resolves', async () => {
+    const outcome = await planAnswers(ROOT, '../plans/feature-absent.md')
+
+    expect(outcome.ok).toBe(false)
+    expect(outcome.ok === false && outcome.message).toContain(
+      join('.claude', 'plans', 'feature-absent.md'),
+    )
+  })
 })
 
-describe('planPath', () => {
+describe('planCandidates', () => {
   it('should add the folder, the prefix, and the extension to a bare slug', () => {
-    expect(planPath('/root', 'gate')).toBe(
+    expect(planCandidates('/root', 'gate')).toEqual([
       join('/root', '.claude', 'plans', 'feature-gate.md'),
-    )
+    ])
   })
 
   it('should not repeat a prefix the caller already spelled', () => {
-    expect(planPath('/root', 'feature-gate')).toBe(
+    expect(planCandidates('/root', 'feature-gate')).toEqual([
       join('/root', '.claude', 'plans', 'feature-gate.md'),
-    )
+    ])
   })
 
-  it('should take a relative path from the root it was given', () => {
-    expect(planPath('/root', '.claude/plans/archive/feature-gate.md')).toBe(
+  it('should offer the root before the board for a relative path', () => {
+    expect(
+      planCandidates('/root', '.claude/plans/archive/feature-gate.md'),
+    ).toEqual([
       join('/root', '.claude', 'plans', 'archive', 'feature-gate.md'),
+      join(
+        '/root',
+        '.claude',
+        'tasks',
+        '.claude',
+        'plans',
+        'archive',
+        'feature-gate.md',
+      ),
+    ])
+  })
+
+  it('should land a board link on the plans folder through its second base', () => {
+    expect(planCandidates('/root', '../plans/feature-gate.md')[1]).toBe(
+      join('/root', '.claude', 'plans', 'feature-gate.md'),
     )
   })
 
   it('should leave an absolute path as the caller wrote it', () => {
-    expect(planPath('/root', '/elsewhere/feature-gate.md')).toBe(
+    expect(planCandidates('/root', '/elsewhere/feature-gate.md')).toEqual([
       '/elsewhere/feature-gate.md',
-    )
+    ])
   })
 })
