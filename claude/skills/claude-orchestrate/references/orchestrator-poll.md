@@ -66,6 +66,10 @@ The five review headings the script matches are written by `claude-pr-review` an
 
 The state reaches every stalled dispatch, since one threshold governs the heading and the dispatch alike and a pass carrying anything posts the open heading. A minors-only pass therefore reports here on the same terms as a blocking one, which widens the state from what it caught while the two were split. It stays a heading test rather than a count test, so nothing here pins the summary line, which is a second string this script does not own.
 
+### The count behind the review fallback
+
+The report is also where the count in `## Parallelism` is legible. That threshold trips on open pull requests awaiting a first pass, which is what `OPENED` and a pull request with no prior pass name here and what `SEEN` excludes, so read the count off these lines rather than off `gh pr list`, which counts a branch closed out and waiting on a merge the same as one nobody has read. It is a separate condition from the poll-start fallback above, which decides when this loop runs rather than where a review runs.
+
 ## The watch beside it
 
 `${CLAUDE_SKILL_DIR}/scripts/watch.sh` is a long-running loop rather than a scheduled prompt. It reads the open pull request list and the session roster together every sixty seconds and prints one line per new pull request, per worker whose status changed, and per worker that dropped out of the roster. Start it in the background and read what it emits. It writes nothing.
