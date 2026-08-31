@@ -43,6 +43,8 @@ The push trigger exists to give the README's CI badge a default-branch run to re
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
 
+A second job, `phase-label-gate`, runs `aitk labels scan` against `$GITHUB_EVENT_PATH` and guards itself with `if: github.event_name == 'pull_request'`, since a pull request body is the one thing no stage in `bun run check` can see. It tells a release-please pull request apart from an ordinary one by two fixed signals rather than a label: the head branch prefix `release-please--branches--main` and the title prefix `chore(main): release `. Either alone is a string an ordinary pull request could reproduce to slip a leaked phase label past the check, so both have to hold together.
+
 The runner installs the plugin CLI so the manifest stage gates rather than skips. The plugin is the toolkit's second delivery path, and while the binary was absent from the runner every manifest was validated on the author's machine alone, so a malformed one reached a marketplace install with no check between.
 
 `bun install -g @anthropic-ai/claude-code@2.1.236` lands the binary in the directory `setup-bun` already put on `PATH` and cost 1.08 seconds against a 49-second gate on its first run. The version is pinned exactly rather than to a major, because `2.1.237` installed one package and no platform-native dependency and left a wrapper on `PATH` that could not run. Three pull requests failed the manifest stage inside six minutes on 2026-08-20 and none of them had touched it. Whether a later release repairs the install on its own is unmeasured, so raising the pin is a move someone makes and reads the run for, rather than one the registry makes overnight.
@@ -66,6 +68,8 @@ A shields.io badge URL returns HTTP 200 whether or not the query resolves, so ve
 An exit-code flag may count only states some documented action can drive to zero, since a permanent condition makes the gate unpassable rather than informative. `aitk sync --check --exit-code` counted `orphaned`, so a single local rule in `.claude/rules/` returned 1 on every run with no remedy, verified against a fresh install. For each state a gate counts, name the action that clears it, and where there is none, exclude it and report it separately.
 
 The runner installs no browser binary, so a test needing one skips rather than fails and a green pipeline is not evidence that test ran. `src/demo/drive.e2e.test.ts` is the first test in this shape and guards itself with a launch probe, reporting the skip in its own header. Adding the install would slow every run for one suite, so the gap is recorded rather than closed, and a change to the demo driver is verified locally. The plugin CLI install above is the precedent for closing it if the count of such tests grows.
+
+`verify.yml`'s `pull_request` trigger carries no explicit `types:` list, which defaults to `opened`, `synchronize`, and `reopened`. A title or body edited through `gh pr edit` with no new commit does not retrigger the workflow, so `phase-label-gate` does not see a phase label added that way after its last run. The skill's own pre-publish scan is what still catches an edit-only leak.
 
 ## Releases
 
