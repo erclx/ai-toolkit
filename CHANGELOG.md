@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.53.0](https://github.com/erclx/aitk/compare/v3.52.1...v3.53.0) (2026-08-31)
+
+
+### Features
+
+* **pr:** compare a body's Key Changes against its own diff ([#1276](https://github.com/erclx/aitk/issues/1276)) ([410c335](https://github.com/erclx/aitk/commit/410c335b4ee04ba792d97a3532e4be614c0a124f))
+
 ## [3.52.1](https://github.com/erclx/aitk/compare/v3.52.0...v3.52.1) (2026-08-31)
 
 
