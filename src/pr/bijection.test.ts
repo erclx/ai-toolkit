@@ -1,0 +1,136 @@
+import { describe, expect, it } from 'vitest'
+import { compareKeyChanges, treeRoots } from '@/pr/bijection'
+
+const TRACKED = [
+  '.claude/rules/core/005-behavior.md',
+  'claude/skills/git-pr/SKILL.md',
+  'docs/agents/index.md',
+  'governance/rules/core/005-behavior.md',
+  'scripts/core/verify.sh',
+  'src/cli.ts',
+  'standards/pr.md',
+  'CLAUDE.md',
+]
+
+function read(body: string, changed: readonly string[]) {
+  return compareKeyChanges({
+    body,
+    changed,
+    roots: treeRoots(TRACKED, changed),
+    head: 'abc1234',
+  })
+}
+
+function keyChanges(...bullets: string[]): string {
+  return ['## Key Changes', '', ...bullets].join('\n')
+}
+
+describe('compareKeyChanges', () => {
+  it('should refuse a body carrying no Key Changes section', () => {
+    expect(read('## Summary\n\nProse.\n', ['src/pr/paths.ts'])).toEqual({
+      kind: 'refused',
+      reason: 'no-section',
+    })
+  })
+
+  it('should refuse a section that yielded no claim rather than passing it', () => {
+    const result = read(
+      keyChanges('- Add a task tier ahead of the two existing ones in Step 1.'),
+      ['src/pr/paths.ts'],
+    )
+
+    expect(result).toEqual({ kind: 'refused', reason: 'no-claims' })
+  })
+
+  it('should refuse an empty changed set rather than reading it as met', () => {
+    expect(read(keyChanges('- Add `src/pr/paths.ts`.'), [])).toEqual({
+      kind: 'refused',
+      reason: 'no-changes',
+    })
+  })
+})
+
+describe('compareKeyChanges', () => {
+  it('should name a claimed file the diff does not carry', () => {
+    const result = read(
+      keyChanges(
+        '- Correct the happy-path `log_info` line in `scripts/sandbox/claude/autoship.sh` that overstated the output.',
+        '- Add `scripts/sandbox/fixtures/claude/autoship/happy-path/expect.toml`, pinning the completion line.',
+      ),
+      ['scripts/sandbox/fixtures/claude/autoship/happy-path/expect.toml'],
+    )
+
+    expect(result.kind === 'measured' && result.unmet).toMatchObject([
+      { path: 'scripts/sandbox/claude/autoship.sh' },
+    ])
+    expect(result.kind === 'measured' && result.unnamed).toEqual([])
+  })
+
+  it('should name a changed file no bullet reached (#1269)', () => {
+    const result = read(
+      keyChanges(
+        '- Add `readCitations()` in `src/gov/citations.ts`, which extracts a citation from a rule body.',
+        '- Add `docs/agents/rule-citations.md` and its rows in `docs/agents/index.md`.',
+      ),
+      [
+        '.claude/context/governance/index.md',
+        'docs/agents/index.md',
+        'docs/agents/rule-citations.md',
+        'src/gov/citations.test.ts',
+        'src/gov/citations.ts',
+      ],
+    )
+
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+    expect(result.kind === 'measured' && result.unnamed).toEqual([
+      '.claude/context/governance/index.md',
+      'src/gov/citations.test.ts',
+    ])
+  })
+
+  it('should let a directory claim cover every file beneath it', () => {
+    const result = read(
+      keyChanges('- Rename four sandbox arms under `scripts/sandbox/claude/`.'),
+      ['scripts/sandbox/claude/autoship.sh', 'scripts/sandbox/claude/ship.sh'],
+    )
+
+    expect(result.kind === 'measured' && result.unnamed).toEqual([])
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+  })
+
+  it('should let a partial path credit a changed file without ever accusing one', () => {
+    const result = read(
+      keyChanges(
+        '- Rewrite the addressing ladder in `claude-worker/SKILL.md` to resolve a name at send time.',
+        '- Point `references/gone.md` at the standard.',
+      ),
+      ['claude/skills/claude-worker/SKILL.md'],
+    )
+
+    expect(result.kind === 'measured' && result.unnamed).toEqual([])
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+    expect(result.kind === 'measured' && result.unresolved).toMatchObject([
+      { path: 'references/gone.md' },
+    ])
+  })
+
+  it('should carry the head the comparison was computed at', () => {
+    const result = read(keyChanges('- Add `src/pr/paths.ts`.'), [
+      'src/pr/paths.ts',
+    ])
+
+    expect(result.kind === 'measured' && result.head).toBe('abc1234')
+  })
+})
+
+describe('treeRoots', () => {
+  it('should admit a top-level folder this branch created', () => {
+    expect(
+      treeRoots(['src/cli.ts'], ['examples/demo.ts']).has('examples'),
+    ).toBe(true)
+  })
+
+  it('should ignore a path with no folder above it', () => {
+    expect(treeRoots(['README.md'], ['CLAUDE.md']).size).toBe(0)
+  })
+})
