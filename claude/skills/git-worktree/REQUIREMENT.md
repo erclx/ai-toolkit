@@ -14,7 +14,7 @@ Without this skill, linked worktrees accumulate past the point where any of them
 - Resolve merge state per branch from the pull request first, and fall back to local ancestry when no pull request exists
 - Match the ancestry fallback against the branch name alone. `git branch --merged` decorates the current branch and every branch checked out in a linked worktree, which is the whole set this skill enumerates.
 - Remove the worktree and its local branch together, since either one left alone is the state the skill exists to prevent
-- Exclude four kinds of row from the remove set: the main root, the current session's worktree, any dirty tree, and any worktree registered from outside the path prefix `claude-worktree` creates under
+- Exclude five kinds of row from the remove set: the main root, the current session's worktree, any dirty tree, any worktree registered from outside the path prefix `claude-worktree` creates under, and any worktree a live session is occupying
 - Give every skipped row a one-word reason, so the skip is a decision the user can overturn rather than a silence
 - Pick exactly one mode. Listing and removing are different requests and inferring both from one invocation removes worktrees the user meant to read about.
 
@@ -22,6 +22,7 @@ Without this skill, linked worktrees accumulate past the point where any of them
 
 - Enter or create a worktree. The description states the boundary so the model routes entry elsewhere rather than discovering it here.
 - Remove a worktree with uncommitted work, whatever its merge state
+- Remove a worktree a live session is occupying, whatever its merge state
 - Remove the worktree the session is currently running in
 - Emit anything after the result line
 

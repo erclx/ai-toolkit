@@ -5,8 +5,10 @@
 
 max_turns = 30
 
-# feat/beta is unmerged, so cleanup must leave its worktree in place.
-paths = [".claude/worktrees/beta"]
+# feat/beta is unmerged, so cleanup must leave its worktree in place. feat/gamma
+# is merged and clean, matching alpha's shape, but a fake live session occupies
+# it, so cleanup must leave it in place too rather than removing it as merged.
+paths = [".claude/worktrees/beta", ".claude/worktrees/gamma"]
 
 # feat/alpha is merged and clean, so cleanup must remove its worktree.
 absent = [".claude/worktrees/alpha"]
@@ -14,11 +16,12 @@ absent = [".claude/worktrees/alpha"]
 # The skill's own `cleanup` Output contract states this exact line, with one
 # worktree and one branch removed. It is the literal completion signal for the
 # mode, not wording the run chooses, so pinning it is what separates a run
-# that classified both rows correctly and acted on them from one that only
-# printed a preview or acted on the wrong row.
+# that classified all three rows correctly and acted on them from one that
+# read gamma as merely merged and removed it alongside alpha.
 reply = ["Removed: 1 worktrees, 1 branches pruned"]
 
 manual = [
-  "The list step reports feat/alpha as 'merged (local)' and feat/beta as 'unmerged'. Unwired: the run drives both list and cleanup in one turn, and the reply the harness captures is the session's final text, which the cleanup line may supersede.",
+  "The list step reports feat/alpha as 'merged (local)', feat/beta as 'unmerged', and feat/gamma as 'occupied'. Unwired: the run drives both list and cleanup in one turn, and the reply the harness captures is the session's final text, which the cleanup line may supersede.",
   "feat/alpha itself is deleted as a local branch, not only its worktree. Unwired: a deleted branch leaves no file the sandbox tree reliably carries once refs are packed, so nothing here reads it directly, and the reply pin above is what stands in for it.",
+  "feat/gamma's occupancy record lives outside this sandbox tree, at the real session registry the operator's own machine reads. Unwired: this fixture cannot assert against a path outside .sandbox/, so the reply pin's held-back count is what stands in for the skip.",
 ]

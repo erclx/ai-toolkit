@@ -141,6 +141,10 @@ aitk() {
 - Skills whose body forbids probing project surfaces, such as `aitk-feedback-file`, have no fixture to anchor and stay out of scope.
 - Anchor scenarios take their starting tree from a fixture, so provisioning does not depend on what the previous arm published to the remote. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
 
+### A scenario faking a live session writes to the real registry
+
+A scenario needing a live session record for a roster read, such as testing occupancy against `aitk sessions list`, has no sandbox-local registry to point at. Provisioning and the later spawned `claude -p` run are separate script invocations with no shared environment, the same split that gives `run.sh` its own `GIT_TERMINAL_PROMPT=0` export above, so an env var set during provisioning cannot repoint `CLAUDE_CONFIG_DIR` for the spawned session. Such a scenario writes to the real `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions/` on the host instead, and its spawned background process and record file both outlive the run with no automated teardown.
+
 ## Standing limits
 
 Six things a run cannot reach. Each is a property of the harness rather than a gap to close per task, so a claim depending on one is hand-verified and should say so.
