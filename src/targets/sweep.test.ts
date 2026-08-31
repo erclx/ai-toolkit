@@ -32,6 +32,15 @@ function stampLegacy(...segments: string[]): string {
   return target
 }
 
+/** Stamps a folder the way a pre-rename install still writes it. */
+function stampRetiredName(...segments: string[]): string {
+  const target = join(ROOT, ...segments)
+  const path = join(target, '.claude', 'aitk', 'config.json')
+  mkdirSync(dirname(path), { recursive: true })
+  writeFileSync(path, JSON.stringify({ covers: [], domains: {} }))
+  return target
+}
+
 const noOrigin = async (): Promise<string | null> => null
 
 beforeEach(() => {
@@ -58,6 +67,18 @@ describe('sweepTargets', () => {
 
     expect(report.targets).toHaveLength(1)
     expect(report.targets[0]?.legacyPaths).toEqual([stackr])
+  })
+
+  // A pre-rename install still writes this form as its current path, so a
+  // sync from it after this row's own binary updated would otherwise drop the
+  // target out of the walk with nothing saying so.
+  it('should find a target stamped only at the retired folder path', async () => {
+    const diction = stampRetiredName('diction')
+
+    const report = await sweepTargets([ROOT], { originOf: noOrigin })
+
+    expect(report.targets).toHaveLength(1)
+    expect(report.targets[0]?.legacyPaths).toEqual([diction])
   })
 
   // The group boolean this replaced cleared for the whole group the moment one

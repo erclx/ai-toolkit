@@ -172,12 +172,16 @@ async function runList(opts: ListOptions): Promise<number> {
 
   if (depth === null) return refuseDepth(opts)
 
+  let backfillFailed = false
+
   if (opts.record === true) {
     if (opts.sweep === undefined || opts.sweep.length === 0) {
       return refuseRecordWithoutSweep(opts)
     }
 
-    reportBackfill(await runBackfill(opts.sweep, depth))
+    const backfill = await runBackfill(opts.sweep, depth)
+    reportBackfill(backfill)
+    backfillFailed = backfill.failed > 0
   }
 
   const resolved = await resolveTargets({ sweep: opts.sweep, depth })
@@ -197,7 +201,7 @@ async function runList(opts: ListOptions): Promise<number> {
     )
   }
 
-  return unknown ? 1 : 0
+  return unknown || backfillFailed ? 1 : 0
 }
 
 async function runPulls(paths: string[], opts: PullsOptions): Promise<number> {
@@ -262,6 +266,7 @@ function refuseDepth(opts: ListOptions): number {
 interface BackfillSummary {
   readonly recorded: number
   readonly skipped: number
+  readonly failed: number
 }
 
 /**
@@ -279,14 +284,16 @@ async function runBackfill(
 
   let recorded = 0
   let skipped = 0
+  let failed = 0
 
   for (const path of paths) {
     const outcome = backfillTarget({ path, stampedAt: stampedAtOf(path) })
     if (outcome === 'recorded') recorded++
-    else skipped++
+    else if (outcome === 'no-stamp') skipped++
+    else failed++
   }
 
-  return { recorded, skipped }
+  return { recorded, skipped, failed }
 }
 
 /**
@@ -329,6 +336,12 @@ function reportBackfill(summary: BackfillSummary): void {
   if (summary.skipped > 0) {
     logWarn(
       `${plural(summary.skipped, 'target')} skipped, carrying no readable stamp to date the row by.`,
+    )
+  }
+
+  if (summary.failed > 0) {
+    logWarn(
+      `${plural(summary.failed, 'target')} failed to write, so its row is unchanged.`,
     )
   }
 }
