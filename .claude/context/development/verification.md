@@ -21,6 +21,14 @@ Pass `--all` to force the full suite, and `--help` to print the argument list. `
 
 Measure CPU seconds and not wall clock when judging a stage's cost. The suite fans 415 tests across every core, so it is the most expensive stage and among the fastest, and ranking by wall time hides it. Test-count growth is invisible in wall time and linear in CPU.
 
+## The process tier
+
+`src/process/harness.ts` spawns `src/cli.ts` as a real process against a temporary directory rather than calling a command's action function in-process, so a case can assert what an in-process call cannot: whether a verb is registered at all, whether the process exits the way its own contract states, and whether a `--json` record parses off stdout alone once stderr framing is set aside. `src/process/harness.test.ts` covers the harness itself, proving a registered verb passes and a subcommand nothing registers fails. `src/process/verbs.test.ts` covers `gov install`, `gov sync`, `tooling sync`, `tasks archive`, and one `list --json` verb, the first pass this tier is scoped to.
+
+Add a case by writing a fixture under a per-test `mkdtempSync` directory, being a golden config, a rule stack, or a task board, whatever the verb reads, and assert the resulting file tree, the exit code, and the parsed record together rather than any one alone. An exit code alone can misreport a wrapped shell function per `.claude/ARCHITECTURE.md`, and a written file alone says nothing about whether the process reported the write correctly. Assert a written tree with named paths plus a count derived from the catalog the verb reads, such as the stack's own rule list off `gov list --json --stacks`, rather than a hardcoded figure. A whole-tree snapshot, or a count frozen at what this pass measured, fails on every unrelated addition, which is the shape `.claude/rules/core/010-testing.md` already forbids.
+
+The tier folds into `bun --bun vitest run` rather than a step of its own for this pass, so `bun run check` and CI both already run it. Twelve cases across five verbs cost roughly 1.2 wall seconds and 3.2 CPU seconds, measured 2026-08-31, which is the number to recheck once the case count reaches fifty before assuming the tier stays cheap.
+
 ## Gotchas
 
 ### A shell script's own test file does not gate the script
