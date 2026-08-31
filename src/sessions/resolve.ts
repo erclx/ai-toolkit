@@ -145,14 +145,6 @@ export async function repositoryOf(cwd: string): Promise<string | null> {
 }
 
 /**
- * An absent field is rendered as an absence rather than as a value.
- *
- * A missing start time formatted from zero reads as a session launched in 1970
- * and a missing identifier as an empty one, both of which a caller would take
- * for data. Null says the record did not carry it, which is the same
- * distinction the registry draws between an absent folder and an empty one.
- */
-/**
  * Falls back to `updatedAt` when `statusUpdatedAt` is absent, since the
  * narrower field is the newer of the two and a record predating it still
  * carries the coarser one. The one record measured with `status: "waiting"`
@@ -163,6 +155,14 @@ function dwellMs(record: SessionRecord, now: number): number | null {
   return stamp === undefined ? null : Math.max(0, now - stamp)
 }
 
+/**
+ * An absent field is rendered as an absence rather than as a value.
+ *
+ * A missing start time formatted from zero reads as a session launched in 1970
+ * and a missing identifier as an empty one, both of which a caller would take
+ * for data. Null says the record did not carry it, which is the same
+ * distinction the registry draws between an absent folder and an empty one.
+ */
 function present(
   record: SessionRecord,
   located: Located,

@@ -226,8 +226,8 @@ describe('resolveSessions', () => {
     })
   })
 
-  it('should report an absent status stamp as an absent dwell rather than as zero', async () => {
-    seed(100, { statusUpdatedAt: undefined })
+  it('should report a dwell as absent when neither stamp is present', async () => {
+    seed(100, { statusUpdatedAt: undefined, updatedAt: undefined })
 
     const report = await resolveSessions({
       dir: DIR,
