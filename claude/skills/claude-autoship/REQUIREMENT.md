@@ -17,6 +17,7 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 - Give every step a stop condition, and leave the code on the branch and the receipts on disk at each one
 - Classify the changed-file list by path as well as by extension, so informational prose skips a code review with no signal on it and executable prose still reaches one
 - Split findings by origin, stopping on a critical or should-fix one the branch inherited and repairing one this run caused
+- Own the review receipt's lifetime, since this chain writes it, cites it in its own closing block, and is the only body that can read whether the step keeping it is still using it
 - Delegate the ship sequence to `git-ship` rather than restating it, and name only what this chain adds to it
 - Open the pull request as a draft before the continuous integration watch begins, since a pull request marked after it is mergeable for the length of the run
 - Name the recovery for the stop it took, since the value of stopping is that the user knows where to resume

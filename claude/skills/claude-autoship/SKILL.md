@@ -152,6 +152,8 @@ Read origin as causation rather than authorship. Staleness this run induced in a
 
 Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .claude/review/branch/review-<slug>.md. Fix and run /git-ship.`
 
+This chain owns the receipt's lifetime, which is what makes the Output block's citation resolve on a run that reaches it. `claude-docs` used to delete the current slug's receipt while running under Step 7 below, so the closing line named a file the same run had already removed. That sweep now reaches only reports whose branch is gone, which collects this one a branch later rather than during the run that wrote it. The cost is one receipt per live branch left in `.claude/review/branch/`, bounded by the branch count rather than by the lifetime of the checkout.
+
 ## Step 7: ship
 
 Invoke `aitk:git-ship`. That body owns the sequence, being the verify gate, memory capture, both doc syncs, staging, the commit grouping, the branch rename, the pull request, the CI watch, and the scoped memory review, along with the reason each step sits where it does. This step used to restate that list and the two drifted apart with nothing comparing them, so read the order there and never here.
