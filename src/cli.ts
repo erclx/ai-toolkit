@@ -33,6 +33,7 @@ import { register as audits } from '@/commands/audits'
 import { register as secrets } from '@/commands/secrets'
 import { register as deps } from '@/commands/deps'
 import { register as labels } from '@/commands/labels'
+import { register as autoship } from '@/commands/autoship'
 import { register as census } from '@/commands/census'
 import { register as targets } from '@/commands/targets'
 import { register as upgrade } from '@/commands/upgrade'
@@ -181,6 +182,7 @@ worktrees(program)
 secrets(program)
 deps(program)
 labels(program)
+autoship(program)
 census(program)
 audits(program)
 upgrade(program)
