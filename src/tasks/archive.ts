@@ -182,10 +182,6 @@ function isRowFor(line: string, target: string): boolean {
 }
 
 /**
- * Tests containment rather than a string prefix, so a sibling whose name merely
- * extends the folder's is not read as being inside it.
- */
-/**
  * Resolves the `Plan:` target against the board and against the project root
  * both, which is how `claude-docs` reads the same line. It accepts `../plans/x.md`
  * and `.claude/plans/x.md` as one file, so a gate reading only the first form
