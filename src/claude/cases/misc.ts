@@ -24,4 +24,8 @@ export const MISC_CASES: readonly SkillCase[] = [
     prompt: "This test just started failing and I don't know why yet.",
     expect: 'systematic-debugging',
   },
+  {
+    prompt: 'Does our github about text still match what the readme says?',
+    expect: 'repo-metadata',
+  },
 ]

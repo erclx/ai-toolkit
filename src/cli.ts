@@ -37,6 +37,7 @@ import { register as deps } from '@/commands/deps'
 import { register as labels } from '@/commands/labels'
 import { register as autoship } from '@/commands/autoship'
 import { register as pr } from '@/commands/pr'
+import { register as repo } from '@/commands/repo'
 import { register as census } from '@/commands/census'
 import { register as targets } from '@/commands/targets'
 import { register as upgrade } from '@/commands/upgrade'
@@ -86,6 +87,7 @@ function showHelp(): void {
     `${GREY}│${NC}    labels [cmd]       ${GREY}# Read a changed set against the pull request label map (audit)${NC}`,
     `${GREY}│${NC}    autoship [cmd]     ${GREY}# Decide whether a changed set needs the review pass (classify)${NC}`,
     `${GREY}│${NC}    pr [cmd]           ${GREY}# Read a pull request body against its own diff (key-changes)${NC}`,
+    `${GREY}│${NC}    repo [cmd]         ${GREY}# This repository's own remote metadata (metadata propose, apply)${NC}`,
     `${GREY}│${NC}    census [path]      ${GREY}# Report tracked file count, extension breakdown, and line totals${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
     `${GREY}│${NC}    gate [cmd]         ${GREY}# Run the merge gate stage by stage (run)${NC}`,
@@ -135,6 +137,7 @@ function showHelp(): void {
     `${GREY}│${NC}    canon secrets scan --json`,
     `${GREY}│${NC}    canon deps audit --json`,
     `${GREY}│${NC}    canon labels audit --json`,
+    `${GREY}│${NC}    canon repo metadata propose --json`,
     `${GREY}│${NC}    canon census --json`,
     `${GREY}│${NC}    canon audits run --json`,
     `${GREY}│${NC}    canon gate run --all --no-write`,
@@ -192,6 +195,7 @@ deps(program)
 labels(program)
 autoship(program)
 pr(program)
+repo(program)
 census(program)
 audits(program)
 gate(program)
