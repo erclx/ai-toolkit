@@ -113,6 +113,18 @@ aitk teach glossary <topic> --json \
 
 Follow `${CLAUDE_SKILL_DIR}/references/lesson-craft.md` for what makes a lesson worth returning to. Keep every quiz answer the same length, so formatting leaks no clue about which one is correct.
 
+### Hand over a link, never a path
+
+A lesson is a page carrying a stylesheet and a script, and an editor preview opens it with neither, so a path alone delivers unstyled markup that reads as the lesson. Serve the teach root and give the learner a link they can click:
+
+```bash
+aitk serve .claude/teach --entry <nn>-<topic>/index.html --json
+```
+
+Start it in the background so the session keeps going, and read `url` off the record rather than composing one. The verb walks past a port already in use, so the port it took is exactly the half a guessed URL gets wrong. Report the refusal and its `reason` when `ok` is false, and report it rather than proceeding silently when the verb does not resolve at all, which is an installed CLI predating it.
+
+Do this on every run that opens or resumes a workspace, including one that writes no lesson, since the learner's route into what is already there is the same link.
+
 ## Step 5: record what happened
 
 Write `learning-records/<nnnn>-<slug>.md` before the session ends, carrying the lessons covered, what the learner retrieved unaided, what they got wrong with the wrong answer itself, and what to revisit.
@@ -165,9 +177,14 @@ Lesson:    .claude/teach/<nn>-<topic>/lessons/<nnnn>-<slug>.html
 Reference: .claude/teach/<nn>-<topic>/reference/<slug>.md
 Record:    .claude/teach/<nn>-<topic>/learning-records/<nnnn>-<slug>.md
 Progress:  <n> of <m> success lines met
+Open:      [<the url the serve verb reported>](<the same url>)
 ```
 
-Omit the reference line where the lesson produced no durable page. Emit every path from the project root, in the form the project's instruction file sets.
+Omit the reference line where the lesson produced no durable page. The open line is the one line that is never omitted, since it is the only route the learner has into the page, and it carries what `aitk serve` reported rather than a URL composed here. Where the verb refused, that line names the refusal instead of a link.
+
+Write that line as a markdown link carrying the URL as both its text and its target, rather than as a bare URL and never inside backticks. A code span renders as text the reader has to select and copy, which is the one thing the line exists to save them, and the path rule the project states governs a file path rather than a URL.
+
+Emit every path from the project root, in the form the project's instruction file sets.
 
 A promotion pass reports its own shape instead, one line per page the operator confirmed and one naming the handoff:
 

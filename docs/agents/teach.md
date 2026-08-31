@@ -129,6 +129,18 @@ Each `quiz` entry carries `order`, the authored option indices in presentation o
 
 The order is drawn here rather than instructed, and that is the point of the verb. An author told to vary the position still varies it by judgment, and the judgment settles on the first slot, which is the defect this design departs from. The draw is uniform over the options, so the position carries no information about which answer is correct.
 
+## Opening a workspace
+
+No `aitk teach` verb serves the workspace. `aitk serve` does, taking the teach root as its directory and the workspace contents page as its entry:
+
+```bash
+aitk serve .claude/teach --entry 03-fde-system-design/index.html --json
+```
+
+It stays general rather than becoming `aitk teach serve`, because nothing about serving a directory is specific to a learning workspace, and the same verb carries a slide render and a design preview.
+
+Read `url` off the record rather than building one from the port that was asked for. The verb walks forward past a port already in use, which is routine when a second workspace is already open, and the port it took is the one thing a composed URL gets wrong.
+
 ## Refusal reasons
 
 | Reason         | Raised when                                                     |
