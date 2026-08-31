@@ -53,6 +53,7 @@ export type ServeRefusal =
   | 'not-a-directory'
   | 'no-port'
   | 'no-entry'
+  | 'bind-failed'
 
 export interface ServeRefused {
   readonly ok: false
@@ -145,6 +146,18 @@ function escapesThroughLink(root: string, target: string): boolean {
 }
 
 /**
+ * Whether a bind failure is contention worth trying the next port for.
+ *
+ * Lifted out of the loop so the decision is testable. Manufacturing a real
+ * non-contention bind failure needs a privileged port or an unavailable
+ * interface and neither travels between machines, where an error value does,
+ * so this is unit-tested and the bind itself is not.
+ */
+export function shouldWalkPast(error: unknown): boolean {
+  return (error as NodeJS.ErrnoException | null)?.code === 'EADDRINUSE'
+}
+
+/**
  * Picks a listening port, starting at the requested one and walking forward.
  * A busy port is the ordinary case rather than a failure, since a preview of
  * one workspace is routinely open while another is started.
@@ -172,9 +185,9 @@ function listen(
        * Contention is the one cause worth walking past. A permission failure
        * or an unavailable interface swallowed here would be retried twenty
        * times and then reported as a port range being full, which names a
-       * cause nothing checked.
+       * cause nothing checked. `startServer` turns the rethrow into a refusal.
        */
-      if ((error as NodeJS.ErrnoException).code !== 'EADDRINUSE') throw error
+      if (!shouldWalkPast(error)) throw error
     }
   }
   return undefined
@@ -185,13 +198,14 @@ export async function respond(
   request: Request,
 ): Promise<Response> {
   const { pathname, search } = new URL(request.url)
-  const target = resolveWithin(root, pathname)
-  if (!target || escapesThroughLink(root, target)) {
-    return new Response('Forbidden\n', {
+  const forbidden = () =>
+    new Response('Forbidden\n', {
       status: 403,
       headers: { 'content-type': 'text/plain; charset=utf-8' },
     })
-  }
+
+  const target = resolveWithin(root, pathname)
+  if (!target) return forbidden()
 
   let path = target
   if (existsSync(path) && statSync(path).isDirectory()) {
@@ -209,6 +223,14 @@ export async function respond(
     }
     path = join(path, DEFAULT_ENTRY)
   }
+
+  /**
+   * Sits immediately before the read rather than beside the path that produced
+   * it, so every path reaching `Bun.file` has been tested whatever produced
+   * it. Checking the request path alone left the appended index untested, and
+   * a real directory holding a linked index was served.
+   */
+  if (escapesThroughLink(root, path)) return forbidden()
 
   const file = Bun.file(path)
   if (!(await file.exists())) {
@@ -253,7 +275,23 @@ export function startServer(
   if (!entryPath) return refuse('no-entry', `${entry} escapes ${dir}`)
 
   const first = options.port ?? DEFAULT_PORT
-  const bound = listen(root, first)
+
+  /**
+   * A bind failure that is not contention reaches here as a throw, and the
+   * command's own help promises a reason on stderr or in the record. A stack
+   * trace is neither, so it is caught and named.
+   */
+  let bound: ReturnType<typeof listen>
+  try {
+    bound = listen(root, first)
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code ?? 'unknown'
+    return refuse(
+      'bind-failed',
+      `could not bind ${SERVE_HOST}:${first} (${code})`,
+    )
+  }
+
   if (!bound) {
     return refuse(
       'no-port',

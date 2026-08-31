@@ -14,6 +14,7 @@ import {
   resolveWithin,
   SERVE_HOST,
   type ServeStarted,
+  shouldWalkPast,
   startServer,
 } from '@/serve/static'
 
@@ -105,6 +106,30 @@ describe('resolveWithin', () => {
     const resolved = resolveWithin('/srv/site', '/../site-private/secret.txt')
 
     expect(resolved).toBeUndefined()
+  })
+})
+
+/**
+ * The classification is unit-tested and the bind is not. Manufacturing a real
+ * non-contention bind failure needs a privileged port or an unavailable
+ * interface, neither of which travels between machines, where an error value
+ * does. That split is the honest boundary rather than a gap.
+ */
+describe('shouldWalkPast', () => {
+  it('should walk past a port already in use', () => {
+    const error = Object.assign(new Error('in use'), { code: 'EADDRINUSE' })
+
+    expect(shouldWalkPast(error)).toBe(true)
+  })
+
+  it('should not walk past a permission failure', () => {
+    const error = Object.assign(new Error('denied'), { code: 'EACCES' })
+
+    expect(shouldWalkPast(error)).toBe(false)
+  })
+
+  it('should not walk past an error carrying no code', () => {
+    expect(shouldWalkPast(new Error('unexplained'))).toBe(false)
   })
 })
 
@@ -248,6 +273,30 @@ describe('startServer', () => {
 
     const status = await fetch(
       `http://${SERVE_HOST}:${server.port}/escape/private.txt`,
+    ).then((response) => response.status)
+    rmSync(outside, { recursive: true, force: true })
+
+    expect(status).toBe(403)
+  })
+
+  /**
+   * The directory branch appends the index after the request path has been
+   * checked, so a real directory holding a linked index reaches the read on a
+   * path nothing tested. The check sits immediately before the read for this
+   * reason, rather than beside the path that produced it.
+   */
+  it('should refuse a directory whose index is a symlink out of the root', async () => {
+    const outside = mkdtempSync(join(tmpdir(), 'aitk-serve-outside-'))
+    writeFileSync(join(outside, 'secret.html'), '<h1>outside</h1>')
+    mkdirSync(join(ROOT, 'folder'), { recursive: true })
+    symlinkSync(
+      join(outside, 'secret.html'),
+      join(ROOT, 'folder', 'index.html'),
+    )
+    const server = start(ROOT, { port: 0 })
+
+    const status = await fetch(
+      `http://${SERVE_HOST}:${server.port}/folder/`,
     ).then((response) => response.status)
     rmSync(outside, { recursive: true, force: true })
 
