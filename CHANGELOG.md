@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.54.0](https://github.com/erclx/aitk/compare/v3.53.0...v3.54.0) (2026-08-31)
+
+
+### Features
+
+* **sandbox:** add a per-arm escape scope for the escape watch ([#1282](https://github.com/erclx/aitk/issues/1282)) ([883ef06](https://github.com/erclx/aitk/commit/883ef06d551038df0b6ff4ae975f0cb4ef0ba1db))
+
 ## [3.53.0](https://github.com/erclx/aitk/compare/v3.52.1...v3.53.0) (2026-08-31)
 
 
