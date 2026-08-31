@@ -16,6 +16,14 @@ function stamp(...segments: string[]): string {
   return target
 }
 
+function stampLegacy(...segments: string[]): string {
+  const target = join(ROOT, ...segments)
+  const path = join(target, '.claude', 'aitk.json')
+  mkdirSync(dirname(path), { recursive: true })
+  writeFileSync(path, JSON.stringify({ covers: [], domains: {} }))
+  return target
+}
+
 const noOrigin = async (): Promise<string | null> => null
 
 beforeEach(() => {
@@ -135,6 +143,29 @@ describe('resolveTargets', () => {
     })
 
     expect(report.targets[0]?.paths[0]).toBe(recorded)
+  })
+
+  // The sweep's own order is sorted by path, which puts `extensions/caret`
+  // ahead of `public/caret`. The merge reorders `paths` to lead with the
+  // recorded clone instead, so a `legacyPaths` list carried straight from the
+  // sweep would answer in the wrong order relative to the row it sits beside.
+  it('should re-derive legacy paths against the merged row rather than the sweep order', async () => {
+    const recordedLegacy = stampLegacy('public', 'caret')
+    const foundLegacy = stampLegacy('extensions', 'caret')
+    recordTarget(recordedLegacy, new Date('2026-08-30'), FILE)
+
+    const report = await resolveTargets({
+      registryFile: FILE,
+      sweep: [ROOT],
+      originOf: async () => 'github.com/erclx/caret',
+    })
+
+    expect(report.targets).toHaveLength(1)
+    expect(report.targets[0]?.paths).toEqual([recordedLegacy, foundLegacy])
+    expect(report.targets[0]?.legacyPaths).toEqual([
+      recordedLegacy,
+      foundLegacy,
+    ])
   })
 
   it('should keep a recorded target the sweep could not reach', async () => {

@@ -52,12 +52,27 @@ describe('sweepTargets', () => {
   })
 
   it('should find a target still stamped at the retired path and mark it', async () => {
-    stampLegacy('stackr')
+    const stackr = stampLegacy('stackr')
 
     const report = await sweepTargets([ROOT], { originOf: noOrigin })
 
     expect(report.targets).toHaveLength(1)
-    expect(report.targets[0]?.legacy).toBe(true)
+    expect(report.targets[0]?.legacyPaths).toEqual([stackr])
+  })
+
+  // The group boolean this replaced cleared for the whole group the moment one
+  // clone migrated, so a project half-migrated read as fully current.
+  it('should name only the clone still at the retired path when its sibling migrated', async () => {
+    const current = stamp('public', 'caret')
+    const legacy = stampLegacy('extensions', 'caret')
+
+    const report = await sweepTargets([ROOT], {
+      originOf: async () => 'github.com/erclx/caret',
+    })
+
+    expect(report.targets).toHaveLength(1)
+    expect(report.targets[0]?.legacyPaths).toEqual([legacy])
+    expect(report.targets[0]?.paths).toContain(current)
   })
 
   it('should report a folder carrying no stamp as no target rather than as one', async () => {

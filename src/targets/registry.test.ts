@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  backfillTarget,
   readTargetRegistry,
   recordTarget,
   registryPath,
@@ -222,5 +223,36 @@ describe('recordTarget', () => {
     recordTarget('/repos/caret', new Date('2026-08-30'), FILE)
 
     expect(JSON.parse(readFileSync(FILE, 'utf8')).version).toBe(1)
+  })
+})
+
+describe('backfillTarget', () => {
+  it('should record a row dated by the checkout, not by the backfill run', () => {
+    const outcome = backfillTarget(
+      { path: '/repos/caret', stampedAt: '2026-08-01T00:00:00.000Z' },
+      FILE,
+    )
+
+    expect(outcome).toBe('recorded')
+    expect(readTargetRegistry(FILE)).toEqual({
+      kind: 'read',
+      path: FILE,
+      targets: [
+        { path: '/repos/caret', stampedAt: '2026-08-01T00:00:00.000Z' },
+      ],
+    })
+  })
+
+  // A checkout whose stamp could not be read has no date to seed the row
+  // with, and dating it by the moment the backfill ran would claim a sync
+  // that never happened.
+  it('should skip a checkout with no readable stamp rather than dating it by now', () => {
+    const outcome = backfillTarget(
+      { path: '/repos/caret', stampedAt: null },
+      FILE,
+    )
+
+    expect(outcome).toBe('no-stamp')
+    expect(readTargetRegistry(FILE)).toEqual({ kind: 'absent', path: FILE })
   })
 })

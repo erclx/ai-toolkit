@@ -44,8 +44,8 @@ export interface SweptTarget {
   readonly paths: readonly string[]
   /** The origin every path agrees on, or null when git resolved none. */
   readonly origin: string | null
-  /** True while every path still carries its stamp at the retired location. */
-  readonly legacy: boolean
+  /** The subset of `paths` still carrying their stamp at the retired location, in `paths` order. */
+  readonly legacyPaths: readonly string[]
 }
 
 /**
@@ -225,7 +225,11 @@ async function group(
     const origin = origins[index]
 
     if (origin === null || origin === undefined) {
-      alone.push({ paths: [path], origin: null, legacy: isLegacyStamped(path) })
+      alone.push({
+        paths: [path],
+        origin: null,
+        legacyPaths: isLegacyStamped(path) ? [path] : [],
+      })
       return
     }
 
@@ -237,7 +241,7 @@ async function group(
   const merged = [...byOrigin.entries()].map(([origin, group]) => ({
     paths: group,
     origin,
-    legacy: group.every((path) => isLegacyStamped(path)),
+    legacyPaths: group.filter((path) => isLegacyStamped(path)),
   }))
 
   return [...merged, ...alone].sort((a, b) =>
