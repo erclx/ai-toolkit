@@ -178,25 +178,26 @@ export function classifySpan(span: string): CitationForm | undefined {
 }
 
 /**
- * Where a citation could answer, in the order the reader's own tools try.
+ * Where a citation could answer, which is wherever the reader's own tools look
+ * and nowhere else.
  *
- * A standard name takes the authoring root first and the internal corpus
- * second, mirroring how the CLI resolves one, so the check agrees with what a
- * session opening the citation would find. A sibling resolves inside the folder
- * the citing rule sits in, since that is the only place a bare rule filename
- * means anything.
+ * A standard name takes the authoring root alone, matching `standardRoots` in
+ * `@/standards/read`, which reads `standards/` at the working root and then the
+ * package corpus. This verb refuses a tree holding no rule corpus, so it runs
+ * only where those two roots are one directory. `internal/standards/` is
+ * deliberately absent: `aitk standards <name>` never reaches it, so admitting it
+ * here would pass a citation that refuses for the session opening it, which is a
+ * gate failing open.
+ *
+ * A sibling resolves inside the folder the citing rule sits in, since that is
+ * the only place a bare rule filename means anything.
  */
 function candidatesFor(
   form: CitationForm,
   cited: string,
   ruleFile: string,
 ): string[] {
-  if (form === 'standard') {
-    return [
-      join('standards', `${cited}.md`),
-      join('internal', 'standards', `${cited}.md`),
-    ]
-  }
+  if (form === 'standard') return [join('standards', `${cited}.md`)]
   if (form === 'sibling') return [join(dirname(ruleFile), cited)]
   return [cited]
 }

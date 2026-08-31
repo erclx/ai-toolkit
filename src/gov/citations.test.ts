@@ -228,7 +228,10 @@ describe('readCitations', () => {
     expect(withStatus(report, 'resolved')).toEqual(['teach'])
   })
 
-  it('should resolve a standard that only the internal corpus carries', async () => {
+  it('should name a standard only the internal corpus carries, which the verb cannot reach', async () => {
+    // `aitk standards <name>` reads standards/ and then the package corpus, and
+    // never internal/standards/, so a citation resolving only there refuses for
+    // the session that opens it. Admitting that root here would pass it.
     write('internal/standards/tooling-reference.md', '# Tooling reference')
     writeRule(
       'claude/598-authoring-layout.md',
@@ -238,7 +241,7 @@ describe('readCitations', () => {
 
     const report = await readCitations(ROOT)
 
-    expect(withStatus(report, 'dead')).toEqual([])
+    expect(withStatus(report, 'dead')).toEqual(['tooling-reference'])
   })
 
   it('should name a standard the verb cites that neither root carries', async () => {

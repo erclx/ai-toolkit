@@ -32,13 +32,15 @@ Two files agreeing is what a drift check measures. Whether either one is right a
 
 A citation reaches a reader in one of three shapes, and each resolves against a different root.
 
-| Form       | Shape                    | Resolves against                                  |
-| ---------- | ------------------------ | ------------------------------------------------- |
-| `standard` | `aitk standards <name>`  | `standards/<name>.md`, then `internal/standards/` |
-| `path`     | a backticked path        | the root                                          |
-| `sibling`  | a bare `<nnn>-<slug>.md` | the folder the citing rule sits in                |
+| Form       | Shape                    | Resolves against                   |
+| ---------- | ------------------------ | ---------------------------------- |
+| `standard` | `aitk standards <name>`  | `standards/<name>.md`              |
+| `path`     | a backticked path        | the root                           |
+| `sibling`  | a bare `<nnn>-<slug>.md` | the folder the citing rule sits in |
 
-`standard` is the live form and carries most of the corpus, which is what makes scoping this check to the two path shapes a check over almost nothing. The standard name resolves the way the CLI resolves one, so the stage agrees with what a session opening the citation would find rather than with a single root.
+`standard` is the live form and carries most of the corpus, which is what makes scoping this check to the two path shapes a check over almost nothing.
+
+A standard name resolves against the authoring root and nowhere else, matching `standardRoots` in `src/standards/read.ts`, which reads `standards/` at the working root and then the package corpus. The stage refuses a tree holding no rule corpus, so it runs only where those two roots are one directory. `internal/standards/` is deliberately not tried: `aitk standards <name>` never reaches it, so admitting it would pass a citation that refuses for the session opening it, which is a gate failing open.
 
 A `path` is anchored on the whole backticked span rather than on a trailing pattern inside it. Cutting `standards/tooling-reference.md` out of `internal/standards/tooling-reference.md` and resolving that against the standards root reports a file that exists as missing, which is a mistake made by hand while measuring this corpus before the stage was written.
 

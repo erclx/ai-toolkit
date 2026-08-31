@@ -96,6 +96,10 @@ Two classes resolve to nothing and are correct to, and both are reported by name
 - **Governed.** A path the citing rule spells exactly in its own frontmatter `paths:` names an artifact a target holds rather than a file here. `claude/560-diagrams.md` declares `.claude/DIAGRAMS.md` and then tells its reader to convert one an older install left. Only an exact declaration excuses, never a glob match against one, so a typo under `.claude/diagrams/**` is still a finding.
 - **Ignored.** A path git ignores is session scratch no clone holds. `claude/555-tasks.md` cites `.claude/tasks/index.md`, which is real at the main root and absent from a fresh clone and from every linked worktree. Without this the verdict would depend on which tree the stage ran in.
 
+The ignored class is what makes the counts tree-dependent, and the two readings were taken side by side on 2026-08-31 over one corpus and one commit. From the main worktree the run reports 34 resolved and 0 ignored, since the board is there and the path resolves. From a linked worktree it reports 33 and 1. The verdict is the same either way, which is the whole point of the exemption, so a count quoted from one tree names which tree it came from.
+
+A standard name resolves against `standards/` alone, matching `standardRoots` in `src/standards/read.ts`, which reads the working root and then the package corpus. Those are one directory wherever this stage runs, since it refuses a tree holding no rule corpus. `internal/standards/` is not a candidate: `aitk standards <name>` never reaches it, so admitting it would pass a citation that refuses for the session opening it. The set it would have covered is empty today, and a gate failing open is worth closing before it is not.
+
 ## Gotchas
 
 - A "Does not govern:" line naming a skill or a sibling standard is a scope exclusion, not a citation. `standards/standard.md` requires exactly this shape for every excluded concern, so the many "the `write-human` skill" mentions across the standards corpus carry no verdict here.
