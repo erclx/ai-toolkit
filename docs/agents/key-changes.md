@@ -21,7 +21,9 @@ aitk pr key-changes --body .claude/.tmp/pr/body.md --base origin/main
 | `--root <path>` | Repository to read, defaulting to the cwd                          |
 | `--json`        | Add a machine-readable record on stdout, keeping the frame         |
 
-Without `--body` the body, the file list, and the head commit come back from one `gh pr view` call. One call rather than three, because the three have to describe the same commit and reading them apart leaves a window where a push between them compares a body against another head's files.
+Without `--body` the body, the file list, and the head commit come back from one `gh pr view` call, because the three have to describe the same commit and reading them apart leaves a window where a push between them compares a body against another head's files.
+
+That view caps its file list at 100 rows and says nothing about having done so, which was measured against `#1250`: the pull request carries 101 files and the view reports 100. A pull request at the cap therefore takes a second read through the paginated endpoint, and a failure there refuses with `gh-truncated` rather than comparing against a set known to be short. A set silently one file short is the worst input this takes, since the missing file is exactly what a correct bullet would then be accused of inventing.
 
 ## The two directions
 
@@ -76,7 +78,7 @@ Three refusals separate a clean pass from a read that produced nothing:
 
 An empty extraction read as a clean pass is the failure shape this repository has recorded twice, which is why the middle one is its own reason rather than a zero count.
 
-`gh-missing`, `gh-failed`, `unreadable-body`, `unreadable-tree`, `no-base`, `bad-base`, and `unreadable-changes` cover the reads that never reached a comparison.
+`gh-missing`, `gh-failed`, `gh-truncated`, `unreadable-body`, `unreadable-tree`, `no-base`, `bad-base`, and `unreadable-changes` cover the reads that never reached a comparison.
 
 ## What it was measured against
 

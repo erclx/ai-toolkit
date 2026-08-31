@@ -23,6 +23,17 @@ const GH_TIMEOUT_MS = 30_000
 /** How many unnamed files the frame prints before it names a count instead. */
 const UNNAMED_PRINT_LIMIT = 10
 
+/**
+ * Where `gh pr view --json files` stops.
+ *
+ * It pages the underlying query once and returns at most this many rows with
+ * nothing on the record saying so, which was measured against `#1250`: the
+ * pull request carries 101 files and the view reports 100. A set silently one
+ * short is the worst input this comparison can take, since the missing file is
+ * exactly what a claim would then be accused of inventing.
+ */
+const GH_VIEW_FILE_CAP = 100
+
 interface KeyChangesOptions {
   readonly body?: string
   readonly base?: string
@@ -34,6 +45,7 @@ interface KeyChangesOptions {
 type SourceRefusal =
   | 'gh-missing'
   | 'gh-failed'
+  | 'gh-truncated'
   | 'unreadable-body'
   | 'unreadable-tree'
   | 'no-base'
@@ -48,6 +60,8 @@ const REFUSALS: Record<Refusal, string> = {
     'gh is not on the path, so no pull request body could be read. Pass --body <path> to read one off disk instead.',
   'gh-failed':
     'gh could not answer for this branch. Name the pull request number, or pass --body <path>.',
+  'gh-truncated':
+    `gh returned the first ${GH_VIEW_FILE_CAP} changed files and the paginated read that would complete the set failed, so a claim could be accused of naming a file this read never saw.`,
   'unreadable-body': 'The file named by --body could not be read.',
   'unreadable-tree':
     'git could not list this repository, so no path could be judged whole rather than partial.',
@@ -133,9 +147,11 @@ type SourceRead =
  * Reads the body and the changed set from the pull request the caller named,
  * or from the one open on this branch.
  *
- * One call rather than two. The body and the file list have to describe the
- * same head, and reading them separately leaves a window where a push between
- * them produces a comparison against two different commits.
+ * One call wherever the file list fits inside it. The body and the file list
+ * have to describe the same head, and reading them separately leaves a window
+ * where a push between them compares a body against another commit's files. A
+ * pull request at the view's cap takes the second read anyway, because a set
+ * short by an unknown number is worse than a set read a moment later.
  */
 async function readFromApi(
   cwd: string,
@@ -168,17 +184,59 @@ async function readFromApi(
       number?: number
     }
 
+    const viewed = (row.files ?? []).map((file) => file.path)
+    const changed =
+      viewed.length < GH_VIEW_FILE_CAP || row.number === undefined
+        ? viewed
+        : await listFilesByPage(cwd, row.number)
+
+    if (changed === undefined) {
+      return { kind: 'refused', reason: 'gh-truncated' }
+    }
+
     return {
       kind: 'read',
       source: {
         body: row.body ?? '',
-        changed: (row.files ?? []).map((file) => file.path).sort(),
+        changed: [...changed].sort(),
         head: row.headRefOid,
         number: row.number,
       },
     }
   } catch {
     return { kind: 'refused', reason: 'gh-failed' }
+  }
+}
+
+/**
+ * Every file a pull request changed, read through the paginated endpoint.
+ *
+ * Only reached when the view came back at the cap, since it costs a request per
+ * page and nearly every pull request here fits in one view. Returns undefined
+ * when the follow-up fails, which refuses rather than falling back to the
+ * capped set: a comparison run against a set known to be short would accuse a
+ * correct bullet of naming a file nobody changed.
+ */
+async function listFilesByPage(
+  cwd: string,
+  number: number,
+): Promise<string[] | undefined> {
+  try {
+    // See src/worktrees/reclaim.ts for why gh needs the stripped environment.
+    const result = await execa(
+      'gh',
+      [
+        'api',
+        '--paginate',
+        `repos/{owner}/{repo}/pulls/${number}/files`,
+        '--jq',
+        '.[].filename',
+      ],
+      { cwd, timeout: GH_TIMEOUT_MS, env: gitEnv(), extendEnv: false },
+    )
+    return result.stdout.split('\n').filter(Boolean)
+  } catch {
+    return undefined
   }
 }
 
