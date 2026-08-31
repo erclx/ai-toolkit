@@ -55,6 +55,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                                               |
 | `aitk gov superseded`      | Report where the tree still asserts a value a changed convention no longer produces, keyed on the value and on the family stem behind a templated citation (`--json`) |
 | `aitk gov restated`        | Report every instruction the always-loaded file or a rule shares with the seed, a shipped skill body, or another rule, classed and with its anchors named (`--json`)  |
+| `aitk gov citations`       | Resolve every path a rule cites and every internal frontmatter glob, failing on one reaching nothing (`--json`)                                                       |
 | `aitk secrets scan`        | Report credential-shaped values in the tree the package ships, keyed on issued values rather than on words (`--json`)                                                 |
 | `aitk deps audit`          | Report published advisories against the resolved dependency set, refusing rather than reporting clean when the index is unreachable (`--json`)                        |
 | `aitk labels audit`        | Report the labels a changed set earns from the pull request label map and the paths no row reaches (`--json`)                                                         |
@@ -96,7 +97,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                                                                |
 | `snippets`  | `list`, `create`                                                                                                                      |
 | `standards` | `list`, `audit`, `<name>`                                                                                                             |
-| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                                               |
+| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`, `citations`                                                  |
 | `claude`    | `init`, `sync`, `routing`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `skills rank`, `setup [dest]` |
 | `demo`      | `compile`, `run`                                                                                                                      |
 | `inventory` | `run`                                                                                                                                 |

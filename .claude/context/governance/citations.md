@@ -1,6 +1,6 @@
 ---
 title: Citations
-description: Verdict for every rule and standard citing a skill or a sibling document, the two forms that resolve for a target, and the moot exception
+description: Verdict for every rule and standard citing a skill or a sibling document, the two forms that resolve for a target, the moot exception, and the stage that resolves a cited path and an internal frontmatter glob mechanically with the bounds each carries
 ---
 
 # Citations
@@ -76,8 +76,34 @@ Each of the four entries that restated their standard also carries a moot verdic
 
 `diagrams.md` and `wireframes.md` each carry one further mention outside that bullet, in a sentence naming a "voice yield" a sibling standard grants the surface. `diagrams.md` says a section "claims the yield the `write-human` skill grants." `wireframes.md` says its Behavior and Copy prose "follows `markdown.md` and the `write-human` skill." Read as describing a cross-standard relationship rather than instructing the reader to load anything, the same reasoning the Gotchas exclusion applies to a "Does not govern:" bullet. `markdown.md`'s repaired sentence reads differently: it states where a markdown edit routes, which is closer to a directive than a boundary description, and that difference is why one got a verdict and the other two did not.
 
+## What the stage resolves and what it cannot
+
+`aitk gov citations` resolves every path a rule body cites across `governance/rules/` and `internal/rules/`, plus every frontmatter `paths:` glob under `internal/rules/`, and `bun run check` gates on it as the `Rule citations` stage. The verdicts above stay a manual read: the stage answers whether a citation resolves at all, and nothing here answers whether a resolving citation points at the right file or restates what it points at.
+
+At `2e912110` the corpus holds 36 body citations across 77 rules. Twenty are `aitk standards <name>`, fifteen are backticked paths, one names a sibling rule by filename. All 36 resolve or are excused, and all 14 internal globs across 7 rules match, so the gate ships as a floor rather than as a repair.
+
+The glob half reads one corpus and the operator settled which on 2026-08-31. A rule under `governance/rules/` installs into a target and its globs name that project's shape, so 32 of the 72 there match nothing in this tree and every one is correct, `src/pages/**` in the Astro rule being indistinguishable by pattern from a path here. Gating them would ship an exemption list the length of the corpus. `internal/rules/` ships nowhere, which makes the tree it governs the tree present.
+
+What it reads is bounded three ways, and each bound is a shape the corpus already writes.
+
+- A placeholder or glob segment is declined, since it describes a shape rather than naming a file. `standards/<name>.md` and `app/**/route.ts` are the two forms.
+- A span carrying no file extension is declined as a folder or a module specifier. This costs one real path, `claude/standards`, which the stage cannot tell from `next/font` by looking at it.
+- A path written without backticks is not read at all, since matching one would report every sentence that happens to name a file.
+- A glob that matches real files and still reaches none of the work it was scoped at is not read. `lib/305-e2e-reliability.md` scopes itself at `e2e/*.ts` and `e2e/**/*.ts`, and no probe here is written under `e2e/`, so the rule asking a session to watch a new guard fail never fired for the session writing guards. Resolution is mechanical and reach is a judgment about where the work happens.
+
+Two classes resolve to nothing and are correct to, and both are reported by name rather than dropped.
+
+- **Governed.** A path the citing rule spells exactly in its own frontmatter `paths:` names an artifact a target holds rather than a file here. `claude/560-diagrams.md` declares `.claude/DIAGRAMS.md` and then tells its reader to convert one an older install left. Only an exact declaration excuses, never a glob match against one, so a typo under `.claude/diagrams/**` is still a finding.
+- **Ignored.** A path git ignores is session scratch no clone holds. `claude/555-tasks.md` cites `.claude/tasks/index.md`, which is real at the main root and absent from a fresh clone and from every linked worktree. Without this the verdict would depend on which tree the stage ran in.
+
+The ignored class is what makes the counts tree-dependent, and the two readings were taken side by side on 2026-08-31 over one corpus and one commit. From the main worktree the run reports 34 resolved and 0 ignored, since the board is there and the path resolves. From a linked worktree it reports 33 and 1. The verdict is the same either way, which is the whole point of the exemption, so a count quoted from one tree names which tree it came from.
+
+A standard name resolves against `standards/` alone, matching `standardRoots` in `src/standards/read.ts`, which reads the working root and then the package corpus. Those are one directory wherever this stage runs, since it refuses a tree holding no rule corpus. `internal/standards/` is not a candidate: `aitk standards <name>` never reaches it, so admitting it would pass a citation that refuses for the session opening it. The set it would have covered is empty today, and a gate failing open is worth closing before it is not.
+
 ## Gotchas
 
 - A "Does not govern:" line naming a skill or a sibling standard is a scope exclusion, not a citation. `standards/standard.md` requires exactly this shape for every excluded concern, so the many "the `write-human` skill" mentions across the standards corpus carry no verdict here.
 - The mechanical duplication sweep behind `aitk gov restated` catches a rule restating a sibling rule or `CLAUDE.md`. It does not catch a rule restating the standard it cites, which is this entry's subject and stayed a manual read for that reason.
+- `aitk gov citations` and `aitk gov superseded` read one corpus and answer different questions. The first asks whether a cited path resolves at all, the second whether a citation still names a value a changed convention no longer produces. A citation can pass either and fail the other, so neither folds into the other.
+- The consumed-copy drift stage passes an authored rule and its copy that are wrong together, which is how `claude/561-teach.md` shipped a `references/glossary.md` that had never existed. Two files agreeing is not either one being right about the tree.
 - A rule can carry both the restated-its-target and the moot verdict at once. Moot says the citation never fires for a target holding governance alone. Restated says the rule's own bullets duplicated its standard regardless. Neither excuses the other.

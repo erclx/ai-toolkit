@@ -387,6 +387,22 @@ main() {
   run_check "cd $PROJECT_ROOT && bun src/cli.ts context audit --citations-only" "A cited context path does not resolve. Run bun src/cli.ts context audit."
   log_info "Context citations resolve"
 
+  # A rule citing a file that moved fails silently. The consumed-copy drift
+  # stage passes an authored rule and its copy that are wrong together, and
+  # nothing else resolves the path until a session opens it, which is how
+  # `561-teach.md` shipped a `references/glossary.md` that had never existed. A
+  # rule whose frontmatter glob names a directory that moved fails the same way,
+  # by never firing again.
+  #
+  # This gates for the reason the stage above gates: a path resolving to
+  # nothing carries no judgment. The classes where absence is correct, a path
+  # the rule declares in its own frontmatter and one git ignores, are separated
+  # inside the verb rather than left as a threshold here. Globs are read under
+  # `internal/rules/` alone, since a shipped rule's glob names a target's shape.
+  log_step "Rule citations"
+  run_check "cd $PROJECT_ROOT && bun src/cli.ts gov citations" "A path a rule cites, or an internal frontmatter glob, does not resolve. Run bun src/cli.ts gov citations."
+  log_info "Rule citations resolve"
+
   # A banned character, word, or spelling is a fact rather than a threshold, so
   # it fails the push while bullet, paragraph, and depth weight stay advisory
   # for the reason the stage above leaves its own thresholds so.
