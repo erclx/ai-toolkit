@@ -25,6 +25,14 @@ mint_sandbox_run_id() {
   export AITK_SANDBOX_RUN_ID
 }
 
+# The base every per-run tree nests under, with no run id appended. Split out
+# of `resolve_sandbox_dir` so a caller that needs to recognize any run's tree,
+# such as `require_project_root` in `scripts/lib/ui.sh`, tests against this
+# prefix instead of a single resolved path that changes on every call.
+sandbox_dir_prefix() {
+  printf '%s/aitk/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
+}
+
 # Twin of `sandboxTree` in `src/commands/sandbox.ts`. The exec boundary rules out
 # a shared constant, so a change to the default lands on both sides.
 #
@@ -39,7 +47,7 @@ resolve_sandbox_dir() {
   fi
 
   mint_sandbox_run_id
-  printf '%s/aitk/sandbox-%s\n' "${XDG_STATE_HOME:-$HOME/.local/state}" "$AITK_SANDBOX_RUN_ID"
+  printf '%s-%s\n' "$(sandbox_dir_prefix)" "$AITK_SANDBOX_RUN_ID"
 }
 
 # Collapses repeated separators, folds `.` and `..` segments, and strips every
