@@ -30,7 +30,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Routing report](routing.md): Reading per CLAUDE.md section how many bullets name a path, what counts as naming one, when a rule counts as covering it, the two refusals, and why the verb reports rather than gates
 - [Sandbox](sandbox.md): Scenario routing, the expectation scoring surface, and the coverage census over scenarios and skills
 - [Scripting](scripting.md): The runtime catalogs that replace hardcoded names, what each carries, and a headless invocation per domain
-- [Sessions](sessions.md): Resolving live peer sessions to the worktree and branch each holds, the liveness confidence field, the unresolved reasons, and what the read depends on
+- [Sessions](sessions.md): Resolving live peer sessions to the worktree and branch each holds, reading which row is the caller, the liveness confidence field, and what each session surface can see
 - [Skill audit](skills-audit.md): Measuring both skill corpora against standards/skill.md, the checks it reads, the requirement gate that is the only failing one, and the drift verb that names bodies rewritten since a ref
 - [Citation reach](skills-reach.md): Reporting the skill bodies that cite a path no target project receives, which corpus the verb reads, the ownership key that decides what counts, the one-word qualifier that marks a citation as decided, and why the verb reports instead of gating
 - [Standard success criteria](standards-audit.md): Reading the corpus against the Success criterion gate, why the check scopes to arrival rather than the whole corpus, and the exit codes it sets

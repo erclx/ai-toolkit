@@ -1,3 +1,4 @@
+import { basename } from 'node:path'
 import { $ } from 'bun'
 import { gitEnv } from '@/git-env'
 import {
@@ -185,4 +186,106 @@ export async function resolveSessions(
   )
 
   return { kind: 'resolved', dir: registry.dir, confidence, sessions }
+}
+
+/** The environment slice the caller's own identity is read from. */
+export type Env = Record<string, string | undefined>
+
+/** Why the caller's own row could not be named, rather than an empty result. */
+export type SelfUnresolved = 'no-identity' | 'no-row'
+
+/**
+ * What the environment offers about the session making the call.
+ *
+ * Both fields are candidates rather than a pair, since a client sets them
+ * independently and a caller can arrive carrying either one alone.
+ */
+export interface SelfIdentity {
+  readonly sessionId: string | null
+  readonly pid: number | null
+}
+
+export type SelfReport =
+  | { readonly kind: 'self'; readonly session: ResolvedSession }
+  | {
+      readonly kind: 'unresolved'
+      readonly reason: SelfUnresolved
+      readonly identity: SelfIdentity
+    }
+
+/**
+ * A positive integer, which is what separates a pid from a socket named for
+ * something else. Signal zero addresses the caller's own process group, so a
+ * zero would match a row rather than failing to.
+ */
+function pidOf(value: string | undefined): number | null {
+  if (value === undefined) return null
+  const pid = Number(value.trim())
+  return Number.isInteger(pid) && pid > 0 ? pid : null
+}
+
+/**
+ * Reads whatever the environment states about the calling session.
+ *
+ * Three identifier namespaces are in play and only two of them join to a
+ * roster row. `CLAUDE_CODE_SESSION_ID` is the roster's own `sessionId` and is
+ * read first because it survives a rename, where the name a session carries is
+ * derived from what it turned out to be doing and rotates while a build runs.
+ * `CLAUDE_CODE_HOST_SESSION_ID` is deliberately never read: it holds a
+ * `local_`-prefixed value from the harness namespace that matches no row, and
+ * it is the variable a reader searching the environment for a session id finds
+ * first.
+ *
+ * The socket path is the last rung because its basename is the caller's pid by
+ * a client convention rather than a published interface, so a client that
+ * moves it drops this rung while leaving the two above it standing.
+ */
+export function callerIdentity(env: Env = process.env): SelfIdentity {
+  const stated = env.CLAUDE_CODE_SESSION_ID?.trim()
+  const socket = env.CLAUDE_CODE_MESSAGING_SOCKET
+
+  return {
+    sessionId: stated !== undefined && stated.length > 0 ? stated : null,
+    pid:
+      pidOf(env.CLAUDE_PID) ??
+      pidOf(
+        socket === undefined
+          ? undefined
+          : basename(socket).replace(/\.sock$/, ''),
+      ),
+  }
+}
+
+/**
+ * Names which row of a roster belongs to the caller.
+ *
+ * The read that already returns every field marks none of them as the caller,
+ * so this performs the join rather than adding a source. An identity the
+ * environment does not carry and an identity no row matches are separated,
+ * because the first is a client that states nothing and the second is a
+ * session the roster cannot see. A session driving from Remote Control is the
+ * measured instance of the second: it is addressable on the message channel
+ * and holds no local process record for the roster to report.
+ */
+export function selfOf(
+  sessions: readonly ResolvedSession[],
+  identity: SelfIdentity,
+): SelfReport {
+  if (identity.sessionId === null && identity.pid === null) {
+    return { kind: 'unresolved', reason: 'no-identity', identity }
+  }
+
+  const byId =
+    identity.sessionId === null
+      ? undefined
+      : sessions.find((session) => session.sessionId === identity.sessionId)
+  const byPid =
+    identity.pid === null
+      ? undefined
+      : sessions.find((session) => session.pid === identity.pid)
+  const match = byId ?? byPid
+
+  return match === undefined
+    ? { kind: 'unresolved', reason: 'no-row', identity }
+    : { kind: 'self', session: match }
 }
