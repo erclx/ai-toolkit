@@ -241,3 +241,42 @@ workers running a server take a port apiece without being told to, since a
 stack derives it from the worktree it runs in through `scripts/worktree-port.sh`.
 Read that value rather than assigning one, and set `WORKTREE_PORT_OFFSET` by
 hand only when two worktrees derive the same offset.
+
+### The review fallback
+
+Two conditions move the review itself out of this session rather than binding the
+track count. One is a diff too large for this session to hold. The other is three
+or more open pull requests awaiting a first pass. Either one makes review the
+bottleneck every track is waiting on, and both answer the same way: dispatch the
+narrow re-review and keep the first pass here.
+
+Three is the operator's number, set by hand on 2026-08-31 and marked as such so a
+measurement replaces it rather than argues with it. It is calibrated against a
+session that ran five workers across two waves and reviewed five pull requests in
+one stretch, several of them twice, where a sixth track was declined on judgment
+and on nothing else. What counts toward it is a pull request awaiting a first
+pass rather than every open one, since a branch already closed out and waiting on
+a merge costs this session nothing and counting it would fire the switch on a
+queue that is clear.
+
+Only the narrow re-review dispatches. A first pass reads across branches, and the
+findings that pay for its cost are the ones no single pull request shows: two
+branches regenerating one binary asset for the same count, three writing one
+context entry, a merge order making one branch's figure true only after another
+lands. A re-review asks whether the prior findings landed and whether the fix
+regressed anything, which is bounded to a delta and carries none of that reading,
+so it is the half that leaves cleanly.
+
+What it dispatches has no role skill yet. `claude-worker` and `claude-planner`
+each state what their session may not do and no third body states a reviewer's,
+so a dispatched re-review would hold its obligations in whatever launch string
+this session types. That is the defect those two skills were written to close, so
+write the third after the first trial rather than before it, since nothing has
+ever dispatched a reviewer and a body written now encodes a shape nobody has
+driven. Until it exists, say in the launch itself that the pass is bounded to the
+delta and that the cross-branch reading stays here.
+
+Nothing counts the pull requests. This is prose this session applies to itself,
+on the same standing as the poll's own start condition, so a wave past three
+reviewed one at a time is a rule that went unread rather than a check that
+failed.

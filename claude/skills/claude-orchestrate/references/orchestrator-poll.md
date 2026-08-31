@@ -66,6 +66,12 @@ The five review headings the script matches are written by `claude-pr-review` an
 
 The state reaches every stalled dispatch, since one threshold governs the heading and the dispatch alike and a pass carrying anything posts the open heading. A minors-only pass therefore reports here on the same terms as a blocking one, which widens the state from what it caught while the two were split. It stays a heading test rather than a count test, so nothing here pins the summary line, which is a second string this script does not own.
 
+### The count behind the review fallback
+
+The report is also where the count in `## Parallelism` is legible. That threshold trips on open pull requests awaiting a first pass, which is what `OPENED` and a pull request with no prior pass name here and what `SEEN` excludes, so read the count off these lines rather than off `gh pr list`, which counts a branch closed out and waiting on a merge the same as one nobody has read. It is a separate condition from the poll-start fallback above, which decides when this loop runs rather than where a review runs.
+
+The count reads low, and it errs in the direction that breaks the trigger. A review's `commit.oid` is stamped with the head at submission rather than with the commit the reviewer read, so an author pushing between the diff read and the post leaves the pass recorded against a commit it never saw, and `SEEN` then fires on a head still awaiting its first look at that delta. Measured on `#1299` on 2026-08-31, where a pass written against `5653721` landed stamped `a5ceb40` and the delta it skipped was a real fix. So a `SEEN` on a head you do not recognize is worth one `gh pr view --json reviews` before it is believed, and a wave past three is likelier to trip the fallback late than early.
+
 ## The watch beside it
 
 `${CLAUDE_SKILL_DIR}/scripts/watch.sh` is a long-running loop rather than a scheduled prompt. It reads the open pull request list and the session roster together every sixty seconds and prints one line per new pull request, per worker whose status changed, and per worker that dropped out of the roster. Start it in the background and read what it emits. It writes nothing.

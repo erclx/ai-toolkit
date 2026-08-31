@@ -220,6 +220,14 @@ above it, and stop adding once you can no longer review every output properly.
 Serialize a track sharing a wiring seam with another, and serialize one whose
 sets are disjoint when a stated reason still puts it behind another.
 
+Past that, review moves rather than the track count, on either of two conditions:
+a diff too large for the controlling session to hold, or three or more open pull
+requests awaiting a first pass. Three is set by hand rather
+than measured, so a later measurement replaces it. Only the narrow re-review
+leaves: a first pass reads across branches and a re-review bounded to a delta
+carries none of that reading. Nothing counts the pull requests, so the switch
+holds only while the session applies it to itself.
+
 Inbound turns cost the controlling session as well, so weigh the spend before
 widening. A message from one of your other sessions arrives as a new turn
 carrying the whole accumulated context, and a recurring poll bills that window
