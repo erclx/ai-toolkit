@@ -119,6 +119,12 @@ A pass says the run touched none of the eight destinations `escape_roots` and `E
 
 Neither reaches the write a real dispatch would make. The declared scope is empty because no run in this catalog drives the dispatch, so a pass proves the refusal path stayed clean and says nothing about what a worker's own worktree entry, commit, or session record would touch once one does. It also proves nothing about a destination `escape_roots` never watches at all, being a home directory, a sibling worktree, or the machine-level target and session registries a live `claude --bg` genuinely reaches, and nothing about whether a write it did catch was this run's rather than a concurrent session's, since attribution stays unsolved on both sides of the scope.
 
+Two runs on 2026-08-31 made both halves of that concrete. The first invoked the arm's bare `/aitk:aitk-rollout` prompt without the narration the fixture's own log tells an operator to say first, and the run dispatched a real `claude --bg` worker into `targets/kestrel-b`, a live background session still running against the machine's real process table until it was killed by hand.
+
+`escape_scope` reported `no escape during this run` throughout, correctly, since the dispatch never touched the eight watched destinations. That is the limitation stated above holding under a real miss rather than a hypothetical one: a wrong run and a right one read identical to this scope, because the failure it exists to catch is not the failure a missing narration causes.
+
+The second run repeated the same prompt with the narration included and passed at 13 asserted and 1 failed in 6 turns at $0.20, refusing to dispatch and writing the decision file as the fixture expects. The one failure was `missing: targets/kestrel-a/.git/FETCH_HEAD`, the same fetch this arm's own comment already flags as a property the run either exercises or does not depending on whether it reads a cached ref, unrelated to escape scope and outside what this row changed.
+
 ### The audits arm failed twice before the section had a route
 
 `audits` failed twice on the same two reply pins by two different paths, at 4 asserted and 2 failed each time. The first reply described the audit categories in prose and named neither `aitk context audit` nor `aitk records validate`, and its turn count and cost went unrecorded. The second took the scaffold handoff on a report showing 14 missing seeds and no installed domain and never reached the audits at all, in 6 turns at 0.24 dollars. Escapes on that run came back empty.
