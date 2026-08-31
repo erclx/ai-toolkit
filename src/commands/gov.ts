@@ -306,18 +306,31 @@ export function register(program: Command): void {
         `\`${SUPERSEDED_MARKER}: <reason>\` marker on its own line or the one above.`,
         '',
         'Pass an empty replacement to retire a value outright. Findings report',
-        'the same way and none is annotated, since a line cannot carry a',
-        'replacement that does not exist.',
+        'the same way, none is annotated, since a line cannot carry a',
+        'replacement that does not exist, and no templated form is read, since',
+        'there is no second value for a stem to diverge from.',
         '',
-        'Blind spot:',
+        'Templated forms, matched on the segment the two values differ on:',
+        '  glob         <stem>-* , the family written as a pattern',
+        '  placeholder  <stem>-<X> , the family written with a stand-in segment',
+        '  prefix       <stem>- , the family written bare',
+        '',
+        'A hit under one of them counts as a finding, since a stale templated',
+        'citation is as real as a literal one. Each carries the nearest heading',
+        'above it in a markdown file, because a line reading as a prohibition',
+        'under one section reads as an instruction under another.',
+        '',
+        'Blind spots:',
         '  a prose reference that went stale without carrying the value, such as',
         '  a declaration citing the wrong standard for the transform, matches',
         '  nothing here and is reached by reading rather than by this sweep',
+        '  a family named in any other form, such as a bracket style other than',
+        '  <>, a trailing glob with no separator, or a description in words',
         '',
         'Exit codes:',
-        '  0  nothing in the corpus asserts the superseded value',
+        '  0  nothing in the corpus asserts the superseded value or its family',
         '  1  refused, with the reason on stderr or in the JSON record',
-        '  2  at least one declaration still asserts it',
+        '  2  at least one declaration asserts either',
         '',
         'Examples:',
         '  aitk gov superseded feature-feat- feature-',
@@ -520,7 +533,37 @@ function describeHit(hit: SupersededHit): string {
   const note = hit.carriesReplacement
     ? ' (the replacement is on this line)'
     : ''
-  return `${hit.file}:${hit.line}:${hit.column}${note}: ${hit.preview}`
+  const section = hit.heading === undefined ? '' : ` under ${hit.heading}`
+  return `[${hit.match}] ${hit.file}:${hit.line}:${hit.column}${section}${note}: ${hit.preview}`
+}
+
+/**
+ * Named separately from the literal hits rather than counted in with them. A
+ * templated hit is a wider match on a shorter string, so a reader weighing one
+ * is weighing a different question, and the section is where the forms it still
+ * cannot read are stated.
+ */
+function reportTemplated(
+  report: Extract<SupersededReport, { kind: 'measured' }>,
+): void {
+  const templated = report.findings.filter((hit) => hit.match !== 'literal')
+
+  logStep('Templated')
+  if (report.stems === undefined) {
+    logInfo(
+      'no stem derives from these two values, so no templated citation was read',
+    )
+  } else if (templated.length === 0) {
+    logInfo(
+      `nothing names the family as ${report.stems.superseded}-*, ${report.stems.superseded}-<X>, or ${report.stems.superseded}- bare`,
+    )
+  } else {
+    for (const hit of templated) logWarn(describeHit(hit))
+  }
+
+  logInfo(
+    'not read: a family named in any other form, such as a bracket style other than <>, a trailing glob with no separator, or a description in words',
+  )
 }
 
 function reportSuperseded(
@@ -531,13 +574,25 @@ function reportSuperseded(
 
   logStep('Sweep')
   logInfo(`${report.superseded} → ${report.replacement} in ${root}`)
+  logInfo(
+    report.stems === undefined
+      ? 'no family stem, so the sweep is the literal value alone'
+      : `family stem ${report.stems.superseded} → ${report.stems.replacement}`,
+  )
 
-  logStep(report.findings.length === 0 ? 'Clean' : 'Findings')
-  if (report.findings.length === 0) {
+  const literal = report.findings.filter((hit) => hit.match === 'literal')
+
+  // Named for the kind rather than for a verdict. `Clean` over the literal half
+  // alone would read as a clean tree on a run whose templated half is the one
+  // carrying every finding.
+  logStep('Literal')
+  if (literal.length === 0) {
     logInfo('nothing in the corpus asserts the superseded value')
   } else {
-    for (const finding of report.findings) logWarn(describeHit(finding))
+    for (const finding of literal) logWarn(describeHit(finding))
   }
+
+  reportTemplated(report)
 
   // Named rather than counted. A muted line is a judgment someone recorded,
   // and a reader weighing this report has to be able to reach the reason.
