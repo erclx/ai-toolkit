@@ -52,8 +52,9 @@ cli = ["src/", "scripts/lib/", "scripts/tooling/", "scripts/eval/"]
 sandbox = ["scripts/sandbox/", "scripts/manage-sandbox.sh"]
 docs = ["docs/", "wiki/", "README.md", "examples/"]
 # `scripts/core/` reaches the whole folder, maintenance scripts included, and
-# the two hook families enforce what the verify gate cannot.
-ci = [".github/", "scripts/core/", ".husky/", ".claude/hooks/"]
+# the two hook families enforce what the verify gate cannot. `.claude/settings.json`
+# registers those hooks, so it rides the same row.
+ci = [".github/", "scripts/core/", ".husky/", ".claude/hooks/", ".claude/settings.json"]
 # Internal narrative and the always-loaded record, which `docs` does not reach.
 context = [
   ".claude/context/",
@@ -113,3 +114,6 @@ generated = ["assets/hero.png", "assets/hero.stamp", ".claude/audits/baseline.js
 # fourth generated file. Giving it `docs` would spuriously label the 18 commits
 # that regenerated the image alongside an unrelated surface.
 rides-with-generated = ["assets/hero.html"]
+# Formatting configuration nobody reviews for behavior, and no row above owns
+# its subject.
+formatting = [".prettierignore"]
