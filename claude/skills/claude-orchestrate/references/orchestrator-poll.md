@@ -75,3 +75,13 @@ Coverage is what it buys over the poll. A worker that finishes goes idle and a w
 It classifies nothing and routes nothing. A line it prints says a pull request opened or a worker moved, and the routing block above is still what decides whether a review follows, so the two compose rather than replace each other.
 
 Every session in the repository holding a branch other than the base one counts as a worker, whoever launched it. The prototype matched the `orchestrator-` prefix instead, which reads a dispatched worker and misses every hand-launched one. A failed read of either source reports itself on a `watch:` line and leaves the baseline untouched, since reading an empty result as current state would report every worker gone on the pass after.
+
+## The stall alarm
+
+`watch.sh` prints `WORKER-STOPPED <name> <branch> <dwell>s` once a `waiting` row crosses `STALL_THRESHOLD_S`, and `WORKER-UNMEASURABLE <name> <branch>` for one whose record carries neither timestamp the dwell falls back to. Both are prints, not alerts, so the operator learns of one only when a session already reading the loop's output relays it further. The toolkit ships no notification verb, since the surface a stall reaches the operator through is a session tool rather than a command a shell loop can call.
+
+The two lines carry different confidence and the push has to say so rather than treat them as one signal. `WORKER-STOPPED` fires only once the dwell has already crossed the threshold, so it reports a wait already confirmed long. `WORKER-UNMEASURABLE` has no dwell to threshold on, so it fires on the first pass that meets a `waiting` row carrying neither stamp, whether that row has sat five seconds or fifty minutes.
+
+On meeting either line, push a notification to the operator through whatever notification surface the client offers, `PushNotification` in this repository's client and one example among the surfaces a different client exposes. Name the worker, the branch, which of the two lines fired, and the dwell where `WORKER-STOPPED` carries one, and send it once per stall the same way `watch.sh` prints it once, rather than repeating it on every interval the row stays stopped.
+
+The bound stays open. The alarm reaches the operator only through the controller's own read, so a controller mid-turn does not see the line for as long as the turn runs, and a controller that is itself stopped never does. Neither case closes here, since the watch loop and the notification surface both live inside the same session that has to be free to act on either.
