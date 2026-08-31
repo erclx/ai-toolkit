@@ -6,6 +6,7 @@ import {
   compareMetadata,
   type CurrentMetadata,
   extractOpeningLine,
+  isValidTopic,
   proposeMetadata,
 } from '@/repo/metadata'
 
@@ -69,6 +70,24 @@ describe('extractOpeningLine', () => {
     const result = extractOpeningLine(`# t\n\n${line}`)
     expect(result?.length).toBe(350)
     expect(result?.endsWith('…')).toBe(true)
+  })
+})
+
+describe('isValidTopic', () => {
+  it('should accept lowercase alphanumeric and internal hyphens', () => {
+    expect(isValidTopic('cli-tool')).toBe(true)
+  })
+
+  it('should reject a space', () => {
+    expect(isValidTopic('foo bar')).toBe(false)
+  })
+
+  it('should reject an uppercase letter', () => {
+    expect(isValidTopic('Governance')).toBe(false)
+  })
+
+  it('should reject an empty string', () => {
+    expect(isValidTopic('')).toBe(false)
   })
 })
 

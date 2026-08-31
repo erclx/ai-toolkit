@@ -38,6 +38,17 @@ const MAX_TOPICS = 20
 const TOPIC_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 
 /**
+ * Whether an already-trimmed, already-lowercased string is a shape GitHub
+ * accepts as a topic. Exported so a caller validating an operator-supplied
+ * topic list checks against the same rule this reader silently filters
+ * `package.json`'s `keywords` through, rather than reimplementing it against
+ * a looser test such as non-emptiness alone.
+ */
+export function isValidTopic(topic: string): boolean {
+  return TOPIC_PATTERN.test(topic)
+}
+
+/**
  * A bare image, or an image wrapped in a link, which is the shape a shields.io
  * badge takes. The wrapped alternative goes first, since the bare form would
  * otherwise match its inner image alone and leave the wrapping link behind.
@@ -94,7 +105,7 @@ function readTopics(keywords: unknown): readonly string[] | undefined {
   for (const entry of keywords) {
     if (typeof entry !== 'string') continue
     const topic = entry.trim().toLowerCase()
-    if (TOPIC_PATTERN.test(topic)) topics.add(topic)
+    if (isValidTopic(topic)) topics.add(topic)
     if (topics.size === MAX_TOPICS) break
   }
   return [...topics]

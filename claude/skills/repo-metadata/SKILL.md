@@ -18,7 +18,7 @@ Reads what `canon repo metadata propose` computes locally and reports it against
 ## Propose
 
 1. Run `canon repo metadata propose --json`.
-2. Read `diff` from the record. An empty object means the remote already matches what this run computed: report that and stop, since there is nothing to answer.
+2. Read `diff` and `repo` from the record. `repo` is the `--repo` value the later apply step must carry. An empty `diff` means the remote already matches what this run computed: report that and stop, since there is nothing to answer.
 3. For each field `diff` carries, put the change to the operator through the structured question surface: which of the differing fields to write. Rank accepting the proposed value first for a field whose current value is stale or wrong, and give the reject option the cost of leaving the remote as it stands. Never pre-select an answer for the operator.
 4. Report the fields the proposal left absent as unchanged, naming that neither the README nor `package.json` carried a source for them.
 5. Stop. Do not run apply here even when the operator answers immediately, since answering is not yet an apply invocation.
@@ -26,7 +26,7 @@ Reads what `canon repo metadata propose` computes locally and reports it against
 ## Apply
 
 1. Confirm every field about to be written was answered by the operator in this conversation. Carry no field forward unanswered.
-2. Run `canon repo metadata apply`, passing only the flags for the answered fields: `--description <text>`, `--homepage <url>`, `--topics <comma-separated list>`. `--topics` is the full desired set, and the command reads the current set itself to compute what to add and remove.
+2. Run `canon repo metadata apply`, always passing `--repo <owner/name>` from the propose record's `repo` field, plus the flags for the answered fields: `--description <text>`, `--homepage <url>`, `--topics <comma-separated list>`. `--topics` is the full desired set, and the command reads the current set itself to compute what to add and remove. The command refuses rather than writing when `--repo` does not match what `--root` resolves to, so never omit it and never guess it from anything but the propose record's `repo` field.
 3. Report the written state from the JSON record.
 
 ## Output
