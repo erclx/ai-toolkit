@@ -1,6 +1,6 @@
 ---
 title: Shared skill procedures
-description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
+description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the review classifier that became data a verb parses, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
 ---
 
 # Shared skill procedures
@@ -68,6 +68,18 @@ The map has a second consumer and it is a person. Nothing detects a top-level di
 `.claude/` carried no row and that exclusion was reversed by the census. The reasoning behind it held that the tree spans context entries, two sets of generated mirrors, and internal skills rather than one domain, so a single row would label unrelated work alike and a row per subtree doubles the map. What overturned it is that a pull request touching that tree alone merged with no label at all, twice, and the doubling is the correct price: each subtree carries its prefix on the row owning its subject rather than on a row of its own, so `.claude/rules/` joins `governance` and `.claude/internal/snippets/` joins `snippets`. The map grew by two rows rather than by a row per subtree.
 
 The row count is the measure worth watching here. Twenty-eight rows against nine would rebuild the unreadable map the exclusion was protecting against, which is why extending an existing row is the default and a new row waits for a subject no label carries. `snippets` and `repo` are the two that earned one.
+
+### The review classifier is data the CLI parses rather than a list a body applies
+
+`claude-autoship` Step 5 decides whether `claude-review` runs, and it used to decide by asking the session to test every changed name against eight path prefixes written into the body. The set was correct in every recorded failure and the session did not apply it. A driven arm on 2026-08-30 staged `.claude/skills/deploy-check/SKILL.md`, which the list names outright, and the chain skipped review and opened a draft pull request anyway. That was the third such miss, and the two before it were each answered by rewriting the same prose.
+
+`aitk autoship classify` now returns the decision, the file that decided it, and which of the two tests that file failed, reading the prefixes from `src/autoship/paths.ts`. It is the second instance of the rule the quiz-order draw in `aitk teach lesson` established, which `ARCHITECTURE.md` states as a rule a session can talk itself out of moving into a verb. What separates this instance from that one is the evidence behind it: the teach case reasoned from a defect in the surface it departed from, and this one has three failures of its own, one of them caught by an arm built to catch exactly it.
+
+Being machine-parsed is what makes the set permanently exempt from any later design that folds a list back into the surface citing it, on the clause `ARCHITECTURE.md` already carries. The bar there is a list a parser reads, and this one is now read by `classifyChanges` rather than by a reader.
+
+The verb takes the changed set as arguments and reads no git, which is not a convenience. `git-ship` and `claude-review` already share one diff baseline, and a classifier resolving its own range could disagree with the set the chain measured, which is the stale-baseline half a prior row closed. Handing the names over keeps one baseline for the whole chain.
+
+What it costs is the fourth surface reached by the two-speed release. The verb ships with the CLI and Step 5 ships with the plugin, so a target on an older binary meets a missing subcommand, and the body keeps the written list as the fallback rather than refusing. The fallback may never be a skip: failing open is the defect the verb closes, so an absent subcommand that routed to a skip would ship every branch unreviewed. Two copies of the path set is the price, standing until a release retires the written half, and nothing compares them.
 
 ### Repairing `core.bare`
 

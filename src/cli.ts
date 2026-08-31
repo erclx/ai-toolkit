@@ -33,6 +33,7 @@ import { register as audits } from '@/commands/audits'
 import { register as secrets } from '@/commands/secrets'
 import { register as deps } from '@/commands/deps'
 import { register as labels } from '@/commands/labels'
+import { register as autoship } from '@/commands/autoship'
 import { register as census } from '@/commands/census'
 import { register as targets } from '@/commands/targets'
 import { register as upgrade } from '@/commands/upgrade'
@@ -80,6 +81,7 @@ function showHelp(): void {
     `${GREY}│${NC}    secrets [cmd]      ${GREY}# Read the shipped tree for credential-shaped values (scan)${NC}`,
     `${GREY}│${NC}    deps [cmd]         ${GREY}# Read the resolved dependency set for advisories (audit)${NC}`,
     `${GREY}│${NC}    labels [cmd]       ${GREY}# Read a changed set against the pull request label map (audit)${NC}`,
+    `${GREY}│${NC}    autoship [cmd]     ${GREY}# Decide whether a changed set needs the review pass (classify)${NC}`,
     `${GREY}│${NC}    census [path]      ${GREY}# Report tracked file count, extension breakdown, and line totals${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
     `${GREY}│${NC}    upgrade            ${GREY}# Reinstall the CLI globally with the manager that installed it${NC}`,
@@ -181,6 +183,7 @@ worktrees(program)
 secrets(program)
 deps(program)
 labels(program)
+autoship(program)
 census(program)
 audits(program)
 upgrade(program)

@@ -97,11 +97,29 @@ If all UI changes are covered by e2e tests, continue.
 
 ## Step 5: review
 
-Classify the diff first. Take the union of `git diff --name-only <base>` and `git ls-files --others --exclude-standard`, resolving `<base>` per Diff baseline. The classifier reads names only.
+Classify the diff first. Take the union of `git diff --name-only <base>` and `git ls-files --others --exclude-standard`, resolving `<base>` per Diff baseline, then hand that set to the verb rather than reading it against the list below yourself:
+
+```bash
+aitk autoship classify --json <path>...
+```
+
+The verb reads names only and touches git not at all, so the set stays the one this step already computed and no second baseline resolves to disagree with the first. Branch on the record's `decision` rather than on the exit code, which a shell function wrapping `aitk` can flatten to zero.
+
+- `skip`. Every path reads as prose and none states agent behavior. Skip review entirely and continue to Step 7.
+- `review`. Invoke `aitk:claude-review`. The record names the `file` that decided it and the `test` it failed, `extension` for a path that is not prose and `behavior-path` for prose that states what an agent does.
+- `refused`, carrying reason `no-changes`. The changed set was empty, so take the stop below.
+
+Say in the run which of the two decided, the verb or the written fallback, since a reader otherwise cannot tell a classification from a judgment.
 
 An empty list stops the chain: `❌ No changed files to classify. Re-run when the plan has yet to produce its output. When the output is gitignored by design, autoship cannot ship it, so take the work out of the chain.` An empty list satisfies the prose-only test vacuously, so reading it as prose-only routes the branch past review instead of through it.
 
 The two causes want different responses. A plan that has yet to produce its output is a re-run once it has. A plan whose output is gitignored by design, such as a read pass writing to `.claude/.tmp/`, is work the chain cannot carry at all, since `git-stage` finds nothing to commit six steps later. Never advise removing the output from `.gitignore`, which trades a stopped run for scratch committed into the repository.
+
+### When the verb is absent
+
+The verb ships with the CLI and this body ships with the plugin, so a target holding an older binary meets a missing subcommand. Apply the written test by hand there, and say the fallback decided it.
+
+Never read an absent subcommand as a skip. Failing open is the exact defect the verb closes, and a shell that answers `command not found` reaching a body that skips on anything other than a `skip` record would ship every branch unreviewed.
 
 The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `aitk:claude-review`.
 
@@ -119,6 +137,8 @@ Markdown under one of them states what an agent does, so a change there is a beh
 Informational prose is already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on it burns tokens with no signal.
 
 The list covers this toolkit's authoring layout and the layout it installs, which is not every layout. A project keeping executable prose where neither spelling reaches adds the path, and until it does every branch touching it skips review silently.
+
+The verb reads the same set from `src/autoship/paths.ts`, so a path added here belongs there too and a path added there belongs here. Two copies is what the fallback costs, and it stands until a release retires the written half.
 
 ## Step 6: evaluate findings
 
