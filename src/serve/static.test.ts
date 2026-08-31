@@ -303,6 +303,26 @@ describe('startServer', () => {
     expect(status).toBe(403)
   })
 
+  /**
+   * The redirect fires on a directory, so answering it before containment is
+   * tested reports that an out-of-root directory exists. One that does not
+   * answers 404, and the pair is a fact about the filesystem outside the root
+   * that a reader there should not be able to read.
+   */
+  it('should refuse an out-of-root directory rather than redirecting to it', async () => {
+    const outside = mkdtempSync(join(tmpdir(), 'aitk-serve-outside-'))
+    mkdirSync(join(outside, 'pages'), { recursive: true })
+    symlinkSync(join(outside, 'pages'), join(ROOT, 'escape'), 'dir')
+    const server = start(ROOT, { port: 0 })
+
+    const response = await fetch(`http://${SERVE_HOST}:${server.port}/escape`, {
+      redirect: 'manual',
+    })
+    rmSync(outside, { recursive: true, force: true })
+
+    expect(response.status).toBe(403)
+  })
+
   it('should serve a symlink that stays inside the root', async () => {
     seed('assets/course.css', 'body { color: red }')
     symlinkSync(join(ROOT, 'assets'), join(ROOT, 'shared'), 'dir')

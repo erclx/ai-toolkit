@@ -207,6 +207,14 @@ export async function respond(
   const target = resolveWithin(root, pathname)
   if (!target) return forbidden()
 
+  /**
+   * Tested here as well as before the read, because the redirect below answers
+   * ahead of that one. A redirect firing on an out-of-root directory reports
+   * that it exists, where one that does not answers 404, and the pair is a
+   * fact about the filesystem outside the root.
+   */
+  if (escapesThroughLink(root, target)) return forbidden()
+
   let path = target
   if (existsSync(path) && statSync(path).isDirectory()) {
     /**
