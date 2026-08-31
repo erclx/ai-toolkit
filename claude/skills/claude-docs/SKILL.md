@@ -245,15 +245,15 @@ Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans/archive/
 
 ### Reviews
 
-Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
+Leave the current branch's review receipt where it is. `claude-autoship` Step 6 keeps minor findings in `.claude/review/branch/review-<slug>.md` and its closing block hands the reader that path, so deleting it here removes the file the chain that invoked this skill is still citing. Seven runs recorded that collision across two days before a sandbox fixture asserted the receipt and could pass only on a run the chain stopped early.
 
-If `.claude/review/branch/review-<slug>.md` exists, delete it. `claude-review` writes with this convention.
+The body that writes a receipt owns its lifetime. This skill sweeps on behalf of whatever called it and has no way to read whether a file is still in use, where the chain that wrote this one cites it in its own output and knows. What reaps it is the branch sweep below, one branch later, once the branch it names is gone.
 
-Then sweep the branch reports this session never opened. List `.claude/review/branch/review-*.md`, run the same slug transform over every name `git branch --format='%(refname:short)'` prints, and delete a report whose slug matches none of them. Take the names from that format rather than from `git branch --list`, which marks the current branch with `* ` and a branch checked out in another worktree with `+ `, so a transform reading the marked lines as written turns a live branch into a slug nothing matches and sweeps a report a sibling worktree is still working from. A branch report is read once, by the session addressing it, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so a report outliving its branch is holding nothing. Skipping this leaves them accumulating for the life of the checkout, since a slug is unique per feature and no later branch ever looks for one.
+Sweep the branch reports this session never opened. List `.claude/review/branch/review-*.md`, run the slug transform in `${CLAUDE_SKILL_DIR}/../../standards/slug.md` over every name `git branch --format='%(refname:short)'` prints, and delete a report whose slug matches none of them. Take the names from that format rather than from `git branch --list`, which marks the current branch with `* ` and a branch checked out in another worktree with `+ `, so a transform reading the marked lines as written turns a live branch into a slug nothing matches and sweeps a report a sibling worktree is still working from. A branch report is read once, by the session addressing it, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so a report outliving its branch is holding nothing. Skipping this leaves them accumulating for the life of the checkout, since a slug is unique per feature and no later branch ever looks for one.
 
 What that removes is a local-only review on a branch deleted before it opened a pull request. `claude-review` says so where a reader meets the report, and the sweep runs anyway rather than keeping every report against the one case, since nothing else ever clears them.
 
-Memory receipts sweep board-wide, like plans above and unlike the current slug's review report. Scan every `.claude/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
+Memory receipts sweep board-wide, like both halves of this step above them. Scan every `.claude/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
 
 For each receipt, count the H2 items still marked 📝 pending:
 
@@ -268,7 +268,6 @@ Output one line per file swept:
 
 - `📦 Archived: <path>` for a plan moved into `.claude/plans/archive/`
 - `⏭ Kept: <path>, still cited by <task-file>` for a plan another live task shares
-- `🧹 Deleted: <path>` for a swept branch report
 - `🧹 Deleted: <path>, branch gone` for a branch report whose branch no longer exists
 - `🧹 Deleted: <path>, folded <n> skips` for a swept memory receipt
 - `⏭ Kept: <path>, <n> items pending` for a memory receipt still holding decisions
