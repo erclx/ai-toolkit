@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/erclx/canon/compare/v3.57.0...v4.0.0) (2026-08-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **canon:** rename aitk to canon across both published surfaces ([#1290](https://github.com/erclx/canon/issues/1290))
+
+### Features
+
+* **canon:** rename aitk to canon across both published surfaces ([#1290](https://github.com/erclx/canon/issues/1290)) ([b0ed2af](https://github.com/erclx/canon/commit/b0ed2afa7882ef3d8a60853227fe877cd867819e))
+
 ## [3.57.0](https://github.com/erclx/canon/compare/v3.56.0...v3.57.0) (2026-08-31)
 
 
