@@ -8,5 +8,20 @@
 #
 # Rules under `internal/rules/` install alongside these and need no entry.
 
+# The `ui` rules are added because this repository renders surfaces of its own,
+# being design token previews, slide decks, capture sources, and teach lessons,
+# none of which is a framework route. `305-e2e-reliability` governs the driven
+# capture those surfaces are verified with.
+
 stack = "node"
-add = ["300-testing-ts", "505-at-references"]
+add = [
+  "300-testing-ts",
+  "305-e2e-reliability",
+  "400-ui",
+  "410-a11y",
+  "420-forms",
+  "430-ux-completeness",
+  "440-surface-capture",
+  "450-link-behavior",
+  "505-at-references",
+]
