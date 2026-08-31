@@ -256,6 +256,32 @@ describe('readBoard', () => {
     expect(rows.map((row) => row.stem)).toEqual(['v1.0-first'])
     expect(findings).toMatchObject([{ kind: 'row-untabled', group: 'Run now' }])
   })
+
+  it('should read the ordinal phrase from the end of the cell rather than only its start', () => {
+    const text = boardBody([
+      '## Needs a plan',
+      '',
+      '| Task | Waiting on |',
+      '| ---- | ---------- |',
+      '| [v3.0-third](v3.0-third.md) | nothing, cleared 2026-08-31 when it merged. Third here |',
+      '',
+    ])
+
+    expect(readBoard(text).rows[0]?.ordinal).toBe('third')
+  })
+
+  it('should not read an ordinal out of a cell whose only "here" follows a non-ordinal word', () => {
+    const text = boardBody([
+      '## Needs a plan',
+      '',
+      '| Task | Waiting on |',
+      '| ---- | ---------- |',
+      '| [v3.0-third](v3.0-third.md) | Untestable from here, re-confirmed 2026-08-30 |',
+      '',
+    ])
+
+    expect(readBoard(text).rows[0]?.ordinal).toBeUndefined()
+  })
 })
 
 describe('readBacklog', () => {
@@ -952,9 +978,9 @@ describe('validateBoard', () => {
         '',
         '| Task | Waiting on |',
         '| ---- | ---------- |',
-        '| [v9.0-a](v9.0-a.md) | Second here, behind the merge-gate port |',
-        '| [v9.1-b](v9.1-b.md) | Second here, beside the compaction row |',
-        '| [v9.2-c](v9.2-c.md) | Fourth here |',
+        '| [v9.0-a](v9.0-a.md) | nothing, behind the merge-gate port. Second here |',
+        '| [v9.1-b](v9.1-b.md) | nothing, beside the compaction row. Second here |',
+        '| [v9.2-c](v9.2-c.md) | nothing yet. Fourth here |',
         '',
       ]),
     )
@@ -979,8 +1005,8 @@ describe('validateBoard', () => {
         '',
         '| Task | Waiting on |',
         '| ---- | ---------- |',
-        '| [v9.0-a](v9.0-a.md) | First here, behind the merge-gate port |',
-        '| [v9.1-b](v9.1-b.md) | Last |',
+        '| [v9.0-a](v9.0-a.md) | nothing, behind the merge-gate port. First here |',
+        '| [v9.1-b](v9.1-b.md) | Untestable from here, re-confirmed 2026-08-30. Last |',
         '',
       ]),
     )

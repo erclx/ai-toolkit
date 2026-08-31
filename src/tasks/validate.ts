@@ -246,22 +246,26 @@ const ORDINAL_WORDS = [
 
 type OrdinalWord = (typeof ORDINAL_WORDS)[number]
 
+const ORDINAL_HERE = new RegExp(
+  `\\b(${ORDINAL_WORDS.join('|')})\\s+here\\b`,
+  'i',
+)
+
 /**
  * Reads the ordinal phrase a `Waiting on` cell states about its own position,
- * anchored to `<ordinal> here` or the bare word `last`. The vocabulary is
- * prose nobody has bounded, so a cell carrying neither reads as unordered
- * rather than as an error, which keeps a legitimately-phrased row out of the
- * findings.
+ * searching the whole cell for `<ordinal> here` or the bare word `last` rather
+ * than anchoring to where the cell opens. The phrase sits at the end of the
+ * sentence on every row that carries one, as in `nothing, cleared 2026-08-31
+ * when it merged. Third here`. The vocabulary stays bounded to the twenty
+ * words plus `last` so a cell reading `Untestable from here` does not match on
+ * `from`, and a cell carrying neither reads as unordered rather than as an
+ * error, which keeps a legitimately-phrased row out of the findings.
  */
 function readOrdinal(cell: string): OrdinalWord | 'last' | undefined {
-  const text = cell.trim()
-  if (/^last\b/i.test(text)) return 'last'
+  const here = ORDINAL_HERE.exec(cell)
+  if (here?.[1]) return here[1].toLowerCase() as OrdinalWord
 
-  const here = /^([a-z]+)\s+here\b/i.exec(text)
-  const word = here?.[1]?.toLowerCase()
-  return word && (ORDINAL_WORDS as readonly string[]).includes(word)
-    ? (word as OrdinalWord)
-    : undefined
+  return /\blast\b/i.test(cell) ? 'last' : undefined
 }
 
 function isRowLine(line: string): boolean {
