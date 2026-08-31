@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.52.1](https://github.com/erclx/aitk/compare/v3.52.0...v3.52.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **hooks:** instruct the summarizer on an automatic compaction ([#1279](https://github.com/erclx/aitk/issues/1279)) ([8709ee7](https://github.com/erclx/aitk/commit/8709ee7a0364d4489ae7bc1ef5fd6eebaee97aab))
+
 ## [3.52.0](https://github.com/erclx/aitk/compare/v3.51.1...v3.52.0) (2026-08-31)
 
 
