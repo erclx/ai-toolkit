@@ -23,7 +23,10 @@ The URL form clones over HTTPS. The `erclx/canon` shorthand resolves to SSH and 
 
 A machine that installed the plugin under its previous name re-registers by hand, once. The marketplace and the plugin both moved, so the old `enabledPlugins` entry and the old marketplace key name things that no longer resolve, and the plugin stops loading without reporting anything. `canon migrate rename` does not reach this: it takes a `--root` and rewrites inside one project, where the plugin registration is machine-level state outside every project.
 
+Both stale keys come out explicitly, since installing under the new name writes a new entry and leaves the old one sitting there. Uninstall before removing the marketplace, so the plugin is cleared while the marketplace it came from still resolves.
+
 ```bash
+claude plugin uninstall aitk@aitk
 claude plugin marketplace remove aitk
 claude plugin marketplace add https://github.com/erclx/canon
 claude plugin install canon@canon
