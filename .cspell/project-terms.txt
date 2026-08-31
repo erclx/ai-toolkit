@@ -41,6 +41,7 @@ declaratives
 deprioritized
 diffable
 disjointness
+dispatchable
 distractor
 docstrings
 dogfooded
@@ -72,6 +73,7 @@ hotspots
 invokable
 jsdom
 korotovsky
+launchable
 leonxlnx
 lintstagedrc
 lockdown
