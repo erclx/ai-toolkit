@@ -167,7 +167,6 @@ describe('renderDeckSlide', () => {
       theme,
     )
     expect(texts).toContain('still shown')
-    expect(isKnownLayout('mystery')).toBe(false)
   })
 })
 

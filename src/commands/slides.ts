@@ -50,8 +50,9 @@ export function register(program: Command): void {
           )
           const validNames = LAYOUTS.map((layout) => layout.name).join(', ')
           for (const { value, slideNumbers } of result.unrecognizedLayouts) {
+            const noun = slideNumbers.length === 1 ? 'slide' : 'slides'
             process.stderr.write(
-              `${GREY}│${NC} ${RED}✗${NC} unrecognized layout "${value}" on slide ${slideNumbers.join(', ')}. Valid layouts: ${validNames}\n`,
+              `${GREY}│${NC} ${RED}✗${NC} unrecognized layout "${value}" on ${noun} ${slideNumbers.join(', ')}. Valid layouts: ${validNames}\n`,
             )
           }
           if (result.mirrorPath) {
