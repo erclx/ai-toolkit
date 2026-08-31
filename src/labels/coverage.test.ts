@@ -110,3 +110,40 @@ release-managed = ["package.json"]
     expect(coverage.uncovered).toEqual([])
   })
 })
+
+describe("resolveCoverage against the map's newest rows", () => {
+  function newestRowsMap() {
+    const map = parseLabelMap(`
+[domains]
+ci = [".github/", "scripts/core/", ".husky/", ".claude/hooks/", ".claude/settings.json"]
+
+[declined]
+formatting = [".prettierignore"]
+`)
+    if (map.kind !== 'map') throw new Error('fixture map did not parse')
+    return map
+  }
+
+  it('should match .claude/settings.json against the prefix added for it', () => {
+    const coverage = resolveCoverage(newestRowsMap(), ['.claude/settings.json'])
+
+    expect(coverage.labels).toEqual(['ci'])
+    expect(coverage.uncovered).toEqual([])
+  })
+
+  it('should match .prettierignore against the declined prefix added for it', () => {
+    const coverage = resolveCoverage(newestRowsMap(), ['.prettierignore'])
+
+    expect(coverage.declined).toEqual([
+      { path: '.prettierignore', reason: 'formatting' },
+    ])
+    expect(coverage.uncovered).toEqual([])
+  })
+
+  it('should still report a path outside every row as uncovered', () => {
+    const coverage = resolveCoverage(newestRowsMap(), ['infra/main.tf'])
+
+    expect(coverage.labels).toEqual([])
+    expect(coverage.uncovered).toEqual(['infra/main.tf'])
+  })
+})

@@ -157,7 +157,11 @@ Respond with one line, using the `url` the final command printed:
 
 `✅ PR: <url>`
 
-Add a second line only when the labelling command printed its warning, quoting the label `gh` refused:
+Add a line for each `uncovered` path the labels step reported, naming the path and the map it belongs in:
+
+`⚠️ No label covers <path>. Add a row to .claude/canon/pr-labels.toml or a [declined] entry.`
+
+Add a further line only when the labelling command printed its warning, quoting the label `gh` refused:
 
 `⚠️ Labels not applied: <what gh reported>`
 
