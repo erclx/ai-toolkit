@@ -1,12 +1,22 @@
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { type LabelAuditRefusal, auditLabels } from '@/labels/audit'
 import { MAP_REL } from '@/labels/map'
+import { scanPhaseLabels } from '@/labels/phase'
 import { intro, logInfo, logStep, logWarn, outro, plural } from '@/ui'
 
 interface AuditOptions {
   readonly base?: string
   readonly root?: string
+  readonly json?: boolean
+}
+
+interface ScanOptions {
+  readonly event?: string
+  readonly title?: string
+  readonly body?: string
+  readonly head?: string
   readonly json?: boolean
 }
 
@@ -75,6 +85,46 @@ export function register(program: Command): void {
     )
     .action(async (paths: string[], opts: AuditOptions) => {
       process.exitCode = await runAudit(paths, opts)
+    })
+
+  labels
+    .command('scan')
+    .description(
+      'Fail a pull request whose title or body carries a phase label',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option(
+      '--event <path>',
+      'GitHub pull_request event payload to read, such as $GITHUB_EVENT_PATH',
+    )
+    .option('--title <text>', 'Title to scan, overriding the event payload')
+    .option('--body <text>', 'Body to scan, overriding the event payload')
+    .option('--head <ref>', 'Head branch, overriding the event payload')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Reads aitk standards versioning for the two namespaces and sorts every',
+        'version-shaped token this pull request carries into the one the pull',
+        'request is allowed to hold. A release-please pull request, read off its',
+        'own fixed head branch and title, may carry semver references. Every',
+        'other pull request may carry neither, so any token found there is a',
+        'leaked phase label.',
+        '',
+        'Exit codes:',
+        '  0  no phase label found',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  the title or body carries a phase label',
+        '',
+        'Examples:',
+        '  aitk labels scan --event "$GITHUB_EVENT_PATH"',
+        '  aitk labels scan --title "feat: x" --body "planned under v68.5" --head feat/x',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: ScanOptions) => {
+      process.exitCode = await runScan(opts)
     })
 }
 
@@ -163,4 +213,149 @@ async function runAudit(paths: string[], opts: AuditOptions): Promise<number> {
   }
 
   return coverage.uncovered.length === 0 ? 0 : 2
+}
+
+/** Why `runScan` had no title and body to hand `scanPhaseLabels`. */
+type ScanInputRefusal = 'no-input' | 'unreadable-event' | 'not-a-pull-request'
+
+type ResolvedScanInput =
+  | {
+      readonly kind: 'resolved'
+      readonly title: string
+      readonly body: string
+      readonly headRefName: string
+    }
+  | {
+      readonly kind: 'refused'
+      readonly reason: ScanInputRefusal
+      readonly message: string
+    }
+
+/**
+ * Reads a title, a body, and a head branch from explicit flags first and the
+ * named event payload second, so a caller testing the wiring by hand never
+ * needs a real GitHub event file on disk.
+ */
+function resolveScanInput(opts: ScanOptions): ResolvedScanInput {
+  let title = opts.title
+  let body = opts.body
+  let headRefName = opts.head
+
+  if (opts.event !== undefined) {
+    let raw: string
+    try {
+      raw = readFileSync(opts.event, 'utf8')
+    } catch {
+      return {
+        kind: 'refused',
+        reason: 'unreadable-event',
+        message: `${opts.event} could not be read, so no payload was there to scan.`,
+      }
+    }
+
+    let payload: unknown
+    try {
+      payload = JSON.parse(raw)
+    } catch {
+      return {
+        kind: 'refused',
+        reason: 'unreadable-event',
+        message: `${opts.event} is not valid JSON, so no payload was there to scan.`,
+      }
+    }
+
+    const pullRequest =
+      typeof payload === 'object' && payload !== null
+        ? (payload as Record<string, unknown>).pull_request
+        : undefined
+
+    if (typeof pullRequest !== 'object' || pullRequest === null) {
+      return {
+        kind: 'refused',
+        reason: 'not-a-pull-request',
+        message: `${opts.event} carries no pull_request, so no title or body exists to scan.`,
+      }
+    }
+
+    const record = pullRequest as Record<string, unknown>
+    const head = record.head
+    title ??= typeof record.title === 'string' ? record.title : undefined
+    body ??= typeof record.body === 'string' ? record.body : undefined
+    headRefName ??=
+      typeof head === 'object' &&
+      head !== null &&
+      typeof (head as Record<string, unknown>).ref === 'string'
+        ? ((head as Record<string, unknown>).ref as string)
+        : undefined
+  }
+
+  if (title === undefined) {
+    return {
+      kind: 'refused',
+      reason: 'no-input',
+      message:
+        'No --event, --title, or --body given, so there is nothing to scan.',
+    }
+  }
+
+  return {
+    kind: 'resolved',
+    title,
+    body: body ?? '',
+    headRefName: headRefName ?? '',
+  }
+}
+
+async function runScan(opts: ScanOptions): Promise<number> {
+  const emitJson = opts.json ?? false
+
+  intro('aitk labels scan')
+
+  const resolved = resolveScanInput(opts)
+
+  if (resolved.kind === 'refused') {
+    logStep('Refused')
+    logWarn(resolved.message)
+    outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ reason: resolved.reason, message: resolved.message })}\n`,
+      )
+    }
+    return 1
+  }
+
+  const result = scanPhaseLabels(resolved)
+
+  logStep('Pull request')
+  logInfo(
+    result.cutsRelease
+      ? 'reads as a release-please pull request'
+      : 'reads as an ordinary pull request',
+  )
+
+  logStep(result.phaseLabels.length === 0 ? 'Clean' : 'Phase label found')
+  if (result.phaseLabels.length === 0) {
+    logInfo('no phase label in the title or body')
+  } else {
+    logWarn(
+      `${plural(result.phaseLabels.length, 'phase label')} in the title or body. Describe the change itself and drop the internal label before publishing.`,
+    )
+    for (const label of result.phaseLabels) logWarn(label)
+  }
+
+  outro()
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        cutsRelease: result.cutsRelease,
+        phaseLabels: result.phaseLabels,
+        semverTags: result.semverTags,
+      })}\n`,
+    )
+  }
+
+  return result.phaseLabels.length === 0 ? 0 : 2
 }

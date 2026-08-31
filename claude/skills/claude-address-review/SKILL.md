@@ -134,6 +134,9 @@ session when one did. Nothing tests the reply for either rule, since the scan
 below reads it for banned characters and phase labels alone, so both halves hold
 while a run applies them.
 
+The `pull_request` check the git-pr surface carries reads a pull request's own
+title and body, not a reply comment, so the scan below stays the only gate here.
+
 When step 5 rebased the branch, say so in the summary sentence and name which
 files were resolved by hand and which the regen rebuilt. The next review is a
 full pass rather than a delta, and the reader is owed the reason.

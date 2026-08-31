@@ -7,7 +7,7 @@ description: GitHub Actions workflow triggers and checks
 
 ## Overview
 
-Owns the GitHub Actions verification that gates pull requests into `main`, and the release automation that runs after one merges. CI runs every stage through one entry point, `bun run check:ci`. Two workflows exist, `verify.yml` and `release-please.yml`.
+Owns the GitHub Actions verification that gates pull requests into `main`, and the release automation that runs after one merges. CI runs every stage through one entry point, `bun run check:ci`. Three workflows exist, `verify.yml`, `phase-label-gate.yml`, and `release-please.yml`.
 
 Three things differ from the local gate:
 
@@ -17,7 +17,7 @@ Three things differ from the local gate:
 
 ## Layout
 
-- `.github/workflows/` owns both workflows and their job definitions
+- `.github/workflows/` owns every workflow and their job definitions
 
 ## Decisions
 
@@ -42,6 +42,14 @@ The `Checkout` step passes `fetch-depth: 0` for the same reason. `actions/checko
 The push trigger exists to give the README's CI badge a default-branch run to report. A badge filtered to `main` reads `no status` while the workflow runs on pull requests alone, and an unfiltered one reports whichever branch happened to run last. The second cost is the useful one: a squash merge now runs the full gate against the merged result, which no pull request run observes.
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
+
+`phase-label-gate.yml` runs `aitk labels scan` against `$GITHUB_EVENT_PATH`, since a pull request body is the one thing no stage in `bun run check` can see. It sits outside `verify.yml` rather than as a second job there, and the split turns on `types:` rather than on cost: this check exists to catch a title or body edited with no new commit, which needs `edited` on the trigger, and adding that to the shared trigger would re-run the whole Static Checks job on every such edit.
+
+It tells a release-please pull request apart from an ordinary one by two fixed signals rather than a label: the head branch prefix `release-please--branches--main` and the title prefix `chore(main): release `. Either alone is a string an ordinary pull request could reproduce to slip a leaked phase label past the check, so both have to hold together.
+
+The scan reads a title and a body with every fenced block dropped and every inline code span blanked first, the same two exclusions `aitk markdown audit` takes from its own ban scan over the same kind of text. A link destination stays unmasked, unlike the ban scan's reading, because a release-please body's real semver reference sits inside its generated compare link and masking it would empty the record on the one pull request the check exists to pass.
+
+`#1208` is the corpus case that forced the code-span exclusion: a backticked span quoting a test fixture's own version-shaped name, found by driving the scan against all 48 merged feature pull requests rather than reading them.
 
 The runner installs the plugin CLI so the manifest stage gates rather than skips. The plugin is the toolkit's second delivery path, and while the binary was absent from the runner every manifest was validated on the author's machine alone, so a malformed one reached a marketplace install with no check between.
 
@@ -114,6 +122,7 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 ## Triggers
 
 - `verify.yml` on pull requests targeting `main`, on pushes to `main`, and on `workflow_dispatch`
+- `phase-label-gate.yml` on a pull request targeting `main` opened, edited, reopened, or synchronized, and on `workflow_dispatch`
 - `release-please.yml` on pushes to `main`, and on `workflow_dispatch` with an optional `tag` that publishes that tag alone
 
 ## Checks

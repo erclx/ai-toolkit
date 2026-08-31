@@ -151,6 +151,18 @@ function blank(match: string): string {
 }
 
 /**
+ * Blanks an inline code span alone, holding its width.
+ *
+ * Split from `maskDisplayed` for a reader who wants the narrower exclusion.
+ * A link destination often carries the one thing such a reader is after, such
+ * as a version-shaped token inside a generated compare link, where a code
+ * span is uniformly a quotation and never the claim itself.
+ */
+export function maskCodeSpans(text: string): string {
+  return text.replace(CODE_SPAN, blank)
+}
+
+/**
  * Replaces displayed spans with spaces of equal width.
  *
  * Equal width is what keeps a reported column pointing at the character an
@@ -158,8 +170,7 @@ function blank(match: string): string {
  * everything masked ahead of it on the line.
  */
 export function maskDisplayed(text: string): string {
-  return text
-    .replace(CODE_SPAN, blank)
+  return maskCodeSpans(text)
     .replace(LINK_DESTINATION, blank)
     .replace(AUTOLINK, blank)
 }
