@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.4.0](https://github.com/erclx/canon/compare/v4.3.0...v4.4.0) (2026-08-31)
+
+
+### Features
+
+* **claude:** add the repo-metadata skill and cli verb ([#1304](https://github.com/erclx/canon/issues/1304)) ([ced49cb](https://github.com/erclx/canon/commit/ced49cb9ebd353964cd0e7570bea65a691698d2f))
+* **orchestrate:** gate a build dispatch on the plan's answer slots ([#1302](https://github.com/erclx/canon/issues/1302)) ([dbc48cf](https://github.com/erclx/canon/commit/dbc48cff651d11d0c32d838640aa3a1d1d45cef4))
+* **sandbox:** bound and record a nested background dispatch ([#1305](https://github.com/erclx/canon/issues/1305)) ([81ade33](https://github.com/erclx/canon/commit/81ade33e481276c9d3625d58c039bbf0611c201e))
+
 ## [4.3.0](https://github.com/erclx/canon/compare/v4.2.1...v4.3.0) (2026-08-31)
 
 
