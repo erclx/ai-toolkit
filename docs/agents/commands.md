@@ -117,6 +117,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `secrets`   | `scan`                                                                                                                                |
 | `deps`      | `audit`                                                                                                                               |
 | `labels`    | `audit`                                                                                                                               |
+| `migrate`   | `rename`                                                                                                                              |
 | `autoship`  | `classify`                                                                                                                            |
 | `audits`    | `run`, `list`                                                                                                                         |
 | `gate`      | `run`                                                                                                                                 |
@@ -127,6 +128,8 @@ Common patterns:
 - `install <name> <path>` → install a specific entry into a target project.
 - `sync <path>` → reapply all installed entries in a target project.
 - `create [name]` → scaffold a new authoring entry in this repo.
+
+`migrate rename` moves a project off the retired `aitk` name. It reports until `--write` is passed, and `--scope target` rewrites the toolkit-owned folders alone, reporting every other citation as one the project owns rather than editing prose somebody wrote. A project installing `canon` fresh never needs it.
 
 ## Version skew
 
