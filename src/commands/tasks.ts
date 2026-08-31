@@ -1,5 +1,6 @@
 import { relative } from 'node:path'
 import type { Command } from 'commander'
+import { type AnswersOutcome, planAnswers } from '@/tasks/answers'
 import {
   type ArchiveOutcome,
   archiveTask,
@@ -50,6 +51,11 @@ interface ValidateCommandOptions {
 }
 
 interface CitationsCommandOptions {
+  readonly json?: boolean
+  readonly root?: string
+}
+
+interface AnswersCommandOptions {
   readonly json?: boolean
   readonly root?: string
 }
@@ -171,6 +177,42 @@ export function register(program: Command): void {
     )
     .action(async (task: string, opts: CitationsCommandOptions) => {
       process.exitCode = await runCitations(task, opts)
+    })
+
+  tasks
+    .command('plan-answers')
+    .description('Report whether a plan still waits on the operator to answer')
+    .argument('<plan>', 'Plan path or its slug, as in dispatch-answer-gate')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the plan is launchable',
+        '  1  refused as no-plan, archived, or bad-input',
+        '  2  the plan waits on the operator, and open names every slot',
+        '',
+        'A blank Answer accepts the Suggested line above it, so only',
+        '`- Suggested: needs your call, <why>` over an empty slot is a stop.',
+        'It reports and never writes. Branch on launchable rather than on the',
+        'exit code, which a shell function wrapping canon can flatten to zero.',
+        '',
+        'A relative path resolves against the project root first and against',
+        '.claude/tasks/ second, so the ../plans/ link a board row writes works.',
+        '',
+        'Examples:',
+        '  canon tasks plan-answers dispatch-answer-gate',
+        '  canon tasks plan-answers .claude/plans/feature-dispatch-answer-gate.md',
+        '  canon tasks plan-answers ../plans/feature-dispatch-answer-gate.md',
+        '  canon tasks plan-answers dispatch-answer-gate --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (plan: string, opts: AnswersCommandOptions) => {
+      process.exitCode = await runAnswers(plan, opts)
     })
 
   tasks
@@ -537,6 +579,64 @@ function describeCitations(outcome: PlanCitations): string {
   }
 
   return `shares ${outcome.target} with ${outcome.citedBy.join(', ')}, so the sweep leaves it.`
+}
+
+async function runAnswers(
+  plan: string,
+  opts: AnswersCommandOptions,
+): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await planAnswers(root, plan)
+
+  return reportAnswers(outcome, opts.json ?? false, root)
+}
+
+function reportAnswers(
+  outcome: AnswersOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: outcome.reason, message: outcome.message })}\n`,
+      )
+      return 1
+    }
+
+    intro('canon tasks plan-answers')
+    logStep('Refused')
+    logError(outcome.message)
+    outro()
+    return 1
+  }
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ...outcome, root })}\n`)
+    return outcome.launchable ? 0 : EXIT_FINDINGS
+  }
+
+  intro('canon tasks plan-answers')
+  logStep(outcome.plan)
+
+  if (outcome.launchable) {
+    logInfo('waits on nobody, so the dispatch may launch it.')
+    outro()
+    return 0
+  }
+
+  for (const question of outcome.open) {
+    logWarn(`${question.label} ${question.why}`)
+  }
+
+  const one = outcome.open.length === 1
+
+  logError(
+    `${outcome.open.length} question${one ? '' : 's'} ${one ? 'waits' : 'wait'} on you, so the dispatch holds this row.`,
+  )
+  outro()
+
+  return EXIT_FINDINGS
 }
 
 function reportValidation(

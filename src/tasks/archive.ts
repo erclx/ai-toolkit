@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { join, relative, resolve, sep } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 import { regenOne } from '@/indexes/regen'
+import { isUnder } from '@/paths'
 
 const TASKS_DIR = join('.claude', 'tasks')
 const ARCHIVE_DIR = join(TASKS_DIR, 'archive')
@@ -178,14 +179,6 @@ function isRowFor(line: string, target: string): boolean {
 
   const [, first] = trimmed.split('|')
   return first !== undefined && first.includes(target)
-}
-
-/**
- * Tests containment rather than a string prefix, so a sibling whose name merely
- * extends the folder's is not read as being inside it.
- */
-function isUnder(path: string, dir: string): boolean {
-  return path === dir || path.startsWith(`${dir}${sep}`)
 }
 
 /**

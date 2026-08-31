@@ -1,6 +1,6 @@
 ---
 title: Orchestrator dispatch runbook
-description: The collision check before a self-dispatch, the file-set disjointness gate, the branch and model the launch names, the planning and handback dispatch shapes, and the loop's stopping condition
+description: The plan-answer gate, the collision check before a self-dispatch, the file-set disjointness gate, the branch and model the launch names, the planning and handback dispatch shapes, and the loop's stopping condition
 ---
 
 Run this at loop step 4, for a `## Run now` row whose plan is verified, in place of handing the worktree to a human. The disjointness gate below is where that row's file set is tested against every track in flight.
@@ -10,6 +10,25 @@ Run this at loop step 4, for a `## Run now` row whose plan is verified, in place
 Resolve `<slug>` from `<plan>`, the row's plan file, the way `claude-worktree` Step 2 resolves a plan-matched name, per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Resolve `<type>` off that plan's `## Summary` and `**Files to touch:**` lines, per `${CLAUDE_SKILL_DIR}/../../standards/branch.md`, defaulting to `feat` when the lines settle nothing. The candidate branch is `<type>/<slug>`.
 
 This is the branch the worker takes, not a guess at one it will derive for itself. Carry the exact string into the launch below. Both halves of that derivation have already disagreed in production: one run checked `docs/remaining-skill-verdicts` against a worker that took `docs/skill-verdicts-decide`, and a later one checked `fix/path-form-hook` against a worker that took `feat/path-form-hook`. A check against a branch nobody uses verifies nothing, and a slug mismatch no longer fails the run downstream on its own, since `claude-autoship` now takes `<plan>` directly rather than resolving it from the worker's own branch. The check above is what has to catch a wrong candidate now.
+
+## Check the plan waits on nobody
+
+Run `canon tasks plan-answers <plan> --json` and read `launchable` off the record.
+
+- `launchable: true`: the plan answers itself, so proceed to the branch check.
+- `launchable: false`: the row is not dispatchable. Report every entry in `open`, each carrying the question label and the reason its suggestion gave for needing a person, and hand the row to the human-launch line below. Never fill the slot on the operator's behalf, which is the one move the plan standard forbids outright.
+- `reason: archived`: the row's plan sits in `.claude/plans/archive/` and describes work that already shipped. Repoint the row at a live plan rather than dispatching, since `claude-autoship` Step 1 refuses the same file and the worker would meet that refusal after the launch spent.
+- The command refuses for any other reason, or the record carries no `launchable` key: treat the row as unverified rather than clear, name what could not be read, and fall back to the human. A gate that reads nothing and proceeds is the gate not running.
+
+Branch on `launchable` rather than on the exit code, which a shell function wrapping `canon` can flatten to zero and so read a held row as a clear one.
+
+This gate runs ahead of the two collision checks because it is the cheapest reading of the three, needing no roster and no ref, and because it is the only one asking about the row itself rather than about what else is in flight. A row nobody can launch does not need testing against the tracks already out.
+
+It also reads the plan rather than a cell describing one, which is the input the gate below it does not have. The disjointness gate compares the sets a dispatcher wrote into the constraints and the Touches column, so a cell omitting a file clears a check the tree would fail. That happened on 2026-08-31, when two rows were cleared against each other with one constraints block leaving out the context entry both were about to write, and what caught it was a worker sending a message rather than any check.
+
+A blank `- Answer:` is not an unanswered question. `${CLAUDE_SKILL_DIR}/../../standards/plan.md` fixes an empty slot as accepting the `- Suggested:` line above it, which is what makes a plan decision-ready in one pass. The narrow case this reads is `- Suggested: needs your call, <why>` over an empty slot, the form that same standard writes where the answer turns on preference rather than on a technical default. A gate reading every blank slot as open would refuse every plan in the folder.
+
+What it prevents is a halt nobody is watching for. `claude-worker` instructs a session to stop on a question written as needing the operator's call, correctly and by its own body, so a dispatch that never reads the plan lands a worker in a wait for a person who does not know it is waiting. The worker's halt is not the defect, and the dispatch that made it necessary is.
 
 ## Check the branch is unclaimed
 
@@ -43,7 +62,7 @@ The finding names which row contributed the containing path, and a bare-folder c
 
 Disjointness is necessary and not sufficient, so hold a candidate whose sets do not touch when a stated reason serializes it, and write the reason on the hold. One row creating a skill and another auditing that catalog and counting it write nothing in common, measured 2026-08-27, and dispatching both still leaves the audit counting a denominator that moves underneath it. Nothing verifies that a reason was written, so the rule holds only while the dispatcher applies it.
 
-What binds past that is review attention rather than a count, and `## Parallelism` in the skill body states it along with the cap an operator can set for a session. No file here carries a number and this runbook does not either.
+What binds past that is review attention rather than a count, and `## Parallelism` in the skill body states it along with the cap an operator can set for a session. The one number this skill carries is the review fallback's count of three in `## Parallelism`, which moves a review rather than binding a track, and this runbook carries none.
 
 ## Pick the model
 
@@ -186,12 +205,16 @@ resolved off the row the way the build shape resolves one off a plan.
 reads `planner-` for the reason the worker's reads `worker-`, which is that it
 marks the role of the session it names rather than the one that launched it.
 
-Neither check above binds this shape. The branch check has no candidate to read,
-and the disjointness gate has nothing to compare, since a planner writes one file
-no track in flight can hold. What a planning dispatch owes instead is the
-reverse reading, because the plan it produces carries a constraint per track in
-flight and a row planned during a wave is planned against a tree that wave is
-changing. `claude-planner` states that read as a command over open pull
+None of the three checks above binds this shape. The branch check has no
+candidate to read, and the disjointness gate has nothing to compare, since a
+planner writes one file no track in flight can hold. The plan-answer gate
+reaches no plan at all, because the planner is dispatched to write the file a
+build would later read, so running it here would refuse every planning dispatch
+over a plan nobody has written yet.
+
+What a planning dispatch owes instead is the reverse reading, because the plan
+it produces carries a constraint per track in flight and a row planned during a
+wave is planned against a tree that wave is changing. `claude-planner` states that read as a command over open pull
 requests, which is why the brief carries no branch list for it.
 
 One row per dispatch. A session reused across a batch pays the context load once
@@ -202,7 +225,9 @@ session where the saving is worth it and say what the cap was.
 
 ## Fall back to the human
 
-Hand the row to the human-launch line in step 4 instead of dispatching when any of these hold, and name which one: the collision check refused, the row's file set overlaps a track already out, or a stated reason holds the row behind one.
+Hand the row to the human-launch line in step 4 instead of dispatching when any of these hold, and name which one: the plan still waits on the operator, the plan-answer read could not be taken, the collision check refused, the row's file set overlaps a track already out, or a stated reason holds the row behind one.
+
+The first of those five is the one that reaches a person rather than the board. A row held for a collision or for a serialize reason waits on the wave clearing, where a row held on its plan waits on an answer only the operator can give, so hand that one over with the question label and its stated reason attached rather than as a name and a refusal.
 
 ## Stop the loop
 
