@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/erclx/canon/compare/v4.2.0...v4.2.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **labels:** close the label map's two uncovered paths ([#1299](https://github.com/erclx/canon/issues/1299)) ([1d76e6d](https://github.com/erclx/canon/commit/1d76e6d0b010ce8813454bc7cd52c8b6bfc3958b))
+
 ## [4.2.0](https://github.com/erclx/canon/compare/v4.1.0...v4.2.0) (2026-08-31)
 
 
