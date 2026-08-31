@@ -143,6 +143,22 @@ describe('extractKeyChangePaths', () => {
     ).toEqual(['.claude/skills/'])
   })
 
+  it('should drop a bullet that disclaims the change it names (#1274)', () => {
+    expect(
+      pathsOf(
+        '- Leave `scripts/sandbox/fixtures/claude/autoship/prose-executable/expect.toml` untouched, since the decision keeps the receipt rather than retiring it.',
+      ),
+    ).toEqual([])
+  })
+
+  it('should drop a bullet that opens by refusing an action', () => {
+    expect(
+      pathsOf(
+        '- Do not edit `src/tasks/validate.ts`, which another row holds.',
+      ),
+    ).toEqual([])
+  })
+
   it('should drop a line citation that follows the bullet own claim (#1236)', () => {
     expect(
       pathsOf(
@@ -212,6 +228,14 @@ describe('extractKeyChangePaths', () => {
       { anchored: true },
       { path: 'prose-executable/expect.toml', anchored: false },
     ])
+  })
+
+  it('should keep a claim whose bullet only mentions leaving other lines alone (#1269)', () => {
+    expect(
+      pathsOf(
+        '- Add the `Rule citations` stage to `scripts/core/verify.sh` as one insertion that touches no other line.',
+      ),
+    ).toEqual(['scripts/core/verify.sh'])
   })
 
   it('should fold a wrapped continuation line into the bullet above it', () => {

@@ -54,8 +54,11 @@ A span inside the claim region has to survive all of these:
 | Extension starts with a letter, or ends with `/`  | A dotted number such as an address                     |
 | Not a single top-level folder                     | `src/`, which nobody claims to have rewritten whole    |
 | A `file:line` span leads its bullet               | A citation into a file the bullet is describing        |
+| The region carries no no-change marker            | A bullet recording a file it deliberately left alone   |
 
-The last two rows earn their place from the corpus rather than from a rule. Every body that spelled a lone top-level folder was naming where something lives, and a line citation that follows another claim in the same bullet points into the file being described rather than naming a second one. A line citation leading its bullet stays a claim, which is how a body names the exact line it rewrote.
+The last three rows earn their place from the corpus rather than from a rule. Every body that spelled a lone top-level folder was naming where something lives, and a line citation that follows another claim in the same bullet points into the file being described rather than naming a second one. A line citation leading its bullet stays a claim, which is how a body names the exact line it rewrote.
+
+The no-change marker is the one rule the region cut cannot substitute for. A body writes "Leave `x` untouched, since the decision keeps it" to record a change it declined, and the path sits ahead of the first comma, so a stricter cut would not reach it and a looser one would find more. The marker rather than the leading verb decides it, since `keep` and `leave` each open a real claim often enough that neither is safe alone. The set is four words: `untouched`, `unchanged`, `alone`, and `as written`. `in place` was measured and dropped, because rewriting a file in place is an ordinary claim, and `no other line` was dropped because a correct bullet writes "as one insertion that touches no other line" about a change it did make. Over the 40-pull-request corpus the rule voids no bullet at all.
 
 A folder claim covers every changed file beneath it. A bare filename drops outright: resolved as a sibling of a path earlier in its bullet it produced seven wrong paths across this corpus against two right ones, because a compound bullet names a sibling folder as often as a sibling file.
 
@@ -87,9 +90,13 @@ An empty extraction read as a clean pass is the failure shape this repository ha
 
 Driven over the 40 most recent merged pull requests in this repository, 23 of which carry the section, the shipped verb reported zero unmet paths and one `no-claims` refusal. The naive extractor it replaced reported 16.
 
+The first body written after that corpus closed produced two, which is what the no-change marker and the open class above come from. One was the disclaiming bullet and the rule now covers it at no cost to the corpus. The other is the definition-site class, left open with the report naming it.
+
 The bound is that the corpus is one repository writing to one house style. A project that punctuates differently loses claims to the comma cut rather than gaining false ones, since every rule above drops rather than invents, so the check degrades toward silence rather than toward noise.
 
 What it cannot see is a bullet claiming a change to a file the branch did touch for another reason, a path written without backticks, and a claim in a second coordinated clause after the comma. The last of those falls to the ungraded direction rather than out of the reading.
+
+One class stays open and is named rather than closed. A bullet can cite where something is defined while claiming an edit somewhere else, as `#1274` does with "Name the slug transform in `standards/slug.md` inline in the same step". The path is a definition site, the edit target is the step, and separating the two needs the sentence parsed rather than cut. A finding on such a bullet is this class rather than a stale claim, and a reader weighing an `unmet` path checks whether the bullet's real target is a locative the path does not name.
 
 ## Where it runs
 

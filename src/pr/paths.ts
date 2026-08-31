@@ -124,6 +124,29 @@ function claimRegion(bullet: string): string {
 }
 
 /**
+ * A claim region that asserts nothing changed.
+ *
+ * A body writes such a bullet to record a decision it declined, and the path it
+ * names is the file it deliberately did not touch, which is the exact inverse
+ * of a claim. `#1274` opens one with "Leave `...expect.toml` untouched" and the
+ * path sits ahead of the first comma, so the region cut cannot reach it: a
+ * stricter cut would not catch this and a looser one would find more.
+ *
+ * The marker rather than the leading verb decides it, because `keep` and
+ * `leave` both open a real claim often enough and neither is safe alone. The
+ * set is deliberately four words. `in place` was measured and dropped, since
+ * rewriting a file in place is an ordinary claim, and `no other line` was
+ * dropped because `#1269` writes "as one insertion that touches no other line"
+ * about a change it did make.
+ */
+const NO_CHANGE =
+  /\b(?:untouched|unchanged|alone)\b|\bas written\b|^\s*(?:do not|don't|never)\b/i
+
+function disclaimsChange(region: string): boolean {
+  return NO_CHANGE.test(maskSpans(region))
+}
+
+/**
  * The lines under a heading, ending at the next heading of the same level or
  * higher. Undefined when the body carries no such heading, which the caller
  * reports rather than reading as an empty section.
@@ -266,9 +289,12 @@ export function extractKeyChangePaths(
       trimmed.length > PREVIEW_LIMIT
         ? `${trimmed.slice(0, PREVIEW_LIMIT)}…`
         : trimmed
+    const region = claimRegion(trimmed)
+    if (disclaimsChange(region)) continue
+
     let claimed = false
 
-    for (const match of claimRegion(trimmed).matchAll(BACKTICKED)) {
+    for (const match of region.matchAll(BACKTICKED)) {
       const span = match[1] ?? ''
       const bare = span.replace(LINE_SUFFIX, '')
 
