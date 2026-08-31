@@ -10,6 +10,7 @@ import {
 import { DEFAULT_DEPTH, type SweepBound, sweepTargets } from '@/targets/sweep'
 import {
   intro,
+  logError,
   logInfo,
   logStep,
   logWarn,
@@ -340,7 +341,7 @@ function reportBackfill(summary: BackfillSummary): void {
   }
 
   if (summary.failed > 0) {
-    logWarn(
+    logError(
       `${plural(summary.failed, 'target')} failed to write, so its row is unchanged.`,
     )
   }
