@@ -1,11 +1,11 @@
 ---
 title: Orchestration
-description: The task and plan artifacts coordinating multi-session work, the board constraints, and the review and handback dispatch
+description: The task and plan artifacts coordinating multi-session work, the board constraints, and the review, handback, and planning dispatches
 ---
 
 # Orchestration
 
-`docs/operating-model.md` owns the two roles and the loop they run, reachable in a target as `canon docs operating-model`. What this entry adds is the pair of artifacts the toolkit ships to make the handoff mechanical.
+`docs/operating-model.md` owns the three roles and the loop they run, reachable in a target as `canon docs operating-model`. What this entry adds is the pair of artifacts the toolkit ships to make the handoff mechanical.
 
 | Artifact                          | Author                 | Holds                                                                                     | Lifecycle                                              |
 | --------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -207,6 +207,18 @@ What the finding lacked was which side contributed the containing path, so an ov
 The `orchestrator-<slug>` prefix outlives the count it was introduced for. Only a self-dispatch writes it, so a session listing separates a dispatched worker from an operator's own launch, and that reading is still taken. What no longer follows from it is a number.
 
 Seven surfaces state this policy rather than the six a grep on the phrase reports. `docs/operating-model.md` carries it twice, once in loop step 2 and once in its own `## Parallelism` section, and the second spelling names a number without using the word, so a sweep keyed on the phrase leaves it stating a retired rule.
+
+## The planning dispatch
+
+`orchestrator-dispatch.md` carries a second launch shape beside the build one, and it exists for the reason the first does. Two trials on 2026-08-31 dispatched a planner with `claude --bg` and both produced usable plans, and both were governed entirely by prose the controller retyped into the launch. Six rules went into each brief by hand, being no worktree, no branch, no tracked file, no board write, report the path alone, and re-measure rather than trusting the task file. `claude-planner` holds them now, minus the fifth, which was a trial condition keeping a blind comparison intact rather than an obligation.
+
+The one rule that failed is the one nobody thought to write. The first trial counted worktrees and local branches for what was in flight and named four branches, all four of them merged, because this repository squash-merges and leaves both behind. A second brief naming `gh pr list --json number,headRefName` closed it and no constraint in the second batch was wrong, which is why the role states the read as a command and states its own negative beside it: a branch is not evidence and neither is a worktree.
+
+Neither check the build shape runs binds this one. No candidate branch exists for `canon sessions list --branch` to read, and the disjointness gate has nothing to compare, since the plan file is gitignored and no track in flight can hold it. What a planning dispatch owes is the reverse reading. The plan it produces names a constraint per track in flight, so a row planned during a wave is planned against a tree that wave is changing, and the role takes that read per task rather than per batch because a reused session ages its picture of the tree while it works.
+
+What stayed warm is the cross-feature call. Loop step 1 in `claude-orchestrate` held every plan in the controlling session on the ground that a warm plan front-loads reasoning a cold worker would otherwise re-derive. The trials measured finding quality instead, ten task-file errors across four plans with two controller corrections and one row's closing conclusion overturned, and no plan from either has been built, so the claim that rule makes is untouched by them. Confirming the rule on that evidence claims more than the trials measured, and retiring it discards more than they disproved. The step is narrowed instead, which lets the per-row measurement go cold and keeps which rows collide, what merges before what, and whether a row should run at all where the board is readable in full.
+
+The plan is also the one artifact nothing scans. `.gitignore` ignores `.claude/plans/` and `canon markdown audit` takes its default path set from what git lists, so no gate opens one. Six ban hits landed across the four trial plans and three of the four carried at least one, caught only because a planner ran the audit unprompted, which is why `claude-feature` Step 4 now names that call beside the shape validation it already ran.
 
 ## The reclaim reading
 

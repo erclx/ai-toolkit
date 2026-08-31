@@ -1,6 +1,6 @@
 ---
 title: Orchestrator dispatch runbook
-description: The collision check before a self-dispatch, the file-set disjointness gate, the branch and model the launch names, and the loop's stopping condition
+description: The collision check before a self-dispatch, the file-set disjointness gate, the branch and model the launch names, the planning and handback dispatch shapes, and the loop's stopping condition
 ---
 
 Run this at loop step 4, for a `## Run now` row whose plan is verified, in place of handing the worktree to a human. The disjointness gate below is where that row's file set is tested against every track in flight.
@@ -65,9 +65,37 @@ Read `<dispatcher-id>` with `canon sessions list --self --json` and interpolate 
 
 Where the installed CLI answers `--self` with an unknown option, that flag is newer than the release the target holds. Read the `sessionId` from the record the client writes for this session under its configuration directory, and say which route answered so the reader knows whether the id was read or inferred.
 
+The worker resolves that id back to a name through `canon sessions list --json`, which carries `sessionId` per row, rather than through the agent listing, which prints a name and a short ref and no id at all. A worker reaching for the listing first therefore finds no lookup and can conclude there is none. That failure is silent in both directions: the session has nothing useful to do with the message it owes and goes idle holding it, and nothing on this side reports the quiet, so the loss surfaces as a missing worktree or a pull request that never opens rather than as anything watching for it.
+
 The worktree call comes first and carries the branch as its argument, which is tier 0 of `claude-worktree` Step 2 and the only tier a caller can reach. `claude-autoship` Step 0 then finds the session already in a linked worktree and continues, which is a path it already documents. The autoship call carries `<plan>`, the same file this runbook already read to derive the branch, so its Step 1 takes it as the caller-supplied plan rather than re-deriving one from the slug the worker's branch happens to carry.
 
 Naming the branch in prose instead was tried and closes nothing, because no tier of that ladder reads the prompt. A worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there. Four workers took the right branch that way, by inference rather than by contract, which is the same judgment both live disagreements came from.
+
+### Put the slash commands bare and first
+
+The client executes a slash command in a launch prompt as user input at session
+start, which is the route the launch block above relies on and the one no
+dispatch has been refused at. `claude-autoship` carries
+`disable-model-invocation: true` and has since `#365`, and seven other shipped
+skills carry it too.
+
+The route a worker takes for itself is the `Skill` tool, and that one is not
+reliable for those eight. Both readings are from 2026-08-31: one dispatched
+worker was refused at `claude-autoship`, stopped and asked rather than routing
+around the guard, which was correct, and its branch lost the run, while another
+reached the same skill that way and shipped. Nothing here explains the split, so
+treat the tool route as something a dispatch may not depend on rather than as
+something it can count on.
+
+So write the commands bare and first, exactly as the block above does, and add no
+commentary about how to run them. Prose describing a command is prose and the
+client executes none of it, so a sentence added ahead of the calls to explain the
+route converts both into text and the session starts having run neither. That is
+what broke the refused dispatch above, rather than the flag alone.
+
+Recovery belongs to whoever writes the next prompt, since a blocked session
+cannot replay its own launch. Re-dispatch onto the same branch with the autoship
+call named as the explicit next action.
 
 ### What the brief may carry
 
@@ -122,6 +150,43 @@ above, since a session that never runs `EnterWorktree` never moves its
 registered branch off `main`, so `canon sessions list --branch` reports nothing
 holding it. A dispatch landing on a branch worked that way collides with
 nothing the check can see.
+
+## Dispatch to plan a row
+
+`claude-feature` is a procedure rather than a role, so a launch naming it alone
+reaches no `claude-planner` and takes no role, which owes no message either.
+Both trials on 2026-08-31 ran on prose the controller retyped into each launch,
+which held every obligation those sessions took and is where the first one's
+in-flight read went wrong. Reach the role directly on this launch, the way the
+build shape above reaches `claude-worker`.
+
+No branch and no worktree exist here and none is created. A planner writes one
+gitignored file at the main worktree root, so this shape names the row's task
+file rather than a branch and opens with the role instead of a worktree call.
+
+```bash
+claude --bg --model <model> -n "planner-<slug>" "Run /canon:claude-planner, then /canon:claude-feature <task>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the plan lands, carrying the path and what the task file got wrong, and message it again if you stop on a question."
+```
+
+`<task>` is the row's task file path and `<slug>` the slug its plan will take,
+resolved off the row the way the build shape resolves one off a plan.
+`<dispatcher-id>` and `<model>` resolve the same way they do above. The prefix
+reads `planner-` for the reason the worker's reads `worker-`, which is that it
+marks the role of the session it names rather than the one that launched it.
+
+Neither check above binds this shape. The branch check has no candidate to read,
+and the disjointness gate has nothing to compare, since a planner writes one file
+no track in flight can hold. What a planning dispatch owes instead is the
+reverse reading, because the plan it produces carries a constraint per track in
+flight and a row planned during a wave is planned against a tree that wave is
+changing. `claude-planner` states that read as a command over open pull
+requests, which is why the brief carries no branch list for it.
+
+One row per dispatch. A session reused across a batch pays the context load once
+and ages its picture of the tree while it works, which is what puts the in-flight
+read on the task rather than on the batch, and one that compacts mid-batch loses
+the reasoning behind its earlier plans with nothing reporting it. Cap a reused
+session where the saving is worth it and say what the cap was.
 
 ## Fall back to the human
 

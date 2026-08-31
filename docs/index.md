@@ -14,7 +14,7 @@ One-line reference for each doc in this folder.
 
 ## Workflow
 
-- [Operating model](operating-model.md): Orchestrator and worker roles for building across parallel sessions
+- [Operating model](operating-model.md): Orchestrator, planner, and worker roles for building across parallel sessions
 - [Visual design workflow](visual-design-workflow.md): Tiered guide for design and wireframe authoring with Claude Code
 - [Zshrc aliases for Claude Code](zshrc-aliases.md): Shell aliases that shorten common Claude Code invocations
 
