@@ -84,6 +84,7 @@ pathlib
 pathspec
 pathspecs
 pdftoppm
+pgid
 pip
 pnpm
 pptx
@@ -105,6 +106,7 @@ rstart
 rtrimstr
 semgrep
 setattr
+setsid
 sidepanel
 sigpipe
 soffice

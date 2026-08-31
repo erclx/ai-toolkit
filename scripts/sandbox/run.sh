@@ -9,6 +9,7 @@ export PROJECT_ROOT
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-path.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-dispatch.sh"
 
 # The agent pushes from inside the sandbox on its own, in a session this script
 # spawns, so the guard has to reach that environment and not only provisioning.
@@ -103,6 +104,12 @@ ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
 # such as a live session record `canon sandbox check` cannot see, is invisible
 # here whether or not an arm declares `escape_scope`.
 #
+# A nested background dispatch is the one such escape this run now reports, and
+# it reports through `sessions` rather than through here. Folding a process fact
+# into a key defined against a file-write watch would make it mean two things and
+# would silently widen the empty declaration `claude:canon-rollout` already
+# carries into covering something it was not written for.
+#
 # An arm whose skill is meant to reach past the sandbox tree declares
 # `escape_scope` in its `expect.toml`, a set of globs matched against this
 # watch's own findings the way `write_scope` matches the write list. A declared
@@ -174,6 +181,63 @@ record_run() {
   fi
 }
 
+# The one place that decides whether a group is safe to signal, so the ordinary
+# path and the trap below cannot disagree about it. Sets `reap_state` for the
+# merged record and reports on stderr, and runs at most once per run.
+#
+# Every read is guarded because the trap can fire before the session started, or
+# before `main` declared any of these. An absent group is `no-session` rather
+# than a clean reap, since the two mean opposite things.
+reap_session_group() {
+  if [ "${reap_done:-0}" -eq 1 ]; then
+    return 0
+  fi
+  reap_done=1
+
+  if [ -z "${session_pgid:-}" ]; then
+    reap_state=no-session
+    return 0
+  fi
+
+  if [ "$session_pgid" = "${harness_pgid:-}" ]; then
+    reap_state=inherited
+    log_warn "The session ran in this shell's own process group, so nothing was signalled."
+    return 0
+  fi
+
+  reap_state="$(reap_process_group "$session_pgid")"
+
+  case "$reap_state" in
+  reaped-term | reaped-kill)
+    log_warn "The session left a process behind. Reaped its group ($reap_state)."
+    ;;
+  survived)
+    log_warn "A process in the session's group survived SIGKILL. Check pgid $session_pgid by hand."
+    ;;
+  refused-own-group)
+    log_warn "The reap refused a group matching this shell's own. Nothing was signalled."
+    ;;
+  esac
+  return 0
+}
+
+# Reaps and cleans up on every path out of `main`, which is what the ordinary
+# path alone could not do. A session that dispatches a child and then exits
+# non-zero is the ordinary shape of a run going wrong, and before this it took an
+# early exit that never reached the reap, leaving the child running. The trap
+# also collects the shim directory on any `set -e` failure between the install
+# and the verdict.
+run_cleanup() {
+  reap_session_group
+
+  if [ -n "${shim_dir:-}" ]; then
+    rm -rf "$shim_dir"
+    shim_dir=""
+  fi
+
+  close_timeline
+}
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} run.sh <cat:cmd> <prompt> [scenario]"
@@ -202,7 +266,12 @@ main() {
   fi
 
   open_timeline "canon skill-test"
-  trap close_timeline EXIT
+  trap run_cleanup EXIT
+
+  # Declared here rather than where they are first written, so the trap reads
+  # them under `main`'s own scope on every path out, including one taken before
+  # the session started.
+  local reap_state=no-session reap_done=0 shim_dir="" session_pgid="" harness_pgid=""
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
     log_error "Run this from inside the toolkit repository."
@@ -247,15 +316,74 @@ main() {
     escape_manifests+=("$manifest")
   done < <(escape_roots)
 
+  # Taken after provisioning, so a scenario that stages a live session record of
+  # its own is already in the before manifest rather than reported as a dispatch
+  # this run made. `.claude/context/sandbox/overview.md` carries why such a
+  # scenario writes to the real registry at all.
+  local sessions_before sessions_after session_records
+  sessions_before="$(mktemp)"
+  sessions_after="$(mktemp)"
+  session_records="$(mktemp)"
+  snapshot_sessions "$sessions_before"
+
+  # The harness calls the real binary by its resolved path and puts the shim on
+  # the PATH the session inherits, so a `claude --bg` from inside the run meets
+  # the refusal and this invocation does not. Routing the harness through the
+  # shim too was the alternative and it reads the arm's own prompt as arguments,
+  # so a prompt naming `--bg` would refuse the run the shim exists to allow.
+  local real_claude
+  real_claude="$(command -v claude)"
+  shim_dir="$(mktemp -d)"
+  install_dispatch_shim "$shim_dir" "$real_claude"
+
   log_step "Running $prompt on $MODEL"
+
+  # Started in a process group of its own, which is what lets the reap after the
+  # verdict signal a group this run created rather than the one it inherited from
+  # the operator's shell. `set -m` is what puts a background job in its own
+  # group, so stdout goes to a file: a command substitution would leave the
+  # session in this shell's group and there would be nothing safe to signal.
+  # Stdin comes from `/dev/null`, since no command here may wait on a terminal.
+  local session_out session_pid session_code=0
+  session_out="$(mktemp)"
+  set -m
+  (
+    cd "$sandbox" || exit 1
+    export PATH="$shim_dir:$PATH"
+    exec "$real_claude" -p "$prompt" \
+      --plugin-dir "$PROJECT_ROOT/claude" \
+      --model "$MODEL" \
+      --output-format json \
+      --permission-mode "$PERMISSION_MODE" \
+      --allowedTools "$ALLOWED_TOOLS" \
+      --max-turns "$MAX_TURNS"
+  ) >"$session_out" </dev/null &
+  session_pid=$!
+  set +m
+
+  # Read rather than assumed. `set -m` makes the job lead a group of its own, so
+  # this equals its pid, and a shell where that did not happen would leave the
+  # session in the group the harness itself runs in. Comparing the two before
+  # signalling is what keeps the reap off the operator's terminal.
+  harness_pgid="$(ps -o pgid= -p $$ 2>/dev/null | tr -d ' ' || true)"
+  session_pgid="$(ps -o pgid= -p "$session_pid" 2>/dev/null | tr -d ' ' || true)"
+  [ -n "$session_pgid" ] || session_pgid="$session_pid"
+
+  wait "$session_pid" 2>/dev/null || session_code=$?
+
   local out
-  out="$(cd "$sandbox" && claude -p "$prompt" \
-    --plugin-dir "$PROJECT_ROOT/claude" \
-    --model "$MODEL" \
-    --output-format json \
-    --permission-mode "$PERMISSION_MODE" \
-    --allowedTools "$ALLOWED_TOOLS" \
-    --max-turns "$MAX_TURNS")"
+  out="$(cat "$session_out")"
+  rm -f "$session_out"
+
+  # `set -e` took this exit for the run while the invocation sat in a command
+  # substitution, and a backgrounded job reports through `wait` instead, so the
+  # same failure now has to be spelled out or it passes unnoticed. A session that
+  # dispatched a child and then died is the ordinary shape of this, so the reap
+  # and the shim both go out through the trap rather than being skipped here.
+  if [ "$session_code" -ne 0 ]; then
+    log_warn "The session exited $session_code before a verdict could be taken."
+    exit "$session_code"
+  fi
 
   local is_error result cost turns denials
   is_error="$(printf '%s' "$out" | jq -r '.is_error' 2>/dev/null || echo "unknown")"
@@ -284,6 +412,17 @@ main() {
     index=$((index + 1))
   done
 
+  # Beside the escape snapshot and ahead of the reap, so a session that outlived
+  # the run is recorded as what it was before anything signals it.
+  local record
+  snapshot_sessions "$sessions_after"
+  : >"$session_records"
+  while IFS= read -r record; do
+    [ -n "$record" ] || continue
+    describe_session "$record" >>"$session_records"
+  done < <(sessions_between "$sessions_before" "$sessions_after")
+  rm -f "$sessions_before" "$sessions_after"
+
   # The verdict decides the outcome. The envelope can only fail a run the
   # expectations would otherwise have passed, never pass one on its own.
   local -a watched_flag=()
@@ -293,6 +432,14 @@ main() {
   verdict_json="$(bun "$PROJECT_ROOT/src/cli.ts" sandbox check "$target" "$scenario" \
     --envelope "$envelope" --writes "$writes" --escapes "$escapes" \
     "${watched_flag[@]}" --json)" || verdict_code=$?
+
+  # After the verdict, which is the last thing that reads what the run left
+  # behind, and ahead of the trap so the outcome reaches the merged record.
+  # Nothing here fails the run: a survivor is a fact about the machine rather
+  # than a claim about the skill, and the verdict is already taken.
+  reap_session_group
+  rm -rf "$shim_dir"
+  shim_dir=""
 
   # The envelope stays on stdout so existing readers keep working, with the
   # verdict merged in. An agent reads the verdict here rather than parsing the
@@ -324,19 +471,51 @@ main() {
     log_warn "No assertion covers these. Check them against what else was running."
   fi
 
+  # One field rather than a second key beside it, so a reader gets the three
+  # facts together: whether the registry was there to watch, which records
+  # appeared while the run was in flight, and what the reap found. `watched`
+  # false means the registry was absent, which makes an empty `new` say nothing
+  # at all rather than say the run dispatched nothing.
+  #
+  # `reap` carries `clear` for a group that was already empty, `reaped-term` or
+  # `reaped-kill` for one this run signalled, `survived` for one that outlived
+  # `SIGKILL`, `inherited` for a session that never led a group of its own, and
+  # `no-session` for a run that stopped before the session began.
+  local sessions_watched_json=false
+  if [ "$sessions_watched" -eq 1 ]; then
+    sessions_watched_json=true
+  fi
+
+  local sessions_json
+  sessions_json="$(jq -n \
+    --argjson watched "$sessions_watched_json" \
+    --argjson new "$(jq -R -s 'split("\n") | map(select(length > 0))' "$session_records")" \
+    --arg reap "$reap_state" \
+    '{watched: $watched, new: $new, reap: $reap}')"
+
+  if [ -s "$session_records" ]; then
+    log_warn "A session record appeared while this run was in flight:"
+    while IFS= read -r record; do
+      [ -n "$record" ] || continue
+      log_rem "$record"
+    done <"$session_records"
+    log_warn "No arm dispatches a session. Read these against what else started."
+  fi
+
   local merged
   if ! merged="$(printf '%s' "$out" |
     jq --argjson verdict "${verdict_json:-null}" \
       --argjson escapes "$escapes_json" \
-      '. + {verdict: $verdict, escapes: $escapes}' 2>/dev/null)"; then
+      --argjson sessions "$sessions_json" \
+      '. + {verdict: $verdict, escapes: $escapes, sessions: $sessions}' 2>/dev/null)"; then
     log_warn "Envelope was not valid JSON. Emitting the verdict alone."
-    merged="$(printf '{"is_error":true,"verdict":%s,"escapes":%s}' \
-      "${verdict_json:-null}" "$escapes_json")"
+    merged="$(printf '{"is_error":true,"verdict":%s,"escapes":%s,"sessions":%s}' \
+      "${verdict_json:-null}" "$escapes_json" "$sessions_json")"
     verdict_code=1
   fi
 
   record_run "$target" "$scenario" "$merged" "$writes"
-  rm -f "$before" "$after" "$envelope" "$writes" "$escapes"
+  rm -f "$before" "$after" "$envelope" "$writes" "$escapes" "$session_records"
 
   trap - EXIT
   close_timeline

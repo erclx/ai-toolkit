@@ -14,7 +14,9 @@ Owns the scenarios that provision isolated project states for testing scripts, c
 - `scripts/sandbox/fixtures/` owns file content staged into the sandbox, one tree per scenario arm
 - `$XDG_STATE_HOME/canon/sandbox-<run-id>` owns the provisioned project state, outside the repository and unique to the run that provisioned it
 
-Run `canon sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added. `fixtures/` sits alongside the categories but holds no scenarios, so both pickers filter it out by name.
+Run `canon sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added. `fixtures/` sits alongside the categories but holds no scenarios, so every picker filters it out by name.
+
+That filter is the literal string `fixtures` in three places, `scripts/manage-sandbox.sh`, `src/commands/sandbox.ts`, and `src/sandbox/coverage.ts`, so any other subdirectory added here reads as a category in all three. A helper the harness needs on disk goes to `scripts/lib/` rather than into a folder beside the categories, which is where `sandbox-dispatch.sh` sits.
 
 - `tooling/`: golden configs per stack, plus raw upstream templates
 - `infra/`: domain CLI commands, covering init, gov, standards, snippets, and others
@@ -49,7 +51,33 @@ The alternative was accepting the exposure and stating it in prose, declined bec
 
 `claude:canon-rollout` declares `escape_scope = []` for the reason its fixture already gives: the arm's narration tells the run to dispatch no worker, so every tested path is the refusal, and a correct run touches none of the eight watched destinations. A future arm that actually drives the dispatch widens the scope from what that run measures rather than from a guess at what a worker touches, the same discipline `write_scope`'s own comment states for the same fixture.
 
-Two things a scoped pass does not say. It says nothing about a write outside the watch's own reach, being a home directory, a sibling worktree, or the machine-level target and session registries a live dispatch would actually touch, since those sit past what `escape_roots` names at all. It says nothing about whether the write it did see belongs to this run rather than a sibling's, since the harness still cannot attribute one. `.claude/context/sandbox/coverage.md` carries what a reader can and cannot conclude from either kind of pass.
+Two things a scoped pass does not say. It says nothing about a write outside the watch's own reach, being a home directory, a sibling worktree, or the machine-level target registry a live dispatch would actually touch, since those sit past what `escape_roots` names at all. It says nothing about whether the write it did see belongs to this run rather than a sibling's, since the harness still cannot attribute one. `.claude/context/sandbox/coverage.md` carries what a reader can and cannot conclude from either kind of pass.
+
+The session registry left that list on its own row below, which is the one destination of the three that a run now reads.
+
+### A nested background dispatch is bounded rather than watched
+
+An arm invoked without the narration its fixture states dispatched a real `claude --bg` session against the machine's own process table. Every watch above reported clean and every one was right to, since a dispatched session writes into neither the sandbox tree `snapshot_tree` reads nor the four scratch directories `snapshot_root` reads. The run spent real cost until a person found it, and `SIGTERM` alone did not end it.
+
+The bound is a `claude` shim placed first on the PATH of the session `run.sh` spawns, which refuses `--bg` and `--background` by name and delegates everything else. Its own caller goes around it: the harness calls the real binary by resolved path, since the arm's prompt is an argument to that call and a prompt naming the flag would otherwise refuse the run. That path is written into the shim rather than passed through the environment, because a variable carrying it sits in the spawned session's own environment and hands any arm the string that walks around the bound.
+
+The recording is a snapshot of `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions` either side of the run, comparing record names rather than content, since a live session rewrites its own record on every status change and a content manifest would name every session running beside this one. It reports on `sessions` in the merged JSON rather than through `escape_scope`. Folding a process fact into a key defined against a file-write watch would make the key mean two things and would silently widen the empty declaration `claude:canon-rollout` carries into covering something it was not written for.
+
+What lets a new record read as a dispatch is that the harness's own session leaves none. A headless `claude -p` writes no registry entry, measured 2026-08-31 over 603 files in `~/.claude/sessions`, where two named a sandbox path: one the `git-worktree` scenario stages by hand, and one the `claude --bg` dispatch this bound was filed against. A client that started registering a print-mode run would have every sandbox run report itself.
+
+The backstop is a reap. `run.sh` starts its session under `set -m` so the session leads a process group of its own, and signals that group after the verdict is taken, escalating to `SIGKILL` rather than sending one signal and reporting success. The group has to be one the run created: signalling the group the harness inherited would reap the operator's terminal, so the run compares the session's real group against its own and `reap_process_group` refuses a group matching the calling shell whatever it is handed.
+
+The reap goes out through the `EXIT` trap rather than from the ordinary path alone. A session that dispatches a child and then exits non-zero is the ordinary shape of a run going wrong, and that path exits early with no verdict to take, so a reap sitting after the verdict never ran on the one failure the backstop exists to cover. The ordinary path still reaps ahead of the trap, because the outcome has to reach the merged record, and the trap skips a second signal once that has happened.
+
+All three sit in `scripts/lib/sandbox-dispatch.sh` rather than in `run.sh`, its only caller, because each is then reachable from a test that never launches a session. `src/sandbox-dispatch.test.ts` drives the shim against a stub binary and the reap against a `sleep`, where proving either through `run.sh` would mean spawning the thing the bound exists to prevent.
+
+### What the dispatch bound does not reach
+
+Three things, and the first two are why both mechanisms ship rather than one. A dispatch calling the binary by an absolute path never resolves through PATH, which is the half the reap covers. A dispatch calling `setsid` on its way out leaves the group before the reap reads it, which is the half the shim covers.
+
+The third is the registry, a client-owned surface carrying no contract, so a client that stops writing a record per session breaks the detection with nothing reporting that it broke. All three are why the recording reports and never fails a run.
+
+A per-arm permission set would not have reached this failure at all. The arm that produced it runs its whole tested path through `Bash`, so a tool set narrow enough to stop the dispatch would have denied the one tool that arm cannot work without. Such a set is still worth building for its own reasons, since every arm currently gets the widest permission any arm needs, and it belongs in its own row where it would not look like a fix for this.
 
 ### An empty manifest cannot say whether it watched anything
 
@@ -169,6 +197,8 @@ canon() {
 
 A scenario needing a live session record for a roster read, such as testing occupancy against `canon sessions list`, has no sandbox-local registry to point at. Provisioning and the later spawned `claude -p` run are separate script invocations with no shared environment, the same split that gives `run.sh` its own `GIT_TERMINAL_PROMPT=0` export above, so an env var set during provisioning cannot repoint `CLAUDE_CONFIG_DIR` for the spawned session. Such a scenario writes to the real `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sessions/` on the host instead. Bound the spawned process well under a day so it exits on its own once no run needs it, since the record then drops out of `canon sessions list`'s live roster automatically rather than sitting there for every consumer that reads it until someone removes it by hand. Key the record's filename on the process's pid, so a second drive gets its own record instead of overwriting the first run's and orphaning its still-running process.
 
+Such a record does not read as a nested dispatch. `run.sh` snapshots the registry after provisioning, so a record a scenario staged is already on the before side. One written later, by a scenario that stages during the run rather than during provisioning, would be reported instead, which is a reason to stage it in the scenario script rather than from inside the driven session.
+
 ## Standing limits
 
 Six things a run cannot reach. Each is a property of the harness rather than a gap to close per task, so a claim depending on one is hand-verified and should say so.
@@ -179,6 +209,8 @@ Six things a run cannot reach. Each is a property of the harness rather than a g
 - The standards fallback of a skill the branch changed. Both resolution routes can land on one file, and no assertion tells them apart.
 - A write landing outside both the sandbox tree and the four watched scratch directories. `snapshot_tree` reads the sandbox, and `run.sh` watches `.claude/plans/`, `.claude/review/`, `.claude/memory/`, and `.claude/tasks/` under the toolkit roots for escapes.
 - Git state. `snapshot_tree` excludes `.git`, and the seven declaration keys read paths, file content, the write list, the reply, and the turn count, so no key reaches a commit, a branch, or a rewritten history.
+
+A nested background dispatch used to belong on that list and no longer does. It is bounded by a shim and recorded on `sessions`, and the three things that bound still cannot reach are stated where the bound is, under the decision above.
 
 ### Reading the last three
 
