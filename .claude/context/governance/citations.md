@@ -1,6 +1,6 @@
 ---
 title: Citations
-description: Verdict for every rule and standard citing a skill or a sibling document, the two forms that resolve for a target, the moot exception, and the stage that resolves a cited path mechanically with the bounds it carries
+description: Verdict for every rule and standard citing a skill or a sibling document, the two forms that resolve for a target, the moot exception, and the stage that resolves a cited path and an internal frontmatter glob mechanically with the bounds each carries
 ---
 
 # Citations
@@ -78,15 +78,18 @@ Each of the four entries that restated their standard also carries a moot verdic
 
 ## What the stage resolves and what it cannot
 
-`aitk gov citations` resolves every path a rule body cites across `governance/rules/` and `internal/rules/`, and `bun run check` gates on it as the `Rule citations` stage. The verdicts above stay a manual read: the stage answers whether a citation resolves at all, and nothing here answers whether a resolving citation points at the right file or restates what it points at.
+`aitk gov citations` resolves every path a rule body cites across `governance/rules/` and `internal/rules/`, plus every frontmatter `paths:` glob under `internal/rules/`, and `bun run check` gates on it as the `Rule citations` stage. The verdicts above stay a manual read: the stage answers whether a citation resolves at all, and nothing here answers whether a resolving citation points at the right file or restates what it points at.
 
-At `2e912110` the corpus holds 36 body citations across 77 rules. Twenty are `aitk standards <name>`, fifteen are backticked paths, one names a sibling rule by filename. All 36 resolve or are excused, so the gate ships as a floor rather than as a repair.
+At `2e912110` the corpus holds 36 body citations across 77 rules. Twenty are `aitk standards <name>`, fifteen are backticked paths, one names a sibling rule by filename. All 36 resolve or are excused, and all 14 internal globs across 7 rules match, so the gate ships as a floor rather than as a repair.
+
+The glob half reads one corpus and the operator settled which on 2026-08-31. A rule under `governance/rules/` installs into a target and its globs name that project's shape, so 32 of the 72 there match nothing in this tree and every one is correct, `src/pages/**` in the Astro rule being indistinguishable by pattern from a path here. Gating them would ship an exemption list the length of the corpus. `internal/rules/` ships nowhere, which makes the tree it governs the tree present.
 
 What it reads is bounded three ways, and each bound is a shape the corpus already writes.
 
 - A placeholder or glob segment is declined, since it describes a shape rather than naming a file. `standards/<name>.md` and `app/**/route.ts` are the two forms.
 - A span carrying no file extension is declined as a folder or a module specifier. This costs one real path, `claude/standards`, which the stage cannot tell from `next/font` by looking at it.
 - A path written without backticks is not read at all, since matching one would report every sentence that happens to name a file.
+- A glob that matches real files and still reaches none of the work it was scoped at is not read. `lib/305-e2e-reliability.md` scopes itself at `e2e/*.ts` and `e2e/**/*.ts`, and no probe here is written under `e2e/`, so the rule asking a session to watch a new guard fail never fired for the session writing guards. Resolution is mechanical and reach is a judgment about where the work happens.
 
 Two classes resolve to nothing and are correct to, and both are reported by name rather than dropped.
 

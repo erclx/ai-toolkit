@@ -39,6 +39,37 @@ function writeRule(name: string, body: string, paths: string = 'src/**'): void {
   )
 }
 
+/**
+ * Writes a rule under the internal corpus, which is the only one whose
+ * frontmatter globs resolve against the tree.
+ */
+function writeInternalRule(
+  name: string,
+  body: string,
+  paths: readonly string[],
+): void {
+  write(
+    join('internal', 'rules', name),
+    [
+      '---',
+      'description: Fixture',
+      'paths:',
+      ...paths.map((glob) => `  - '${glob}'`),
+      '---',
+      '',
+      body,
+    ]
+      .join('\n')
+      .trimEnd(),
+  )
+}
+
+function unmatchedGlobs(
+  report: Extract<CitationReport, { kind: 'measured' }>,
+): string[] {
+  return report.globs.filter((glob) => !glob.matched).map((glob) => glob.glob)
+}
+
 function measured(
   report: CitationReport,
 ): Extract<CitationReport, { kind: 'measured' }> {
@@ -361,6 +392,57 @@ describe('readCitations', () => {
 
     expect(report.rules).toBe(2)
     expect(withStatus(report, 'dead')).toEqual(['references/gone.md'])
+  })
+
+  it('should name an internal glob matching nothing in this tree', async () => {
+    // The defect the fourth outcome names: a rule scoped at a directory that
+    // moved stops firing and says nothing.
+    writeInternalRule('claude/597-wiki.md', '- Wiki pages live here.', [
+      'wikis/**/*.md',
+    ])
+    git('add', '--all')
+
+    const report = measured(await readCitations(ROOT))
+
+    expect(unmatchedGlobs(report)).toEqual(['wikis/**/*.md'])
+  })
+
+  it('should anchor an unmatched glob on the frontmatter line carrying it', async () => {
+    writeInternalRule('claude/597-wiki.md', '- Wiki pages live here.', [
+      'wiki/**/*.md',
+      'wikis/**/*.md',
+    ])
+    write('wiki/index.md', '# Wiki')
+    git('add', '--all')
+
+    const report = measured(await readCitations(ROOT))
+    const finding = report.globs.find((glob) => !glob.matched)
+
+    expect(finding?.line).toBe(5)
+  })
+
+  it('should accept an internal glob that matches a file', async () => {
+    writeInternalRule('claude/597-wiki.md', '- Wiki pages live here.', [
+      'wiki/**/*.md',
+    ])
+    write('wiki/concepts/rule-writing-vocabulary.md', '# Vocabulary')
+    git('add', '--all')
+
+    const report = measured(await readCitations(ROOT))
+
+    expect(unmatchedGlobs(report)).toEqual([])
+  })
+
+  it('should read no glob from the shipped corpus, whose globs name a target', async () => {
+    // `src/pages/**` in the Astro rule is indistinguishable by pattern from a
+    // path here, and 32 of the 72 shipped globs match nothing in this tree
+    // while every one of them is correct.
+    writeRule('lang/200-astro.md', '- Astro pages live here.', 'src/pages/**')
+    git('add', '--all')
+
+    const report = measured(await readCitations(ROOT))
+
+    expect(report.globs).toEqual([])
   })
 
   it('should refuse a tree holding neither rule corpus', async () => {

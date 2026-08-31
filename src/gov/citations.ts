@@ -25,6 +25,21 @@ export const RULE_DIRS: readonly string[] = [
 ]
 
 /**
+ * The corpus whose frontmatter globs resolve against this tree.
+ *
+ * Bodies are read across both corpora and globs across this one alone. A rule
+ * under `governance/rules/` installs into a target and its `paths:` entries
+ * name that project's shape, which is why 32 of the 72 globs there match
+ * nothing here and every one of them is correct: `src/pages/**` in the Astro
+ * rule is indistinguishable by pattern from a path this repository might hold.
+ * Gating on them would ship a permanent exemption list the length of the
+ * corpus. The internal corpus ships nowhere, so the tree it governs is the
+ * tree present and a glob matching nothing there is a rule that stopped
+ * firing.
+ */
+export const GLOB_CORPUS = join('internal', 'rules')
+
+/**
  * How the citation was written, kept on the finding because the three resolve
  * against different roots and a reader repairing one needs to know which.
  *
@@ -64,12 +79,28 @@ export interface RuleCitation {
   readonly preview: string
 }
 
+/**
+ * One `paths:` entry from a rule's frontmatter, resolved against the tree.
+ *
+ * Only the internal corpus is read. A rule shipping to a target declares the
+ * shape that target holds, so its globs answer about a tree that is not this
+ * one, which `GLOB_CORPUS` states and the report repeats on every run.
+ */
+export interface RuleGlob {
+  readonly file: string
+  readonly line: number
+  readonly glob: string
+  readonly matched: boolean
+}
+
 export type CitationReport =
   | {
       readonly kind: 'measured'
       /** Rule files opened, which is what the verdict covers. */
       readonly rules: number
       readonly citations: readonly RuleCitation[]
+      /** Frontmatter globs read, from `GLOB_CORPUS` alone. */
+      readonly globs: readonly RuleGlob[]
     }
   | { readonly kind: 'unreadable'; readonly reason: string }
 
@@ -263,6 +294,49 @@ function isGoverned(cited: string, declared: readonly string[]): boolean {
 }
 
 /**
+ * Where each declared glob sits, so a finding names a line a reader can click.
+ *
+ * The values come from the YAML parse and the line numbers from a scan of the
+ * same block, rather than from a second parse of the list syntax. A quoted
+ * entry, a bare one, and a flow sequence all reach the parse identically and
+ * only the first two are what this corpus writes.
+ */
+function locateGlobs(text: string): { line: number; glob: string }[] {
+  const declared = governedPaths(text)
+  if (declared.length === 0) return []
+
+  const lines = text.split('\n')
+  const taken = new Set<number>()
+
+  return declared.map((glob) => {
+    const at = lines.findIndex(
+      (line, index) => !taken.has(index) && line.includes(glob),
+    )
+    if (at !== -1) taken.add(at)
+    return { line: at + 1, glob }
+  })
+}
+
+/**
+ * Whether the glob matches a file present in this tree.
+ *
+ * Read only for `internal/rules/`. A shipped rule's glob names the shape a
+ * target holds, so `src/pages/**` in the Astro rule is indistinguishable by
+ * pattern from a path here and resolving it would report 32 of 72 correct
+ * globs as defects. The internal corpus ships nowhere, which makes the tree it
+ * governs the tree present and the question answerable.
+ */
+function globMatches(root: string, glob: string): boolean {
+  const scan = new Bun.Glob(glob).scanSync({
+    cwd: root,
+    onlyFiles: true,
+    dot: true,
+  })
+  for (const _ of scan) return true
+  return false
+}
+
+/**
  * Which of `paths` git ignores, or nothing when git could not answer.
  *
  * Session scratch is the class this reaches. `.claude/tasks/index.md` is real
@@ -291,7 +365,12 @@ async function readIgnored(
 
 /**
  * Resolves every path the two rule corpora cite and names the ones reaching
- * nothing.
+ * nothing, plus every frontmatter glob under `GLOB_CORPUS`.
+ *
+ * Two questions rather than one, because they fail the same way. A citation
+ * broken by a move sends a reader to an absence, and a glob broken by a move
+ * stops the rule firing at all, and neither says anything when it happens. One
+ * stage reads both rather than two reading one file each.
  *
  * This gates rather than reports, unlike the superseded sweep it sits beside. A
  * path resolving to nothing carries no judgment: either the file is there or the
@@ -299,8 +378,9 @@ async function readIgnored(
  * before the verdict rather than left for a reader to settle.
  *
  * What it cannot see is a citation that resolves and points somewhere wrong,
- * a path written without backticks, and a folder or module specifier carrying no
- * extension, which `namesAFile` declines rather than guessing at.
+ * a path written without backticks, a folder or module specifier carrying no
+ * extension, which `namesAFile` declines rather than guessing at, and a glob
+ * that matches real files while reaching none of the work it was scoped at.
  */
 export async function readCitations(root: string): Promise<CitationReport> {
   const dirs = RULE_DIRS.map((rel) => ({
@@ -316,6 +396,7 @@ export async function readCitations(root: string): Promise<CitationReport> {
   }
 
   const citations: RuleCitation[] = []
+  const globs: RuleGlob[] = []
   let rules = 0
 
   for (const dir of dirs) {
@@ -334,6 +415,12 @@ export async function readCitations(root: string): Promise<CitationReport> {
 
       rules += 1
       const declared = governedPaths(text)
+
+      if (dir.rel === GLOB_CORPUS) {
+        for (const { line, glob } of locateGlobs(text)) {
+          globs.push({ file, line, glob, matched: globMatches(root, glob) })
+        }
+      }
 
       for (const raw of collectCitations(text)) {
         const candidates = candidatesFor(raw.form, raw.cited, file)
@@ -355,7 +442,7 @@ export async function readCitations(root: string): Promise<CitationReport> {
     }
   }
 
-  return applyIgnored(root, rules, citations)
+  return applyIgnored(root, { kind: 'measured', rules, citations, globs })
 }
 
 function classifyStatus(
@@ -379,13 +466,12 @@ function classifyStatus(
  */
 async function applyIgnored(
   root: string,
-  rules: number,
-  citations: readonly RuleCitation[],
+  measured: Extract<CitationReport, { kind: 'measured' }>,
 ): Promise<CitationReport> {
-  const pending = citations.filter(
+  const pending = measured.citations.filter(
     (citation) => citation.status === 'dead' && citation.form === 'path',
   )
-  if (pending.length === 0) return { kind: 'measured', rules, citations }
+  if (pending.length === 0) return measured
 
   const ignored = await readIgnored(
     root,
@@ -400,9 +486,8 @@ async function applyIgnored(
   }
 
   return {
-    kind: 'measured',
-    rules,
-    citations: citations.map((citation) =>
+    ...measured,
+    citations: measured.citations.map((citation) =>
       citation.status === 'dead' && ignored.has(citation.cited)
         ? { ...citation, status: 'ignored' as const }
         : citation,

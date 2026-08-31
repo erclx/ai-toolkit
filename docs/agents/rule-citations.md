@@ -1,11 +1,13 @@
 ---
 title: Rule citations
-description: Resolving every path a governance rule cites, the three forms a citation is written in, the shapes that look like citations and are not, the two classes where an absent path is correct, the blind spots it cannot reach, and why this one gates
+description: Resolving every path a governance rule cites and every frontmatter glob the internal corpus declares, the three forms a citation is written in, the shapes that look like citations and are not, the two classes where an absent path is correct, why the glob half reads one corpus, and why this one gates
 ---
 
 # Rule citations
 
-`aitk gov citations` resolves every path a rule cites and names the ones reaching nothing. It answers a failure no other stage sees: a rule points a reader at a file, the file moves, and nothing reports it until a session opens the path and finds an absence.
+`aitk gov citations` resolves every path a rule cites and every frontmatter glob the internal corpus declares, naming the ones reaching nothing. It answers a failure no other stage sees: a rule points a reader at a file, the file moves, and nothing reports it until a session opens the path and finds an absence.
+
+A glob fails the same way and more quietly. A rule scoped at a directory that moved stops matching, so it never loads again, and a rule that never fires looks exactly like a rule nobody violated.
 
 ```bash
 aitk gov citations
@@ -61,6 +63,16 @@ Only an exact declaration exempts, never a glob match against one. A glob declar
 
 **Ignored.** A path git ignores is session scratch no clone is expected to hold. `governance/rules/claude/555-tasks.md` cites `.claude/tasks/index.md`, which is real in a live project and absent from a fresh clone and from every linked worktree. Resolving against the filesystem alone would make the verdict depend on which tree the stage ran in, so the unresolved paths go to one batched `git check-ignore` and an ignored one is excused. A read git cannot answer refuses rather than reporting those paths dead.
 
+## Why the glob half reads one corpus
+
+Bodies are read across both corpora and frontmatter globs across `internal/rules/` alone.
+
+A rule under `governance/rules/` installs into a target, and its `paths:` entries name the shape that project holds rather than anything here. Measured over that corpus, 32 of its 72 globs match nothing in this tree and every one of them is correct. `src/pages/**` in the Astro rule cannot be told by pattern from a path this repository might hold, so a check cannot separate the two, and gating them would ship an exemption list the length of the corpus. Nothing reads the shipped globs, and the measurement is the reason rather than a gap left for someone to close.
+
+`internal/rules/` ships nowhere. The tree it governs is the tree present, which makes the question answerable, and all 14 of its globs across 7 rules match at the commit this shipped on.
+
+What that leaves unreached is a glob that matches real files and still reaches none of the work it was scoped at. `governance/rules/lib/305-e2e-reliability.md` scopes itself at `e2e/*.ts` and `e2e/**/*.ts`, and no probe in this repository is written under `e2e/`, so the rule asking a session to watch a new guard fail never fired for the session writing guards. Resolution is mechanical and reach is a judgment about where the work happens, so only the first is here.
+
 ## The exemption marker
 
 Everything the classifier can separate mechanically is separated there. For the residue, a line carries `aitk-allow-citation: <reason>` on itself or the one directly above, which moves it into the report's `Exempt` section. Only a marker naming a reason counts, since a bare token is a line that meant to say something and did not. This is the `aitk-allow-superseded` shape, and both read the same placement rule through one helper.
@@ -73,9 +85,11 @@ A path written into running prose without backticks is not read at all. Matching
 
 A folder or a path carrying no extension is declined rather than guessed at, which is stated above as the cost of the test that carries the separation.
 
+A glob under `governance/rules/` is not read, and a glob that resolves while reaching none of the work it was scoped at is a reading rather than a resolution. Both are stated above.
+
 ## Exit codes
 
-Exit codes are `0` when every citation resolves or is excused, `1` for a refusal, and `2` for at least one cited path reaching nothing. It refuses a tree holding neither rule corpus, since a tree with no rules passes each of its zero rules, and a `git check-ignore` read that fails.
+Exit codes are `0` when every citation resolves or is excused and every glob read matches, `1` for a refusal, and `2` for at least one cited path reaching nothing or one glob matching nothing. It refuses a tree holding neither rule corpus, since a tree with no rules passes each of its zero rules, and a `git check-ignore` read that fails.
 
 This gates, and `bun run check` runs it as the `Rule citations` stage. The sibling sweeps report rather than gate because a value appears for reasons unrelated to the convention, so their output is a reading. A path resolving to nothing carries no judgment: either the file is there or the citation is stale, and the two classes where absence is correct are separated before the verdict rather than left for a reader to settle. The corpus is clean at the commit this shipped on, so the gate starts green and stays that way until something breaks.
 
