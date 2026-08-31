@@ -75,6 +75,8 @@ That bounds what a carried identifier buys. Resolving a `sessionId` to a name he
 
 The `name` field is what both surfaces agree on, and that agreement is what makes the resolution work. `SendMessage` takes a name and carries no identifier parameter, so the carry runs id to name to send rather than sending an id anywhere.
 
+Agreement is not uniqueness, and the last hop is where that bites. Two live sessions can hold one name, the roster carries no field that separates them, and a send to the bare name reaches whichever the channel resolves first. The agent listing prints a ref beside each row and the roster does not, so a name resolving to more than one live row is completed from that listing rather than from anything this verb returns.
+
 ## Why the verb exists
 
 A session listing reports a name, a kind, a status, and how long each session has been running. None of those names a branch. Resolving a branch to a session therefore meant ordering the roster by start time and matching it against the order the worktrees were created, which is an inference that fails whenever two sessions start inside the same minute.

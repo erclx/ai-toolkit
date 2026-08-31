@@ -47,6 +47,16 @@ the `name` on it. Resolve that name at the moment of sending rather than at
 launch, since a name is derived from what a session turned out to be doing and
 has gone stale inside the hour that a build takes.
 
+Check that name against the agent listing before sending it. A name is not
+unique, and the roster carries no field that separates two live sessions holding
+one, so the resolution can end on a string that reaches the wrong session. Send
+the name bare where the listing shows one row under it. Where it shows more than
+one, complete the address with the `[ref]` that listing prints beside each row
+rather than sending to the name alone, which lands on whichever row the channel
+resolves first. Two sessions differing only by a trailing ` (3)` is the shape
+this meets in practice, and one of them being a controller is what makes the
+wrong pick silent.
+
 Ask the operator when the launch named nobody and a person is there to answer.
 Put the candidate rows to them through the structured question surface, so they
 pick a row rather than recalling a name. The ask halts the build, and the halt
