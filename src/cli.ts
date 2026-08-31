@@ -81,6 +81,7 @@ function showHelp(): void {
     `${GREY}│${NC}    secrets [cmd]      ${GREY}# Read the shipped tree for credential-shaped values (scan)${NC}`,
     `${GREY}│${NC}    deps [cmd]         ${GREY}# Read the resolved dependency set for advisories (audit)${NC}`,
     `${GREY}│${NC}    labels [cmd]       ${GREY}# Read a changed set against the pull request label map (audit)${NC}`,
+    `${GREY}│${NC}    autoship [cmd]     ${GREY}# Decide whether a changed set needs the review pass (classify)${NC}`,
     `${GREY}│${NC}    census [path]      ${GREY}# Report tracked file count, extension breakdown, and line totals${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
     `${GREY}│${NC}    upgrade            ${GREY}# Reinstall the CLI globally with the manager that installed it${NC}`,
