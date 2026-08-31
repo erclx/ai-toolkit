@@ -134,13 +134,20 @@ function claimRegion(bullet: string): string {
  *
  * The marker rather than the leading verb decides it, because `keep` and
  * `leave` both open a real claim often enough and neither is safe alone. The
- * set is deliberately four words. `in place` was measured and dropped, since
+ * set is deliberately three words. `in place` was measured and dropped, since
  * rewriting a file in place is an ordinary claim, and `no other line` was
  * dropped because `#1269` writes "as one insertion that touches no other line"
- * about a change it did make.
+ * about a change it did make. `alone` was in the set and came out on review:
+ * every occurrence across the 40-pull-request corpus sits past the first
+ * comma, where the region cut already excludes it, so the word caught nothing
+ * real there. Kept, it turns restrictive on a comma-free bullet, which is this
+ * repository's more common use of the word: "Move the threshold read into
+ * `src/gate/stages.ts` alone." asserts an edit and voided to an empty claim
+ * set while the word was in the set, unlike the other three, which disclaim
+ * wherever they land.
  */
 const NO_CHANGE =
-  /\b(?:untouched|unchanged|alone)\b|\bas written\b|^\s*(?:do not|don't|never)\b/i
+  /\b(?:untouched|unchanged)\b|\bas written\b|^\s*(?:do not|don't|never)\b/i
 
 function disclaimsChange(region: string): boolean {
   return NO_CHANGE.test(maskSpans(region))

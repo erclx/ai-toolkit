@@ -151,6 +151,18 @@ describe('extractKeyChangePaths', () => {
     ).toEqual([])
   })
 
+  it('should keep a claim whose comma-free bullet uses alone restrictively (#1276)', () => {
+    expect(
+      pathsOf('- Move the threshold read into `src/gate/stages.ts` alone.'),
+    ).toEqual(['src/gate/stages.ts'])
+  })
+
+  it('should keep the region before the comma when alone follows it restrictively (#1276)', () => {
+    expect(
+      pathsOf('- Rewrite `src/pr/paths.ts` alone and leave the rest.'),
+    ).toEqual(['src/pr/paths.ts'])
+  })
+
   it('should drop a bullet that opens by refusing an action', () => {
     expect(
       pathsOf(
