@@ -533,6 +533,36 @@ describe('checkExpectation on escape scope', () => {
       'escape scope: no escape data supplied, pass --escapes',
     )
   })
+
+  it('should skip rather than pass when no watched root held a target', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: [],
+      escapesWatched: false,
+    })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.results).toEqual([
+      { ok: false, message: 'no assertion ran against this sandbox' },
+    ])
+    expect(verdict.skipped).toContain(
+      'escape scope: no watched root held a target, unmeasured',
+    )
+  })
+
+  it('should still pass outright when a watched root held a target and saw zero escapes', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: [],
+      escapesWatched: true,
+    })
+
+    expect(verdict.state).toBe('pass')
+    expect(verdict.results).toContainEqual({
+      ok: true,
+      message: 'no escape during this run',
+    })
+  })
 })
 
 describe('checkExpectation with data the caller did not supply', () => {

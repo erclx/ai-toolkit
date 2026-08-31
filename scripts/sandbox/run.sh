@@ -117,6 +117,13 @@ ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
 # destinations held and nothing more. Read `.claude/context/sandbox/overview.md`
 # and `.claude/context/sandbox/coverage.md` before writing a claim past that.
 
+# Set whenever any watched root holds at least one of the four directories,
+# across every call this run makes. A root with none of them contributes no
+# manifest and no diff, which reads identically to a watch that ran clean, so
+# `checkEscapeScope` needs this to tell "watched and clean" from "nothing to
+# watch" apart.
+escape_watched=0
+
 snapshot_root() {
   local dir="$1"
   local manifest="$2"
@@ -129,6 +136,7 @@ snapshot_root() {
 
   : >"$manifest"
   [ ${#targets[@]} -eq 0 ] && return 0
+  escape_watched=1
 
   (cd "$dir" && find "${targets[@]}" -type f -exec sha1sum {} +) |
     sed "s|\./||" | sort -k2 >"$manifest"
@@ -278,9 +286,13 @@ main() {
 
   # The verdict decides the outcome. The envelope can only fail a run the
   # expectations would otherwise have passed, never pass one on its own.
+  local -a watched_flag=()
+  [ "$escape_watched" -eq 1 ] && watched_flag=(--escapes-watched)
+
   local verdict_code=0 verdict_json
   verdict_json="$(bun "$PROJECT_ROOT/src/cli.ts" sandbox check "$target" "$scenario" \
-    --envelope "$envelope" --writes "$writes" --escapes "$escapes" --json)" || verdict_code=$?
+    --envelope "$envelope" --writes "$writes" --escapes "$escapes" \
+    "${watched_flag[@]}" --json)" || verdict_code=$?
 
   # The envelope stays on stdout so existing readers keep working, with the
   # verdict merged in. An agent reads the verdict here rather than parsing the

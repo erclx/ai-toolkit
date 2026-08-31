@@ -71,6 +71,13 @@ export interface CheckInput {
   readonly sandboxDir: string
   readonly writes?: readonly string[]
   readonly escapes?: readonly string[]
+  /**
+   * Whether any watched escape root held one of the four directories this run.
+   * Undefined when the caller supplied no escapes at all, which already skips.
+   * False is what separates a watch that ran and found nothing from one with
+   * nothing to watch, both of which produce the same empty `escapes` list.
+   */
+  readonly escapesWatched?: boolean
   readonly envelope?: RunEnvelope
 }
 
@@ -372,11 +379,18 @@ function checkWriteScope(
  * write-scope declaration exists to bound required output, so a run that wrote
  * nothing skips rather than passing on a fabricated zero. An escape-scope
  * declaration exists to bound a side effect nothing requires, so zero escapes
- * is the outcome a correct run produces and reports as a pass outright.
+ * is the outcome a correct run produces and reports as a pass outright,
+ * provided a watched root held something to watch. `run.sh`'s `snapshot_root`
+ * returns an empty manifest both when a watch ran clean and when none of the
+ * four watched directories existed under a root, and the two produce the same
+ * empty `escapes` list. `watched` is what tells them apart: a run that had
+ * nothing to watch reports unmeasured rather than passing on a diff it never
+ * had the target to take.
  */
 function checkEscapeScope(
   expectation: Expectation,
   escapes: readonly string[] | undefined,
+  watched: boolean | undefined,
 ): KindOutcome {
   if (expectation.escapeScope === undefined) return { results: [], skipped: [] }
 
@@ -388,6 +402,13 @@ function checkEscapeScope(
   }
 
   if (escapes.length === 0) {
+    if (watched === false) {
+      return {
+        results: [],
+        skipped: ['escape scope: no watched root held a target, unmeasured'],
+      }
+    }
+
     return {
       results: [{ ok: true, message: 'no escape during this run' }],
       skipped: [],
@@ -489,7 +510,11 @@ export function checkExpectation(
   input: CheckInput,
 ): Verdict {
   const scope = checkWriteScope(expectation, input.writes)
-  const escapeScope = checkEscapeScope(expectation, input.escapes)
+  const escapeScope = checkEscapeScope(
+    expectation,
+    input.escapes,
+    input.escapesWatched,
+  )
   const reply = checkReply(expectation, input.envelope)
   const envelope = checkEnvelope(expectation, input.envelope)
 

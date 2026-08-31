@@ -51,6 +51,10 @@ The alternative was accepting the exposure and stating it in prose, declined bec
 
 Two things a scoped pass does not say. It says nothing about a write outside the watch's own reach, being a home directory, a sibling worktree, or the machine-level target and session registries a live dispatch would actually touch, since those sit past what `escape_roots` names at all. It says nothing about whether the write it did see belongs to this run rather than a sibling's, since the harness still cannot attribute one. `.claude/context/sandbox/coverage.md` carries what a reader can and cannot conclude from either kind of pass.
 
+### An empty manifest cannot say whether it watched anything
+
+`snapshot_root` in `run.sh` returns an empty manifest both when a watch ran clean and when none of the four scratch directories existed under a root, and the two produce the same empty `escapes` list, so `checkEscapeScope` could not tell a real pass from a watch with nothing to watch. `run.sh` now sets a flag whenever any root held one of the four directories at snapshot time and passes it through `--escapes-watched`, and `checkEscapeScope` reports unmeasured rather than passing when no root did. A run whose watched roots held something and still saw nothing still passes outright, which is the case the declaration exists to check.
+
 ### The checker and its verdicts
 
 An assertion kind whose input the caller did not supply reports as unchecked rather than dropping out of the count. Omitting `--writes` would otherwise let write scope vanish silently from the cheap standalone path, which is the path most likely to be trusted. A verdict never reports `pass` having asserted nothing, since the declaration counts globs while the verdict counts writes and the two diverge at zero.

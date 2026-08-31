@@ -77,6 +77,7 @@ interface CheckOptions {
   readonly envelope?: string
   readonly writes?: string
   readonly escapes?: string
+  readonly escapesWatched?: boolean
   readonly json?: boolean
   readonly strict?: boolean
 }
@@ -365,6 +366,10 @@ function runCheck(
       sandboxDir,
       writes: readPathList(options.writes),
       escapes: readPathList(options.escapes),
+      escapesWatched:
+        options.escapes === undefined
+          ? undefined
+          : options.escapesWatched === true,
       envelope: readEnvelope(options.envelope),
     },
   )
@@ -411,6 +416,10 @@ export function register(program: Command): void {
     .option(
       '--escapes <file>',
       'Newline-delimited paths written to a watched toolkit root, for escape scope',
+    )
+    .option(
+      '--escapes-watched',
+      'At least one watched root held a target this run, so a zero-escape file is a clean watch rather than one with nothing to watch',
     )
     .option('--json', 'Emit the verdict as JSON on stdout')
     .option('--strict', 'Exit non-zero when the arm declares no expectation')
