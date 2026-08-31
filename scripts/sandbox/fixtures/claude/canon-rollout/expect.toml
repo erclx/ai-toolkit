@@ -101,6 +101,7 @@ reply = ["kestrel-a", "kestrel-b"]
 manual = [
   "The reason given for refusing kestrel-a is that it is behind its remote, rather than some other property that happens to separate the two. Judgment: the narration fixes the line and leaves the reason as free text, and no pattern reads whether the reason is the right one. The first driven run gave the right one, naming the commit count and both short SHAs.",
   "The run treated the two directories as one target rather than as two. Semantic: the assertions below read which path was chosen and cannot tell a run that resolved a shared origin from one that picked between two projects it thought were unrelated.",
+  "The run's `sessions.new` list is empty and `sessions.watched` is true. Semantic: a nested background dispatch reports beside the verdict rather than inside it, so no declaration key here reads it and `escape_scope` above deliberately does not cover it. This is the arm the dispatch incident came from, and a `watched` of false means the registry was absent rather than that the run dispatched nothing.",
 ]
 
 # The decision itself, in the shape the narration fixes. Anchored to the line
