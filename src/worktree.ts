@@ -9,15 +9,21 @@ import { gitEnv } from '@/git-env'
  * files the session has edited only if it resolves the root this way. The
  * working directory is not a substitute, since a caller invoking from a
  * subdirectory would resolve a root holding none of the trees a verb reads.
+ *
+ * The directory to resolve from is an argument so a caller holding a root of
+ * its own asks about that one rather than about wherever the process happens to
+ * stand, which is what a verb driven by an injected root needs.
  */
-export async function currentWorktreeRoot(): Promise<string> {
-  const result = await $`git rev-parse --show-toplevel`
+export async function currentWorktreeRoot(
+  cwd: string = process.cwd(),
+): Promise<string> {
+  const result = await $`git -C ${cwd} rev-parse --show-toplevel`
     .env(gitEnv())
     .quiet()
     .nothrow()
-  if (result.exitCode !== 0) return process.cwd()
+  if (result.exitCode !== 0) return cwd
 
-  return result.stdout.toString().trim() || process.cwd()
+  return result.stdout.toString().trim() || cwd
 }
 
 /**

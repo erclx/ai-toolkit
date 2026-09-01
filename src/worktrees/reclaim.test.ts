@@ -214,6 +214,35 @@ describe('reclaimReport', () => {
     expect(verdict.route).toBeNull()
   })
 
+  // Git removes the directory a caller is standing in without complaint, and
+  // every later call scoped to that directory then fails, so the run would leave
+  // the branches after it undeleted and blame the worktrees for it.
+  it('should refuse the linked worktree the reading is being run from', async () => {
+    const path = linked('wt-parser', 'feat/parser')
+
+    const report = await reclaimReport({
+      cwd: path,
+      resolve: async () => roster(),
+      mergedPullRequests: async () => merged(['feat/parser', 673]),
+    })
+
+    const verdict = verdictFor(report, path)
+    expect(verdict.reclaimable).toBe(false)
+    expect(verdict.refusals).toEqual(['current-worktree'])
+  })
+
+  // The main worktree already refuses on its own, so a reading run from there
+  // names one reason rather than stacking a second that says the same thing.
+  it('should not stack the current-worktree refusal onto the main worktree', async () => {
+    const report = await reclaimReport({
+      cwd: ROOT,
+      resolve: async () => roster(),
+      mergedPullRequests: async () => merged(['main', 1]),
+    })
+
+    expect(verdictFor(report, ROOT).refusals).toEqual(['main-worktree'])
+  })
+
   it('should refuse a detached worktree that holds no branch to match', async () => {
     git('worktree', 'add', '--quiet', '--detach', 'wt-detached')
 

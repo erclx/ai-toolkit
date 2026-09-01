@@ -8,7 +8,11 @@ import {
   resolveSessions,
   type SessionReport,
 } from '@/sessions/resolve'
-import { listWorktrees, type WorktreeEntry } from '@/worktree'
+import {
+  currentWorktreeRoot,
+  listWorktrees,
+  type WorktreeEntry,
+} from '@/worktree'
 
 const GH_TIMEOUT_MS = 30_000
 
@@ -22,6 +26,7 @@ const MERGED_LIMIT = 200
 /** Why one worktree cannot be reclaimed, one entry per failing condition. */
 export type Refusal =
   | 'main-worktree'
+  | 'current-worktree'
   | 'detached-head'
   | 'no-merged-pull-request'
   | 'uncommitted-changes'
@@ -220,6 +225,7 @@ function holders(
 function verdict(
   entry: WorktreeEntry,
   isMain: boolean,
+  isCurrent: boolean,
   status: StatusReport,
   merged: ReadonlyMap<string, number>,
   sessions: readonly ResolvedSession[],
@@ -231,6 +237,13 @@ function verdict(
   const refusals: Refusal[] = []
 
   if (isMain) refusals.push('main-worktree')
+  // Git removes the directory a caller is standing in without complaint, and
+  // every later call scoped to that directory then fails, so a run that took it
+  // would leave the branches behind it undeleted and report the failures as the
+  // worktrees' own. The main worktree is already refused above, so this names
+  // only a linked one.
+  else if (isCurrent) refusals.push('current-worktree')
+
   if (entry.branch === null) refusals.push('detached-head')
   else if (pullRequest === null) refusals.push('no-merged-pull-request')
 
@@ -285,11 +298,12 @@ export async function reclaimReport(
   const readStatus = opts.worktreeStatus ?? worktreeStatus
   const resolve = opts.resolve ?? resolveSessions
 
-  const [entries, merged, sessions, repository] = await Promise.all([
+  const [entries, merged, sessions, repository, current] = await Promise.all([
     listAll(cwd),
     readMerged(cwd),
     resolve(),
     repositoryOf(cwd),
+    currentWorktreeRoot(cwd),
   ])
 
   if (merged.kind === 'unreadable') {
@@ -321,6 +335,7 @@ export async function reclaimReport(
     verdict(
       entry,
       index === 0,
+      entry.path === current,
       statuses[index] ?? { readable: false, dirty: false, missing: false },
       byBranch,
       sessions.sessions,
