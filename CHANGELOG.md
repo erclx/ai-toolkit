@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.9.0](https://github.com/erclx/canon/compare/v4.8.1...v4.9.0) (2026-09-01)
+
+
+### Features
+
+* **design:** consolidate six palettes onto one source with a channel ([#1324](https://github.com/erclx/canon/issues/1324)) ([52bea58](https://github.com/erclx/canon/commit/52bea58f263852e5cc6f21b4359371d0cf96a32a))
+
 ## [4.8.1](https://github.com/erclx/canon/compare/v4.8.0...v4.8.1) (2026-09-01)
 
 
