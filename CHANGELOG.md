@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.13.0](https://github.com/erclx/canon/compare/v4.12.0...v4.13.0) (2026-09-01)
+
+
+### Features
+
+* **feedback:** cite the pre-publish scan in both feedback skills ([#1338](https://github.com/erclx/canon/issues/1338)) ([fdb270e](https://github.com/erclx/canon/commit/fdb270ef83dd782ae51812c5c4424f0d3c18bd59))
+* **worktrees:** remove the reclaimable worktrees the report only named ([#1339](https://github.com/erclx/canon/issues/1339)) ([4035997](https://github.com/erclx/canon/commit/4035997b996f899a4e2aff3d689553e5b0f8204a))
+
 ## [4.12.0](https://github.com/erclx/canon/compare/v4.11.0...v4.12.0) (2026-09-01)
 
 
