@@ -1,13 +1,13 @@
 ---
 title: Claude Code agent view
-description: Managing background sessions, their groups, peek and attach, filter syntax, pinning, the shell verbs beside the view, and its operational limits
+description: Managing background sessions, their groups, peek and attach, filter syntax, pinning, keyboard shortcuts, the shell verbs beside the view, and its operational limits
 ---
 
 # Claude Code agent view
 
 Agent view is the terminal surface that lists and manages background Claude Code sessions, opened with `claude agents` or reached automatically from a session sent to the background. Each row is a full independent session with its own conversation, transcript, and quota, dispatched with `claude --bg "<task>"` or by sending the current one to the background with `/bg`.
 
-Source: Anthropic, in the [agent view docs](https://code.claude.com/docs/en/agent-view.md), read 2026-08-27.
+Source: Anthropic, in the [agent view docs](https://code.claude.com/docs/en/agent-view.md), read 2026-09-01.
 
 ## What it manages and what it does not
 
@@ -35,7 +35,25 @@ Idle is a state, not a process signal. Measured 2026-08-27: five idle sessions e
 
 `Space` on a row opens a peek panel: full status, linked pull requests, and how long it has been waiting, without attaching. A reply typed there, or a numbered choice picked with `1`–`9`, reaches the session while the panel stays open, and `↑`/`↓` moves the peek to an adjacent row.
 
-`Enter` or `→` attaches, opening the session as a normal interactive `claude` session with every command and shortcut available, plus a recap of what happened while detached. `←` on an empty prompt, or `Ctrl+Z`, detaches back to agent view without stopping the session. `Ctrl+C` twice exits to the shell entirely.
+`Enter` attaches to the selected row, or dispatches a new session when the dispatch input holds text. `→` also attaches, opening the session as a normal interactive `claude` session with every command and shortcut available, plus a recap of what happened while detached. `←` on an empty prompt detaches back to agent view without stopping the session, and `Ctrl+Z` does the same but returns to wherever the session was backgrounded from instead, agent view or the shell. `Ctrl+C` clears the dispatch input on the first press and exits to the shell on the second.
+
+## Keyboard shortcuts
+
+`?` opens an overlay listing every shortcut in agent view, reached from the row list as well as the dispatch input. The rest of the set, beyond peek, attach, detach, and pin:
+
+| Shortcut                  | Action                                                                      |
+| ------------------------- | --------------------------------------------------------------------------- |
+| `↑` / `↓`                 | Move between rows                                                           |
+| `Shift+↑` / `Shift+↓`     | Reorder the selected session                                                |
+| `Shift+Enter` or `Ctrl+J` | Insert a newline in the dispatch input                                      |
+| `Ctrl+Enter`              | Dispatch and attach immediately                                             |
+| `Alt+1`–`Alt+9`           | Attach to session 1–9 in the focused session's directory                    |
+| `Tab`                     | Browse all subagents on an empty input, or apply the highlighted suggestion |
+| `Ctrl+S`                  | Switch grouping between state and directory                                 |
+| `Ctrl+R`                  | Rename the selected session                                                 |
+| `Ctrl+G`                  | Open the dispatch prompt in `$VISUAL` or `$EDITOR`                          |
+| `Ctrl+X`                  | Stop the session, and delete it if pressed again within two seconds         |
+| `Esc`                     | Close the peek panel, clear the input, or exit                              |
 
 ## Filter syntax
 
