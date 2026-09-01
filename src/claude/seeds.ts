@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { copyPreservingMode } from '@/copy'
+import { creationRel, isRecordEntry } from '@/record-root'
 import { rewritesOnInstall, stripSeedMarker } from '@/seed-marker'
 
 const SEEDS_DIR = join('tooling', 'claude', 'seeds')
@@ -81,13 +82,23 @@ export function planSeeds(root: string, target: string): SeedEntry[] {
   }
 
   for (const subdir of SUBDIRS) {
+    // The seed tree authors every subdirectory under `.claude/`, and three of
+    // them are record folders that install under the record root instead. A
+    // target that has not migrated resolves back to `.claude/`, so the same seed
+    // lands beside the records already there rather than opening a second root.
+    // Scaffolding one under `.claude/` now would also land it outside the single
+    // `.canon/` ignore entry a target receives, which tracks the memory pen.
+    const installRel = isRecordEntry(subdir)
+      ? creationRel(target, subdir)
+      : join(CLAUDE_DIR, subdir)
+
     for (const name of listLevel(join(source, subdir))) {
       const rel = `${subdir}/${name}`
       seeds.push({
         src: join(source, subdir, name),
-        dest: join(destDir, subdir, name),
+        dest: join(target, installRel, name),
         scanLabel: rel,
-        applyLabel: join(CLAUDE_DIR, subdir, name),
+        applyLabel: join(installRel, name),
         scope: 'claude',
         executable: subdir === HOOKS,
       })

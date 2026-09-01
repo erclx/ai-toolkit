@@ -20,7 +20,7 @@ export function register(program: Command): void {
     .option(
       '-o, --out <path>',
       'Output directory',
-      creationRel('review', 'slides'),
+      creationRel(process.cwd(), 'review', 'slides'),
     )
     .option('-v, --variant <variant>', 'Override variant (light or dark)')
     .option(

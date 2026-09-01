@@ -181,7 +181,7 @@ describe('recordsDir', () => {
   })
 
   it('should stand the creation default in for a record kind neither root carries', () => {
-    expect(recordsDir(ROOT, 'plans')).toBe(join(ROOT, '.claude', 'plans'))
+    expect(recordsDir(ROOT, 'plans')).toBe(join(ROOT, '.canon', 'plans'))
   })
 
   it('should name both record roots for a record kind', () => {

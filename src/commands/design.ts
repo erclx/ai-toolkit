@@ -17,7 +17,7 @@ export function register(program: Command): void {
     .option(
       '-o, --out <path>',
       'Output directory',
-      creationRel('review', 'design'),
+      creationRel(process.cwd(), 'review', 'design'),
     )
     .action((opts: { source: string; out: string }) => {
       const sourcePath = resolve(process.cwd(), opts.source)

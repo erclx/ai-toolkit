@@ -87,7 +87,7 @@ describe('planLesson', () => {
     expect(outcome).toMatchObject({
       ok: true,
       lesson: join(
-        '.claude',
+        '.canon',
         'teach',
         '01-regular-expressions',
         'lessons',
@@ -125,7 +125,7 @@ describe('planLesson', () => {
     expect(outcome).toMatchObject({
       stylesheetExists: false,
       stylesheet: join(
-        '.claude',
+        '.canon',
         'teach',
         '01-regular-expressions',
         'assets',

@@ -144,7 +144,7 @@ describe('applySeeds', () => {
       '.claude/settings.json',
       '.claude/hooks/guard.sh',
       '.claude/context/index.md',
-      '.claude/tasks/index.md',
+      '.canon/tasks/index.md',
       '.claude/wireframes/index.md',
       'CLAUDE.md',
     ])

@@ -6,24 +6,25 @@ import { recordRoot } from '@/record-root'
 
 /**
  * The folders a backup carries, relative to the record root `workTree` resolves
- * rather than to `.claude/` specifically, since the same nine names sit under
- * whichever root a tree holds. Most of them are the `# Claude` group the claude
- * manifest ships, minus three: the scratch folder, which is defined as deletable
- * without loss, `worktrees/`, whose contents belong to the enclosing repository
- * already, and `.records.git/`, which is the history the rest are pushed into.
- * The list is spelled out rather than read off that group so adding an ignore
- * entry cannot silently enlarge the payload.
+ * rather than to either root specifically, since the same nine names sit under
+ * whichever one a tree holds.
  *
- * `diagrams` is the one name the manifest group does not carry, so a target
- * tracks it where this repository ignores it. That is the second reason to
- * spell the list out: the manifest bounds it rather than producing it, and no
- * count taken off that group matches this one. `scripts/core/check-ignore-parity.sh`
- * compares the two lists and holds the reason `diagrams` stays apart, so the
- * one difference is enforced rather than assumed.
+ * Nothing bounds this list any more, and the move is what took the bound away.
+ * The claude manifest used to ship a folder apiece, so the `# Claude` group
+ * named a superset this could be read against; it ships one `.canon/` root
+ * entry now and names no folder at all. Spelling the list out is therefore the
+ * whole of the protection rather than half of it, since a record folder added
+ * under `.canon/` is ignored the moment it exists and enters no payload until
+ * a name is written here.
  *
- * The manifest group is the one this reads rather than the enclosing
- * repository's own `.gitignore`, which spreads the same entries across two
- * headers and carries `.claude/README.md` that no target receives.
+ * Three counts describe this surface and each is right about a different
+ * question, so they are stated apart rather than reconciled. Nine is what a
+ * disk loss would take, which is this list. Eleven is what sat under `.claude/`
+ * as an ignored folder before the move, which adds the scratch folder that is
+ * deletable without loss and `worktrees/`, whose contents belong to the
+ * enclosing repository already. Twelve is what the move relocated, which counts
+ * ignore entries rather than folders: the eleven less `worktrees/`, which stayed,
+ * plus `.records.git/` and the `README.md` a records pull writes back.
  *
  * Each entry is a top-level record folder and every archive sits inside the one
  * it archives, so the three former archive entries are covered by their parents

@@ -184,7 +184,7 @@ function isRowFor(line: string, target: string): boolean {
 /**
  * Resolves the `Plan:` target against the board and against the project root
  * both, which is how `claude-docs` reads the same line. It accepts `../plans/x.md`
- * and `.claude/plans/x.md` as one file, so a gate reading only the first form
+ * and `.canon/plans/x.md` as one file, so a gate reading only the first form
  * would pass the second and strand the plan this exists to protect.
  *
  * The resolved path is returned rather than a boolean, because the citation
@@ -213,9 +213,26 @@ export function resolveLivePlan(
   const fromBoard = resolve(dir, target)
   const fromRoot = resolve(root, target)
 
-  if (live(fromBoard)) return fromBoard
-  if (live(fromRoot)) return fromRoot
+  if (live(fromBoard)) return atOneRoot(fromBoard, plans, root)
+  if (live(fromRoot)) return atOneRoot(fromRoot, plans, root)
   return undefined
+}
+
+/**
+ * Restates a live plan path at the root this tree actually resolves, so two
+ * tasks naming one plan through different roots compare equal.
+ *
+ * Callers compare the return of `resolveLivePlan` by string. Both roots are
+ * accepted above, so without this a task citing `.canon/plans/x.md` and one
+ * citing `.canon/plans/x.md` name one file and read as two, which counts a
+ * sibling's citation as absent and refuses the archive it should allow.
+ */
+function atOneRoot(path: string, plans: string[], root: string): string {
+  const at = plans.find((dir) => isUnder(path, dir))
+
+  return at === undefined
+    ? path
+    : join(recordDir(root, PLANS), relative(at, path))
 }
 
 /**

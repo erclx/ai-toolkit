@@ -43,6 +43,18 @@ describe('collectSuperseded', () => {
     expect(collectSuperseded(TARGET)).toEqual([
       {
         rel: join('.claude', 'TASKS.md'),
+        replacedBy: join('.canon', 'tasks'),
+      },
+    ])
+  })
+
+  it('should name the old root for a target that has not migrated its board', () => {
+    writeFixture(join('.claude', 'TASKS.md'))
+    mkdirSync(join(TARGET, '.claude', 'tasks'), { recursive: true })
+
+    expect(collectSuperseded(TARGET)).toEqual([
+      {
+        rel: join('.claude', 'TASKS.md'),
         replacedBy: join('.claude', 'tasks'),
       },
     ])

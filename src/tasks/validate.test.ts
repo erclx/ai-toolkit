@@ -3,7 +3,8 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { tasksDir } from '@/tasks/archive'
+import { recordDir } from '@/record-root'
+import { archiveDir, tasksDir } from '@/tasks/archive'
 import {
   backlogPath,
   type Finding,
@@ -79,7 +80,7 @@ function trunkHolding(...landed: readonly number[]): ValidateOptions {
 const UNREACHABLE_TRUNK: ValidateOptions = { trunk: async () => undefined }
 
 async function seedArchivedTask(stem: string): Promise<void> {
-  const archive = join(ROOT, '.claude', 'tasks', 'archive')
+  const archive = archiveDir(ROOT)
   mkdirSync(archive, { recursive: true })
   await writeFile(join(archive, `${stem}.md`), `# ${stem}\n`)
 }
@@ -116,7 +117,7 @@ async function seedBacklog(lines: readonly string[]): Promise<void> {
 }
 
 async function seedPlan(stem: string): Promise<void> {
-  const plans = join(ROOT, '.claude', 'plans')
+  const plans = recordDir(ROOT, 'plans')
   mkdirSync(plans, { recursive: true })
   await writeFile(join(plans, `feature-${stem}.md`), `# ${stem}\n`)
 }
