@@ -22,9 +22,13 @@ canon tasks archive --pull-request 673 --json
 | `--json`             | Emit a machine-readable record on stdout                     |
 | `--root <path>`      | Board root, defaulting to the main worktree                  |
 
-Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a warning, because `.husky/post-merge` calls this with nobody watching. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, `no-outcomes`, `open-outcomes`, `plan-unswept`, or `bad-input`.
+Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a warning, because `.husky/post-merge` calls this with nobody watching. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, `no-outcomes`, `open-outcomes`, or `bad-input`.
 
-`plan-unswept` fires on the last task pointing at a live plan, never on every task pointing at one. The gate counts the other live tasks whose `Plan:` line resolves onto the same file, so a plan several tasks share archives its tasks freely and only the final one is held until `claude-docs` sweeps the plan. Reading the folder alone refused all of them, which deadlocked the board against a sweep correctly declining to move a plan another live task cites.
+The task carries its plan with it. When the closing task is the last live one whose `Plan:` line resolves onto that file, the plan moves to `.canon/plans/archive/` under its own name and the archived task's line is rewritten as `Plan: [feature-<slug>](../../plans/archive/feature-<slug>.md)`, a folder deeper than the live task wrote it. The `plan` field on the success record carries that `from` and `to`, and is `null` when nothing moved.
+
+A plan several tasks share stays where it is, and the task archives anyway. Moving it on the first task to close strands every sibling's pointer at a path that has gone, and `.canon/plans/` is gitignored so no history recovers the target. A `Plan:` line resolving to no file leaves the plan alone too, since a pointer somebody typed wrong is not a plan to move and holding the whole archive over it would park the board behind a repair the merge cannot make.
+
+The merge is what settles a plan. `.husky/post-merge` reads the pull request number off the squash subject and calls this verb, so both halves close in one act with nobody naming a file. That is why the move sits inside this verb rather than in a second call the hook would make after it, which could leave the task archived and the plan live.
 
 `bad-input` covers a malformed command line, which all three task verbs answer the same way. It is separate from `ambiguous` and `no-match` because those describe the board, and a caller that passed two selectors would otherwise be sent to repair a task citation that is fine.
 
@@ -53,7 +57,7 @@ The record carries `location`, one of `unstated`, `live`, `archived`, or `outsid
 
 The target resolves against the board folder and against the project root both, so `../plans/x.md` and `.canon/plans/x.md` land on the same file and one plan two tasks spelled differently counts once. Containment is tested at both record roots rather than at the one this tree resolves at, since a line somebody wrote against a root the tree has since left is still a path into the plans folder, and reading it as outside would report a shipped plan as still live. `docs/agents/records.md` states the read order.
 
-`canon tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, so a sweep calling a verb the installed `canon` predates gets no record back and archives nothing.
+`canon tasks archive` decides its plan move on this same answer, so a caller wanting the count reads it here rather than scanning the board.
 
 Branch on `reason` rather than on the exit code, which is the rule the archive section above already states and which this verb needs for a second reason. An operator's shell profile may wrap `canon` in a function that runs the binary and then another command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
 
@@ -159,7 +163,7 @@ Seven checks run. Plan and Collisions reach one half each of the `## Run now` te
 | Check      | What it reports                                                                                                      |
 | ---------- | -------------------------------------------------------------------------------------------------------------------- |
 | Shape      | A row whose cell count disagrees with its table's header, or one stranded behind a table a blank line already closed |
-| Plan       | A `## Run now` row whose Plan column carries no link, or one resolving to no file                                    |
+| Plan       | A `## Run now` row whose Plan column carries no link, resolves to no file, or disagrees with the task's own line     |
 | Mapping    | A row or backlog line naming no task file, and a task file neither surface names                                     |
 | Grouping   | A task carrying a row in more than one readiness group, or on both surfaces                                          |
 | Ordering   | A `## Needs a plan` row whose stated position disagrees with where it actually sits                                  |
@@ -167,6 +171,8 @@ Seven checks run. Plan and Collisions reach one half each of the `## Run now` te
 | Blockers   | A parked row whose blocker has stopped holding, or whose cited task resolves nowhere                                 |
 
 Shape runs before any other check reads a row, since a row failing it carries no dependable fields for the rest to check. A blank or prose line closes the table above it, so the walk treats the next pipe line as a fresh header candidate rather than as a continuation. That candidate counts as a header only when the line behind it is a separator carrying the same cell count, and one that fails is `row-untabled`, stranded behind a table that already closed. Cell count still has to match the header on every row that clears that test, and a row whose count disagrees is `row-misshapen`, the shape a dropped pipe or a merged column produces.
+
+The Plan check reads the row and the task file both, because the two are written by different hands and only the task's own `Plan:` line reaches the archive. A row carrying a plan whose task states none is `plan-uncited`, and a pair naming two different plans is `plan-mismatched`. Both sides resolve against the board and against the project root before they compare, so a row writing `../plans/x.md` and a task writing `.canon/plans/x.md` name one file rather than two.
 
 Mapping spans two surfaces, because a task sits on `priority.md` when it would plausibly be planned soon and on `backlog.md` otherwise. A task file either surface names is accounted for, a file neither names is `row-missing`, and a file both name is `row-duplicated` for the reason a task in two groups is: it claims two things about itself and only one can hold. One check across both is what lets a task move between them without the move reading as a dropped file.
 

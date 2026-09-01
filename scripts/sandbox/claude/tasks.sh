@@ -44,11 +44,11 @@ stage_setup() {
 
     log_step "Scenario ready: one shipped task archived off a two-task board"
     log_info "Context: v01.0-rate-limit is all [x], names pull request #41, and its"
-    log_info "  Plan: line already points into .canon/plans/archive/, so the"
-    log_info "  command's open-outcome and plan-unswept gates are both satisfied"
+    log_info "  Plan: line points at a live .canon/plans/feature-rate-limit.md that"
+    log_info "  no other task cites, so the archive carries the plan across with it"
     log_info "  HEAD carries the shipped work under a subject naming #41"
-    log_info "  v02.0-pagination is the control. Its outcomes stay open and it must"
-    log_info "  end the run on the board with its ordering row intact."
+    log_info "  v02.0-pagination is the control. Its outcomes stay open, and both it"
+    log_info "  and its live plan must end the run where they started."
     log_info ""
     log_info "The sandbox has no remote, so the work-reached-main check resolves"
     log_info "from the Pull request: line and the local log rather than origin/main."
@@ -56,8 +56,10 @@ stage_setup() {
     log_info "Action:  /canon:claude-tasks archive v01.0-rate-limit"
     log_info "Expect:  declared in fixtures/claude/tasks/archive/expect.toml"
     log_info "         Check it with: canon sandbox check claude:tasks archive"
-    log_info "         The task moved under .canon/tasks/archive/, its ordering"
-    log_info "         row cleared, and the control left where it was."
+    log_info "         The task moved under .canon/tasks/archive/ and its plan"
+    log_info "         under .canon/plans/archive/, the archived task's Plan: line"
+    log_info "         retargeted a folder deeper, its ordering row cleared, and"
+    log_info "         the control and its plan left where they were."
     log_info "         Two expectations need a reader and report as unchecked."
     ;;
   *)

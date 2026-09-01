@@ -2,45 +2,48 @@
 # Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
-# The arm asserts the plans sweep is board-wide. `drift` already asserts a plan
-# archived for the task the prompt names, so folding the two would make one
-# failure ambiguous between "the sweep runs" and "the sweep reaches past the
-# session". Keep them separate.
+# The arm asserts that outcome state alone moves no plan. `claude-docs` marks
+# outcomes and nothing else, and a plan is settled by the merge through
+# `canon tasks archive`, so a run here leaves all three plans exactly where it
+# found them however many tasks it closes.
+#
+# It reads board-wide for the same reason it always did. The rate-limit task
+# closed in an earlier session and nothing in the prompt mentions it, so a run
+# that reached past its own diff to sweep is what this arm has to see and refuse.
 
 # The arm runs under the default cap. A clean run on 2026-07-31 cost 28 turns,
 # just under `drift`'s 29, so the ceiling matches the default 30 the way `drift`
-# already does. The extra work this arm carries over `drift`, one more task
-# marked and one more plan moved, is a handful of edits against a board both arms
-# read and reason about once, which is where the turns actually go.
+# already does. That reading predates the plans sweep coming out, and the cap
+# stays where it is: the work this arm dropped was two moves against a board it
+# reads and reasons about once, which is where the turns actually go.
 #
 # Correcting from that 28 lands on the cap anyway. A ceiling has to sit above the
 # observation to catch a blowup rather than fire on ordinary variance, and the
 # only room above 28 is the two turns to the cap.
 max_turns = 30
 
-# Both plans move. `feature-pagination.md` belongs to the task this session's
-# diff closes, and `feature-rate-limit.md` belongs to a task that closed in an
-# earlier session and that nothing in the prompt mentions. The second path is
-# the whole point of the arm: a session-scoped sweep archives the first and
-# strands the second.
-# `feature-search.md` is the control. Its task still carries open outcomes and
-# nothing in HEAD ships search, so a correct sweep leaves it where it is. Without
-# it the arm cannot tell a board-wide sweep from one that dropped the outcome
-# gate too, since every other fixture task ends the run all `[x]` and would be
-# archived either way.
+# All three plans stay live. `feature-pagination.md` belongs to the task this
+# session's diff closes and `feature-rate-limit.md` to a task that closed in an
+# earlier session, so a run that still swept on outcome state would move both.
+# `feature-search.md` is the third: its task carries open outcomes and nothing in
+# HEAD ships search, so it stays live under every reading and separates a run
+# that moved nothing from one that moved everything.
 paths = [
-  ".canon/plans/archive/feature-pagination.md",
-  ".canon/plans/archive/feature-rate-limit.md",
+  ".canon/plans/feature-pagination.md",
+  ".canon/plans/feature-rate-limit.md",
   ".canon/plans/feature-search.md",
 ]
 
+# No plans archive at all. An `absent` entry over the three live paths would pass
+# on a run that created the folder and moved nothing into it, and the folder is
+# what a sweep leaves behind whatever it decided to carry.
 absent = [
-  ".canon/plans/feature-pagination.md",
-  ".canon/plans/feature-rate-limit.md",
+  ".canon/plans/archive/feature-pagination.md",
+  ".canon/plans/archive/feature-rate-limit.md",
   ".canon/plans/archive/feature-search.md",
 ]
 
-write_scope = [".claude/**"]
+write_scope = [".claude/**", ".canon/**"]
 
 [[content]]
 path = ".canon/tasks/v02.0-pagination.md"
@@ -48,19 +51,15 @@ pattern = '^- \[x\] Outcome: a list request accepts a page size and an offset'
 
 [[content]]
 path = ".canon/tasks/v02.0-pagination.md"
-pattern = '^Plan: \[feature-pagination\]\(\.\./plans/archive/feature-pagination\.md\)'
+pattern = '^Plan: \[feature-pagination\]\(\.\./plans/feature-pagination\.md\)'
 
-# The retarget matters more here than on the closing task. This task was already
-# `[x]` before the run, so a sweep that moved the plan without rewriting the line
-# would leave the only pointer to it aimed at a path that no longer resolves, and
-# `.canon/plans/` is gitignored so nothing recovers it.
+# Every pointer stays live, the closing task's included. A run that retargeted a
+# line without moving the plan leaves the only pointer to it aimed at a path
+# holding no file, and `.canon/plans/` is gitignored so nothing recovers it.
 [[content]]
 path = ".canon/tasks/v01.0-rate-limit.md"
-pattern = '^Plan: \[feature-rate-limit\]\(\.\./plans/archive/feature-rate-limit\.md\)'
+pattern = '^Plan: \[feature-rate-limit\]\(\.\./plans/feature-rate-limit\.md\)'
 
-# The control's pointer stays put. Asserting the plan's location alone would pass
-# on a run that retargeted the line anyway, leaving the task aimed at an archive
-# path holding no file.
 [[content]]
 path = ".canon/tasks/v03.0-search.md"
 pattern = '^Plan: \[feature-search\]\(\.\./plans/feature-search\.md\)'
