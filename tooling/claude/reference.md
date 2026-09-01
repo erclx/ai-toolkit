@@ -32,7 +32,9 @@ One ignore entry covers `.canon/` whole, so nothing under it is named separately
 
 A project installed before the split still holds its records under `.claude/`. `canon migrate records` moves them and repoints every tracked file that cites one, reporting the plan until `--write` is passed.
 
-Run `canon tooling sync claude . --write` first. The verb refuses while the project does not ignore `.canon/`, because every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. Until it runs, this project's records sit at a root the shipped ignore set no longer names, so a `git add -A` in that window picks them up.
+Run `canon tooling sync claude . --write` first. The verb refuses while the project does not ignore `.canon/`, because every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. Until the move runs, this project's records sit at a root the shipped ignore set no longer names, so a `git add -A` in that window picks them up.
+
+The verb ships with the change that split the roots and is not in a published release yet, so an installed binary answers `unknown command` until one carries it. Run it out of a canon checkout in the meantime, as `bun src/cli.ts migrate records --root <project> --write`, and read the `ok` field out of `--json` rather than the exit code, which a shell wrapper around `canon` can flatten.
 
 ## Upgrading from a single-file board
 

@@ -46,6 +46,12 @@ export interface ApplyResult {
  * A plain rename rather than `git mv`, since none of these paths is tracked and
  * git has no history to carry. The destination root is created once; a rename
  * across filesystems is not handled, because both paths sit inside one project.
+ *
+ * The folder loop stops on the first failure rather than carrying on. Each move
+ * that lands makes the tree more split, and a split tree is what `pushRecords`
+ * refuses on, so continuing turns one unmovable folder into a longer list of
+ * folders to put back by hand. Stopping does not undo what already moved,
+ * which is why the refusal on the push side exists as well.
  */
 export async function applyRecordsMove(
   root: string,
@@ -56,8 +62,16 @@ export async function applyRecordsMove(
   const failed: string[] = []
 
   for (const entry of plan.entries) {
-    await writeFile(join(root, entry.path), entry.text)
-    written += 1
+    // A rejected write leaves the tree half-rewritten with nothing said, since
+    // this runs inside a commander action that would unwind past the report.
+    // Reads still resolve through the root fallback, so the recorded failure is
+    // what a caller needs rather than a stop.
+    const done = await writeFile(join(root, entry.path), entry.text)
+      .then(() => true)
+      .catch(() => false)
+
+    if (done) written += 1
+    else failed.push(entry.path)
   }
 
   for (const move of plan.moves) {
@@ -66,8 +80,12 @@ export async function applyRecordsMove(
       .then(() => true)
       .catch(() => false)
 
-    if (done) moved += 1
-    else failed.push(move.from)
+    if (!done) {
+      failed.push(move.from)
+      break
+    }
+
+    moved += 1
   }
 
   // The old root survives the moves as an empty directory when it held records

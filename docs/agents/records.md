@@ -164,6 +164,7 @@ Point it at a private repository, and at one that is not a remote of the project
 
 | Reason              | What fired                                                                           |
 | ------------------- | ------------------------------------------------------------------------------------ |
+| `split-roots`       | Record folders sit under both roots, so the resolved work tree is not the whole set  |
 | `no-repository`     | No `.canon/.records.git`, answered with the two setup commands                       |
 | `no-remote`         | The records history has no `origin`                                                  |
 | `remote-unreadable` | The project's own remotes could not be read, so the shared-origin gate could not run |
@@ -172,6 +173,8 @@ Point it at a private repository, and at one that is not a remote of the project
 | `local-changes`     | `pull` found records on disk that the history does not carry                         |
 | `local-ahead`       | `pull` found local commits that never reached the origin                             |
 | `git-failed`        | A git call failed, with its stderr in the message                                    |
+
+`split-roots` runs ahead of every gate below it and fires on a half-migrated tree, which is what a `canon migrate records` run that failed partway leaves. `recordRoot` answers for the whole tree on the first root that exists, so a folder left at the old root is absent from the work tree while the records index still names it, and an unguarded `add -A` would stage its deletion and drop it from the remote on the next push. Finish the move, or put the stranded folders back beside the others.
 
 The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the ten has nothing to lose, so a restore onto a fresh checkout runs straight through.
 

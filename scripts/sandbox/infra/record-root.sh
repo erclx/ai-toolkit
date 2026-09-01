@@ -95,9 +95,10 @@ stage_setup() {
   log_info "refusal         : neither root carries the folder, so both are named"
   log_info "migrate         : the verb moving an unmigrated tree, then re-running clean"
   log_info "migrate-refusal : the same tree with no .canon/ ignore entry to land under"
+  log_info "records-push    : push and pull across the moved history, and the split-root refusal"
 
   select_or_route_scenario "Which scenario?" \
-    "migrated" "unmigrated" "refusal" "migrate" "migrate-refusal"
+    "migrated" "unmigrated" "refusal" "migrate" "migrate-refusal" "records-push"
 
   case "$SELECTED_OPTION" in
   "migrated")
@@ -169,6 +170,54 @@ stage_setup() {
     log_info "Expect: the records still under .claude/, untouched by a refused run"
     find . -not -path './.git/*' | sort
     ;;
+  "records-push")
+    seed_records .claude .tmp
+    printf '.canon/\n' >.gitignore
+
+    # A bare repository on this disk stands in for the private records remote.
+    # The gate this has to clear compares the records origin against every
+    # remote of the project, and a sandbox project has none, so a local path
+    # passes it the way a real private repository would.
+    origin="$PWD/../records-origin.git"
+    rm -rf "$origin"
+    git init --quiet --bare "$origin"
+    git --git-dir=.claude/.records.git init --quiet
+    git --git-dir=.claude/.records.git remote add origin "$origin"
+
+    log_step "Running: canon records push --root ."
+    run_cli records push --root . --json
+    log_info "Expect: ok true, the three seeded folders, and a commit on the bare origin"
+    log_step "Reading the origin back"
+    git -C "$origin" ls-tree -r --name-only main | sort
+    log_info "Expect: bare paths such as tasks/index.md, with no record root in any of them"
+
+    # Half a move is what a failed rename leaves, and it is the state the push
+    # guard exists for. Moving one folder is enough: `recordRoot` then answers
+    # `.canon` for the whole tree while the index still names the eight left
+    # behind, so an unguarded `add -A` would stage every one of them as deleted.
+    log_step "Half-migrating the tree, one folder moved"
+    mkdir -p .canon
+    mv .claude/memory .canon/memory
+    log_step "Running: canon records push --root ."
+    run_cli records push --root . --json
+    log_info "Expect: ok false with reason split-roots, naming the two left at .claude/"
+    log_step "Reading the origin back"
+    git -C "$origin" ls-tree -r --name-only main | sort
+    log_info "Expect: unchanged, so the refusal is what kept the folders on the remote"
+    log_step "Running: canon records pull --root ."
+    run_cli records pull --root . --json
+    log_info "Expect: ok false with reason split-roots, the same reading from the other verb"
+
+    log_step "Finishing the move"
+    run_cli migrate records --root . --write --json
+    log_step "Running: canon records push --root ."
+    run_cli records push --root . --json
+    log_info "Expect: ok true again, the work tree now resolving at .canon/"
+    log_step "Reading the origin back"
+    git -C "$origin" ls-tree -r --name-only main | sort
+    log_info "Expect: the same paths and changed 0, since the history stores none of the root"
+    ;;
+
   "refusal")
     seed_records .canon tmp
     rm -rf .canon/memory

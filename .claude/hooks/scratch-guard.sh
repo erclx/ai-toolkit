@@ -27,19 +27,19 @@ case "$file_path" in
 esac
 
 # A project whose own root sits under a path carrying a tmp segment is not
-# writing to system temp, and the bare pattern below trips the guard on every
-# source file it holds. Anchor on the project root before the pattern match.
-#
-# This gives up one case on purpose: a write to <project>/tmp/ is a genuine
-# scratch violation that no longer warns. The false positive fires on every
-# source write in an affected project, so the trade favors the anchor.
+# writing to system temp, and the bare pattern below would trip on every source
+# file it holds. The project root is stripped before the match rather than
+# exiting on it, so the segments the patterns look for are the ones the write
+# adds. Exiting on any path under the project gives up <project>/tmp/ as well,
+# which is a genuine violation this still warns on.
+matched=$file_path
 if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
   case "$file_path" in
-  "$CLAUDE_PROJECT_DIR"/*) exit 0 ;;
+  "$CLAUDE_PROJECT_DIR"/*) matched=${file_path#"$CLAUDE_PROJECT_DIR"} ;;
   esac
 fi
 
-case "$file_path" in
+case "$matched" in
 */tmp/* | *\\tmp\\* | */Temp/* | *\\Temp\\* | */var/folders/*) ;;
 *) exit 0 ;;
 esac

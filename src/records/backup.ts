@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 import { $ } from 'bun'
 import { gitEnv } from '@/git-env'
-import { recordRoot } from '@/record-root'
+import { RECORD_ROOTS, recordRoot } from '@/record-root'
 
 /**
  * The folders a backup carries, relative to the record root `workTree` resolves
@@ -104,6 +104,7 @@ const COMMIT_IDENTITY = [
 ]
 
 export const BACKUP_REFUSALS = [
+  'split-roots',
   'no-repository',
   'no-remote',
   'remote-unreadable',
@@ -299,6 +300,52 @@ async function resolveRemote(root: string): Promise<string | BackupRefused> {
 }
 
 /**
+ * Backed folders sitting at a record root other than the one `workTree` chose.
+ *
+ * A half-migrated tree is the case this reads. `recordRoot` answers for the
+ * whole tree on the first root that exists, so one folder left behind by a move
+ * that failed partway is absent from the work tree while the records index
+ * still names it. `scopedFolders` puts it in the pathspec on the index side,
+ * `add -A` stages its deletion, and the push drops it from the remote, which is
+ * the harm `RETIRED_FOLDERS` documents reached by a different route.
+ *
+ * Both verbs refuse on it rather than only `push`. A `pull` resets the resolved
+ * work tree hard and leaves the stranded copy beside it, which is not a loss but
+ * is a tree where two roots disagree and neither is wrong.
+ *
+ * Only `BACKED_FOLDERS` is read. The scratch folder is deletable by definition
+ * and `worktrees/` belongs to the enclosing repository, so neither stranded
+ * anywhere costs a record.
+ */
+function strandedFolders(root: string): string[] {
+  const resolved = resolve(workTree(root))
+
+  return RECORD_ROOTS.flatMap((candidate) => {
+    const dir = join(root, candidate)
+    if (resolve(dir) === resolved) return []
+
+    return BACKED_FOLDERS.filter((folder) => existsSync(join(dir, folder))).map(
+      (folder) => join(candidate, folder),
+    )
+  })
+}
+
+/** Refuses a tree whose records sit under both roots, naming what to move. */
+function refuseSplitRoots(root: string): BackupRefused | undefined {
+  const stranded = strandedFolders(root)
+  if (stranded.length === 0) return undefined
+
+  return refuse(
+    'split-roots',
+    [
+      `Records sit under both roots, so ${relative(root, workTree(root))} is not the whole set and a push would stage the rest as deleted:`,
+      ...stranded.map((path) => `  ${path}`),
+      'Finish the move with canon migrate records --write, or put these back beside the others by hand.',
+    ].join('\n'),
+  )
+}
+
+/**
  * The subset of the backed and retired names a pathspec can name: on disk, or
  * already in the records index.
  *
@@ -346,6 +393,9 @@ function countLines(text: string): number {
  * that commit on one disk, which is the state the whole verb exists to end.
  */
 export async function pushRecords(root: string): Promise<PushOutcome> {
+  const split = refuseSplitRoots(root)
+  if (split) return split
+
   const remote = await resolveRemote(root)
   if (typeof remote !== 'string') return remote
 
@@ -407,6 +457,9 @@ export async function pushRecords(root: string): Promise<PushOutcome> {
  * resolves by pushing first or by moving the local folders aside.
  */
 export async function pullRecords(root: string): Promise<PullOutcome> {
+  const split = refuseSplitRoots(root)
+  if (split) return split
+
   const remote = await resolveRemote(root)
   if (typeof remote !== 'string') return remote
 

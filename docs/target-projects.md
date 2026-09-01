@@ -128,17 +128,21 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 Session records moved out of `.claude/` and into a root of their own. What is committed stays where it is, and everything gitignored, being the task board, the plans, the memory pen, the review reports, and the scratch folder, now lives under `.canon/`, which a single ignore entry covers.
 
-Run this once per project, ahead of the sync commands below:
+**`canon migrate records` is not in a published release yet.** It ships with the change that split the roots, so an installed binary answers `unknown command` until the next release carries it. Until then, run it out of a canon checkout against the project by path:
 
 ```bash
 canon tooling sync claude . --write
-canon migrate records
-canon migrate records --write
+bun src/cli.ts migrate records --root /path/to/project --json
+bun src/cli.ts migrate records --root /path/to/project --write --json
 ```
 
-The first line takes the `.canon/` ignore entry, and the verb refuses until the project has it, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. The second reports the plan and the third applies it, moving the folders and repointing every tracked file that cites one.
+Once the release lands, the same three lines read `canon migrate records` from inside the project. Either way the first line takes the `.canon/` ignore entry, and the verb refuses until the project has it, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. The second reports the plan and the third applies it, moving the folders and repointing every tracked file that cites one.
 
-Until it runs, the project is exposed. The shipped ignore set no longer names the old record paths, so a project holding records at `.claude/` stops ignoring them on its next `canon tooling sync`, and the first sign is a memory file or a task board appearing in a commit. Every command reads either root, so nothing else breaks in the meantime, and running the move is what closes it.
+Read the `ok` field out of the `--json` record rather than the exit code. A shell profile that wraps `canon` in a function takes its status from whatever the function runs last, so an absent subcommand and a clean run can both exit 0, and a reader watching the exit alone concludes the move happened.
+
+A tracked file that names an old record path on purpose, such as prose dating a decision, keeps it by carrying `canon-keep-record-root` on that line or the one above. The report pass prints every file it would rewrite, which is where to catch one before `--write` runs.
+
+Until the move runs, the project is exposed. The shipped ignore set no longer names the old record paths, so a project holding records at `.claude/` stops ignoring them on its next `canon tooling sync`, and the first sign is a memory file or a task board appearing in a commit. Every command reads either root, so nothing else breaks in the meantime, and running the move is what closes it.
 
 ### Check first
 
