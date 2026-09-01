@@ -52,6 +52,8 @@ Sequencing rationale had no home under either arrangement, because the tasks sta
 
 The cell holds one row's reasoning and nothing wider. Why one group of work runs before another is carried by no surface at all, which the tasks standard now states rather than pointing at a file, so a session wanting it asks whoever ordered the board.
 
+The three groups have no slot at the other end either, for work too small to plan that is executing in the session filing it. `## Run now` requires a written plan covering every open outcome, so a change agreed as a diff in conversation cannot enter it, and the backlog asserts that nobody has scheduled the task, which is false of work already running. `v74.8` took `## Needs a plan` with the mismatch stated in its own `Waiting on` cell, on the reading that a row contradicting its heading for the minutes before a merge clears it costs less than a fourth group the standard bars. Measured 2026-09-01.
+
 ## Validating a row
 
 `canon tasks validate` checks what a row claims once the sweep has rewritten it. It is a verb rather than a hook because the board is gitignored per-machine scratch, so a `PostToolUse` hook would fire on intermediate states mid-restructure and run nowhere but an interactive session. It reads and never writes, since a row is the orchestrator's claim about readiness and a validator repairing one would assert the claim it exists to test.
