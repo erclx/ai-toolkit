@@ -5,6 +5,13 @@ import { listRepositoryFiles } from '@/git-files'
 import { applyRecordsMove, applyRename, readSources } from '@/migrate/apply'
 import { isToolkitOwned, planRename, type RenamePlan } from '@/migrate/plan'
 import {
+  applyRecordTree,
+  planRecordTree,
+  readRecordTree,
+  type RecordTreePlan,
+  walkRecordTree,
+} from '@/migrate/record-tree'
+import {
   ignoresDestination,
   isRecordArtifact,
   planRecordsMove,
@@ -280,6 +287,125 @@ function toRecordsRecord(
   }
 }
 
+interface RecordTreeOptions {
+  readonly json?: boolean
+  readonly write?: boolean
+  readonly root?: string
+}
+
+/**
+ * Repoints the old-root citations left inside the record tree itself.
+ *
+ * The sibling verb sweeps a git listing, which reaches every tracked file and
+ * none of the records, since those are gitignored by construction. This one
+ * walks the new root directly and is scoped to the folders a session still
+ * follows a path into, so the closed trails and the scratch folder keep saying
+ * what they say.
+ *
+ * No ignore gate here. Nothing moves, so there is no destination whose ignore
+ * status could publish a record, and a run in a project the move has not
+ * reached finds no new root to walk and reports nothing.
+ */
+async function runRecordTree(opts: RecordTreeOptions): Promise<number> {
+  const root = opts.root ?? process.cwd()
+
+  const walk = await walkRecordTree(root)
+  const plan = planRecordTree(
+    await readRecordTree(root, walk.files),
+    walk.excluded,
+    walk.skipped,
+  )
+
+  // stdout, so the record pipes clean. `pipeOutput` frames to stderr, which is
+  // where this command's report belongs and where a JSON record does not.
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify(toRecordTreeRecord(plan, walk.files.length, opts.write))}\n`,
+    )
+  }
+
+  reportRecordTree(plan, walk.files.length)
+
+  if (plan.entries.length === 0) return 0
+
+  if (!opts.write) {
+    logWarn('Nothing was written. Pass --write to apply this plan.')
+    return 2
+  }
+
+  const applied = await applyRecordTree(root, plan)
+  logStep(`Rewrote ${plural(applied.written, 'file')}.`)
+
+  if (applied.failed.length > 0) {
+    logError(`Could not write ${plural(applied.failed.length, 'file')}.`)
+    for (const path of applied.failed) logError(`  ${path}`)
+    return 1
+  }
+
+  return 0
+}
+
+/** How much of a citation's line the report prints before it wraps. */
+const LINE_WIDTH = 160
+
+function excerpt(text: string): string {
+  return text.length <= LINE_WIDTH ? text : `${text.slice(0, LINE_WIDTH)}…`
+}
+
+/**
+ * Names every citation with the line it sits on.
+ *
+ * The record tree is untracked and unbacked, so a wrong rewrite has no git undo
+ * and a count would give a reader nothing to judge before passing `--write`.
+ * The excluded corpora take the opposite treatment for the same reason
+ * `reportRecords` counts the records it skips: they are thousands of files
+ * nobody is being asked to check.
+ */
+function reportRecordTree(plan: RecordTreePlan, swept: number): void {
+  logInfo(`${plural(swept, 'file')} in the live record surface.`)
+  logInfo(
+    `${plural(plan.entries.length, 'file')} to change, ${plural(plan.rewritten, 'citation')} to rewrite.`,
+  )
+
+  for (const entry of plan.entries) {
+    for (const line of entry.lines) {
+      logInfo(`  ${entry.path}:${line.line}  ${excerpt(line.text)}`)
+    }
+  }
+
+  logInfo(`${plural(plan.kept, 'citation')} marked to keep the old root.`)
+
+  for (const corpus of plan.excluded) {
+    logInfo(`  ${corpus.path}: ${plural(corpus.files, 'file')}, left alone.`)
+  }
+
+  for (const path of plan.skipped) {
+    logInfo(`  ${path}: a git object store, skipped by name.`)
+  }
+}
+
+function toRecordTreeRecord(
+  plan: RecordTreePlan,
+  swept: number,
+  wrote: boolean | undefined,
+): unknown {
+  return {
+    ok: true,
+    wrote: wrote === true,
+    swept,
+    files: plan.entries.length,
+    rewritten: plan.rewritten,
+    kept: plan.kept,
+    excluded: plan.excluded,
+    skipped: plan.skipped,
+    paths: plan.entries.map((entry) => ({
+      path: entry.path,
+      rewritten: entry.rewritten,
+      lines: entry.lines,
+    })),
+  }
+}
+
 export function register(program: Command): void {
   const migrate = program
     .command('migrate')
@@ -326,6 +452,53 @@ export function register(program: Command): void {
     )
     .action(async (opts: RecordsOptions) => {
       process.exitCode = await runRecords(opts)
+    })
+
+  migrate
+    .command('record-tree')
+    .description('Repoint old-root citations inside the records themselves')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option('--write', 'Apply the plan rather than reporting it')
+    .option(
+      '--root <path>',
+      'Project root, defaulting to the working directory',
+    )
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Run this after canon migrate records. That verb sweeps a git listing,',
+        'so it reaches every tracked file and none of the records, which are',
+        'gitignored by construction. This one walks the new root itself.',
+        '',
+        'Scope: diagrams, memory, plans, proposals, review, tasks, and teach,',
+        'each minus its own archive subtree. The closed trails under groundwork',
+        'and intake, the scratch folder, and the backup history are reported as',
+        'counts and never rewritten, since a path inside a closed trail is part',
+        'of a sentence about work that already ended.',
+        '',
+        'Exit codes:',
+        '  0  nothing to rewrite, or --write applied the whole plan',
+        '  1  a write failed',
+        '  2  a plan exists and --write was not passed',
+        '',
+        'Every citation is reported with its file, its line, and the line text.',
+        'The records are untracked and unbacked, so a wrong rewrite has no undo',
+        'and the report is what a reader judges before passing --write.',
+        '',
+        'A line carrying canon-keep-record-root, or the line below it, keeps the',
+        'old root. Prose that dates a decision needs it; a live path does not.',
+        '',
+        'Examples:',
+        '  canon migrate record-tree',
+        '  canon migrate record-tree --write',
+        '  canon migrate record-tree --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: RecordTreeOptions) => {
+      process.exitCode = await runRecordTree(opts)
     })
 
   migrate
