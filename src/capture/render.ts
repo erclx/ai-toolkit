@@ -1,21 +1,27 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, dirname } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { chromium } from '@playwright/test'
-import type { Browser, Page } from '@playwright/test'
+import { chromium } from 'playwright-core'
+import type { Browser, Page } from 'playwright-core'
 import type { CaptureSource } from '@/capture/sources'
 import { primaryFontFamily, resolveCaptureSources } from '@/capture/sources'
 import { formatStamp, hashSource, stampPath } from '@/capture/stamp'
 
 /**
  * Every browser reference the capture command makes lives in this module, and
- * `files` in `package.json` excludes it, because capture regenerates images
- * committed to this repository and a target has nothing to regenerate.
  * `src/commands/capture.ts` reaches it through a dynamic import so `src/cli.ts`
  * never resolves the engine at startup.
  *
- * `@/demo/drive` is the other browser module and ships, since its whole purpose
- * is running in someone else's project.
+ * It ships, like `@/demo/drive`, `@/inventory/walk`, and `@/driver/drive`.
+ * Regenerating this repository's own committed images was the reason it stayed
+ * behind, and it was a reason about one caller rather than about the mechanism:
+ * a target renders its own generated pages and proves its own fonts resolved,
+ * which is the whole of what this module does.
+ *
+ * It imports `playwright-core` rather than `@playwright/test` for the same
+ * reason the three siblings do. The test runner is a development dependency the
+ * published tarball never carries, so the earlier import resolved here and
+ * threw `ERR_MODULE_NOT_FOUND` in every target install.
  */
 
 const DEVICE_SCALE_FACTOR = 2
