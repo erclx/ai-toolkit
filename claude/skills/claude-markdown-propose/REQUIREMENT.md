@@ -23,7 +23,6 @@ A second failure compounds the first. A claim copied across several files is cor
 - Carry three labelled variants on a change whose replacement was invented, and one on a change that corrects text to a recorded fact
 - Write one proposal file per source file under `.claude/proposals/<slug>/` and stop, leaving `You:` empty on every change
 - Apply only a change carrying an answer, one file at a time, and re-grep its anchor before applying it
-- Name a folder that does not collide with `.claude/audits/`, which held generated data rather than decision state until that file folded into `.claude/canon/`
 - Report what each file leaves alone, so a proposal cannot be read as finding everything wanting
 
 ## Must not
