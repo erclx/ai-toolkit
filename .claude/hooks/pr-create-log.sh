@@ -40,7 +40,13 @@ root="${CLAUDE_PROJECT_DIR:-.}"
 case "$root" in
 */.claude/worktrees/*) root="${root%/.claude/worktrees/*}" ;;
 esac
-log_dir="$root/.claude/.tmp/pr-create-log"
+# The log is scratch, so it follows the scratch folder to whichever record root
+# the project carries rather than creating a second one beside it.
+if [ -d "$root/.canon" ]; then
+  log_dir="$root/.canon/tmp/pr-create-log"
+else
+  log_dir="$root/.claude/.tmp/pr-create-log"
+fi
 mkdir -p "$log_dir"
 session=$(printf '%s' "$input" | jq -r '.session_id // "unknown"')
 printf -- '- %s session=%s pr=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$session" "$url" >>"$log_dir/log.md"
