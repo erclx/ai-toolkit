@@ -158,13 +158,18 @@ This chain owns the receipt's lifetime, which is what makes the Output block's c
 
 Invoke `canon:git-ship`. That body owns the sequence, being the verify gate, memory capture, both doc syncs, staging, the commit grouping, the branch rename, the pull request, the CI watch, and the scoped memory review, along with the reason each step sits where it does. This step used to restate that list and the two drifted apart with nothing comparing them, so read the order there and never here.
 
-One thing this chain adds. Mark the pull request as a draft as soon as `git-ship`'s pull request step returns, ahead of its CI watch:
+One thing this chain adds. Mark the pull request as a draft as soon as `git-ship`'s pull request step returns, ahead of its CI watch, then read the flag back:
 
 ```bash
 gh pr ready --undo
+gh pr view <number> --json isDraft
 ```
 
-Placement is the whole point of naming it. Marking after the watch leaves the pull request ready to merge for as long as CI runs, which is the window an unattended worker's branch is least supervised.
+Name the number `git-ship`'s pull request step returned rather than leaving the read to resolve by branch, since `gh pr view` matches a head ref and ignores state, so a reused branch name answers with a merged namesake's flag.
+
+Report what the read returned rather than what the command printed, since the exit says the call ran and says nothing about the state. A `true` reports a draft. A `false` reports the pull request as opened ready and unsupervised, and the chain stops there. Never re-issue the undo on a disagreeing read, which fights whoever readied it instead of guarding anything.
+
+Placement is why the call sits ahead of the watch rather than after it. Marking afterwards leaves the pull request unmarked for the whole CI run, which is the stretch an unattended worker's branch is least supervised. What the mark buys is a reader learning the pull request has had no review yet. It buys no bound on that stretch: readying a pull request to merge lifts the mark, GitHub requires it before a merge, and it is the operator's act to take.
 
 `git-ship` verifies again at its own gate, which repeats this chain's Step 3 on the run where nothing stopped. That cost is deliberate: four of the stop points in the table below hand the run straight back to that body, and a gate the chain skips for being redundant is a gate no resumed run ever meets.
 
@@ -173,16 +178,18 @@ Placement is the whole point of naming it. Marking after the watch leaves the pu
 Respond with up to five lines:
 
 ```plaintext
-✅ Autoshipped (draft): <PR url>
+✅ Autoshipped (<state>): <PR url>
 <N minor findings kept in .canon/review/branch/review-<slug>.md>
 <N facts routed to context entries>
 <N memories captured in .canon/memory/>
 <Memory proposal at .canon/review/memory/memory-review-<slug>.md>
 ```
 
+`<state>` is whatever the Step 7 read returned, being `draft` or `ready, unsupervised`, rather than the state the undo asked for. Writing the word `draft` there unconditionally is what this line used to do, and it named a state no step had read.
+
 Omit the second line if there were no minor findings, and the third if nothing routed. Omit the fourth and fifth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal. A run that routes every fact and writes none is the shape to expect, and it reports three lines.
 
-This block replaces the one `git-ship` closes on rather than following it. The two carry the same three trailing lines and differ on the two above them, since the first names the draft state and the second reports the minor findings Step 6 kept, neither of which that body has a counterpart for. Emitting both reports one run twice and buries the draft under a `✅ Shipped` that does not name it.
+This block replaces the one `git-ship` closes on rather than following it. The two carry the same three trailing lines and differ on the two above them, since the first names the state the read returned and the second reports the minor findings Step 6 kept, neither of which that body has a counterpart for. Emitting both reports one run twice and buries the state under a `✅ Shipped` that does not name it.
 
 ## Failure recovery
 
