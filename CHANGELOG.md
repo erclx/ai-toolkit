@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.11.0](https://github.com/erclx/canon/compare/v4.10.0...v4.11.0) (2026-09-01)
+
+
+### Features
+
+* **design:** put both rendered captures on the design source ([#1333](https://github.com/erclx/canon/issues/1333)) ([c7b6782](https://github.com/erclx/canon/commit/c7b67829cf3c88b9a3f5d2ecf86f69684150e5f6))
+* **feedback:** report the real gh cause and validate the report shape ([#1331](https://github.com/erclx/canon/issues/1331)) ([4609a57](https://github.com/erclx/canon/commit/4609a5787e77368bbd77645bb274c1fd4b1bdb97))
+* **migrate:** sweep the record tree for its own old-root citations ([#1330](https://github.com/erclx/canon/issues/1330)) ([7490280](https://github.com/erclx/canon/commit/749028042871addaf1d4f4d3abdbadcb120b4170))
+
 ## [4.10.0](https://github.com/erclx/canon/compare/v4.9.2...v4.10.0) (2026-09-01)
 
 
