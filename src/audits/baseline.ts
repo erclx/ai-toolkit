@@ -15,7 +15,7 @@ import type { AuditResult } from '@/audits/catalog'
  * that installs the CLI. A baseline in the package would hand a target this
  * repository's counts to measure its own tree against.
  */
-export const BASELINE_REL = join('.claude', 'audits', 'baseline.json')
+export const BASELINE_REL = join('.claude', 'canon', 'baseline.json')
 
 export interface Baseline {
   /** The day the record was taken, as `YYYY-MM-DD`. */
