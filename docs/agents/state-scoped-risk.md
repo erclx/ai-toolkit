@@ -30,7 +30,7 @@ Three root files are read whether or not the field names them, being `package.js
 
 ### What the corpus leaves out
 
-The corpus answers what the package publishes, which is narrower than what the repository holds. Measured against this repository on 2026-08-21, the scan read 544 files and left 593 of the 1139 git lists unread. Those include everything under `.claude/`, `wiki/`, and `internal/`, the workflow definitions under `.github/`, and the trees the publish negations remove, being `scripts/sandbox/`, `scripts/eval/`, `src/capture/`, and every test file.
+The corpus answers what the package publishes, which is narrower than what the repository holds. Measured against this repository on 2026-08-21, the scan read 544 files and left 593 of the 1139 git lists unread. Those include everything under `.claude/`, `wiki/`, and `internal/`, the workflow definitions under `.github/`, and the trees the publish negations remove, being `scripts/sandbox/`, `scripts/eval/`, and every test file. `src/capture/` was a fourth negation when that reading was taken and is not one now, so the corpus is wider than the numbers above describe and the unread count is smaller by whatever that folder holds.
 
 A public repository makes that gap readable by anyone, so a clean run means no credential in the published tree rather than none in the repository. The run states the number on every pass, including a clean one, so the bound travels with the verdict. Widening the corpus to every tracked file is a separate decision, since the row this implements puts the shipped tree first on the record's rule that content leaving the repository gates harder than content that stays.
 

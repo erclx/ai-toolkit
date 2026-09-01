@@ -75,7 +75,7 @@ Every refusal exits 1 and names its reason in the `--json` record, so a skill br
 
 ## The browser reaches every target
 
-Unlike `canon capture`, this command ships. Capture is toolkit-only because it regenerates images committed to this repository, and that reason does not transfer to a command whose whole purpose is running in someone else's project.
+This command was the first browser command to ship, and `canon capture` has since joined it. Capture was held back because its only caller was this repository regenerating its own committed images, which was a fact about that caller rather than about the render.
 
 The cost is stated rather than hidden: the browser binary installs separately, so a target runs `bunx playwright install chromium` once before a recording works at all. A run that cannot launch reports that command inside the frame and exits 1.
 
