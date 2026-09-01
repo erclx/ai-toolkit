@@ -11,15 +11,12 @@ use_config() {
 # shape the migrate verb will have to produce is the only way to reach the
 # fallback's other branch before then.
 #
-# The plan is staged already archived and the task's line points at it there. A
-# live plan makes `tasks archive` refuse as `plan-unswept`, which is correct
-# behavior and answers nothing about which root either file resolved at.
 seed_records() {
   local root=$1 scratch=$2
 
   mkdir -p "$root/plans/archive" "$root/tasks" "$root/memory" "$root/$scratch"
 
-  cat <<'PLAN' >"$root/plans/archive/feature-record-root.md"
+  cat <<'PLAN' >"$root/plans/feature-live-row.md"
 # Feature: A staged plan
 
 One paragraph of intro so the plan carries a body.
@@ -62,7 +59,7 @@ description: One line on what this task achieves
 
 # v1.1: A staged row
 
-Plan: [../plans/archive/feature-record-root.md](../plans/archive/feature-record-root.md)
+Plan: [../plans/archive/feature-shipped-row.md](../plans/archive/feature-shipped-row.md)
 
 Pull request: #1
 
@@ -74,6 +71,13 @@ Pull request: #1
 
 - A note.
 TASK
+
+  # A second plan, already archived, is what the task points at. A live target
+  # makes `tasks archive` refuse as `plan-unswept`, which is correct behavior and
+  # answers nothing about which root either file resolved at. The live one beside
+  # it is what gives `records validate plans` a record to count, since the walk
+  # skips the archive.
+  cp "$root/plans/feature-live-row.md" "$root/plans/archive/feature-shipped-row.md"
 
   printf 'scratch\n' >"$root/$scratch/note.txt"
 }
@@ -98,6 +102,8 @@ stage_setup() {
     seed_records .canon tmp
     log_step "Running: canon records validate plans --root ."
     run_cli records validate plans --root . --json
+    log_info "Expect: 1 record read, the live plan under .canon/plans"
+    log_info "Expect: ok true rather than a no-folder refusal, which is the resolution"
     log_step "Running: canon records size --root . --json"
     run_cli records size --root . --json
     log_info "Expect: plans, tasks, and memory present, read under .canon/"
@@ -116,6 +122,7 @@ stage_setup() {
     seed_records .claude .tmp
     log_step "Running: canon records validate plans --root ."
     run_cli records validate plans --root . --json
+    log_info "Expect: 1 record read, the live plan under .claude/plans"
     log_step "Running: canon tasks archive v1.1-staged-row --root ."
     run_cli tasks archive v1.1-staged-row --root . --json
     log_info "Expect: from and to both spelling .claude/tasks/, behavior unchanged"
