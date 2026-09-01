@@ -10,11 +10,69 @@
   Warm neutrals carry the frame and a single rust accent marks the counts and
   the install command. One accent, never two, because promoting a second and
   third into structural roles is what reads as a generated interface.
+
+  Every color below is a custom property the generator fills from
+  `canon design css --no-components`, so the palette arrives the same way the
+  counts do and a value moved in src/design/tokens.ts moves this frame.
 -->
 <html>
   <head>
     <meta charset="utf-8" />
     <style>
+      :root {
+        --color-background: #191512;
+        --color-surface: #211c19;
+        --color-chrome: #241e1a;
+        --color-border: #2f2823;
+        --color-text: #f4efe9;
+        --color-text-body: #c9c0b7;
+        --color-text-secondary: #a79d94;
+        --color-muted: #948a81;
+        --color-accent: #e0724b;
+        --color-success: #61c454;
+        --color-light-background: #faf7f2;
+        --color-light-surface: #f4efe6;
+        --color-light-text: #1a1815;
+        --color-light-muted: #726b62;
+        --color-light-accent: #a4471c;
+        --color-light-border: #e4dcd0;
+        --space-xs: 6px;
+        --space-sm: 12px;
+        --space-md: 18px;
+        --space-lg: 24px;
+        --space-xl: 30px;
+        --space-frame-top: 44px;
+        --space-frame-inline: 52px;
+        --space-frame-bottom: 38px;
+        --type-display-size: 34px;
+        --type-display-lh: 1.3;
+        --type-heading-size: 19px;
+        --type-heading-lh: 1.3;
+        --type-body-size: 16px;
+        --type-body-lh: 1.65;
+        --type-label-size: 12px;
+        --type-label-lh: 1.45;
+        --type-code-size: 14.5px;
+        --type-code-lh: 1.3;
+        --radius-frame: 12px;
+        --radius-panel: 10px;
+        --radius-action: 7px;
+        --radius-pill: 999px;
+        --radius-marker: 999px;
+      }
+
+      /* The record declares no light counterpart for chrome, text-body, text-secondary, success, so
+         a light-ground surface using one is reading a dark value. Declare the
+         counterpart in src/design/tokens.ts rather than overriding it here. */
+      [data-theme='light'] {
+        --color-background: var(--color-light-background);
+        --color-surface: var(--color-light-surface);
+        --color-text: var(--color-light-text);
+        --color-muted: var(--color-light-muted);
+        --color-accent: var(--color-light-accent);
+        --color-border: var(--color-light-border);
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -26,13 +84,13 @@
       }
       .window {
         width: 1200px;
-        background: #191512;
+        background: var(--color-background);
         border-radius: 12px;
         padding: 44px 52px 38px;
         display: flex;
         flex-direction: column;
         font-family: 'Noto Sans Mono', 'DejaVu Sans Mono', monospace;
-        color: #c9c0b7;
+        color: var(--color-text-body);
       }
 
       .topbar {
@@ -40,12 +98,12 @@
         justify-content: space-between;
         align-items: center;
         font-size: 15px;
-        color: #a79d94;
+        color: var(--color-text-secondary);
         padding-bottom: 22px;
-        border-bottom: 1px solid #2f2823;
+        border-bottom: 1px solid var(--color-border);
       }
       .topbar .name {
-        color: #f4efe9;
+        color: var(--color-text);
         font-weight: 700;
       }
 
@@ -65,24 +123,24 @@
       h1 {
         font-size: 34px;
         line-height: 1.3;
-        color: #f4efe9;
+        color: var(--color-text);
         font-weight: 700;
         letter-spacing: -0.01em;
       }
       .sub {
         font-size: 16px;
         line-height: 1.65;
-        color: #a79d94;
+        color: var(--color-text-secondary);
         padding-top: 22px;
       }
       .cmd {
         margin-top: 34px;
-        background: #e0724b;
+        background: var(--color-accent);
         border-radius: 7px;
         padding: 12px 18px;
         font-size: 14.5px;
         font-weight: 700;
-        color: #191512;
+        color: var(--color-background);
       }
       .cmd .sigil {
         opacity: 0.55;
@@ -90,7 +148,7 @@
       }
       .needs {
         font-size: 13px;
-        color: #a79d94;
+        color: var(--color-text-secondary);
         padding-top: 13px;
       }
 
@@ -102,8 +160,8 @@
         gap: 18px;
       }
       .col {
-        background: #211c19;
-        border: 1px solid #2f2823;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
         border-radius: 10px;
         padding: 16px 16px 14px;
         display: flex;
@@ -116,35 +174,35 @@
       }
       .col-dest {
         font-size: 11.5px;
-        color: #a79d94;
+        color: var(--color-text-secondary);
         padding-bottom: 12px;
         margin-bottom: 12px;
-        border-bottom: 1px solid #2f2823;
+        border-bottom: 1px solid var(--color-border);
       }
       .col-name {
         font-size: 12px;
         letter-spacing: 0.05em;
-        color: #a79d94;
+        color: var(--color-text-secondary);
       }
       .col-count {
         font-size: 19px;
         font-weight: 700;
-        color: #f4efe9;
+        color: var(--color-text);
       }
       .entry {
         font-size: 12.5px;
         line-height: 1.95;
-        color: #c9c0b7;
+        color: var(--color-text-body);
         white-space: nowrap;
       }
       .more {
         font-size: 12.5px;
-        color: #a79d94;
+        color: var(--color-text-secondary);
         padding-top: 11px;
       }
 
       .topbar .mark {
-        color: #e0724b;
+        color: var(--color-accent);
         padding-right: 10px;
       }
 
@@ -154,19 +212,19 @@
         align-items: baseline;
         padding-top: 26px;
         margin-top: 30px;
-        border-top: 1px solid #2f2823;
+        border-top: 1px solid var(--color-border);
         font-size: 14px;
-        color: #a79d94;
+        color: var(--color-text-secondary);
       }
       .stats b {
-        color: #f4efe9;
+        color: var(--color-text);
         font-weight: 700;
         padding-right: 6px;
       }
       .stats .note {
         margin-left: auto;
         font-size: 13px;
-        color: #948a81;
+        color: var(--color-muted);
       }
     </style>
   </head>

@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
-# Fills assets/hero.html.tmpl from the CLI catalogs and writes assets/hero.html.
+# Fills every assets/*.html.tmpl from the CLI catalogs and the design source,
+# writing the .html beside each one.
+#
+# The name says hero because the hero was the only template when it was written
+# and every citation of it across docs/, .claude/context/, and src/ spells that
+# name. Renaming the file is a sweep across roughly twenty surfaces for a
+# cosmetic gain, so the file keeps its name and the loop below covers whatever
+# templates the folder holds.
+#
+# The palette arrives the same way the counts do. `canon design css
+# --no-components` emits the custom properties from src/design/tokens.ts and
+# they land on the {{TOKENS}} placeholder, so neither frame carries its own copy
+# of a hex value and a token moved at the source moves both captures. The
+# component half is left out on purpose: it is a scrollbar and a status marker,
+# and a static capture frame renders neither.
 #
 # Only the HTML regenerates here. The PNG beside it is a chromium render whose
 # bytes move with the browser version, so asserting it in verify.sh would fail
 # on a machine whose chromium differs rather than on a stale count. Rebuild the
-# image with `canon capture assets/hero.html --selector .window` after this
-# script reports a change. The selector has no default, since the element a
-# capture crops to belongs to the page rather than to the command, and `.window`
-# is the class this repository's own two sources declare.
-# That capture also writes assets/hero.stamp, which records the digest of the
-# markup it rendered and is what the Hero stage compares, so all three files
-# commit together. The frame carries no version. `package.json` is bumped on main by the release
+# images with `canon capture assets --selector .window` after this script
+# reports a change. The selector has no default, since the element a capture
+# crops to belongs to the page rather than to the command, and `.window` is the
+# class this repository's own two sources declare.
+# That capture also writes a .stamp beside each PNG, which records the digest of
+# the markup it rendered and is what the Hero stage compares, so a frame's three
+# files commit together. The frame carries no version. `package.json` is bumped on main by the release
 # tooling, so embedding it drifts every open branch on the next release and the
 # stage then fails for work that touched nothing.
 #
@@ -22,8 +36,7 @@ set -o pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
-TEMPLATE="$PROJECT_ROOT/assets/hero.html.tmpl"
-OUTPUT="$PROJECT_ROOT/assets/hero.html"
+ASSET_DIR="$PROJECT_ROOT/assets"
 LISTED=10
 
 # `bun src/cli.ts` rather than `canon`, since a globally linked binary resolves to
@@ -32,8 +45,17 @@ catalog() {
   (cd "$PROJECT_ROOT" && CANON_NON_INTERACTIVE=1 bun src/cli.ts "$@" --json 2>/dev/null)
 }
 
-if [ ! -f "$TEMPLATE" ]; then
-  echo "regen-hero: missing template at $TEMPLATE" >&2
+TEMPLATES=("$ASSET_DIR"/*.html.tmpl)
+if [ ! -f "${TEMPLATES[0]}" ]; then
+  echo "regen-hero: no templates under $ASSET_DIR" >&2
+  exit 1
+fi
+
+# Not routed through `catalog`, since the design emitter writes CSS on stdout
+# rather than a `--json` record.
+TOKEN_CSS="$(cd "$PROJECT_ROOT" && CANON_NON_INTERACTIVE=1 bun src/cli.ts design css --no-components)"
+if [ -z "$TOKEN_CSS" ]; then
+  echo "regen-hero: the design source emitted nothing, refusing to write an unstyled frame" >&2
   exit 1
 fi
 
@@ -73,16 +95,25 @@ printf '%s' "$GOV_JSON" >"$PAYLOAD_DIR/gov.json"
 printf '%s' "$STANDARDS_JSON" >"$PAYLOAD_DIR/standards.json"
 printf '%s' "$SNIPPETS_JSON" >"$PAYLOAD_DIR/snippets.json"
 printf '%s' "$TOOLING_JSON" >"$PAYLOAD_DIR/tooling.json"
+printf '%s' "$TOKEN_CSS" >"$PAYLOAD_DIR/tokens.css"
 
 export PAYLOAD_DIR
-export TEMPLATE OUTPUT LISTED PROJECT_ROOT
+export ASSET_DIR LISTED PROJECT_ROOT
 
 bun --eval '
-const { readFileSync } = require("node:fs")
+const { readFileSync, readdirSync } = require("node:fs")
 
-const { PAYLOAD_DIR, TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT } = process.env
+const { PAYLOAD_DIR, ASSET_DIR, LISTED, PROJECT_ROOT } = process.env
 
 const payload = (name) => readFileSync(PAYLOAD_DIR + "/" + name + ".json", "utf8")
+
+// Indented to the depth a rule inside the `<style>` block sits at, so the
+// emitted file passes the same formatter every other committed asset does.
+const tokenCss = readFileSync(PAYLOAD_DIR + "/tokens.css", "utf8")
+  .trimEnd()
+  .split("\n")
+  .map((line) => (line === "" ? "" : "      " + line))
+  .join("\n")
 
 const COUNTS_JSON = payload("counts")
 const SKILLS_JSON = payload("skills")
@@ -190,6 +221,7 @@ for (const [label, list] of [
 }
 
 const values = {
+  TOKENS: tokenCss,
   SKILL_COUNT: String(skills.length),
   RULE_COUNT: String(rules.length),
   STANDARD_COUNT: String(standards.length),
@@ -205,16 +237,30 @@ const values = {
   STANDARD_MORE: remaining(standards),
 }
 
-let html = await Bun.file(TEMPLATE).text()
-for (const [key, value] of Object.entries(values)) {
-  html = html.replaceAll(`{{${key}}}`, value)
-}
+// Every template takes the same value map, so one carrying no count placeholder
+// simply resolves none of them. What a template must not do is name a
+// placeholder nobody fills, which the unresolved check below catches per file.
+const templates = readdirSync(ASSET_DIR)
+  .filter((name) => name.endsWith(".html.tmpl"))
+  .sort()
 
-const unresolved = html.match(/{{[A-Z_]+}}/g)
-if (unresolved) {
-  console.error(`regen-hero: unresolved placeholders ${[...new Set(unresolved)].join(", ")}`)
+if (templates.length === 0) {
+  console.error(`regen-hero: no templates under ${ASSET_DIR}`)
   process.exit(1)
 }
 
-await Bun.write(OUTPUT, html)
+for (const template of templates) {
+  let html = await Bun.file(ASSET_DIR + "/" + template).text()
+  for (const [key, value] of Object.entries(values)) {
+    html = html.replaceAll(`{{${key}}}`, value)
+  }
+
+  const unresolved = html.match(/{{[A-Z_]+}}/g)
+  if (unresolved) {
+    console.error(`regen-hero: ${template} carries unresolved placeholders ${[...new Set(unresolved)].join(", ")}`)
+    process.exit(1)
+  }
+
+  await Bun.write(ASSET_DIR + "/" + template.replace(/\.tmpl$/, ""), html)
+}
 '

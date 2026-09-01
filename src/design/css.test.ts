@@ -36,7 +36,14 @@ describe('buildDesignCss', () => {
   })
 
   it('leaves an ANSI role out, since no browser renders one', () => {
-    expect(buildDesignCss()).not.toContain('--color-success')
+    const css = buildDesignCss()
+
+    expect(css).not.toContain('--color-warning')
+    expect(css).not.toContain('--color-error')
+  })
+
+  it('emits success, which holds a hex a browser does render', () => {
+    expect(buildDesignCss()).toContain('--color-success: #61c454;')
   })
 
   it('carries the spacing, type, and radius layers beside the colors', () => {
@@ -60,8 +67,15 @@ describe('buildDesignCss', () => {
   it('names the roles with no light counterpart rather than inventing one', () => {
     const css = buildDesignCss()
 
-    expect(unmappedOnLight()).toEqual(['text-body', 'text-secondary'])
-    expect(css).toContain('no light counterpart for text-body, text-secondary')
+    expect(unmappedOnLight()).toEqual([
+      'chrome',
+      'text-body',
+      'text-secondary',
+      'success',
+    ])
+    expect(css).toContain(
+      'no light counterpart for chrome, text-body, text-secondary, success',
+    )
   })
 
   it('carries every component rule by default', () => {

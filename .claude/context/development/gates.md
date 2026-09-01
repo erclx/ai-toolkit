@@ -59,9 +59,11 @@ The banned pattern is a bare `wiki/` with no exemption for a body that has a rea
 
 ## Hero provenance
 
-The Hero stage regenerates `assets/hero.html` and asserts no drift on it, then runs `assert_hero_stamp` over the image beside it. The drift assert cannot reach the PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
+The Hero stage regenerates every `assets/*.html` from the template beside it and asserts no drift over the set, then runs the `captureStamps` measure in `src/gate/measures.ts` over the images. The drift assert cannot reach a PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
 
-`canon capture` writes `assets/hero.stamp` from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both files where they sit on disk and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
+`canon capture` writes a `.stamp` beside each PNG from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both files where they sit on disk and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
+
+Which frames it reads comes off the folder rather than a list. `captureStamps` takes the `.html` files under `assets/` as its bases, which is the set `resolveCaptureSources` renders, so a frame added later is covered with no second edit and an image in the folder that no markup renders is left alone. A list would pass its named members forever and say nothing about the one added next, which is what it did while `assets/install.png` sat ungated.
 
 Both halves clear on a staged regeneration rather than on a committed one. `assert_no_drift` reads `git diff --exit-code` against the working tree and `git ls-files --others`, so `git add` of the three files satisfies it while nothing is committed, and `file_sha256` reads the path rather than a committed blob. A branch that regenerates the markup, runs the capture, and stages the triple therefore passes `bun run check` before its commit exists, which is what lets a ship chain verify ahead of the step that commits. Measured 2026-08-14.
 
@@ -69,11 +71,13 @@ Two digests rather than one, because either file can move alone. The markup side
 
 Comparing the commit that last touched each file was the previous read and it measures timing. Two branches editing different counts merge clean while the binary conflicts, and a conflict resolved by taking either side leaves both files moved by the same commit with the image showing one branch's numbers. The digests catch that case and both cases above.
 
-Writing the stamp inside the render rather than in a wrapper is what makes it worth reading. A caller cannot capture and skip the stamp, so a PNG without a current one is either uncaptured or hand-placed, and the stage names which of the three files is missing rather than reporting a mismatch it cannot compute. All three absent passes, which is correct for a tree carrying none of them.
+Writing the stamp inside the render rather than in a wrapper is what makes it worth reading. A caller cannot capture and skip the stamp, so a PNG without a current one is either uncaptured or hand-placed, and the stage names which of a frame's three files is missing rather than reporting a mismatch it cannot compute. A tree carrying no markup under `assets/` has no set to read and passes, which is correct.
 
 Each digest covers a whole file rather than the five counts inside it. A template edit changes what the image shows without moving any count, and hashing bytes keeps the stage ignorant of what the markup renders, which is what lets it stay correct as the frame grows fields.
 
 The counts are regenerated from the standards and skills trees and from the CLI registration block, so any branch adding a standard, a skill, or a command group moves `assets/hero.html` whether or not it meant to touch the frame. Clearing the stage then costs a capture and all three files in the commit, which puts that branch in collision with any track holding `assets/` however its plan drew the file set. Read the collision off this stage rather than off the plan.
+
+A fourth source joined on 2026-09-01 and it reaches both frames rather than one. `canon design css --no-components` fills a `{{TOKENS}}` placeholder in every template, so a branch moving a value in `src/design/tokens.ts` moves `assets/hero.html` and `assets/install.html` together and owes two captures, two images, and two stamps.
 
 The third source is the one a plan is least likely to predict, since the commands expose no `--json` catalog and the figure comes through `canon gov counts`, which parses the registration list in `src/cli.ts` directly. Registering `canon autoship` on 2026-08-31 took the count from 35 to 36 and cost that branch the capture and the staged triple against a plan that named neither.
 

@@ -47,7 +47,14 @@ describe('readings', () => {
     const roles = new Set(readings().map((reading) => reading.role))
 
     expect(roles.has('background')).toBe(false)
-    expect(roles.has('success')).toBe(false)
+    expect(roles.has('warning')).toBe(false)
+    expect(roles.has('error')).toBe(false)
+  })
+
+  it('measures success, which holds a hex a surface renders', () => {
+    const measured = readings().filter((reading) => reading.role === 'success')
+
+    expect(measured.map((reading) => reading.ground)).toEqual(['background'])
   })
 
   it('refuses a ground the record does not declare', () => {

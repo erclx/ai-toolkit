@@ -311,12 +311,12 @@ describe('the shipped stage table', () => {
     })
   })
 
-  it('should assert the hero markup for drift beside the regen', () => {
+  it('should assert every generated frame for drift beside the regen', () => {
     const hero = STAGES.find((entry) => entry.id === 'hero')
 
     expect(hero?.checks[1]).toMatchObject({
       kind: 'drift',
-      pathspec: 'assets/hero.html',
+      pathspec: 'assets/*.html',
     })
   })
 

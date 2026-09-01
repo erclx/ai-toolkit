@@ -6,12 +6,14 @@
 :root {
   --color-background: #191512;
   --color-surface: #211c19;
+  --color-chrome: #241e1a;
   --color-border: #2f2823;
   --color-text: #f4efe9;
   --color-text-body: #c9c0b7;
   --color-text-secondary: #a79d94;
   --color-muted: #948a81;
   --color-accent: #e0724b;
+  --color-success: #61c454;
   --color-light-background: #faf7f2;
   --color-light-surface: #f4efe6;
   --color-light-text: #1a1815;
@@ -43,7 +45,7 @@
   --radius-marker: 999px;
 }
 
-/* The record declares no light counterpart for text-body, text-secondary, so
+/* The record declares no light counterpart for chrome, text-body, text-secondary, success, so
    a light-ground surface using one is reading a dark value. Declare the
    counterpart in src/design/tokens.ts rather than overriding it here. */
 [data-theme='light'] {

@@ -109,11 +109,19 @@ release-managed = [
 # Each is rewritten by a command rather than authored, and it travels in the
 # commit that changed its source, which already carries that source's label. A
 # row over any of them adds a second label to a mechanical edit.
-generated = ["assets/hero.png", "assets/hero.stamp", ".claude/canon/baseline.json"]
-# `assets/hero.html` is authored, so it is a reason of its own rather than a
-# fourth generated file. Giving it `docs` would spuriously label the 18 commits
-# that regenerated the image alongside an unrelated surface.
-rides-with-generated = ["assets/hero.html"]
+generated = [
+  "assets/hero.png",
+  "assets/hero.stamp",
+  "assets/install.png",
+  "assets/install.stamp",
+  ".claude/canon/baseline.json",
+]
+# Each is a reason of its own rather than another generated file, since a reader
+# reviews the markup where the image and the stamp are mechanical. Giving either
+# `docs` would spuriously label every commit that regenerated its image
+# alongside an unrelated surface. The match is a prefix, so each entry covers
+# the `.tmpl` beside it, which travels in the same commit for the same reason.
+rides-with-generated = ["assets/hero.html", "assets/install.html"]
 # Formatting configuration nobody reviews for behavior, and no row above owns
 # its subject.
 formatting = [".prettierignore"]

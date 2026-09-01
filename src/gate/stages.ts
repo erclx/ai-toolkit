@@ -1,6 +1,6 @@
 import {
   auditSet,
-  heroStamp,
+  captureStamps,
   markdownBans,
   type Measure,
   pluginManifests,
@@ -181,17 +181,21 @@ export const STAGES: readonly Stage[] = [
     // render whose bytes move with the browser version, so a drift check over it
     // would fail on a machine whose chromium differs rather than on a stale
     // count. The stamp measure below is what covers the image instead.
+    //
+    // The stage covers both frames under `assets/` and keeps the narrower name,
+    // because the label is spelled across the context entries and the CI table
+    // and renaming it buys nothing the pathspec below does not already say.
     id: 'hero',
     label: 'Hero',
     checks: [
       script('regen-hero.sh', 'Hero regen failed'),
       {
         kind: 'drift',
-        pathspec: 'assets/hero.html',
+        pathspec: 'assets/*.html',
         failure:
-          'Hero counts drifted. Run bun run check, then canon capture assets/hero.html --selector .window, and commit assets/hero.html with assets/hero.png and assets/hero.stamp.',
+          'A generated frame drifted from the catalogs or the design source. Run bun run check, then canon capture assets --selector .window, and commit each assets/*.html with its .png and .stamp.',
       },
-      { kind: 'measure', measure: heroStamp },
+      { kind: 'measure', measure: captureStamps },
     ],
     success: 'Hero clean',
   },

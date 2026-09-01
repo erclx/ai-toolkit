@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 export interface CommandResult {
@@ -99,8 +99,8 @@ export const SANDBOX_UNDECLARED_CEILING = 47
  */
 export const AUDITS_BASELINE = '.claude/canon/baseline.json'
 
-export const HERO_STAMP_FAILURE =
-  'The hero set disagrees with the stamp written when the image was captured. Run canon capture assets/hero.html --selector .window and commit all three files together.'
+export const CAPTURE_STAMP_FAILURE =
+  'A capture set disagrees with the stamp written when its image was captured. Run canon capture assets --selector .window and commit each frame with its image and its stamp.'
 
 function parseJson(payload: string): unknown {
   try {
@@ -585,6 +585,27 @@ async function collectPluginManifests(ctx: MeasureContext): Promise<string[]> {
   return [...seen].sort()
 }
 
+const CAPTURE_DIR = 'assets'
+
+/**
+ * Every capture under `assets/`, named by the base its three files share.
+ *
+ * Read off the folder rather than listed, and off the markup specifically,
+ * because that is how `resolveCaptureSources` decides what `canon capture
+ * assets` renders. A list would fail open on the frame somebody adds next,
+ * which is the one nobody thinks to add here, and driving off the PNGs instead
+ * would report a missing set for any image in the folder that is not a capture.
+ */
+function captureBases(root: string): string[] {
+  const dir = join(root, CAPTURE_DIR)
+  if (!existsSync(dir)) return []
+
+  return readdirSync(dir)
+    .filter((name) => name.endsWith('.html'))
+    .map((name) => name.slice(0, -'.html'.length))
+    .sort()
+}
+
 /**
  * The drift assert on the Hero stage covers the markup because the image beside
  * it is a chromium render whose bytes move with the browser. That leaves the
@@ -600,36 +621,37 @@ async function collectPluginManifests(ctx: MeasureContext): Promise<string[]> {
  *
  * Both digests are checked because either file can move alone. The markup side
  * catches an edit committed with no capture, and the image side catches an
- * image replaced under markup that never changed. All three absent passes,
- * which is correct for a tree that carries none of them.
+ * image replaced under markup that never changed. A tree carrying no markup
+ * under `assets/` has no set to read and passes, which is correct.
  */
-export const heroStamp: Measure = async (ctx) => {
-  const set = [
-    ['assets/hero.html', join(ctx.root, 'assets/hero.html')],
-    ['assets/hero.png', join(ctx.root, 'assets/hero.png')],
-    ['assets/hero.stamp', join(ctx.root, 'assets/hero.stamp')],
-  ] as const
-
-  if (set.every(([, path]) => !existsSync(path))) return { emissions: [] }
-
-  const missing = set
-    .filter(([, path]) => !existsSync(path))
-    .map(([label]) => label)
-  if (missing.length > 0) {
-    return {
-      emissions: [output(`Missing from the hero set: ${missing.join(' ')}`)],
-      failure: HERO_STAMP_FAILURE,
-    }
-  }
-
-  const [[, html], [, png], [, stamp]] = set
-  const lines = [
-    ...assertStampField(ctx.root, stamp, 'source-sha256', html),
-    ...assertStampField(ctx.root, stamp, 'image-sha256', png),
-  ]
+export const captureStamps: Measure = async (ctx) => {
+  const lines = captureBases(ctx.root).flatMap((base) =>
+    readCaptureSet(ctx.root, base),
+  )
   if (lines.length === 0) return { emissions: [] }
 
-  return { emissions: [output(lines.join('\n'))], failure: HERO_STAMP_FAILURE }
+  return {
+    emissions: [output(lines.join('\n'))],
+    failure: CAPTURE_STAMP_FAILURE,
+  }
+}
+
+/** One capture set, as the lines it has to report and none where it agrees. */
+function readCaptureSet(root: string, base: string): string[] {
+  const set = (['html', 'png', 'stamp'] as const).map(
+    (extension) => `${CAPTURE_DIR}/${base}.${extension}`,
+  )
+
+  const missing = set.filter((rel) => !existsSync(join(root, rel)))
+  if (missing.length > 0) {
+    return [`Missing from the ${base} set: ${missing.join(' ')}`]
+  }
+
+  const [html, png, stamp] = set.map((rel) => join(root, rel))
+  return [
+    ...assertStampField(root, stamp, 'source-sha256', html),
+    ...assertStampField(root, stamp, 'image-sha256', png),
+  ]
 }
 
 /**
