@@ -124,6 +124,7 @@ tanstack
 tavily
 testsrc
 threadpool
+titlebar
 tldraw
 tmpl
 tolower

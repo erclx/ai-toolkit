@@ -25,6 +25,10 @@
   "ignorePaths": [".cspell/**", "tooling/**", ".git/**"],
   "overrides": [
     {
+      "filename": ["**/*.html.tmpl"],
+      "languageId": "html"
+    },
+    {
       "filename": [
         "src/markdown/bans.ts",
         "src/markdown/bans.test.ts",
