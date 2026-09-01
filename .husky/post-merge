@@ -20,6 +20,10 @@
 # Husky runs this as `sh -e`, so the shebang is advisory and any bare command
 # returning non-zero aborts the hook and prints a husky failure. Keep every
 # test inside an `if` condition, which errexit exempts.
+#
+# The hook also reinstalls the global `canon` binary once it drifts behind
+# what is published, so PATH runs the same contract this repository ships.
+# CANON_SKIP_UPGRADE=1 turns that step off.
 
 root=$(git worktree list --porcelain 2>/dev/null | grep -m 1 '^worktree ' | cut -d' ' -f2-) || root=''
 [ -n "$root" ] || exit 0
@@ -96,5 +100,45 @@ else
   if [ "$reason" != "no-repository" ]; then
     printf '\n🗄️  Records not backed up: %s\n' "${reason:-unknown}"
     printf 'Run canon records push when the remote is reachable.\n\n'
+  fi
+fi
+
+# Reinstalls the global binary once it drifts behind what is published, so
+# every hook, script, and check driven through PATH runs the same contract
+# this repository ships rather than an older one nobody noticed. Nothing here
+# is a source checkout's problem, since `canon upgrade` refuses one on its own
+# and reports that refusal same as any other.
+#
+# CANON_SKIP_UPGRADE=1 skips this block, which is the one route to stop it
+# short of editing the hook, which then drifts from the committed copy.
+#
+# Sits last, after the records push, for the same reason that block does: a
+# slow or unreachable registry delays neither archiving nor backup. Wrapped in
+# an `if` so a failed reinstall still leaves the hook exiting zero, and the
+# `canon` presence check ran already, at the top of this file.
+if [ -z "$CANON_SKIP_UPGRADE" ]; then
+  if upgrade=$(CANON_NON_INTERACTIVE=1 canon upgrade --json 2>/dev/null); then
+    state=$(printf '%s' "$upgrade" | sed -n 's/.*"state":"\([^"]*\)".*/\1/p')
+
+    # Current is the ordinary outcome on most merges. The archive block above
+    # stays quiet on no-match and no-board, and the records push prints only
+    # when something changed, so this stays quiet on the same shape of
+    # no-op rather than putting a line on every merge that says nothing moved.
+    if [ "$state" != "current" ]; then
+      message=$(printf '%s' "$upgrade" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
+      if [ -n "$message" ]; then
+        printf '\n⬆️  %s\n\n' "$message"
+      fi
+    fi
+  else
+    # A record on stdout is a refusal reported the same way an install
+    # failure is: with the versions it was moving between, on this same
+    # `message` field. No record at all is an older global binary carrying no
+    # `upgrade` subcommand, which stays quiet the way every such gap here
+    # does until a release lands.
+    message=$(printf '%s' "$upgrade" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
+    if [ -n "$message" ]; then
+      printf '\n⬆️  Not upgraded: %s\n\n' "$message"
+    fi
   fi
 fi

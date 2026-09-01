@@ -32,6 +32,13 @@ interface UpgradeRecord {
   readonly latest?: string
   readonly state: 'upgraded' | 'current' | 'cancelled' | 'refused'
   readonly reason?: string
+  /**
+   * One rendered line for a caller that reports the outcome without parsing
+   * the rest of the record, such as `.husky/post-merge`. `current` reuses
+   * `describeSkew` verbatim so its wording never drifts from the line `canon
+   * sync --check` and `canon claude skills drift` already report.
+   */
+  readonly message: string
 }
 
 export function register(program: Command): void {
@@ -116,6 +123,7 @@ async function runUpgrade(opts: UpgradeOptions): Promise<number> {
       ...base(before, manager, command, skew),
       after: before,
       state: 'current',
+      message: describeSkew(skew),
     })
     return 0
   }
@@ -152,7 +160,11 @@ async function applyUpgrade(
   if (!proceed) {
     logWarn('Cancelled')
     outro()
-    emit(opts, { ...base(before, manager, command, skew), state: 'cancelled' })
+    emit(opts, {
+      ...base(before, manager, command, skew),
+      state: 'cancelled',
+      message: `Cancelled. ${describeSkew(skew)}`,
+    })
     return 0
   }
 
@@ -169,10 +181,11 @@ async function applyUpgrade(
   })
 
   if (result.exitCode !== 0) {
+    const target = latestOf(skew) ?? UNKNOWN_LABEL
     return refuse(
       opts,
       before,
-      `\`${command.join(' ')}\` exited ${result.exitCode}. Run it yourself to read what it reported.`,
+      `\`${command.join(' ')}\` exited ${result.exitCode} moving from ${before} to ${target}. Run it yourself to read what it reported.`,
       manager,
     )
   }
@@ -186,8 +199,15 @@ async function applyUpgrade(
     ...base(before, manager, command, skew),
     after,
     state: 'upgraded',
+    message: upgradedMessage(before, after),
   })
   return 0
+}
+
+export function upgradedMessage(before: string, after: string): string {
+  return after === before
+    ? `Reinstalled ${after}, unchanged.`
+    : `Upgraded ${before} to ${after}.`
 }
 
 function base(
@@ -195,7 +215,7 @@ function base(
   manager: Manager,
   command: readonly string[],
   skew: SkewReport,
-): Omit<UpgradeRecord, 'state'> {
+): Omit<UpgradeRecord, 'state' | 'message'> {
   const latest = latestOf(skew)
 
   return {
@@ -221,11 +241,28 @@ function refuse(
     before,
     state: 'refused',
     reason,
+    message: reason,
   })
   return 1
 }
 
 function emit(opts: UpgradeOptions, record: UpgradeRecord): void {
   if (opts.json !== true) return
-  process.stdout.write(`${JSON.stringify(record)}\n`)
+  process.stdout.write(
+    `${JSON.stringify({ ...record, message: singleLine(record.message) })}\n`,
+  )
+}
+
+/**
+ * `message` is the one field carrying arbitrary text: `describeSkew`'s
+ * `unknown` branch embeds a registry error verbatim, and a registry answering
+ * with HTML produces one already carrying a double quote. `.husky/post-merge`
+ * reads this field with a pattern rather than a parser, so a quote makes it
+ * through `JSON.stringify` as an escaped `\"` that the pattern stops at,
+ * truncating the line it prints. Collapsing whitespace and swapping the quote
+ * for an apostrophe here, once, is what keeps every emitter of `message` from
+ * having to reason about that reader.
+ */
+export function singleLine(text: string): string {
+  return text.replace(/\s+/g, ' ').replace(/"/g, "'")
 }
