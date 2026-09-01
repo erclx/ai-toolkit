@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.0](https://github.com/erclx/canon/compare/v4.4.0...v4.5.0) (2026-09-01)
+
+
+### Features
+
+* **records:** read a record folder at either root ([#1309](https://github.com/erclx/canon/issues/1309)) ([61d35ff](https://github.com/erclx/canon/commit/61d35ff65854abc67cc344c50f3b32e8448b877d))
+
 ## [4.4.0](https://github.com/erclx/canon/compare/v4.3.0...v4.4.0) (2026-08-31)
 
 
