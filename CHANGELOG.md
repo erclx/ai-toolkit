@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.0](https://github.com/erclx/canon/compare/v4.5.0...v4.6.0) (2026-09-01)
+
+
+### Features
+
+* **driver:** drive a page through named steps and measure each state ([#1311](https://github.com/erclx/canon/issues/1311)) ([725fd99](https://github.com/erclx/canon/commit/725fd993790bf74b88a2c9eb81ed74eca346fcb2))
+
 ## [4.5.0](https://github.com/erclx/canon/compare/v4.4.0...v4.5.0) (2026-09-01)
 
 
