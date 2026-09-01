@@ -7,6 +7,7 @@ import {
   destinationPath,
   ignoresDestination,
   isExcludedPath,
+  isRecordArtifact,
   MOVED_ENTRIES,
   planFolderMoves,
   planRecordsMove,
@@ -158,6 +159,70 @@ describe('isExcludedPath', () => {
   })
 })
 
+describe('isRecordArtifact', () => {
+  it('should read the whole new root as records', () => {
+    expect(isRecordArtifact('.canon/memory/user-erclx.md')).toBe(true)
+  })
+
+  it('should read a new-root folder the entry list has never heard of', () => {
+    expect(isRecordArtifact('.canon/unheard-of/a.md')).toBe(true)
+  })
+
+  it('should read the new root named bare', () => {
+    expect(isRecordArtifact('.canon')).toBe(true)
+  })
+
+  it('should read the backup history under the new root', () => {
+    expect(isRecordArtifact('.canon/.records.git/objects/ab/0123')).toBe(true)
+  })
+
+  it('should read an old-root record folder per entry', () => {
+    expect(isRecordArtifact('.claude/plans/feature-x.md')).toBe(true)
+  })
+
+  it('should read the old-root scratch folder at its own spelling', () => {
+    expect(isRecordArtifact('.claude/.tmp/gov/rules.md')).toBe(true)
+  })
+
+  it('should sweep a committed file under the old root', () => {
+    expect(isRecordArtifact('.claude/rules/core/035-tasks.md')).toBe(false)
+  })
+
+  it('should sweep every other committed surface under the old root', () => {
+    for (const path of [
+      '.claude/context/index.md',
+      '.claude/skills/internal-scripts/SKILL.md',
+      '.claude/hooks/scratch-guard.sh',
+      '.claude/ARCHITECTURE.md',
+      '.claude/settings.json',
+    ]) {
+      expect(isRecordArtifact(path)).toBe(false)
+    }
+  })
+
+  it('should sweep the worktrees carve-out the harness owns', () => {
+    expect(isRecordArtifact('.claude/worktrees/a/src/x.ts')).toBe(false)
+  })
+
+  it('should sweep a retired flat archive, which sat outside the entries', () => {
+    expect(isRecordArtifact('.claude/plans-archive/feature-x.md')).toBe(false)
+  })
+
+  it('should not take an entry name as a prefix of a longer folder', () => {
+    expect(isRecordArtifact('.claude/tasks-board/a.md')).toBe(false)
+  })
+
+  it('should sweep an ordinary source file', () => {
+    expect(isRecordArtifact('src/migrate/apply.ts')).toBe(false)
+  })
+
+  it('should sweep a fixture whose path merely contains a record folder', () => {
+    expect(
+      isRecordArtifact('scripts/sandbox/fixtures/create/.claude/tasks/a.md'),
+    ).toBe(false)
+  })
+})
+
 describe('planFolderMoves', () => {
   it('should name only the entries on disk', () => {
     mkdirSync(join(root, '.claude', 'plans'), { recursive: true })
@@ -283,6 +348,49 @@ describe('planRecordsMove', () => {
 
     expect(plan.entries).toEqual([])
     expect(plan.kept).toBe(1)
+  })
+
+  it('should leave a record under the old root out of the plan entirely', () => {
+    const plan = planRecordsMove(root, [
+      { path: '.claude/memory/user-erclx.md', text: 'see .claude/plans/x.md' },
+    ])
+
+    expect(plan.entries).toEqual([])
+    expect(plan.excluded).toEqual([])
+    expect(plan.rewritten).toBe(0)
+  })
+
+  it('should leave a record under the new root out of the plan entirely', () => {
+    const plan = planRecordsMove(root, [
+      { path: '.canon/tasks/v1.0-a.md', text: 'the board was .claude/tasks' },
+    ])
+
+    expect(plan.entries).toEqual([])
+    expect(plan.excluded).toEqual([])
+    expect(plan.rewritten).toBe(0)
+  })
+
+  it('should not count a marked citation inside a record it never read', () => {
+    const plan = planRecordsMove(root, [
+      {
+        path: '.canon/memory/a.md',
+        text: '.claude/memory/a.md canon-keep-record-root',
+      },
+    ])
+
+    expect(plan.kept).toBe(0)
+  })
+
+  it('should still sweep an installed rule beside the records it repoints', () => {
+    const plan = planRecordsMove(root, [
+      { path: '.claude/memory/a.md', text: 'see .claude/tasks/b.md' },
+      { path: '.claude/rules/core/035-tasks.md', text: '.claude/tasks/ is it' },
+    ])
+
+    expect(plan.entries.map((entry) => entry.path)).toEqual([
+      '.claude/rules/core/035-tasks.md',
+    ])
+    expect(plan.rewritten).toBe(1)
   })
 
   it('should read the folder moves off disk beside the citations', () => {
