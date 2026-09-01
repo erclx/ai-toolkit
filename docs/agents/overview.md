@@ -5,9 +5,9 @@ description: What this folder covers, the invocation rules every command inherit
 
 # Overview
 
-CLI catalog and invocation rules for agents working in this repository.
+CLI catalog and invocation rules for an agent driving the `canon` CLI, in this repository or in any project that installed it.
 
-This folder is an index of what an agent can run and how to run it cleanly from a script. It does not cover domain behavior. Read `CLAUDE.md` for project behaviors and load the matching `.claude/skills/internal-*` skill when working inside a domain.
+This folder is an index of what an agent can run and how to run it cleanly from a script. It does not cover domain behavior. Read the project's own `CLAUDE.md` for that. The `.claude/skills/internal-*` skills carry the per-domain editing guidance and live in the toolkit checkout alone, so a reader who installed the package resolves none of them.
 
 ## Invocation rules
 
@@ -22,5 +22,5 @@ See `CLAUDE.md` design principles. They apply to every command in this folder.
 ## Related
 
 - `CLAUDE.md`: project behaviors and design principles
-- `.claude/skills/internal-*`: domain-scoped guidance for editing work
+- `.claude/skills/internal-*`: domain-scoped guidance for editing work, in the toolkit checkout only
 - `docs/index.md`: full docs directory

@@ -26,6 +26,8 @@ byok
 canon
 changelog
 changelogithub
+clpa
+clpac
 clpc
 clps
 codegen

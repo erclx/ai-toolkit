@@ -11,7 +11,7 @@ What sequences those guards is not here. `bun run check` resolves to `canon gate
 
 ## The catalog
 
-- `bootstrap.sh`, run as `bun run bootstrap`: installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent and re-runnable
+- `bootstrap.sh`, run as `bun run bootstrap`: installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent and re-runnable, which cuts both ways on the alias block: `install_aliases` returns at the marker check, so growing the canonical block reaches nobody who already ran it until they delete the marked block and re-run
 - `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then `canon gate run --nested`
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
 - `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.canon/tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context, framing entirely to stderr

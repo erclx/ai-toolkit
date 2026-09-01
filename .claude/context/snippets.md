@@ -1,13 +1,13 @@
 ---
 title: Snippets
-description: Reusable prompt snippets for Claude and Gemini
+description: Reusable prompt snippets for Claude Code and chat UIs
 ---
 
 # Snippets system
 
 ## Overview
 
-Owns the small reusable prompts stored as plain markdown, invoked from Claude or Gemini chat via the Chrome extension or directly in Claude Code with `@`. Authoring conventions live in `standards/snippets.md`, which this entry does not repeat.
+Owns the small reusable prompts stored as plain markdown, invoked directly in Claude Code with `@` or in a chat UI through the Chrome extension. Authoring conventions live in `standards/snippets.md`, which this entry does not repeat.
 
 ## Layout
 
