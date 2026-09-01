@@ -71,6 +71,8 @@ The move off the older layout is named rather than worked out per visit: `git mv
 
 The citation sweep behind `canon migrate records` passes over the records themselves, and the documented first-run order is what makes that necessary. `canon tooling sync claude . --write` prunes the twelve old ignore entries down to one `.canon/` line immediately before the verb runs, so every record folder still at the old root becomes visible to `ls-files --others --exclude-standard` and enters the sweep as source. Measured here at `fe32d16d` on 2026-09-01, that put 750 files under `.claude/` into a run that had named none of them before the pull, 43 of those recorded artifacts carrying 702 citations between them.
 
+### The record roots the sweep passes over
+
 `isRecordArtifact` in `src/migrate/records.ts` is what closes it, applied inside `planRecordsMove` for correctness and again in `runRecords` ahead of `readSources`, which is what keeps 9,744 files at 83M off the read path. The verb reports what it passed over as a count on its own line rather than in `excluded`, which exists so a reader can go and check a handful by hand.
 
 The two roots take different rules and the asymmetry is deliberate. `.canon/` is read whole, since `.claude/ARCHITECTURE.md` fixes the rule that every gitignored record moves there and nothing tracked ever lands there, which covers a folder `RECORD_ENTRIES` has yet to learn about. `.claude/` is mixed and has to be entry-scoped, because a bare prefix there drops 163 tracked files here and strands a target's installed `.claude/rules/core/035-tasks.md`, which is the file the sweep exists to repoint.
