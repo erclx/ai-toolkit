@@ -223,9 +223,9 @@ The trigger this records is retired. `claude-docs` no longer carries a diagram s
 
 `gh pr view` resolves by head ref name and ignores state, so a branch name reused after its first pull request merged sends `git-pr`'s create-or-edit conditional down the edit arm and rewrites a merged record. It has fired three times against three different merged records. The push reports `* [new branch]` either way, so nothing in the output suggests a collision. Detect with `gh pr list --head <branch> --state open` and create with an explicit `--head`. Recovery takes the squash merge subject for the title and GraphQL `userContentEdits(last: 1)` for the body.
 
-### The draft conversion reports a write it did not make
+### The draft conversion lands and a person lifts it afterwards
 
-`gh pr ready --undo` prints its conversion line on a run that changed nothing. On one pull request it reported success twice while `gh pr view --json isDraft` returned `false` after each, and the `convertPullRequestToDraft` GraphQL mutation against the node id set it on the first call. The flag also reverted after a later force-push, so the read-back is worth repeating whenever the branch is pushed again.
+`gh pr ready --undo` writes the flag. An earlier reading here had the command printing its conversion line on a run that changed nothing, and two measurements disprove it: `#1265` recorded `convert_to_draft` and `ready_for_review` nine minutes apart with no session writing between them, and a third-party read on `#1307` caught the pull request ready before the undo ran and a draft minutes later. Four correlation passes eliminated every candidate inside the tree, leaving a person readying the pull request to merge, which GitHub requires and no guard should prevent. Read the flag back anyway, since it reverted after a later force-push, so a read is worth repeating whenever the branch is pushed again. `convertPullRequestToDraft` against the node id is the GraphQL fallback where the command is refused.
 
 ### A failed commit leaks into the next group
 
