@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.9.1](https://github.com/erclx/canon/compare/v4.9.0...v4.9.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **migrate:** skip the record roots in the citation sweep ([#1325](https://github.com/erclx/canon/issues/1325)) ([a38be12](https://github.com/erclx/canon/commit/a38be121808193227aa0c9b15b46e383844a0b14))
+
 ## [4.9.0](https://github.com/erclx/canon/compare/v4.8.1...v4.9.0) (2026-09-01)
 
 
