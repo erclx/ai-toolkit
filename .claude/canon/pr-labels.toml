@@ -56,6 +56,9 @@ docs = ["docs/", "wiki/", "README.md", "examples/"]
 # registers those hooks, so it rides the same row.
 ci = [".github/", "scripts/core/", ".husky/", ".claude/hooks/", ".claude/settings.json"]
 # Internal narrative and the always-loaded record, which `docs` does not reach.
+# `assets/brand/` rides here rather than under `generated` or `rides-with-generated`,
+# since a mark under it is hand-authored source `.claude/DESIGN.md`'s own
+# iconography field names, not a mechanical derivative of anything.
 context = [
   ".claude/context/",
   ".claude/ARCHITECTURE.md",
@@ -63,6 +66,7 @@ context = [
   ".claude/DESIGN.md",
   ".canon/diagrams/",
   "CLAUDE.md",
+  "assets/brand/",
 ]
 # Repository configuration belonging to no domain, this map included. The
 # toolkit-owned folder takes a folder prefix rather than this file's own path,
