@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -10,6 +10,7 @@ import {
   readWorkspace,
   recordSources,
   teachDir,
+  writeStylesheet,
 } from '@/teach/workspace'
 
 let ROOT: string
@@ -611,5 +612,71 @@ describe('defineTerms', () => {
       ok: true,
       workspace: { terms: 2 },
     })
+  })
+})
+
+describe('writeStylesheet', () => {
+  it('refuses a topic no workspace carries', async () => {
+    mkdirSync(teachDir(ROOT), { recursive: true })
+
+    const outcome = await writeStylesheet(ROOT, 'nothing-here')
+
+    expect(outcome.ok).toBe(false)
+  })
+
+  it('seeds a workspace from the design source rather than from a hand copy', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+
+    const outcome = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!outcome.ok) throw new Error(outcome.message)
+
+    const body = await readFile(join(ROOT, outcome.path), 'utf8')
+
+    expect(outcome.written).toBe(true)
+    expect(body).toContain('--color-accent: #e0724b;')
+    expect(body).toContain('.status::before')
+  })
+
+  it('leaves a stylesheet the workspace already carries, since lessons add to it', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+    const first = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!first.ok) throw new Error(first.message)
+
+    await writeFile(join(ROOT, first.path), '.lesson { color: red }\n')
+    const second = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!second.ok) throw new Error(second.message)
+
+    expect(second.written).toBe(false)
+    expect(await readFile(join(ROOT, second.path), 'utf8')).toBe(
+      '.lesson { color: red }\n',
+    )
+  })
+
+  it('takes the seed back over an existing file when forced', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+    const first = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!first.ok) throw new Error(first.message)
+
+    await writeFile(join(ROOT, first.path), '.lesson { color: red }\n')
+    const forced = await writeStylesheet(ROOT, 'regular-expressions', true)
+    if (!forced.ok) throw new Error(forced.message)
+
+    expect(forced.written).toBe(true)
+    expect(await readFile(join(ROOT, forced.path), 'utf8')).toContain(
+      '--color-accent:',
+    )
+  })
+
+  it('creates the assets folder a workspace opened without one lacks', async () => {
+    const dir = await seed('01-regular-expressions', {
+      'MISSION.md': '# Mission\n',
+    })
+
+    expect(existsSync(join(dir, 'assets'))).toBe(false)
+
+    const outcome = await writeStylesheet(ROOT, 'regular-expressions')
+
+    expect(outcome.ok).toBe(true)
+    expect(existsSync(join(dir, 'assets'))).toBe(true)
   })
 })
