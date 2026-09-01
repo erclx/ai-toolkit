@@ -8,7 +8,8 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 TMP_ROOT="$PROJECT_ROOT/.canon/tmp/install-check"
-CLONE_DIR="$TMP_ROOT/clone"
+PACK_DIR="$TMP_ROOT/pack"
+EXTRACT_DIR="$TMP_ROOT/extract"
 TARGET_DIR="$TMP_ROOT/target"
 KEEP=0
 
@@ -19,12 +20,13 @@ for arg in "$@"; do
     cat <<HELP
 Usage: scripts/core/install-check.sh [--keep]
 
-Verifies the README install path end to end:
-  1. Clones this repo into .canon/tmp/install-check/clone
-  2. Runs bun install in the clone
-  3. Runs the CLI with --help to confirm it executes
-  4. Scaffolds a fresh project in .canon/tmp/install-check/target
-  5. Runs canon init and asserts a scaffold landed
+Verifies the published install path end to end:
+  1. Packs this repo into a tarball at .canon/tmp/install-check/pack
+  2. Extracts it and asserts scripts/sandbox is absent from the tree
+  3. Runs bun install --production in the extracted tree
+  4. Runs the CLI with --help from the extracted tree to confirm it resolves
+  5. Scaffolds a fresh project in .canon/tmp/install-check/target
+  6. Runs canon init from the extracted package and asserts a scaffold landed
 
 Flags:
   --keep    Keep the tmp tree on exit for inspection
@@ -45,21 +47,31 @@ cleanup() {
 trap cleanup EXIT
 
 rm -rf "$TMP_ROOT"
-mkdir -p "$TMP_ROOT"
+mkdir -p "$PACK_DIR" "$EXTRACT_DIR"
 
 open_timeline "Install verification"
 
-log_step "Clone"
-git clone --quiet "$PROJECT_ROOT" "$CLONE_DIR" 2>&1 | pipe_output || true
-log_info "Cloned to $CLONE_DIR"
+log_step "Pack"
+TARBALL_PATH="$(cd "$PROJECT_ROOT" && bun pm pack --quiet --ignore-scripts --destination "$PACK_DIR" | tail -n 1)"
+log_info "Packed to $TARBALL_PATH"
 
-log_step "Install dependencies"
-(cd "$CLONE_DIR" && bun install --silent 2>&1 | pipe_output) || log_error "bun install failed"
-log_info "Dependencies installed"
+log_step "Extract"
+tar -xzf "$TARBALL_PATH" -C "$EXTRACT_DIR" --strip-components=1
+log_info "Extracted to $EXTRACT_DIR"
+
+log_step "Assert excluded path is absent"
+if [ -e "$EXTRACT_DIR/scripts/sandbox" ]; then
+  log_error "scripts/sandbox shipped in the tarball, and the files field in package.json excludes it"
+fi
+log_info "Absent: scripts/sandbox"
+
+log_step "Install dependencies (production)"
+(cd "$EXTRACT_DIR" && bun install --production --ignore-scripts --silent 2>&1 | pipe_output) || log_error "bun install --production failed"
+log_info "Dependencies installed without devDependencies"
 
 log_step "Confirm CLI runs"
-(cd "$CLONE_DIR" && bun run src/cli.ts --help >/dev/null) || log_error "canon --help failed"
-log_info "canon --help ran clean"
+(cd "$EXTRACT_DIR" && bun run src/cli.ts --help >/dev/null) || log_error "canon --help failed"
+log_info "canon --help ran clean from the extracted package"
 
 log_step "Scaffold fresh project"
 mkdir -p "$TARGET_DIR"
@@ -67,7 +79,7 @@ mkdir -p "$TARGET_DIR"
 log_info "Initialized git in $TARGET_DIR"
 
 log_step "Run canon init"
-(cd "$TARGET_DIR" && CANON_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "canon init failed"
+(cd "$TARGET_DIR" && CANON_NON_INTERACTIVE=1 bun run "$EXTRACT_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "canon init failed"
 log_info "canon init completed"
 
 log_step "Assert scaffold"
