@@ -119,8 +119,13 @@ export function isExcludedPath(path: string): boolean {
  * about. The old root is the one that cannot take a whole-root reading, and it
  * is derived by exclusion rather than named, so a third root added later reads
  * as records-only unless someone says otherwise.
+ *
+ * Exported because `record-tree.ts` sweeps inside these roots and has to name
+ * them rather than invert `isRecordArtifact`. That predicate is true for the old
+ * root's record entries as well, so an inversion would sweep a project the move
+ * has not run in, where the old spelling is the correct one.
  */
-const RECORD_ONLY_ROOTS: readonly RecordRoot[] = RECORD_ROOTS.filter(
+export const RECORD_ONLY_ROOTS: readonly RecordRoot[] = RECORD_ROOTS.filter(
   (root) => root !== FROM_ROOT,
 )
 

@@ -7,6 +7,8 @@ description: Why shared scratch lives at the main worktree root, the two write r
 
 `.canon/plans/`, `.canon/review/`, `.canon/memory/`, and `.canon/tasks/` are gitignored and live at the main worktree root. A linked worktree resolves them there rather than writing its own copy.
 
+A linked worktree has no ignored scratch path of its own since the records move. The ignore file names one `.canon/` line plus `.claude/worktrees/`, and a linked worktree carries no `.canon/` of its own, so a session taking the scratch rule's second spelling writes `<worktree>/.claude/.tmp/<slug>/` and `git check-ignore` exits 1 on it. The scratch-guard hook accepts that path, so the session is told it complied while the `git add -A` in the ship chain stages the folder. What catches it is a status read before staging, which is the same signal that caught the flat task archive below. Measured 2026-09-01 on `fix/record-tree-old-root`.
+
 A linked worktree reads them through one tool and writes them through another. `Edit` and `Write` refuse every main-root path with a message naming session isolation and directing the session to the worktree copy, while `Read` resolves normally and `Bash` writes without complaint, so the boundary is tool-scoped rather than filesystem-scoped. That holds across all four folders and a live task file.
 
 The same isolation refuses a `Bash` command whose target it cannot statically verify stays inside the worktree, reporting complexity rather than a path. Joining `mkdir -p` and a heredoc write to the main root with `&&` is refused whole even though each half runs alone, so a main-root write goes out as a plain single command.

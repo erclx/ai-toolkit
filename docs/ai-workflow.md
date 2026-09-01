@@ -31,7 +31,7 @@ Project docs split across two roots at the project root, on one mechanical line:
 └── tmp/             ← deletable scratch, safe to remove without loss
 ```
 
-A project scaffolded before the move keeps its records under `.claude/`, and every command reads either root. `canon migrate records` moves one project across and repoints what cites it.
+A project scaffolded before the move keeps its records under `.claude/`, and every command reads either root. `canon migrate records` moves one project across and repoints what cites it, and `canon migrate record-tree` follows it to reach the citations inside the records themselves, which the first verb passes over because it enumerates through git.
 
 Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md`, or `.claude/context/<domain>/` once a domain outgrows one file, discovered via `.claude/context/index.md`). See [the context model](../.claude/context/context-model.md) for the full picture.
 

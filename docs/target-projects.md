@@ -146,6 +146,17 @@ A tracked file that names an old record path on purpose, such as prose dating a 
 
 Until the move runs, the project is exposed. The shipped ignore set no longer names the old record paths, so a project holding records at `.claude/` stops ignoring them on its next `canon tooling sync`, and the first sign is a memory file or a task board appearing in a commit. Every command reads either root, so nothing else breaks in the meantime, and running the move is what closes it.
 
+Then sweep the records themselves, which the three lines above never reach. They enumerate through git, and the records are gitignored by construction, so a task still naming its plan at the old root resolves nothing once the folders move.
+
+```bash
+canon migrate record-tree --json
+canon migrate record-tree --write --json
+```
+
+This is a separate step rather than a fourth line in the block above because the move has to land before there is a new root to walk. The scope is the folders a session still follows a path into, being `diagrams`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, each minus its own `archive/` subtree. A closed groundwork or intake trail, the scratch folder, and the backup history are counted and left alone, since a path inside one of those sits in a sentence about work that already ended.
+
+Read the report before `--write` here more carefully than above. The record tree is untracked, so a wrong rewrite has no git undo, and the report names every citation with its line number and the line text for exactly that reason. The same `canon-keep-record-root` marker protects a line that has to keep the old spelling.
+
 ### Check first
 
 `canon sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.
