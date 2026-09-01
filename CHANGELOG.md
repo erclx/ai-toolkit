@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.12.0](https://github.com/erclx/canon/compare/v4.11.0...v4.12.0) (2026-09-01)
+
+
+### Features
+
+* **design:** author the product mark and wire it into the hero ([#1336](https://github.com/erclx/canon/issues/1336)) ([5a8ef9e](https://github.com/erclx/canon/commit/5a8ef9e2a61f9cdb1a09aa1699af9c5b0d5429df))
+
 ## [4.11.0](https://github.com/erclx/canon/compare/v4.10.0...v4.11.0) (2026-09-01)
 
 
