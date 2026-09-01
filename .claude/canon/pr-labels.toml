@@ -109,7 +109,7 @@ release-managed = [
 # Each is rewritten by a command rather than authored, and it travels in the
 # commit that changed its source, which already carries that source's label. A
 # row over any of them adds a second label to a mechanical edit.
-generated = ["assets/hero.png", "assets/hero.stamp", ".claude/audits/baseline.json"]
+generated = ["assets/hero.png", "assets/hero.stamp", ".claude/canon/baseline.json"]
 # `assets/hero.html` is authored, so it is a reason of its own rather than a
 # fourth generated file. Giving it `docs` would spuriously label the 18 commits
 # that regenerated the image alongside an unrelated surface.

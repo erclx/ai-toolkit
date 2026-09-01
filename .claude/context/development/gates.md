@@ -111,7 +111,7 @@ The Standard success criteria stage runs `bun src/cli.ts standards audit --arriv
 
 ## Audit set
 
-The Audit set stage runs `canon audits run --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every audit and the growth against `.claude/audits/baseline.json`.
+The Audit set stage runs `canon audits run --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every audit and the growth against `.claude/canon/baseline.json`.
 
 Growth reports for the reason the ceiling above gates. The standards behind the largest counts set no hard cap, so a rising number is a fact about the corpus and a judgment about whether it matters, and a push failing on a judgment teaches a reader to route around the stage.
 

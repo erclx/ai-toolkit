@@ -14,11 +14,11 @@ canon audits run --record
 canon audits list --json
 ```
 
-| Option          | Behavior                                                          |
-| --------------- | ----------------------------------------------------------------- |
-| `--json`        | Add a machine-readable record on stdout, keeping the frame        |
-| `--root <path>` | Measure this tree instead of the current worktree                 |
-| `--record`      | Write this run's tracked counts to `.claude/audits/baseline.json` |
+| Option          | Behavior                                                         |
+| --------------- | ---------------------------------------------------------------- |
+| `--json`        | Add a machine-readable record on stdout, keeping the frame       |
+| `--root <path>` | Measure this tree instead of the current worktree                |
+| `--record`      | Write this run's tracked counts to `.claude/canon/baseline.json` |
 
 ## What it runs
 
@@ -73,7 +73,7 @@ Every run states how many corpora it measured against how many it skipped, inclu
 
 ## The retained baseline
 
-`.claude/audits/baseline.json` holds the counts from the last run recorded with `--record`, alongside the day it was taken and the commit it was read at. Each later run reports which counts moved and by how much.
+`.claude/canon/baseline.json` holds the counts from the last run recorded with `--record`, alongside the day it was taken and the commit it was read at. Each later run reports which counts moved and by how much.
 
 The file is committed. A per-machine record cannot answer the question this half exists for, which is whether a number grew since anyone last looked, and a fresh checkout has to inherit that answer rather than start over. The cost is that a branch moving a count either fixes it or re-records it and says why, which is the shape the consumed-copy assertion already carries.
 

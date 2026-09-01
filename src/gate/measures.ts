@@ -97,7 +97,7 @@ export const SANDBOX_UNDECLARED_CEILING = 47
  * rather than derived, because this stage only ever names the file in a remedy
  * a reader has to be able to open, and `canon audits run` owns writing it.
  */
-export const AUDITS_BASELINE = '.claude/audits/baseline.json'
+export const AUDITS_BASELINE = '.claude/canon/baseline.json'
 
 export const HERO_STAMP_FAILURE =
   'The hero set disagrees with the stamp written when the image was captured. Run canon capture assets/hero.html and commit all three files together.'
