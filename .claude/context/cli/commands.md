@@ -102,6 +102,12 @@ Every `canon` verb is registered in commander and either handled in TypeScript o
 - All three task verbs carry that split, not only the two a swallowing caller drives. `archive` answered both selectors with `ambiguous`, which routes `claude-tasks` to repair a task citation that is fine, so one mistake read as three different board defects depending on which verb saw it.
 - A taxonomy that holds for one verb in a domain and not its siblings is read as a distinction rather than as the omission it is
 
+## A verb whose subject is gitignored walks the tree instead of asking git
+
+`listRepositoryFiles` is what every sweep in `src/migrate/` reads, and it answers about tracked files, which is the one population `canon migrate record-tree` has to miss entirely. The record folders are gitignored by construction, so that listing returns none of them and a verb built on it reports a clean tree over the 2,636 old-root citations the records were actually holding. `walkRecordTree` reads the record root with `readdir` and `Bun.Glob` instead. That is what makes `src/migrate/record-tree.ts` a sibling of `records.ts` rather than a scope flag on it: one module answers about a repository listing and the other about a directory walk, and folding them would give one file two enumeration models.
+
+Asking git for the ignored half, with `--others --ignored`, was the alternative. It returns the backup history under `.canon/.records.git` along with everything else, which `runRecords` already measured for this tree at 9,744 files and 83M, so the listing pays to enumerate an object store before anything filters it back out. The walk skips that directory by name and never opens it. Measured at `d60b3117` on 2026-09-01.
+
 ## An argument added for testability widens the guards
 
 Turning a hardcoded path into an argument for testability widens the input domain, so the guards need re-auditing against what the argument now admits. Giving `canon claude setup` a `[dest]` argument let the settings merge be covered without pointing a test at a real home directory. The bash hardcoded `$HOME/.claude` and needed no target guard, while the argument made `canon claude setup .claude` from the toolkit root rewrite the tracked `.claude/settings.json`. The guard had to be added by exact path rather than by prefix, since the sandbox scenario legitimately writes under the repo.
