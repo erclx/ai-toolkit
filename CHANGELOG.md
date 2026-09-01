@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.0](https://github.com/erclx/canon/compare/v4.9.2...v4.10.0) (2026-09-01)
+
+
+### Features
+
+* **install:** verify from a packed tarball instead of a clone ([#1329](https://github.com/erclx/canon/issues/1329)) ([3ecf6ca](https://github.com/erclx/canon/commit/3ecf6cac8b540d80f59391ff9532907c3e362b74))
+
 ## [4.9.2](https://github.com/erclx/canon/compare/v4.9.1...v4.9.2) (2026-09-01)
 
 
