@@ -26,7 +26,14 @@ export interface GitResult {
 }
 
 export interface RemovalOptions {
-  readonly cwd?: string
+  /**
+   * Where every git call runs. Required rather than defaulted, since the one
+   * value a default could carry is the process directory and that is the unsafe
+   * one: a caller standing in a worktree this run removes loses the ground the
+   * calls after it resolve against. A compiler error is what a caller gets
+   * instead of that failure.
+   */
+  readonly cwd: string
   readonly git?: (cwd: string, args: readonly string[]) => Promise<GitResult>
 }
 
@@ -50,6 +57,13 @@ async function runGit(
  * takes a stale registration as readily as a live directory, measured at git
  * 2.43.0, so the missing case needs no command of its own.
  *
+ * Every command runs from `opts.cwd`, which belongs at the main worktree root
+ * and never at the directory a caller happens to stand in. A removal earlier in
+ * the run deletes that directory, and each `git -C` after it fails against a
+ * path that is gone, so the branches behind those entries survive and the run
+ * reports the failures against the worktrees rather than against the removal
+ * that pulled the ground out.
+ *
  * The unlock runs on every entry and its result is not read, since `git worktree
  * unlock` exits 128 with "is not locked" for the ordinary case. Reading the lock
  * state first would buy a second parse of the porcelain to answer what the next
@@ -65,9 +79,9 @@ async function runGit(
  */
 export async function removeReclaimable(
   verdicts: readonly WorktreeVerdict[],
-  opts: RemovalOptions = {},
+  opts: RemovalOptions,
 ): Promise<RemovalReport> {
-  const cwd = opts.cwd ?? process.cwd()
+  const { cwd } = opts
   const git = opts.git ?? runGit
   const targets = verdicts.filter((entry) => entry.reclaimable)
 
