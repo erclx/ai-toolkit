@@ -100,7 +100,7 @@ export const SANDBOX_UNDECLARED_CEILING = 47
 export const AUDITS_BASELINE = '.claude/canon/baseline.json'
 
 export const HERO_STAMP_FAILURE =
-  'The hero set disagrees with the stamp written when the image was captured. Run canon capture assets/hero.html and commit all three files together.'
+  'The hero set disagrees with the stamp written when the image was captured. Run canon capture assets/hero.html --selector .window and commit all three files together.'
 
 function parseJson(payload: string): unknown {
   try {
