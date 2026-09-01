@@ -38,9 +38,9 @@ A rule stated in two skill bodies and never in `CLAUDE.md` or another rule is ou
 
 Matching is recall-first and keyed on shared distinctive tokens rather than on a phrase two surfaces spell the same way. The case this exists for was one rule written three different ways, so a near-exact matcher would ship a cheap report blind to the defect it was built for.
 
-A token is distinctive when it appears in at most 20 of the corpus's statements, which is under one percent of them. `.claude/plans/` sits at 14 and is the anchor the motivating case turns on, while `file` sits at 371 and would match most of the tree.
+A token is distinctive when it appears in at most 20 of the corpus's statements, which is under one percent of them. `.canon/plans/` sits at 14 and is the anchor the motivating case turns on, while `file` sits at 371 and would match most of the tree.
 
-A backticked token counts double. An author marking a span as code named an identifier rather than describing one, so `.claude/plans/archive/` says more about what a statement governs than any two prose words do. Two statements are one rule when their shared anchors reach a weight of 3.
+A backticked token counts double. An author marking a span as code named an identifier rather than describing one, so `.canon/plans/archive/` says more about what a statement governs than any two prose words do. Two statements are one rule when their shared anchors reach a weight of 3.
 
 Every record names the anchors its match rested on, so a reader can weigh a finding instead of taking it.
 

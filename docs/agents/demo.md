@@ -10,7 +10,7 @@ description: Compiling a screencast draft into a runnable plan, driving a served
 Two verbs, and they are separate because the artifact between them is edited.
 
 ```bash
-canon demo compile .claude/.tmp/screencast/inline-edit.md
+canon demo compile .canon/tmp/screencast/inline-edit.md
 canon demo run demos/inline-edit.json
 canon demo run demos/inline-edit.json --cursor ~/cursors/theme --out assets
 ```

@@ -5,13 +5,13 @@ description: Listing learning workspaces and the ordinal a new one takes, openin
 
 # Teach
 
-Learning workspaces sit under `.claude/teach/<nn>-<topic>/`, and `standards/teach.md` fixes their layout, naming, and file formats, apart from the glossary, whose shape `standards/glossary.md` fixes, cited from the `claude-teach` skill, so it travels with the file wherever a promotion lands it. Every verb here resolves that folder against the main worktree root rather than against the working directory, so a session standing in a linked worktree reaches the one workspace the learner has rather than opening a second.
+Learning workspaces sit under `.canon/teach/<nn>-<topic>/`, and `standards/teach.md` fixes their layout, naming, and file formats, apart from the glossary, whose shape `standards/glossary.md` fixes, cited from the `claude-teach` skill, so it travels with the file wherever a promotion lands it. Every verb here resolves that folder against the main worktree root rather than against the working directory, so a session standing in a linked worktree reaches the one workspace the learner has rather than opening a second.
 
 That root resolution is also why the writing verbs exist at all. The file-editing tools refuse a main-root path from a linked worktree and offer a worktree copy instead, and a caller naming only the destination reports a success that did not happen. A whole-file create still goes out as a shell heredoc. Changing a line inside a file that already exists has no shell route, because the stream editors are banned, so `resource` and `glossary` are the route for the two files a running workspace edits.
 
 ## List
 
-`canon teach list` reports the workspaces under `.claude/teach/`, or what one workspace holds. It reads and never writes.
+`canon teach list` reports the workspaces under `.canon/teach/`, or what one workspace holds. It reads and never writes.
 
 ```bash
 canon teach list
@@ -134,7 +134,7 @@ The order is drawn here rather than instructed, and that is the point of the ver
 No `canon teach` verb serves the workspace. `canon serve` does, taking the teach root as its directory and the workspace contents page as its entry:
 
 ```bash
-canon serve .claude/teach --entry 03-fde-system-design/index.html --json
+canon serve .canon/teach --entry 03-fde-system-design/index.html --json
 ```
 
 It stays general rather than becoming `canon teach serve`, because nothing about serving a directory is specific to a learning workspace, and the same verb carries a slide render and a design preview.
@@ -145,7 +145,7 @@ Read `url` off the record rather than building one from the port that was asked 
 
 | Reason         | Raised when                                                     |
 | -------------- | --------------------------------------------------------------- |
-| `no-teach`     | The root carries no `.claude/teach/` folder                     |
+| `no-teach`     | The root carries no `.canon/teach/` folder                      |
 | `no-workspace` | No workspace matches the topic, with the folder names as detail |
 | `ambiguous`    | Two workspaces claim one topic, with both names as detail       |
 | `exists`       | A workspace already covers the topic an open names              |

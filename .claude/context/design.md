@@ -13,7 +13,7 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 
 - `src/design/` owns the DESIGN.md parser and the preview renderer
 - `claude/skills/claude-design-extract/` owns the skill that drafts the file, from an existing codebase or from a greenfield project
-- `.claude/review/design/` owns the rendered preview, gitignored
+- `.canon/review/design/` owns the rendered preview, gitignored
 
 ## Decisions
 
@@ -72,18 +72,18 @@ The scenario picks between `source`, which stages the tokenized notes app, and `
 
 ## Render command
 
-`canon design render` reads `.claude/DESIGN.md` and writes an HTML plus CSS preview to `.claude/review/design/`. The HTML shows color swatches, typography samples, spacing bars, and border exemplars. The CSS holds tokens as custom properties for copy-paste into a project stylesheet.
+`canon design render` reads `.claude/DESIGN.md` and writes an HTML plus CSS preview to `.canon/review/design/`. The HTML shows color swatches, typography samples, spacing bars, and border exemplars. The CSS holds tokens as custom properties for copy-paste into a project stylesheet.
 
 A cell no source anchors shows a `? verify` marker beside its value, and a confidence line above the sections names how many cells are anchored against how many are tagged. `src/design/parse.test.ts` and `src/design/render.test.ts` cover both tag spellings, the count and the columns it reads, and the untagged render.
 
 Flags:
 
-| Option            | Default                 | Behavior                 |
-| ----------------- | ----------------------- | ------------------------ |
-| `--source <path>` | `.claude/DESIGN.md`     | Source markdown to parse |
-| `--out <path>`    | `.claude/review/design` | Output directory         |
+| Option            | Default                | Behavior                 |
+| ----------------- | ---------------------- | ------------------------ |
+| `--source <path>` | `.claude/DESIGN.md`    | Source markdown to parse |
+| `--out <path>`    | `.canon/review/design` | Output directory         |
 
-The output directory sits under `.claude/review/` which is gitignored by the seed CLAUDE.md. Do not stage the preview.
+The output directory sits under `.canon/review/` which is gitignored by the seed CLAUDE.md. Do not stage the preview.
 
 ## Workflow
 
@@ -92,7 +92,7 @@ Typical sequence in a new project:
 1. Run the extract skill to draft `.claude/DESIGN.md`. It sources tokens from an existing codebase, or proposes them against a greenfield project with a personality paragraph.
 2. Review `? verify` cells and edit the file directly. The preview marks each one and counts them, so step 4 below is where they are found rather than the source file.
 3. Run `canon design render` to regenerate the preview
-4. Open `.claude/review/design/index.html` in a browser
+4. Open `.canon/review/design/index.html` in a browser
 5. Iterate on DESIGN.md until the preview matches intent
 
 The Stitch integration (`canon design sync`, `generate`, `edit`, `variants`, `list`) sits on top of the same DESIGN.md file, consuming its tables via MCP. See `wiki/tools/stitch.md` for that surface.

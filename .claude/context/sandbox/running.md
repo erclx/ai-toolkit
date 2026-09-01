@@ -66,7 +66,7 @@ An escape list covering the whole tree, or a failure count far past what the arm
 
 ### The run record
 
-Every run also lands at `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `canon sandbox check` recovers the tree-based assertions from surviving sandbox state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
+Every run also lands at `.canon/tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `canon sandbox check` recovers the tree-based assertions from surviving sandbox state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
 
 The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. What that costs is the turn count, which is recoverable from nowhere else once the run's temp files are deleted, so an arm whose record failed to write cannot have its ceiling calibrated without paying for the run twice. `claude:canon-operator/fresh` is declared at the cap for that reason rather than from an observation.
 

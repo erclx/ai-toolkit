@@ -7,7 +7,7 @@ description: Selecting a shipped task by stem or pull request, recording a numbe
 
 ## Archive
 
-`canon tasks archive` moves a shipped task from `.claude/tasks/` into `.claude/tasks/archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.
+`canon tasks archive` moves a shipped task from `.canon/tasks/` into `.canon/tasks/archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.
 
 Name the task by its filename stem, or by the pull request it carries:
 
@@ -51,7 +51,7 @@ canon tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .r
 
 The record carries `location`, one of `unstated`, `live`, `archived`, or `outside`, and `citedBy`, the other live tasks whose `Plan:` line lands on the same file. Exit codes: `0` read, `1` refused with `no-board` or `no-match`.
 
-The target resolves against the board folder and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file and one plan two tasks spelled differently counts once. Containment is tested at both record roots rather than at the one this tree resolves at, since a line somebody wrote against a root the tree has since left is still a path into the plans folder, and reading it as outside would report a shipped plan as still live. `docs/agents/records.md` states the read order.
+The target resolves against the board folder and against the project root both, so `../plans/x.md` and `.canon/plans/x.md` land on the same file and one plan two tasks spelled differently counts once. Containment is tested at both record roots rather than at the one this tree resolves at, since a line somebody wrote against a root the tree has since left is still a path into the plans folder, and reading it as outside would report a shipped plan as still live. `docs/agents/records.md` states the read order.
 
 `canon tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, so a sweep calling a verb the installed `canon` predates gets no record back and archives nothing.
 
@@ -71,13 +71,13 @@ Name the plan by its path or by its slug, which resolve to the same file:
 
 ```bash
 canon tasks plan-answers dispatch-answer-gate
-canon tasks plan-answers .claude/plans/feature-dispatch-answer-gate.md
+canon tasks plan-answers .canon/plans/feature-dispatch-answer-gate.md
 canon tasks plan-answers ../plans/feature-dispatch-answer-gate.md
 ```
 
-A relative path resolves against the project root first and against `.claude/tasks/` second. The third form above is what a board row writes, since its link is relative to the board, and a dispatcher copying the reference out of the row it is dispatching has that spelling to hand rather than either of the other two. A refusal names every base it looked under.
+A relative path resolves against the project root first and against `.canon/tasks/` second. The third form above is what a board row writes, since its link is relative to the board, and a dispatcher copying the reference out of the row it is dispatching has that spelling to hand rather than either of the other two. A refusal names every base it looked under.
 
-`canon tasks plan-citations` reads a task's `Plan:` line against those same two bases in the opposite order, and tests that the target lands under the live plans folder, which this verb does not. Both answer the same file for every spelling a board writes. Liveness is a separate refusal here: a plan resolving inside `.claude/plans/archive/` returns `archived` rather than a launchable reading, since it answers every question and describes work that already shipped.
+`canon tasks plan-citations` reads a task's `Plan:` line against those same two bases in the opposite order, and tests that the target lands under the live plans folder, which this verb does not. Both answer the same file for every spelling a board writes. Liveness is a separate refusal here: a plan resolving inside `.canon/plans/archive/` returns `archived` rather than a launchable reading, since it answers every question and describes work that already shipped.
 
 | Option          | Effect                                      |
 | --------------- | ------------------------------------------- |
@@ -115,7 +115,7 @@ canon tasks pull-request 673 --plan worktree-scratch-routing --json
 | `--json`        | Emit a machine-readable record on stdout           |
 | `--root <path>` | Board root, defaulting to the main worktree        |
 
-A plan is matched on the token both spellings share, so `worktree-scratch-routing`, `feature-worktree-scratch-routing`, and `.claude/plans/feature-worktree-scratch-routing.md` all select the same task. The `action` field reports `added`, `corrected`, or `unchanged`, which makes a rerun against the same number safe.
+A plan is matched on the token both spellings share, so `worktree-scratch-routing`, `feature-worktree-scratch-routing`, and `.canon/plans/feature-worktree-scratch-routing.md` all select the same task. The `action` field reports `added`, `corrected`, or `unchanged`, which makes a rerun against the same number safe.
 
 Exit codes: `0` recorded, `1` refused. The `reason` field carries `no-board`, `no-match`, or `ambiguous`. `git-pr` skips silently on those three, because each is a case where a guessed write would archive the wrong task once the branch merges.
 

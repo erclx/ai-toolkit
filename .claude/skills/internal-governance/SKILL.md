@@ -19,7 +19,7 @@ Read `.claude/context/governance/overview.md` for the system overview and `.clau
 
 - `canon gov install <stack> <target>` writes `.claude/rules/<subdir>/<rule>.md` as a passthrough copy. Source files carry the Claude shape directly, so the install copies the `.md` file as-is and preserves subdirectories.
 - `canon gov sync` diffs `.claude/rules/` against source. It also removes any stale `.claude/GOV.md` left over from the retired build.
-- `canon gov build` produces a single concatenated paste-payload at `.claude/.tmp/gov/rules.md` from `.claude/rules/`.
+- `canon gov build` produces a single concatenated paste-payload at `.canon/tmp/gov/rules.md` from `.claude/rules/`.
 
 ## Stacks
 

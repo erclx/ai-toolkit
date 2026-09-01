@@ -10,7 +10,7 @@ description: Comparing the files a pull request body's Key Changes names against
 ```bash
 canon pr key-changes
 canon pr key-changes 1265 --json
-canon pr key-changes --body .claude/.tmp/pr/body.md --base origin/main
+canon pr key-changes --body .canon/tmp/pr/body.md --base origin/main
 ```
 
 The positional is the pull request to read, defaulting to the one open on this branch.

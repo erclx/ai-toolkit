@@ -24,7 +24,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon design render`         | Render `.claude/DESIGN.md` tokens to HTML and CSS                                                                                                                     |
 | `canon slides render`         | Render a `.claude/SLIDES.md` source into a PowerPoint deck, reporting any unrecognized layout name on stderr                                                          |
 | `canon slides list`           | List the available slide layouts (`--json` for the catalog)                                                                                                           |
-| `canon feedback`              | Write toolkit feedback from stdin to `.claude/review/feedback/`, or open a GitHub issue with `--github`                                                               |
+| `canon feedback`              | Write toolkit feedback from stdin to `.canon/review/feedback/`, or open a GitHub issue with `--github`                                                                |
 | `canon transcripts <url>`     | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                                                                                                 |
 | `canon tasks archive`         | Move a shipped task off the board, clear its ordering row, and regenerate the index                                                                                   |
 | `canon tasks pull-request`    | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)                                                                              |
@@ -42,6 +42,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon records push`          | Commit the nine backed record folders and push them to a private records remote (`--json`)                                                                            |
 | `canon records pull`          | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                                               |
 | `canon migrate rename`        | Rewrite every unprotected `aitk` token to `canon` and move the paths that carry the name, reporting the plan without `--write` (`--scope`, `--json`)                  |
+| `canon migrate records`       | Move the gitignored session records to `.canon/` and repoint every tracked citation, reporting the plan without `--write` (`--root`, `--json`)                        |
 | `canon sessions list`         | Resolve live sessions to the worktree and branch each holds, filtered by `--branch` (`--json`)                                                                        |
 | `canon worktrees list`        | Report which worktrees are reclaimable, keyed on the pull request having merged, with every refusal and the removal route named (`--json`)                            |
 | `canon comments scan`         | Measure comment density by language and comment kind, with a trend recomputed from git                                                                                |
@@ -122,7 +123,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `secrets`   | `scan`                                                                                                                                |
 | `deps`      | `audit`                                                                                                                               |
 | `labels`    | `audit`                                                                                                                               |
-| `migrate`   | `rename`                                                                                                                              |
+| `migrate`   | `rename`, `records`                                                                                                                   |
 | `autoship`  | `classify`                                                                                                                            |
 | `audits`    | `run`, `list`                                                                                                                         |
 | `gate`      | `run`                                                                                                                                 |
@@ -135,6 +136,8 @@ Common patterns:
 - `create [name]` → scaffold a new authoring entry in this repo.
 
 `migrate rename` moves a project off the retired `aitk` name. It reports until `--write` is passed, and `--scope target` rewrites the toolkit-owned folders alone, reporting every other citation as one the project owns rather than editing prose somebody wrote. A project installing `canon` fresh never needs it.
+
+`migrate records` moves a project's session records from `.claude/` to `.canon/` and rewrites every tracked file that cites one. It reports until `--write` is passed, and refuses outright when the project does not already ignore `.canon/`, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. Take the ignore entry with `canon tooling sync --write` first. A record folder already present at the destination is a refusal rather than a merge, and a line carrying `canon-keep-record-root`, or the line below it, keeps the old spelling for prose that dates a decision. Running it twice rewrites nothing, which is the check that the exclusions and the markers fired.
 
 ## Version skew
 

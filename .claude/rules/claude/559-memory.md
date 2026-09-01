@@ -1,7 +1,7 @@
 ---
-description: Route .claude/memory/ edits to the memory standard for the filename, frontmatter, body shape, and lifecycle
+description: Route .canon/memory/ edits to the memory standard for the filename, frontmatter, body shape, and lifecycle
 paths:
-  - '.claude/memory/**'
+  - '.canon/memory/**'
 ---
 
 # Memory standards

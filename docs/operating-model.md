@@ -53,7 +53,7 @@ halts on a plan question it may not answer, or argues back against an
 instruction the tree contradicts, is working correctly. The four measured halts
 to date each cost the dispatcher one reply and each was right.
 
-What the worker may not do is write `.claude/tasks/priority.md` or the backlog
+What the worker may not do is write `.canon/tasks/priority.md` or the backlog
 beside it. Those are gitignored, so an overwrite drops a row with no history to
 recover it from, and a worker cannot pick a free task label without reading
 every task file and every archive entry. It reports the row it needs and lets
@@ -69,7 +69,7 @@ and no later session recovers that vantage.
 
 One feature travels this path end to end.
 
-1. The next feature is planned with `claude-feature`, writing a plan to `.claude/plans/`. The orchestrator runs it warm when the row turns on a contract other features consume or a shared wiring seam, and dispatches a planner under `claude-planner` otherwise. A cold planner measures the row against the tree rather than trusting what the row claims, and it reads what is in flight from open pull requests rather than from branches and worktrees, which this repository leaves behind after a squash merge.
+1. The next feature is planned with `claude-feature`, writing a plan to `.canon/plans/`. The orchestrator runs it warm when the row turns on a contract other features consume or a shared wiring seam, and dispatches a planner under `claude-planner` otherwise. A cold planner measures the row against the tree rather than trusting what the row claims, and it reads what is in flight from open pull requests rather than from branches and worktrees, which this repository leaves behind after a squash merge.
 2. Orchestrator checks the plan waits on nobody, checks the branch is unclaimed, and checks the plan's file set is disjoint from every track in flight, then dispatches a background worker with `claude --bg` against the plan, naming the branch and the model on the launch rather than leaving the worker to derive either. No count caps how many run at once. The branch travels as the argument to the worker's own worktree call, which is the one place the name is read rather than inferred. It falls back to naming the invocation for a human to run through `claude-worktree` and `claude-autoship` when the plan still waits on an answer only the operator can give, the check refuses, the sets overlap, or a stated reason serializes the plan behind a track already in flight. Either way, the worker enters its own worktree, builds, self-checks, opens a PR, and stops at the PR boundary.
 3. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 4. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target then with `canon sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.
@@ -203,7 +203,7 @@ coordination costs more than the change it was too small.
 
 Two tiers hold work at different altitudes.
 
-- Tasks (`.claude/tasks/`): the active few pulled into the current turn, one file each. Gitignored, high churn. Shape governed by `standards/tasks.md`. `priority.md` beside them carries execution order, and `backlog.md` carries what nobody is scheduling.
+- Tasks (`.canon/tasks/`): the active few pulled into the current turn, one file each. Gitignored, high churn. Shape governed by `standards/tasks.md`. `priority.md` beside them carries execution order, and `backlog.md` carries what nobody is scheduling.
 - Edits: a few lines, done immediately with no ceremony.
 
 Nothing above these sequences work into versions. Scope is stated in

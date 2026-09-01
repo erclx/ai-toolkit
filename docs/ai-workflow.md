@@ -12,7 +12,7 @@ A concise reference for when to reach for which tool, organized by what you're t
 
 ## Documents
 
-Project docs live in `.claude/` at the project root.
+Project docs split across two roots at the project root, on one mechanical line: what is committed lives in `.claude/`, and every gitignored session record lives in `.canon/`, which a single ignore entry covers.
 
 ```plaintext
 .claude/
@@ -20,11 +20,18 @@ Project docs live in `.claude/` at the project root.
 ├── ARCHITECTURE.md  ← technical design decisions
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
-├── diagrams/        ← one Mermaid entry per diagram kind with a generated index.md, redrawn on demand
-├── tasks/           ← one file per task with a generated index.md, gitignored local scratch
 ├── context/         ← per-domain narrative loaded on demand via index.md
 └── rules/           ← path-scoped governance rules, written by canon gov install
+
+.canon/
+├── diagrams/        ← one Mermaid entry per diagram kind with a generated index.md, redrawn on demand
+├── tasks/           ← one file per task with a generated index.md, local scratch
+├── plans/           ← one plan per feature, archived inside itself once it ships
+├── memory/          ← durable session facts no context entry owns
+└── tmp/             ← deletable scratch, safe to remove without loss
 ```
+
+A project scaffolded before the move keeps its records under `.claude/`, and every command reads either root. `canon migrate records` moves one project across and repoints what cites it.
 
 Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md`, or `.claude/context/<domain>/` once a domain outgrows one file, discovered via `.claude/context/index.md`). See [the context model](../.claude/context/context-model.md) for the full picture.
 
@@ -44,8 +51,8 @@ One session works for most features. Prefer splitting across two sessions only w
 
 Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
-- When the input is a pile of findings rather than one feature, invoke `canon:claude-intake` first. It files the dump into `.claude/intake/<nn>-<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled.
-- When the current state is unmeasured and more than one approach is live, invoke `canon:claude-groundwork` first. It opens a track folder under `.claude/groundwork/<nn>-<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
+- When the input is a pile of findings rather than one feature, invoke `canon:claude-intake` first. It files the dump into `.canon/intake/<nn>-<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled.
+- When the current state is unmeasured and more than one approach is live, invoke `canon:claude-groundwork` first. It opens a track folder under `.canon/groundwork/<nn>-<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
 - Invoke `canon:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
 - For UI changes, invoke `canon:claude-ui-test` to generate and run Playwright e2e tests
@@ -53,7 +60,7 @@ Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full fi
 
 The routing test is whether the repository can answer an item today. A session grepping handles the yes, and a groundwork track handles the no.
 
-A groundwork track may run experiments to settle a question, writing a fixture it reads itself under `.claude/.tmp/groundwork-fixtures/<slug>/` and spawning up to three billed headless runs before it asks. A fixture a headless run is pointed at sits outside the repository, since a session started under the project root inherits that project's `CLAUDE.md` and rules and would measure them instead of the arm.
+A groundwork track may run experiments to settle a question, writing a fixture it reads itself under `.canon/tmp/groundwork-fixtures/<slug>/` and spawning up to three billed headless runs before it asks. A fixture a headless run is pointed at sits outside the repository, since a session started under the project root inherits that project's `CLAUDE.md` and rules and would measure them instead of the arm.
 
 What a spike produces goes somewhere else again. An input the run reads is re-runnable and cited by nothing, so the scratch path above is the right lifetime for it, while a recording or a render the track cites as evidence for a finding is what a later reader opens to check the claim. Evidence therefore lives in `evidence/` inside the track beside the file citing it, since the scratch tree holds only what can be deleted without loss.
 
@@ -70,14 +77,14 @@ Start a fresh Claude Code session. The diff is sufficient context for both revie
 When features are independent, run them in parallel instead of sequentially. Use one git worktree per feature so each session has its own working tree and branch.
 
 - Create a worktree per feature, then start a Claude Code session in each
-- Invoke `canon:claude-feature` in each session. Plans land at the main worktree root as `.claude/plans/feature-<slug>.md`, one per feature, no collisions. Small features stay in chat and skip the file.
+- Invoke `canon:claude-feature` in each session. Plans land at the main worktree root as `.canon/plans/feature-<slug>.md`, one per feature, no collisions. Small features stay in chat and skip the file.
 - Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files at the main worktree root (`review/branch/review-<slug>.md`, `review/ui-checklist-<slug>.md`), so parallel sessions do not overwrite each other. The slug is the branch name with any leading type segment dropped, so `feat/jwt-expiration` and the plan at `feature-jwt-expiration.md` meet on one name
 - Ship each worktree separately with `canon:git-ship`
 - For full autonomy per worktree, invoke `canon:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
 To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `canon:claude-orchestrate`. It holds the cross-feature call, plans each feature itself or dispatches a cold planner under `canon:claude-planner` to write the plan, refills the ready queue so a free worker never waits, and reviews each worker's PR with `canon:claude-pr-review`, then tells the session holding that branch to run `canon:claude-address-review` whenever the pass posted a finding at any severity, which is the same threshold `canon:claude-pr-review` states and posts its open heading under. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
 
-Execution order comes off `.claude/tasks/priority.md` and nothing sequences work into versions. Scope stays in `.claude/REQUIREMENTS.md` as a statement of what is wanted, and it reaches the board as discrete tasks the orchestrator orders by readiness.
+Execution order comes off `.canon/tasks/priority.md` and nothing sequences work into versions. Scope stays in `.claude/REQUIREMENTS.md` as a statement of what is wanted, and it reaches the board as discrete tasks the orchestrator orders by readiness.
 
 Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives.
 
@@ -87,7 +94,7 @@ Before a handoff, the orchestrator checks the plan against the tree rather than 
 
 A constraint naming a track in flight carries the same problem past the handoff, so the block opens with the commit it was measured against. A worker re-tests before honoring one, fetching and then logging that commit against `origin/main` over the paths the constraint names, and any merge there means the track landed and the constraint is dead. An unstamped block reads as unverified rather than as live, which covers every plan written before the rule.
 
-`.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. A session inside a worktree reads them directly, since the file-editing tools refuse a main-root path but `Read` resolves normally. It writes a whole file through the shell and makes a change inside an existing file through a `canon` verb, which resolves the main root in-process. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
+`.canon/plans/`, `.canon/review/`, and `.canon/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. A session inside a worktree reads them directly, since the file-editing tools refuse a main-root path but `Read` resolves normally. It writes a whole file through the shell and makes a change inside an existing file through a `canon` verb, which resolves the main root in-process. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
 The plan's shape is fixed by `standards/plan.md`: the section list, the filename, the lifecycle, and the contract its questions keep. Every question carries a `- Suggested:` line and an empty `- Answer:` slot, and a blank answer accepts the suggestion at execution time. That default is what makes a plan decision-ready in one pass, and it is the opposite of the contract an intake folder keeps, where an empty slot means nobody reached the item.
 
@@ -95,29 +102,29 @@ An execution that picks other than the suggestion rewrites the `- Suggested:` li
 
 `canon records validate plans` reports where a plan and that standard disagree: a filename that is not `feature-<slug>.md`, a missing required section, a files-to-touch entry naming no file, and a question carrying a suggestion with no answer slot. The same verb takes `groundwork`, `intake`, `memory`, and `teach`, which are governed the same way and were unreachable for the same reason. Nothing fires it automatically, because all five folders are gitignored and every check the repository runs reads changed files from git. It reports and never writes, since the folders are per-machine scratch with no history to recover a wrong repair from.
 
-`canon records push` carries these folders off the disk they live on, and `canon records pull` brings them back. Nine of them are backed: `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, each carrying whatever it has archived inside it. The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every path a task file cites stays where it is.
+`canon records push` carries these folders off the disk they live on, and `canon records pull` brings them back. Nine of them are backed: `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, each carrying whatever it has archived inside it. The history lives in a second git directory at `.canon/.records.git` with `.canon/` as its work tree, so every path a task file cites stays where it is.
 
 A person points it at a private repository once and both verbs refuse until they have, and `push` refuses when that origin is also a remote of the project, since the payload is the memory pen and the groundwork trails. `.husky/post-merge` runs the push after its archive loop, on every merge rather than only on one that closed a task. See [records](agents/records.md) for the refusal table.
 
-`canon records size` reports what each of these folders holds, heaviest first, along with `.claude/.tmp`. Each row carries the file count, the bytes, how many files were written in the last 7 and 30 days, and the dates of the least and most recently written one. Nothing fails on a number, because a record folder has no correct size. What the verb replaces is a reading somebody had to remember to take: the memory pen went from 44 entries to 236 between two counts made by hand a fortnight apart, and nothing reported the rate in between.
+`canon records size` reports what each of these folders holds, heaviest first, along with `.canon/tmp`. Each row carries the file count, the bytes, how many files were written in the last 7 and 30 days, and the dates of the least and most recently written one. Nothing fails on a number, because a record folder has no correct size. What the verb replaces is a reading somebody had to remember to take: the memory pen went from 44 entries to 236 between two counts made by hand a fortnight apart, and nothing reported the rate in between.
 
-A plan that ships is archived, never deleted. `canon:claude-docs` moves it to `.claude/plans/archive/` and retargets the task file's `Plan:` line at the new location, so a completed task still leads to the reasoning behind it. An archive sits inside the record folder it archives rather than beside it, so one ignore entry and one backed-folder entry cover a record and everything it has retired. The folder is gitignored, which is why a deleted plan had no recovery path. A plan cited by more than one task stays put until the last of them closes, since moving it early would strand every other pointer.
+A plan that ships is archived, never deleted. `canon:claude-docs` moves it to `.canon/plans/archive/` and retargets the task file's `Plan:` line at the new location, so a completed task still leads to the reasoning behind it. An archive sits inside the record folder it archives rather than beside it, so one ignore entry and one backed-folder entry cover a record and everything it has retired. The folder is gitignored, which is why a deleted plan had no recovery path. A plan cited by more than one task stays put until the last of them closes, since moving it early would strand every other pointer.
 
-A branch review report takes the other route and is swept rather than archived. `claude-review` writes it to `.claude/review/branch/`, the session addressing it reads it once, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so `claude-docs` deletes any report whose branch is gone. The body that writes a report owns how long it lives, which leaves the shipping branch's own report on disk through the run that cites it and collects it a branch later. What that loses is a local-only review on a branch that never opened a pull request, which is why the report says so where a reader meets it.
+A branch review report takes the other route and is swept rather than archived. `claude-review` writes it to `.canon/review/branch/`, the session addressing it reads it once, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so `claude-docs` deletes any report whose branch is gone. The body that writes a report owns how long it lives, which leaves the shipping branch's own report on disk through the run that cites it and collects it a branch later. What that loses is a local-only review on a branch that never opened a pull request, which is why the report says so where a reader meets it.
 
 The plans sweep reads the whole board rather than the tasks the session touched. It is the one place the skill reaches past its own rule against editing a task file the session did not change, because a task that closed while an earlier run missed its archive is exactly what the sweep exists to clear. Reaching it is safe: the archive moves the plan and retargets the pointer in the same pass, so an untouched task ends up with a working link rather than a broken one.
 
 `canon:claude-docs` decides which task closed by reading the diff rather than the conversation. It resolves a merge base against `origin/main`, unions the committed diff with the working tree and untracked files, then matches unchecked outcomes on the board against what shipped. A task that shipped without ever being discussed still gets marked. Requirements, architecture, and design stay session-sourced, because a diff cannot carry a judgment.
 
-`.claude/tasks/` is gitignored and resolves at the main worktree root, so every session shares one board. One file per task is what keeps concurrent sessions from overwriting each other, since a gitignored board has no history to recover a lost write from. Its `index.md` is generated by a hook rather than by `bun run check`, because the whole-repo index walk skips gitignored folders.
+`.canon/tasks/` is gitignored and resolves at the main worktree root, so every session shares one board. One file per task is what keeps concurrent sessions from overwriting each other, since a gitignored board has no history to recover a lost write from. Its `index.md` is generated by a hook rather than by `bun run check`, because the whole-repo index walk skips gitignored folders.
 
-`.claude/memory/` carries the same arrangement, its own hook regenerating `index.md` from each entry's `title`, `description`, and `category`. A hand-maintained `priority.md` sits beside it carrying execution order and what each task is waiting on, which the alphabetical index cannot express.
+`.canon/memory/` carries the same arrangement, its own hook regenerating `index.md` from each entry's `title`, `description`, and `category`. A hand-maintained `priority.md` sits beside it carrying execution order and what each task is waiting on, which the alphabetical index cannot express.
 
 `canon tasks validate` reads a row against its own table before it reads anything the row claims. A blank or prose line closes the table above it, so a row stranded there is checked against the line behind it rather than parsed as a continuation, and a row that clears that test still has its cell count checked against its header. A `## Needs a plan` row that states its own position, searched for `<ordinal> here` or the bare word `last` anywhere in the cell rather than at its start, is checked against where it actually sits, which is what catches a gap, a duplicate, and a sequence starting somewhere other than first alike.
 
 Past that shape, it checks what a surviving row claims against what the tree holds: every plan pointer resolves, every task file is named by a board row or a backlog line and never by both, no task sits in two groups, and no two rows marked ready touch the same file. One check across both surfaces is what lets a task move between the board and the backlog without the move reading as a dropped file. The collision check is the half a reader cannot run by eye, and it is what keeps two workers from being handed colliding work. Blockers re-takes what a parked row waits on, reporting one whose cited task reached the trunk and one whose cited file nothing running still holds. A cited task settles the row by being archived, or by closing every outcome and naming a pull request the trunk carries, since the checkbox alone is marked while the branch is still in review. Both halves read a citation out of the blocker cell, so a row citing neither is reported as untested rather than counted clean, and so is a cited task the trunk could not answer for. It reports and never writes, because a row is the orchestrator's claim and a validator repairing one would assert the claim it exists to test. Nothing fires it automatically, since the board is gitignored per-machine scratch with no shared moment to hang a hook on, so the orchestrator's sweep calls it at the point the readiness claim is made and follows it with the parked re-test.
 
-`canon:claude-tasks` owns the two operations that bracket a task's life. It creates the file, holding the filename convention and the frontmatter contract so a malformed write cannot break the index for every sibling, and it moves a shipped task to `.claude/tasks/archive/`. Creation is where the origin invariant is enforced: every task names a plan, a groundwork folder, an intake folder, or an issue, since a task with no origin is either lost context or work nobody decided to do.
+`canon:claude-tasks` owns the two operations that bracket a task's life. It creates the file, holding the filename convention and the frontmatter contract so a malformed write cannot break the index for every sibling, and it moves a shipped task to `.canon/tasks/archive/`. Creation is where the origin invariant is enforced: every task names a plan, a groundwork folder, an intake folder, or an issue, since a task with no origin is either lost context or work nobody decided to do.
 
 Archiving a task leaves its plan alone, because `canon:claude-docs` owns the plans sweep and already holds the last-live-citation rule. That makes the order load-bearing, so the archive verb refuses the last task pointing at a live plan. The sweep only reaches tasks still in the live folder, and archiving that task first would strand the plan there with nothing citing it. A task whose plan a sibling still cites archives freely, because the sweep is correct to leave that plan where it is and a gate reading the folder instead would park every task sharing one plan behind a sweep that will never move it.
 
@@ -152,13 +159,13 @@ The list stays written in the skill body as the fallback for a target whose inst
 
 #### Memory in the chain
 
-`git-ship` runs its verify gate and then opens on `claude-memory-capture`, which sends what the session learned to the surface that owns it. `autoship` reaches the same step by invoking that skill at its Step 7 rather than restating the order. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.claude/memory/`.
+`git-ship` runs its verify gate and then opens on `claude-memory-capture`, which sends what the session learned to the surface that owns it. `autoship` reaches the same step by invoking that skill at its Step 7 rather than restating the order. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.canon/memory/`.
 
 Capture leads rather than trails because a routed fact edits a tracked file, which has to reach the branch before the commit steps run.
 
 If capture wrote at least one memory file, `claude-memory-review` then proposes a decision-ready fix scoped to those entries while context is fresh, otherwise it is skipped. It stops at Propose. Review the receipt and run Apply yourself, on its own commit separate from the feature.
 
-Run `claude-memory-review` standalone to curate the whole pen. An entry it retires moves to `.claude/.tmp/memory-archive/` rather than being deleted, since the folder is gitignored and a bulk pass has no undo.
+Run `claude-memory-review` standalone to curate the whole pen. An entry it retires moves to `.canon/tmp/memory-archive/` rather than being deleted, since the folder is gitignored and a bulk pass has no undo.
 
 The receipt is collected once every item on it has been decided, and it survives untouched while any item is still pending. Whichever runs first takes it: Apply collects the receipt it has resolved, and `claude-docs` scans the folder on every shipped branch for one an earlier session left behind. Before the file goes, each declined item is folded into the entry it was about, since a promotion survives in its target and in git while a decline is recorded nowhere else. `canon standards memory` states what a fold writes and which entry types take one.
 
@@ -197,7 +204,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:setup-plugins`         | On a new machine, to install the community and official plugins user-scoped             |
 | `canon:setup-verify`          | After the agent generates configs, to run the installed scripts and report pass or fail |
 | `canon:claude-design-extract` | Before the first UI feature, to draft `.claude/DESIGN.md`                               |
-| `canon:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.claude/diagrams/`   |
+| `canon:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.canon/diagrams/`    |
 
 ### Decide what to build
 

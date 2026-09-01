@@ -9,7 +9,7 @@ description: Flags, exit codes, and JSON shape for canon indexes regen, plus whe
 
 Duplicates dedupe. The whole-repo walk prunes `.git`, `node_modules`, and anything `.gitignore` covers via `git check-ignore`.
 
-A positional path is not filtered that way, because the walk-up resolves on the filesystem and never consults git. That is the only way to regenerate an index inside a gitignored folder, and it is how `.claude/tasks/` and `.claude/memory/` both stay current.
+A positional path is not filtered that way, because the walk-up resolves on the filesystem and never consults git. That is the only way to regenerate an index inside a gitignored folder, and it is how `.canon/tasks/` and `.canon/memory/` both stay current.
 
 Each is driven by a `PostToolUse` hook matching `Write|Edit|MultiEdit`, so a file moved by a shell `mv` fires nothing. A caller that relocates an entry runs the command itself once the last move is done.
 

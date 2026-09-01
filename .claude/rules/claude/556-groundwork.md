@@ -1,7 +1,7 @@
 ---
-description: Route .claude/groundwork/ edits to the groundwork standard for ordinal naming, numbering, frontmatter, and required file contents
+description: Route .canon/groundwork/ edits to the groundwork standard for ordinal naming, numbering, frontmatter, and required file contents
 paths:
-  - '.claude/groundwork/**'
+  - '.canon/groundwork/**'
 ---
 
 # Groundwork standards

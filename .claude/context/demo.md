@@ -9,7 +9,7 @@ description: Beats compiler and browser driver behind canon demo, why the plan i
 
 `canon demo` drives a project's running application and writes a recording and a still. The command surface, its flags, and its refusal reasons live in `docs/agents/demo.md`. This entry holds why it is shaped the way it is.
 
-The whole feature came out of `.claude/groundwork/38-demo-recorder/`, which measured three spikes on 2026-08-19 and settled that the browser engine already in this repository can produce a video from a driven page with no editor and no desktop recorder. Read `06-decision.md` there before changing anything structural.
+The whole feature came out of `.canon/groundwork/38-demo-recorder/`, which measured three spikes on 2026-08-19 and settled that the browser engine already in this repository can produce a video from a driven page with no editor and no desktop recorder. Read `06-decision.md` there before changing anything structural.
 
 ## Layout
 
@@ -26,7 +26,7 @@ The whole feature came out of `.claude/groundwork/38-demo-recorder/`, which meas
 ## Decisions
 
 - **The plan is a second artifact rather than four more fields on a beat.** A beat is drafted through four discovery questions and pre-seeded so a person edits down, and a selector, a URL, a wait condition, and a timing on every beat destroys that property. The compiler also has to translate, since the engine's overlay carries the action it performed rather than the beat's caption, and a translation step is a compiler rather than a field.
-- **The plan is committed, not scratch.** It was going to sit beside the draft under `.claude/.tmp/`, and it fails the deletable test on its timing: the numbers are tuned by watching a recording and the draft cannot reproduce a tuned value. That is also why `compile` refuses to overwrite an existing plan without `--force`, since a recompile is the same loss by another route.
+- **The plan is committed, not scratch.** It was going to sit beside the draft under `.canon/tmp/`, and it fails the deletable test on its timing: the numbers are tuned by watching a recording and the draft cannot reproduce a tuned value. That is also why `compile` refuses to overwrite an existing plan without `--force`, since a recompile is the same loss by another route.
 - **The command ships to targets and `canon capture` does not.** Capture is excluded from the published package because it regenerates images committed here. That reason does not transfer to a command whose purpose is running in someone else's project, so `src/demo/` ships and a target inherits a browser binary install. The engine moved from a development dependency to a runtime one for this.
 - **The pointer moves through the engine's pointer, never the element-clicking helper.** The helper resolves a target and jumps to it. Interpolated movement is the entire trick, and one step is what makes a cursor teleport.
 - **`--out` names a directory in both verbs and never a root.** It first meant the directory on `compile` and a root on `run`, which resolved the plan's own directory a second time and nested the output path inside itself. `drive` now takes resolved paths rather than a root plus a relative path.

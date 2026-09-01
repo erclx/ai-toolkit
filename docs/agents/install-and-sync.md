@@ -205,7 +205,7 @@ target never touched still reports `matching`. Every other seed copies byte for
 byte.
 
 `superseded` names a file a newer seed folder replaced, such as `.claude/TASKS.md`
-against the `.claude/tasks/` that now ships. The entry carries `replacedBy` and
+against the `.canon/tasks/` that now ships. The entry carries `replacedBy` and
 nothing else, and the file is never deleted, since the content belongs to the
 project and only its author can decide where it moves. The list derives from the
 seed tree rather than from a fixed set of filenames, so a folder added later is

@@ -15,7 +15,7 @@ So the claim was stripped rather than sourced, and a gate was added to the write
 
 ### What the retirement left open
 
-Cross-version sequencing rationale now has no home. A row's `Waiting on` cell in `.claude/tasks/priority.md` carries why that row sits where it does, one line per row, and reasoning spanning several rows reaches a later session only through whoever remembers it. Both skills already ran correctly against a missing file, so nothing broke, and stating the gap is the honest end state rather than inventing a second document that would be the retired surface under another name.
+Cross-version sequencing rationale now has no home. A row's `Waiting on` cell in `.canon/tasks/priority.md` carries why that row sits where it does, one line per row, and reasoning spanning several rows reaches a later session only through whoever remembers it. Both skills already ran correctly against a missing file, so nothing broke, and stating the gap is the honest end state rather than inventing a second document that would be the retired surface under another name.
 
 `standards/requirements.md` keeps its Lifecycle section, which now says that later scope arrives as a new section and that nothing sequences either list into versions. The gate it fed is gone with the writer, so the section is read by a person rather than by a guard, and the `## Distribution` carve-out that kept a greenfield project from tripping that guard went with it.
 
@@ -31,7 +31,7 @@ Where a handoff may legitimately continue into the skill it names, as a fresh ta
 
 ## The review two-pass model
 
-`claude-pr-review` read that same path and asserted nothing from it, so it carried no defect to fix there. Its read informed a review comment, and the body sat inside a rewrite's file set where an edit would have bought a rebase for no behavior change. The retirement pointed it at `.claude/tasks/priority.md` instead, which is a read of the same kind against a file that exists.
+`claude-pr-review` read that same path and asserted nothing from it, so it carried no defect to fix there. Its read informed a review comment, and the body sat inside a rewrite's file set where an edit would have bought a rebase for no behavior change. The retirement pointed it at `.canon/tasks/priority.md` instead, which is a read of the same kind against a file that exists.
 
 That rewrite landed as a second pass the skill had never described. `claude-pr-review` posts twice over a pull request's life, a first pass and a close-out, and `claude-orchestrate` step 6 assumed the second one while the skill body defined only the first. The body path carries the head commit now, `body-<number>-<short-sha>.md`, because keying on the pull request number alone stops two sessions reviewing different pull requests from colliding and says nothing about one session posting twice.
 

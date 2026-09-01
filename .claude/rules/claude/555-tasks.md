@@ -1,7 +1,7 @@
 ---
-description: Route .claude/tasks/ edits to the tasks standard for filenames, frontmatter, and task file format
+description: Route .canon/tasks/ edits to the tasks standard for filenames, frontmatter, and task file format
 paths:
-  - '.claude/tasks/**'
+  - '.canon/tasks/**'
 ---
 
 # Tasks standards
@@ -9,4 +9,4 @@ paths:
 ## Authority
 
 - Follow the tasks standard for filenames, frontmatter, what belongs, and the task file format. It is the single source. Read it with `canon standards tasks`.
-- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.
+- Never hand-edit `.canon/tasks/index.md`. A hook regenerates it from sibling frontmatter.

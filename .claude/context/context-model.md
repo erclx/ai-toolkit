@@ -36,6 +36,40 @@ The conceptual placement decision is:
 - Tutorials or human onboarding → `docs/` if a public audience exists
 - Function-level docs → read the code instead
 
+## What each root holds, and what reads it
+
+The move to `.canon/` split the project root on one mechanical line: what is committed stays in `.claude/`, what is gitignored lives in `.canon/`. The census below is the whole of `.claude/` as it stands, since the branch performing the move is the one whose author has to enumerate the root anyway and any census written before it would be stale on merge. Read at `346556b1` on 2026-09-01.
+
+Five surfaces are Claude Code's own and the toolkit invented none of them:
+
+| Surface               | What reads it                                                       |
+| --------------------- | ------------------------------------------------------------------- |
+| `settings.json`       | Claude Code, which registers the hooks below from it                |
+| `settings.local.json` | Claude Code, per-machine and untracked                              |
+| `hooks/`              | Claude Code, on the events `settings.json` names                    |
+| `skills/`             | Claude Code, as the internal skills a session in this repo can load |
+| `rules/`              | Claude Code, glob-matched against the path being edited             |
+
+Two more are the harness's rather than the toolkit's, and the first is the carve-out the move left behind:
+
+| Surface                | What reads it                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| `worktrees/`           | `EnterWorktree`, which creates a worktree here and requires its target to sit here |
+| `scheduled_tasks.lock` | Claude Code, and nothing in this repository names it                               |
+
+The rest are the toolkit's own and stay because they are committed:
+
+| Surface           | What reads it                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| `context/`        | A session, on demand, through the `index.md` catalog this entry describes                     |
+| `canon/`          | `canon audits` for `baseline.json`, and the pull request label map for `pr-labels.toml`       |
+| `ARCHITECTURE.md` | Every session, eagerly, through the root `CLAUDE.md`                                          |
+| `REQUIREMENTS.md` | Every session, eagerly, and the design and diagram skills by name                             |
+| `DESIGN.md`       | `canon design render`, and the design skills by name                                          |
+| `wireframes/`     | `canon context` as an audited folder, in a project that carries one. This repository does not |
+
+Everything else that used to sit here is a session record and lives under `.canon/` now, which one ignore line covers. That is what makes the census worth writing once rather than maintaining: a record folder added later needs no row here, no ignore entry, and no manifest edit, and anything added to `.claude/` is by construction committed and therefore owes a row.
+
 ## Gotchas
 
 ### A folder split is a ceiling rather than a fix
