@@ -145,6 +145,12 @@ if (!commandCount) {
   process.exit(1)
 }
 
+const MARK_SVG = (await Bun.file(`${PROJECT_ROOT}/assets/brand/mark.svg`).text()).trim()
+if (!MARK_SVG) {
+  console.error("regen-hero: assets/brand/mark.svg read empty, refusing to write a hero with no mark")
+  process.exit(1)
+}
+
 const escape = (value) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
@@ -229,6 +235,7 @@ const values = {
   GOV_STACK_COUNT: String(gov.stacks.length),
   TOOLING_STACK_COUNT: String(toolingStacks.length),
   COMMAND_COUNT: String(commandCount),
+  MARK_SVG,
   SKILL_ENTRIES: markup(featured(skills, FEATURED_SKILLS)),
   RULE_ENTRIES: entries(deliveredRules),
   STANDARD_ENTRIES: entries(standards),

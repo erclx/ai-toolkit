@@ -95,4 +95,4 @@ Motion is not used. No transition, animation, or keyframe declaration appears on
 
 ## Iconography
 
-No icon library is installed. The surfaces draw literal glyph characters, `✦` for the hero mark and `│ ├ ✓ ! ✗ + - ◆ ◇ ❯` for the terminal framing, and a custom icon has no place to load from.
+No icon library is installed. `assets/brand/mark.svg` is the one authored icon, embedded inline in the hero topbar, and the surfaces otherwise draw literal glyph characters: `│ ├ ✓ ! ✗ + - ◆ ◇ ❯` for the terminal framing.

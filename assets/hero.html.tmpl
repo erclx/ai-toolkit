@@ -153,6 +153,11 @@
         color: var(--color-accent);
         padding-right: 10px;
       }
+      .topbar .mark svg {
+        width: 15px;
+        height: 15px;
+        vertical-align: -3px;
+      }
 
       .stats {
         display: flex;
@@ -179,7 +184,7 @@
   <body>
     <div class="window">
       <div class="topbar">
-        <span><span class="mark">✦</span><span class="name">canon</span> &nbsp;/&nbsp; erclx/canon</span>
+        <span><span class="mark" aria-hidden="true">{{MARK_SVG}}</span><span class="name">canon</span> &nbsp;/&nbsp; erclx/canon</span>
         <span>MIT</span>
       </div>
 
