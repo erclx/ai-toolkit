@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.14.0](https://github.com/erclx/canon/compare/v4.13.0...v4.14.0) (2026-09-01)
+
+
+### Features
+
+* **hooks:** reinstall the global binary from post-merge on skew ([#1341](https://github.com/erclx/canon/issues/1341)) ([c340723](https://github.com/erclx/canon/commit/c340723ffcb238819e834d2afc99ce3bb0fe511c))
+
+
+### Bug Fixes
+
+* **pr:** claim every path a bullet names without widening what accuses ([#1340](https://github.com/erclx/canon/issues/1340)) ([e51ab35](https://github.com/erclx/canon/commit/e51ab35b2dd8235034fbbb11b355ca49a5b4fab0))
+
 ## [4.13.0](https://github.com/erclx/canon/compare/v4.12.0...v4.13.0) (2026-09-01)
 
 
