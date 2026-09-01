@@ -7,7 +7,7 @@ description: Managing background sessions, their groups, peek and attach, filter
 
 Agent view is the terminal surface that lists and manages background Claude Code sessions, opened with `claude agents` or reached automatically from a session sent to the background. Each row is a full independent session with its own conversation, transcript, and quota, dispatched with `claude --bg "<task>"` or by sending the current one to the background with `/bg`.
 
-Source: Anthropic, in the [agent view docs](https://code.claude.com/docs/en/agent-view.md), read 2026-08-27.
+Source: Anthropic, in the [agent view docs](https://code.claude.com/docs/en/agent-view.md), read 2026-09-01.
 
 ## What it manages and what it does not
 
