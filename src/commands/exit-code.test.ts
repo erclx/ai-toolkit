@@ -26,6 +26,28 @@ function findInstalledModules(): string {
 const SETUP_TIMEOUT_MS = 60_000
 const RUN_TIMEOUT_MS = 30_000
 
+/**
+ * Carries every field `REQUIRED_FIELDS` names, so a case below fails on the
+ * branch it is written for rather than on the shape validator that now runs
+ * ahead of both write paths.
+ */
+const CONFORMING_REPORT = [
+  '## Toolkit feedback',
+  '',
+  '### Surface',
+  '',
+  'CLI, canon feedback',
+  '',
+  '### Observed',
+  '',
+  'Something broke.',
+  '',
+  '### Proposed fix',
+  '',
+  'open',
+  '',
+].join('\n')
+
 interface CliResult {
   readonly exitCode: number
   readonly stdout: string
@@ -171,23 +193,38 @@ describe('command action exit codes', () => {
     const result = await runCli(['feedback'], {
       cwd: workDir,
       cli: relocatedCli,
-      input: '# Report\n\nSomething broke.\n',
+      input: CONFORMING_REPORT,
     })
 
     expect(result.exitCode).toBe(1)
     expect(result.stderr).toContain('Local scratch needs the toolkit source')
   })
 
+  /**
+   * The validator gates both write paths, so this reaches the local one and
+   * covers the flag path with it. Running `--github` here would file a real
+   * issue on any machine holding an authenticated `gh`.
+   */
+  it('should exit 1 when feedback is missing a required field', async () => {
+    const result = await runCli(['feedback'], {
+      cwd: workDir,
+      input: '## Toolkit feedback\n\n### Observed\n\nSomething broke.\n',
+    })
+
+    expect(result.exitCode).toBe(1)
+    expect(result.stderr).toContain('### Surface')
+  })
+
   it('should exit 1 when feedback --github finds neither gh nor a toolkit source', async () => {
     const result = await runCli(['feedback', '--github'], {
       cwd: workDir,
       cli: relocatedCli,
-      input: '# Report\n\nSomething broke.\n',
+      input: CONFORMING_REPORT,
       emptyPath,
     })
 
     expect(result.exitCode).toBe(1)
-    expect(result.stderr).toContain('gh unavailable')
+    expect(result.stderr).toContain('gh is not installed')
   })
 
   /**

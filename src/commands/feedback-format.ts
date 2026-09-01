@@ -2,8 +2,81 @@ const SLUG_FALLBACK = 'general'
 const SLUG_MAX_LENGTH = 40
 const TITLE_MAX_LENGTH = 72
 
+/**
+ * The one place the report's field list is spelled. The GitHub issue form is
+ * the other writer of this shape and enforces nothing a producer passes
+ * through, so validation sits here, on the path every filed report crosses.
+ */
+export const REQUIRED_FIELDS = ['Surface', 'Observed', 'Proposed fix'] as const
+
+/**
+ * Fields are `###` headings under the report's own `## Toolkit feedback` title,
+ * because that is the level a GitHub issue form emits for a field label. One
+ * parser therefore reads a report the CLI wrote and one a person submitted
+ * through the web form.
+ *
+ * The retired `**Surface:**` bold form is not accepted. Reading both would
+ * leave a producer free to keep emitting the shape this parser exists to
+ * retire, and the validator would then enforce nothing.
+ */
+const FIELD_HEADING = /^###\s+(.+?)\s*$/
+const FENCE = /^\s*(```|~~~)/
+
+export function parseSections(body: string): Map<string, string> {
+  const sections = new Map<string, string>()
+  let heading: string | undefined
+  let lines: string[] = []
+  let fenced = false
+
+  const flush = (): void => {
+    if (heading === undefined) return
+    sections.set(heading.toLowerCase(), lines.join('\n').trim())
+  }
+
+  for (const line of body.split('\n')) {
+    // A Repro field routinely carries a fenced block, and a `###` comment
+    // inside one is shell rather than the next field. Reading it as a heading
+    // splits the section and drops everything under it.
+    if (FENCE.test(line)) fenced = !fenced
+    const match = fenced ? null : line.match(FIELD_HEADING)
+    if (match?.[1] === undefined) {
+      lines.push(line)
+      continue
+    }
+    flush()
+    heading = match[1]
+    lines = []
+  }
+  flush()
+
+  return sections
+}
+
+export function readField(body: string, field: string): string | undefined {
+  const value = parseSections(body).get(field.toLowerCase())
+  return value ? value : undefined
+}
+
+/**
+ * The first required field the report does not carry, or `undefined` when it
+ * carries them all. One name rather than a list, because a reporter repairs one
+ * field at a time and the next run names the next gap.
+ */
+export function missingField(body: string): string | undefined {
+  const sections = parseSections(body)
+  for (const field of REQUIRED_FIELDS) {
+    const value = sections.get(field.toLowerCase())
+    if (!value) return field
+  }
+  return undefined
+}
+
+export function missingFieldMessage(field: string): string {
+  return `Feedback report is missing its "### ${field}" section. Every report needs ${REQUIRED_FIELDS.map((name) => `### ${name}`).join(', ')}.`
+}
+
 function surfaceField(body: string): string | undefined {
-  return body.match(/\*\*Surface:\*\*\s*([^\n]+)/i)?.[1]?.trim()
+  return readField(body, 'Surface')?.split('\n')[0]?.trim()
 }
 
 export function deriveSlug(body: string): string {

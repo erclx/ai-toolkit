@@ -2,12 +2,17 @@ name: Toolkit feedback
 description: Report something broken, missing, or off in the toolkit
 title: 'feedback: '
 labels: ['feedback']
+# The web mirror of the report `canon feedback` validates. A submission renders
+# each label as a `### <label>` section, which is the shape the CLI parses, so
+# both routes reach triage as one document. `required` here mirrors
+# REQUIRED_FIELDS in src/commands/feedback-format.ts, which is where the list is
+# spelled and where every report filed through the CLI is checked against it.
 body:
   - type: input
     id: project
     attributes:
       label: From project
-      description: The project name or path where you hit this
+      description: The project's name or kind, such as "a Next.js app". Not a full path, which names a folder on one machine.
     validations:
       required: false
   - type: input
@@ -44,4 +49,4 @@ body:
       label: Proposed fix
       description: One line if you have one, or "open"
     validations:
-      required: false
+      required: true

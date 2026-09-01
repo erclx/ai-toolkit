@@ -1,10 +1,16 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Command } from 'commander'
-import { deriveSlug, deriveTitle } from '@/commands/feedback-format'
+import {
+  deriveSlug,
+  deriveTitle,
+  missingField,
+  missingFieldMessage,
+} from '@/commands/feedback-format'
 import { PROJECT_ROOT } from '@/project-root'
 import { creationRel } from '@/record-root'
 import { createGithubIssue } from '@/github'
+import { issueFailureMessage } from '@/github-format'
 import { frameError, frameSuccess, palette } from '@/ui'
 
 function readStdin(): Promise<string> {
@@ -78,27 +84,35 @@ export function register(program: Command): void {
         return
       }
 
+      // Both write paths, not `--github` alone. A report missing its surface is
+      // no more useful sitting in the triage queue on disk than in the tracker.
+      const absent = missingField(body)
+      if (absent) {
+        frameError(missingFieldMessage(absent))
+        process.exitCode = 1
+        return
+      }
+
       if (opts.github) {
-        const url = await createGithubIssue({
+        const result = await createGithubIssue({
           title: deriveTitle(body),
           body,
           labels: ['feedback'],
         })
-        if (url) {
-          frameSuccess('canon feedback', url)
-          process.stdout.write(`${url}\n`)
+        if (result.ok) {
+          frameSuccess('canon feedback', result.url)
+          process.stdout.write(`${result.url}\n`)
           return
         }
+        const reason = issueFailureMessage(result)
         if (!isToolkitSource()) {
-          frameError(
-            'gh unavailable and no toolkit source to fall back to. Install gh, or file it at https://github.com/erclx/canon/issues/new',
-          )
+          frameError(`${reason} No toolkit source to fall back to.`)
           process.exitCode = 1
           return
         }
         const { NC, YELLOW } = palette(process.stderr)
         process.stderr.write(
-          `${YELLOW}! gh unavailable, wrote local scratch instead${NC}\n`,
+          `${YELLOW}! ${reason} Wrote local scratch instead.${NC}\n`,
         )
       }
 
