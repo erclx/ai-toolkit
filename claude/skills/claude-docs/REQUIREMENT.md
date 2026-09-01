@@ -38,10 +38,10 @@ The trigger side carries a gap of its own. "Sync the docs" names either corpus t
 ## Must not
 
 - Infer a new task from the diff. Only outcomes already on the board get marked.
-- Touch task files the session did not change, outside the board-wide plans sweep that exists to clear a missed archive
+- Touch task files the session did not change
 - Widen what a writing step reads when the baseline is unusable. Widening a read is safe and widening a write stubs a surface for every file in the repository.
 - Edit `CLAUDE.md` inline. Every change there goes through a diff-and-approve gate, so this skill only flags.
-- Create a context entry or delete a plan
+- Create a context entry, or move or delete a plan. A plan is settled by the merge, and `canon tasks archive` carries it.
 - Overwrite a file a promotion block routes to. A destination that already holds a page is a merge for a person, and folding over it discards work this skill never read.
 - Write an anchor onto a decision the run did not amend, or refresh one without re-reading the number. A date from a pass that measured nothing is the false confidence the marker exists to prevent.
 - Anchor an entry written before the rule, which dates it by blame rather than by a read

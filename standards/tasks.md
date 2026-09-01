@@ -47,7 +47,7 @@ The handoff takes one file per session for the reason a task does. A single shar
 
 The catalog is the one reader that filters nothing, so it carries a row per sibling alongside the tasks. That is what a folder catalog is for, and the handoffs are what make it worth stating: a board accumulates one row per session that ever wrote one, with nothing pruning them. Anything reading the catalog as the backlog therefore does its own filtering, and a reader that takes every row as a task reports the handoffs as queued work.
 
-The `claude-tasks` skill creates and archives task files. `claude-docs` marks outcomes `[x]` in an existing file and sweeps the plans those tasks cite. Neither does the other's job.
+The `claude-tasks` skill creates and archives task files, and the archive carries the task's plan with it. `claude-docs` marks outcomes `[x]` in an existing file. Neither does the other's job.
 
 ## Ordering
 
@@ -247,8 +247,8 @@ The archive nests inside `.canon/tasks/` rather than sitting beside it as a flat
 
 One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.canon/plans/archive/`, sitting inside the folder it archives the same way, and it inherits the board's own ignore entry rather than needing one of its own. The cost is that an archived task does not appear in diffs, which is the cost the live board already carries.
 
-Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation, so the sweep runs before the archive rather than after it. The sweep finds its work by scanning the live folder, and a task archived first is beyond its reach for good, leaving the plan with no live task citing it and an archived task pointing at a path nothing will retarget.
+Archiving a task archives its plan alongside it, when the closing task is that plan's last live citation. The archived task's `Plan:` line is retargeted at `../../plans/archive/feature-<slug>.md`, a folder deeper than the live task wrote it, so a completed task still leads to the reasoning behind it. A plan several tasks share stays live and the task archives anyway, since moving it on the first task to close strands every sibling's pointer at a path that has gone.
 
-The `claude-docs` sweep states that ordering in its own body rather than reading it back from a command, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `canon` predates gets no record back and sweeps nothing. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
+One act rather than two is what makes the pair safe. The merge is the event that settles a plan, and a `post-merge` hook reaching the archive with nobody watching cannot act on a warning, so a second call after it would be a second failure point leaving the task archived and the plan live.
 
-A task with an open outcome stays on the board. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. The sweep is gated on the same condition, so archiving around an open outcome also leaves the plan behind.
+A task with an open outcome stays on the board, and so does its plan. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file.

@@ -51,7 +51,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 
 Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
 
-- `.canon/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. The scratch sweep reads every file in the folder for its plans sweep and states that where it gives the instruction.
+- `.canon/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step, which is the only step here that opens a task file.
 
 ## Step 2: identify what changed
 
@@ -102,7 +102,7 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 
 The verb resolves the board at the main worktree root in-process, which is the route because this is an edit inside an existing file and the file-editing tools refuse that path from a linked worktree.
 
-Read `ok` and `reason` out of that record rather than the exit, for the reason the plans sweep below states at length. A refusal arriving as success leaves the outcome unmarked while the chain moves on, so the board reports shipped work as open and the next session re-plans it.
+Read `ok` and `reason` out of that record rather than the exit. An operator's shell profile may wrap `canon` in a function that runs the binary and then a second command and takes the second status, which flattens every non-zero exit to zero. A refusal arriving as success leaves the outcome unmarked while the chain moves on, so the board reports shipped work as open and the next session re-plans it.
 
 **REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, `.claude/wireframes/<surface>.md`**
 
@@ -208,40 +208,13 @@ Report a block left unfolded rather than dropping it:
 
 `⚠ Skipped: <destination path> already exists. Merge by hand.`
 
-## Step 9: sweep consumed scratch
+## Step 9: sweep consumed receipts
 
-Sweep reviews this session consumed, and sweep plans across the whole board. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+Sweep the review and memory receipts this session consumed. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
-Every move and delete below is a shell operation, so send each as a plain single `Bash` command rather than joining a `mkdir -p` to the `mv` with `&&`, which is refused as compound from a linked worktree. The one edit inside an existing file is the `Plan:` retarget, and no verb covers it: read the task file and write it back whole with a heredoc, which the file-editing tools refuse from a linked worktree and no shell stream editor may do.
+Every delete below is a shell operation, so send each as a plain single `Bash` command rather than joining two with `&&`, which is refused as compound from a linked worktree.
 
-### Plans
-
-Scan every file in `.canon/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target.
-
-The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.canon/tasks/` before routing on it, which lands `../plans/x.md` and `.canon/plans/x.md` on the same file.
-
-The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `${CLAUDE_SKILL_DIR}/../../standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
-
-Board-wide scope is the one place this sweep reaches past Step 3's rule against touching task files the session did not change. A board carrying a task that closed while an earlier run missed its archive is the defect this exists to clear, and skipping those tasks would preserve it. Reaching them is safe because the archive moves the plan and points the task at the new path, so a task from unrelated work ends up with a working pointer rather than a broken one.
-
-Before moving anything, count the other citations. Scan every `.canon/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone.
-
-A board carrying one task written `../plans/x.md` and another written `.canon/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.canon/plans/archive/`, and the count then reads a citation that does not exist and archives nothing.
-
-Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
-
-`canon tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `canon` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.canon/plans/archive/`.
-
-Nothing in the exit code reports that. Branch on the record's `ok` and `reason` fields and never on the exit, which is the rule every task verb already carries: an operator's shell profile may wrap `canon` in a function that runs the binary and then another command, taking its status from the second, and one measured here masks every non-zero exit rather than only an absent verb. The binary itself exits 1 for an unknown subcommand and 1 for an ordinary refusal alike. Switching this body to the verb needs a release that carries it and a read of the record rather than the exit, which together retire the duplication.
-
-A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.canon/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
-
-- Target resolves inside `.canon/plans/`, the file exists, and no other task file cites it: create `.canon/plans/archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
-- Target resolves inside `.canon/plans/` and at least one other task file cites it: leave the plan where it is and retarget nothing. Report the shared citation.
-- Target resolves inside `.canon/plans/archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
-- Any other resolved target outside `.canon/plans/`: warn and skip.
-
-Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans/archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
+Plans are not swept here. A plan is settled by the merge rather than by an outcome this run marked, and `canon tasks archive` moves it with the task the `post-merge` hook archives. Sweeping it from this step read a closure Step 3 had written moments earlier and moved a plan the branch was still building from.
 
 ### Reviews
 
@@ -253,7 +226,7 @@ Sweep the branch reports this session never opened. List `.canon/review/branch/r
 
 What that removes is a local-only review on a branch deleted before it opened a pull request. `claude-review` says so where a reader meets the report, and the sweep runs anyway rather than keeping every report against the one case, since nothing else ever clears them.
 
-Memory receipts sweep board-wide, like both halves of this step above them. Scan every `.canon/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
+Memory receipts sweep board-wide rather than by slug. Scan every `.canon/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
 
 For each receipt, count the H2 items still marked 📝 pending:
 
@@ -266,8 +239,6 @@ Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, 
 
 Output one line per file swept:
 
-- `📦 Archived: <path>` for a plan moved into `.canon/plans/archive/`
-- `⏭ Kept: <path>, still cited by <task-file>` for a plan another live task shares
 - `🧹 Deleted: <path>, branch gone` for a branch report whose branch no longer exists
 - `🧹 Deleted: <path>, folded <n> skips` for a swept memory receipt
 - `⏭ Kept: <path>, <n> items pending` for a memory receipt still holding decisions

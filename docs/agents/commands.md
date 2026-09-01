@@ -26,7 +26,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon slides list`           | List the available slide layouts (`--json` for the catalog)                                                                                                           |
 | `canon feedback`              | Write toolkit feedback from stdin to `.canon/review/feedback/`, or open a GitHub issue with `--github`                                                                |
 | `canon transcripts <url>`     | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                                                                                                 |
-| `canon tasks archive`         | Move a shipped task off the board, clear its ordering row, and regenerate the index                                                                                   |
+| `canon tasks archive`         | Move a shipped task and its plan off the board, clear its ordering row, and regenerate the index                                                                      |
 | `canon tasks pull-request`    | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)                                                                              |
 | `canon tasks outcome`         | Mark outcomes `[x]` on a task by position, repeating `--close` (`--json`)                                                                                             |
 | `canon tasks validate`        | Report board rows whose shape, order, plan, task file, group, file set, or blocker does not hold (`--json`)                                                           |
