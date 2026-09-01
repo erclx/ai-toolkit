@@ -22,6 +22,10 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon indexes regen`         | Regenerate `index.md` files from sibling frontmatter                                                                                                                  |
 | `canon docs [topic]`          | Emit toolkit reference docs (`list`, or a topic by name)                                                                                                              |
 | `canon design render`         | Render `.claude/DESIGN.md` tokens to HTML and CSS                                                                                                                     |
+| `canon design regen`          | Rewrite this repository's `.claude/DESIGN.md` and `src/design/base.css` from `src/design/tokens.ts`                                                                   |
+| `canon design css`            | Emit the design tokens and components as CSS on stdout (`--no-components` for properties alone)                                                                       |
+| `canon design install`        | Install the base stylesheet into a project at `.claude/design/base.css`                                                                                               |
+| `canon design sync`           | Update a base stylesheet already installed under `.claude/design/`                                                                                                    |
 | `canon slides render`         | Render a `.claude/SLIDES.md` source into a PowerPoint deck, reporting any unrecognized layout name on stderr                                                          |
 | `canon slides list`           | List the available slide layouts (`--json` for the catalog)                                                                                                           |
 | `canon feedback`              | Write toolkit feedback from stdin to `.canon/review/feedback/`, or open a GitHub issue with `--github`                                                                |
@@ -36,6 +40,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon teach open`            | Open a workspace at the next ordinal with its mission, resources, and glossary files (`--json`)                                                                       |
 | `canon teach resource`        | Record sources and leads in a workspace, repeating `--read` or `--lead` as `<title>=<url>` (`--json`)                                                                 |
 | `canon teach glossary`        | Add terms to a workspace glossary alphabetically, repeating `--term <term>=<definition>` (`--json`)                                                                   |
+| `canon teach stylesheet`      | Seed a workspace stylesheet from the design source, leaving an existing one alone without `--force` (`--json`)                                                        |
 | `canon records validate`      | Report a session record or a standard against the standard governing it, per kind (`--json`)                                                                          |
 | `canon records migrate`       | Rewrite the records a validate finding names a recoverable transform for (`--write`, `--json`)                                                                        |
 | `canon records size`          | Report what each record folder holds and how much of it is recent, heaviest first (`--json`)                                                                          |
@@ -112,11 +117,11 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `demo`      | `compile`, `run`                                                                                                                      |
 | `inventory` | `run`                                                                                                                                 |
 | `wiki`      | `init`                                                                                                                                |
-| `design`    | `render`                                                                                                                              |
+| `design`    | `regen`, `css`, `render`, `install`, `sync`                                                                                           |
 | `slides`    | `render`, `list`                                                                                                                      |
 | `tasks`     | `archive`, `validate`                                                                                                                 |
 | `intake`    | `list`, `answer`                                                                                                                      |
-| `teach`     | `list`, `open`, `resource`, `glossary`                                                                                                |
+| `teach`     | `list`, `open`, `resource`, `glossary`, `lesson`, `stylesheet`                                                                        |
 | `comments`  | `scan`                                                                                                                                |
 | `context`   | `audit`                                                                                                                               |
 | `markdown`  | `audit`                                                                                                                               |

@@ -125,6 +125,8 @@ It reports four things. `lesson` is the numbered path the lesson takes, derived 
 
 The stylesheet is reported rather than written. A verb that wrote it on every lesson would discard whatever the last lesson added, and the second lesson in a workspace is the one that needs the file the first one left.
 
+`canon teach stylesheet <topic>` is what writes it, seeded from the design source so a workspace renders in the system every other surface does. It refuses to overwrite, reporting `written` as false where the workspace already carries one, and `--force` takes the seed back over it. Each workspace used to carry a hand-authored palette, which is how the course styling forked once per workspace, so a lesson adds its own rules under the seed and reaches a value through its custom property rather than restating the hex.
+
 Each `quiz` entry carries `order`, the authored option indices in presentation order where index `0` is the correct answer, and `answer`, the one-based position that answer lands in. Both travel together because a caller deriving the position itself is a caller that can derive it wrongly.
 
 The order is drawn here rather than instructed, and that is the point of the verb. An author told to vary the position still varies it by judgment, and the judgment settles on the first slot, which is the defect this design departs from. The draw is uniform over the options, so the position carries no information about which answer is correct.
