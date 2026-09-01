@@ -8,6 +8,10 @@ What follows is the local loop for an invited contributor, and for anyone runnin
 
 Bun runs the CLI and every script. The shell scripts need `zsh` or bash 4 or newer, so macOS needs `brew install bash` first. The [readme](README.md#development) covers the clone, install, and bootstrap path.
 
+`bun run bootstrap` writes one file outside the repository. It appends a block of Claude Code shell aliases to `~/.zshrc`, wrapped in `# >>> canon aliases >>>` and `# <<< canon aliases <<<` markers.
+
+The markers are how a re-run recognizes its own block and skips, so the script never appends a second copy, and deleting the block between them removes the aliases. Skip that step by running `bun install` and `bun link` yourself instead. The [zshrc aliases](docs/zshrc-aliases.md) doc lists what the block defines.
+
 ## Verifying a change
 
 `bun run check` is the gate. It auto-formats, regenerates the generated files, and runs the stages the changed files call for. Use `bun run format` when a change needs formatting alone.
