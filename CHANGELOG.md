@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.7.0](https://github.com/erclx/canon/compare/v4.6.1...v4.7.0) (2026-09-01)
+
+
+### Features
+
+* **records:** move the gitignored records to a root of their own ([#1315](https://github.com/erclx/canon/issues/1315)) ([fe32d16](https://github.com/erclx/canon/commit/fe32d16da9126896af4d2f59e91c2492fffc92be))
+
 ## [4.6.1](https://github.com/erclx/canon/compare/v4.6.0...v4.6.1) (2026-09-01)
 
 
