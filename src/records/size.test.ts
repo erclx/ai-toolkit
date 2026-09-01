@@ -91,7 +91,7 @@ function touchedWithin(entry: FolderSize, days: number): number {
 }
 
 describe('sizeRecords', () => {
-  it('should refuse when the project holds no .claude directory', async () => {
+  it('should refuse when the project holds neither record root', async () => {
     const bare = join(ROOT, 'nested')
     mkdirSync(bare, { recursive: true })
 
@@ -99,6 +99,32 @@ describe('sizeRecords', () => {
 
     expect(outcome.ok).toBe(false)
     if (!outcome.ok) expect(outcome.reason).toBe('no-folder')
+  })
+
+  it('should read a project holding the new root alone', async () => {
+    const migrated = join(ROOT, 'migrated')
+    const path = join(migrated, '.canon', 'memory', 'project-one.md')
+    mkdirSync(join(path, '..'), { recursive: true })
+    writeFileSync(path, '12345')
+
+    const outcome = await sizeRecords(migrated, NOW)
+
+    expect(outcome.ok).toBe(true)
+    if (!outcome.ok) return
+    expect(folder(outcome, 'memory')).toMatchObject({ present: true, files: 1 })
+  })
+
+  it('should read the scratch folder at the name the new root gives it', async () => {
+    const migrated = join(ROOT, 'migrated-scratch')
+    const path = join(migrated, '.canon', 'tmp', 'routing', 'one.md')
+    mkdirSync(join(path, '..'), { recursive: true })
+    writeFileSync(path, '12345')
+
+    const outcome = await sizeRecords(migrated, NOW)
+
+    expect(outcome.ok).toBe(true)
+    if (!outcome.ok) return
+    expect(folder(outcome, '.tmp')).toMatchObject({ present: true, files: 1 })
   })
 
   it('should skip a file that leaves between the listing and the read', async () => {

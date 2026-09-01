@@ -167,6 +167,29 @@ describe('recordsDir', () => {
       join(ROOT, '.claude', 'standards'),
     ])
   })
+
+  it('should read a record kind at the new root when it carries the folder', () => {
+    mkdirSync(join(ROOT, '.canon', 'plans'), { recursive: true })
+
+    expect(recordsDir(ROOT, 'plans')).toBe(join(ROOT, '.canon', 'plans'))
+  })
+
+  it('should read a record kind at the old root when the new one is absent', () => {
+    mkdirSync(join(ROOT, '.claude', 'plans'), { recursive: true })
+
+    expect(recordsDir(ROOT, 'plans')).toBe(join(ROOT, '.claude', 'plans'))
+  })
+
+  it('should stand the creation default in for a record kind neither root carries', () => {
+    expect(recordsDir(ROOT, 'plans')).toBe(join(ROOT, '.claude', 'plans'))
+  })
+
+  it('should name both record roots for a record kind', () => {
+    expect(recordDirs(ROOT, 'memory')).toEqual([
+      join(ROOT, '.canon', 'memory'),
+      join(ROOT, '.claude', 'memory'),
+    ])
+  })
 })
 
 describe('pathWords', () => {
@@ -1118,11 +1141,11 @@ describe('validateRecords over a teaching workspace', () => {
     })
   })
 
-  it('should name the folder when no teach directory exists', async () => {
+  it('should name both record roots when no teach directory exists', async () => {
     expect(await validateRecords(ROOT, 'teach')).toMatchObject({
       ok: false,
       reason: 'no-folder',
-      message: `No teach folder at ${join(ROOT, '.claude', 'teach')}.`,
+      message: `No teach folder at ${join(ROOT, '.canon', 'teach')} or ${join(ROOT, '.claude', 'teach')}.`,
     })
   })
 })

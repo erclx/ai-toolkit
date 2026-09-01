@@ -1,12 +1,13 @@
 import { existsSync, type Stats } from 'node:fs'
 import { readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
+import { RECORD_ROOTS, recordDir, SCRATCH } from '@/record-root'
 import { BACKED_FOLDERS } from '@/records/backup'
 
 /**
- * The folders a size reading covers, relative to `.claude/`.
+ * The folders a size reading covers, named at the record root they sit under.
  *
- * It is the backed set plus `.tmp`, which a backup skips because it is
+ * It is the backed set plus the scratch folder, which a backup skips because it is
  * deletable without loss and a reading covers because deletable is not the same
  * as empty: the routing handoffs and the memory archive both sit there and both
  * accumulate. `.records.git` stays out because it is the backup history rather
@@ -14,7 +15,7 @@ import { BACKED_FOLDERS } from '@/records/backup'
  * checkout of the enclosing repository with its own removal verb, and one of
  * them outweighs every record folder combined.
  */
-export const SIZED_FOLDERS = [...BACKED_FOLDERS, '.tmp'] as const
+export const SIZED_FOLDERS = [...BACKED_FOLDERS, SCRATCH] as const
 
 /**
  * The windows a reading reports, in days.
@@ -34,7 +35,7 @@ export interface WindowCount {
 }
 
 export interface FolderSize {
-  /** Relative to `.claude/`, which is the name a reader opens. */
+  /** Relative to the record root, which is the name a reader opens. */
   readonly folder: string
   readonly present: boolean
   readonly files: number
@@ -170,7 +171,7 @@ async function measure(
   folder: string,
   now: number,
 ): Promise<FolderSize> {
-  const path = join(root, '.claude', folder)
+  const path = recordDir(root, folder)
   const empty = GROWTH_WINDOWS.map((days) => ({ days, files: 0 }))
 
   if (!existsSync(path)) {
@@ -212,11 +213,15 @@ export async function sizeRecords(
   root: string,
   now: number = Date.now(),
 ): Promise<SizeOutcome> {
-  if (!existsSync(join(root, '.claude'))) {
+  // Either root answers, so a migrated tree is read rather than refused. The
+  // roots are tested rather than the folders under them, since a project that
+  // holds the root and no records yet is empty rather than absent and the
+  // per-folder `present` flags already say which of the ten it carries.
+  if (!RECORD_ROOTS.some((name) => existsSync(join(root, name)))) {
     return {
       ok: false,
       reason: 'no-folder',
-      message: `No .claude directory at ${root}, so there are no record folders to read.`,
+      message: `No ${RECORD_ROOTS.join(' or ')} directory at ${root}, so there are no record folders to read.`,
     }
   }
 

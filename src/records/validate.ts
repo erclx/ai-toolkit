@@ -4,6 +4,10 @@ import { join } from 'node:path'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
 import { linesOutsideFences } from '@/markdown/scan'
 import {
+  recordDir as resolveRecordDir,
+  recordDirs as resolveRecordDirs,
+} from '@/record-root'
+import {
   TEACH_GLOSSARY,
   TEACH_MISSION,
   TEACH_RECORDS,
@@ -25,22 +29,22 @@ export const RECORD_KINDS = [
 export type RecordKind = (typeof RECORD_KINDS)[number]
 
 /**
- * The folders each kind reads, in precedence order.
+ * The folders standards reads, in precedence order.
  *
- * Standards carry two because the corpus authors at the project root and
- * installs under `.claude/`. The authoring root wins where both exist, since the
+ * It carries two because the corpus authors at the project root and installs
+ * under `.claude/`. The authoring root wins where both exist, since the
  * installed tree is a generated copy here and a finding fixed there is
  * overwritten by the next regen. A project that consumed the corpus holds only
  * the second, so one order serves both.
+ *
+ * Every other kind is a session record and takes the record roots instead,
+ * resolved by `@/record-root`. Standards is the one kind that is tracked, so it
+ * does not move and spells its own two candidates here.
  */
-const FOLDERS_BY_KIND: Readonly<Record<RecordKind, readonly string[]>> = {
-  plans: [join('.claude', 'plans')],
-  groundwork: [join('.claude', 'groundwork')],
-  intake: [join('.claude', 'intake')],
-  memory: [join('.claude', 'memory')],
-  standards: ['standards', join('.claude', 'standards')],
-  teach: [join('.claude', 'teach')],
-}
+const STANDARDS_FOLDERS: readonly string[] = [
+  'standards',
+  join('.claude', 'standards'),
+]
 
 /**
  * `unknown-kind` is raised at the argument boundary rather than by the walk, and
@@ -107,17 +111,31 @@ export type ValidateOutcome = ValidateReport | ValidateRefused
 
 /** Every folder a kind would accept, whether or not it is on disk. */
 export function recordDirs(root: string, kind: RecordKind): string[] {
-  return FOLDERS_BY_KIND[kind].map((folder) => join(root, folder))
+  if (kind === 'standards') {
+    return STANDARDS_FOLDERS.map((folder) => join(root, folder))
+  }
+
+  return resolveRecordDirs(root, kind)
 }
 
 /**
- * The folder a kind reads. The first candidate on disk wins, and the first
- * candidate stands in when none exists, so a refusal and a test fixture both
- * name the location the kind prefers.
+ * The folder a kind reads. The first candidate on disk wins, and the creation
+ * default stands in when none exists, so a refusal and a test fixture both name
+ * the location the kind would be written to.
+ *
+ * The default is where this parts company with `dirs[0]`, which the record
+ * kinds can no longer take: their first candidate is the root the move lands at
+ * and nothing creates there yet, so a fallback reading it would name a folder no
+ * verb would ever write. Standards has no such split, since it is tracked and
+ * its first candidate is where it is authored.
  */
 export function recordsDir(root: string, kind: RecordKind): string {
-  const dirs = recordDirs(root, kind)
-  return dirs.find((dir) => existsSync(dir)) ?? dirs[0]
+  if (kind === 'standards') {
+    const dirs = recordDirs(root, kind)
+    return dirs.find((dir) => existsSync(dir)) ?? dirs[0]
+  }
+
+  return resolveRecordDir(root, kind)
 }
 
 export function isRecordKind(value: string): value is RecordKind {

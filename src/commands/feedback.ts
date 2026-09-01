@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import type { Command } from 'commander'
 import { deriveSlug, deriveTitle } from '@/commands/feedback-format'
 import { PROJECT_ROOT } from '@/project-root'
+import { creationRel } from '@/record-root'
 import { createGithubIssue } from '@/github'
 import { frameError, frameSuccess, palette } from '@/ui'
 
@@ -39,7 +40,10 @@ function isToolkitSource(): boolean {
  * single ignore entry and the single backed-folder entry it already had.
  */
 function writeLocal(body: string): string {
-  const relativeDir = join('.claude', 'review', 'feedback')
+  // Creation, so the destination is the creation default rather than the
+  // resolved read root. A toolkit checkout that has migrated its records already
+  // carries the folder and resolves the same path either way.
+  const relativeDir = creationRel('review', 'feedback')
   const reviewDir = join(PROJECT_ROOT, relativeDir)
   mkdirSync(reviewDir, { recursive: true })
   const filename = `feedback-${deriveSlug(body)}-${timestamp()}.md`

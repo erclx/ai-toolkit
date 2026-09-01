@@ -82,6 +82,26 @@ afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
 })
 
+describe('tasksDir', () => {
+  it('should resolve the board at the new record root when it carries one', () => {
+    mkdirSync(join(ROOT, '.canon', 'tasks'), { recursive: true })
+
+    expect(tasksDir(ROOT)).toBe(join(ROOT, '.canon', 'tasks'))
+    expect(archiveDir(ROOT)).toBe(join(ROOT, '.canon', 'tasks', 'archive'))
+  })
+
+  it('should resolve the board at the old root when the new one is absent', () => {
+    mkdirSync(join(ROOT, '.claude', 'tasks'), { recursive: true })
+
+    expect(tasksDir(ROOT)).toBe(join(ROOT, '.claude', 'tasks'))
+    expect(archiveDir(ROOT)).toBe(join(ROOT, '.claude', 'tasks', 'archive'))
+  })
+
+  it('should create the board at the old root while the move is pending', () => {
+    expect(tasksDir(ROOT)).toBe(join(ROOT, '.claude', 'tasks'))
+  })
+})
+
 describe('readOutcomes', () => {
   it('should split outcomes by checkbox state', () => {
     const text = '- [x] Outcome: shipped\n- [ ] Outcome: pending\n'

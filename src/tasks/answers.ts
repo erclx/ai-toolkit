@@ -1,12 +1,13 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { isAbsolute, join, relative, resolve } from 'node:path'
+import { isAbsolute, relative, resolve } from 'node:path'
 import { isUnder } from '@/paths'
+import { recordDir, recordDirs } from '@/record-root'
 import { readQuestions, splitPlanSections } from '@/records/validate'
 
-const PLANS_DIR = join('.claude', 'plans')
-const PLANS_ARCHIVE_DIR = join(PLANS_DIR, 'archive')
-const TASKS_DIR = join('.claude', 'tasks')
+const PLANS = 'plans'
+const TASKS = 'tasks'
+const ARCHIVE = 'archive'
 
 /**
  * The suggestion the plan standard fixes for a question that turns on the
@@ -74,14 +75,17 @@ export function planCandidates(root: string, reference: string): string[] {
   if (reference.includes('/') || reference.endsWith('.md')) {
     if (isAbsolute(reference)) return [reference]
 
-    return [resolve(root, reference), resolve(join(root, TASKS_DIR), reference)]
+    return [
+      resolve(root, reference),
+      resolve(recordDir(root, TASKS), reference),
+    ]
   }
 
   const slug = reference.startsWith('feature-')
     ? reference.slice('feature-'.length)
     : reference
 
-  return [join(root, PLANS_DIR, `feature-${slug}.md`)]
+  return [recordDir(root, PLANS, `feature-${slug}.md`)]
 }
 
 function suggestionOf(body: readonly string[]): string | undefined {
@@ -167,7 +171,10 @@ export async function planAnswers(
   // An archived plan answers every question and would report as launchable, so
   // the name would clear a dispatch that `claude-autoship` Step 1 then refuses
   // as already-shipped work. Catching it here is a step earlier than the worker.
-  if (isUnder(path, join(root, PLANS_ARCHIVE_DIR))) {
+  // Both roots, for the reason `resolveLivePlan` carries: the reference is a
+  // string a caller wrote, and one spelling the root this tree has since left is
+  // still a path into the archive.
+  if (recordDirs(root, PLANS, ARCHIVE).some((dir) => isUnder(path, dir))) {
     return refuse(
       'archived',
       `${relative(root, path)} sits in the plans archive, so it describes work that already shipped.`,
