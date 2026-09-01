@@ -45,7 +45,7 @@ State the class and the one-line reason per issue before routing. Do not batch u
 
 - Direct fix: rename the branch to a conventional name (invoke `git-branch`), make the edit, then open the PR with `git-pr`.
 - Plan-worthy: invoke `claude-feature` with the issue body as the feature description. Let it write the plan and stop. Hand the plan slug back to the user. Do not implement.
-- Needs clarification: `gh issue comment <n> --body "<one question>"`, then move on.
+- Needs clarification: run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the question first, since it reaches the remote with nothing else checking it and this scan is the only gate. Then `gh issue comment <n> --body "<one question>"`, and move on.
 
 Match one issue to one branch and one PR. A single feedback issue is a single unit of work.
 
@@ -54,7 +54,7 @@ Match one issue to one branch and one PR. A single feedback issue is a single un
 Link every fix back to its issue so the queue drains on merge.
 
 - For a PR-backed fix, add a `Closes #<n>` line to the PR body so GitHub closes the issue on merge. When `git-pr` regenerates the body, keep that line.
-- For a fix that ships without a PR, close it directly: `gh issue close <n> --comment "Fixed in <commit or PR url>."`
+- For a fix that ships without a PR, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the close message first, since it reaches the remote with nothing else checking it and this scan is the only gate. Then close it directly: `gh issue close <n> --comment "Fixed in <commit or PR url>."`
 - For a plan-worthy route, leave the issue open. It closes when the resulting PR merges with its `Closes #<n>` line.
 
 ## Notes
