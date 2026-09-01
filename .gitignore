@@ -11,30 +11,18 @@
 node_modules/
 
 # Claude
-# The root the gitignored record folders move to. It names nothing yet: the CLI
-# reads it ahead of .claude/ and creates nothing there, so the entry lands ahead
-# of the move rather than behind it. Checked in both directions by
-# scripts/core/check-ignore-parity.sh alongside the .claude/ patterns.
+# The root every gitignored session record sits under. One line covers the whole
+# tree, which is what the move bought: what is committed stays in .claude/ and
+# what is ignored lives here, so a record folder added later needs no entry.
+#
+# That holds only while nothing tracked ever lands under .canon/. Git does not
+# descend into an excluded directory, so a re-inclusion like !.canon/x/ matches
+# nothing and there is no way to carve one out. Nothing enforces the rule.
+#
+# Both entries are checked against the "# Claude" array in
+# tooling/claude/manifest.toml by scripts/core/check-ignore-parity.sh.
 .canon/
-# Every .claude/ pattern below is checked against the "# Claude" array in
-# tooling/claude/manifest.toml by scripts/core/check-ignore-parity.sh, which
-# holds the reason for each of the two that stays out of it.
-# .records.git holds the backup history for the folders below, not a record itself.
-.claude/.records.git/
-# README.md is the records repository's landing page, written back by records
-# pull. Not shipped to a target, which has no records remote to receive it from.
-.claude/README.md
-.claude/.tmp
-# Not shipped to a target, which keeps its own diagrams under the context audit.
-.claude/diagrams/
-.claude/groundwork/
-.claude/intake/
-.claude/memory/
-.claude/plans/
-.claude/proposals/
-.claude/review/
+# The one .claude/ record folder that did not move. EnterWorktree creates a
+# worktree here and requires its target to sit here, so relocating it breaks the
+# harness rather than the toolkit.
 .claude/worktrees/
-.claude/tasks/
-
-# Teaching workspace
-.claude/teach/
