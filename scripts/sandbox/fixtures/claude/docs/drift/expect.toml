@@ -13,11 +13,11 @@ max_turns = 30
 # cannot tell a move from a delete, so asserting only the absence would report
 # green on a run that lost the file. Archive behavior landed in #619.
 paths = [
-  ".claude/plans/archive/feature-postgres-migration.md",
-  ".claude/plans/feature-some-old-plan.md",
+  ".canon/plans/archive/feature-postgres-migration.md",
+  ".canon/plans/feature-some-old-plan.md",
 ]
 
-absent = [".claude/plans/feature-postgres-migration.md"]
+absent = [".canon/plans/feature-postgres-migration.md"]
 
 # The arm runs under `bypassPermissions`, because no permission mode both allows
 # writes under `.claude/` and scopes them. This is what replaces the denial count
@@ -33,9 +33,9 @@ manual = [
 ]
 
 [[content]]
-path = ".claude/tasks/v01.0-postgres-migration.md"
+path = ".canon/tasks/v01.0-postgres-migration.md"
 pattern = '^- \[x\] Outcome: tasks persist in Postgres'
 
 [[content]]
-path = ".claude/tasks/v01.0-postgres-migration.md"
+path = ".canon/tasks/v01.0-postgres-migration.md"
 pattern = '^Plan: \[feature-postgres-migration\]\(\.\./plans/archive/feature-postgres-migration\.md\)'

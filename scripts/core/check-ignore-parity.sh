@@ -9,22 +9,22 @@ GITIGNORE="$PROJECT_ROOT/.gitignore"
 MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"
 SECTION="# Claude"
 
-# Divergences this repository has decided to keep, one `<entry>|<reason>` per
-# line, matched after the trailing slash is stripped. Each names a path the
-# enclosing repository ignores and the claude manifest deliberately does not
-# ship, so a target keeps tracking it.
+# Parity is exact, with no exception list behind it, and the move to `.canon/`
+# is what removed the one there was. Its two members each named a path inside
+# `.claude/` that this repository ignored and the manifest withheld, so a target
+# kept tracking it. A single root entry can withhold nothing inside itself: git
+# does not descend into an excluded directory, so a re-inclusion like
+# `!.canon/diagrams/` matches nothing. Retiring both is what buys the one line.
 #
-# This is the canonical list. `.gitignore` and the manifest carry a pointer
-# beside their own entries rather than a second copy of the reason, and
-# `.claude/context/tooling.md` carries the narrative behind both.
+# The diagrams divergence is the one that cost something. A target used to track
+# its diagrams and keep the context audit's default coverage of them, and it now
+# ignores them with the rest of its records, so that coverage is gone unless the
+# project names the folder itself. `.claude/context/tooling.md` carries the
+# narrative.
 #
-# A sanction that no longer describes a divergence fails the same as an
-# unsanctioned one. An exception outliving its reason is what teaches the next
-# reader to widen the list rather than to read it.
-SANCTIONED=(
-  ".claude/diagrams|a target that tracks its diagrams keeps the context audit's default coverage of them, which ignoring the folder for every target would take away. This repository backs the folder through its records remote instead."
-  ".claude/README.md|the landing page a records pull writes back into a repository that set up a records remote. A target has not, so it never receives the file."
-)
+# An exception mechanism is not kept against a future divergence, because an
+# empty one cannot be exercised and a check nobody can test is a check nobody
+# should trust. It comes back with its first real member or not at all.
 
 if [ ! -f "$GITIGNORE" ]; then
   echo "No .gitignore at ${GITIGNORE#"$PROJECT_ROOT/"}, ignore parity unverifiable." >&2
@@ -38,15 +38,15 @@ fi
 
 # A gitignore pattern and a manifest entry describe the same folder whether or
 # not either spells the trailing slash, so presence is compared with it dropped.
-# `.claude/.tmp` and `.claude/.tmp/` are the live instance of that pair.
+# No live pair differs that way now that both lists carry the same two entries,
+# and the normalization stays because either side may be written without one.
 normalize() {
   printf '%s\n' "${1%/}"
 }
 
 # Every pattern the file carries, comments and blank lines dropped. The whole
-# file rather than one header, because `.claude/teach/` sits under a header of
-# its own and reading the `# Claude` header alone would report it missing from a
-# list that carries it.
+# file rather than one header, since a claude-scoped entry filed under a header
+# of its own would otherwise read as missing from a list that carries it.
 gitignore_patterns() {
   awk '{ sub(/[[:space:]]+$/, "") } $0 ~ /^[[:space:]]*#/ || $0 == "" { next } { print }' "$GITIGNORE"
 }
@@ -106,7 +106,6 @@ if [ ${#shipped[@]} -eq 0 ]; then
 fi
 
 failures=""
-sanction_notes=""
 
 # Entries the manifest ships that this repository does not ignore. A target is
 # told to ignore a folder the toolkit itself tracks, which no decision sanctions,
@@ -121,48 +120,22 @@ done
 # and says nothing about `node_modules/` or `.env`.
 #
 # `.canon` is read as a bare root as well as a prefix, since it is one line
-# covering a whole tree where `.claude/` is thirteen lines naming folders inside
-# a root that also holds tracked content. Leaving it out is what would let a new
-# entry sit outside the only stage comparing the two lists, which is the
-# direction that goes silently blind.
+# covering a whole tree where `.claude/` names a folder inside a root that also
+# holds tracked content. Leaving it out is what would let a new entry sit outside
+# the only stage comparing the two lists, which is the direction that goes
+# silently blind.
 for pattern in "${ignored[@]}"; do
   case "$pattern" in
   .claude/* | .canon | .canon/*) ;;
   *) continue ;;
   esac
   contains "$pattern" "${shipped[@]}" && continue
-
-  matched=false
-  for sanction in "${SANCTIONED[@]}"; do
-    [ "${sanction%%|*}" = "$pattern" ] || continue
-    matched=true
-    sanction_notes="$sanction_notes  $pattern stays out of the manifest: ${sanction#*|}"$'\n'
-    break
-  done
-
-  if [ "$matched" = false ]; then
-    failures="$failures  $pattern is ignored here and absent from the manifest"$'\n'
-  fi
-done
-
-# A sanction naming a path that is no longer divergent, either because the
-# manifest took it or because .gitignore dropped it.
-for sanction in "${SANCTIONED[@]}"; do
-  entry="${sanction%%|*}"
-  if contains "$entry" "${ignored[@]}" && ! contains "$entry" "${shipped[@]}"; then
-    continue
-  fi
-  failures="$failures  $entry is sanctioned as a divergence and is no longer one"$'\n'
+  failures="$failures  $pattern is ignored here and absent from the manifest"$'\n'
 done
 
 if [ -n "$failures" ]; then
   echo "The ignore set a target receives disagrees with this repository's own:" >&2
   printf '%s' "$failures" >&2
-  echo "Add the entry to the \"$SECTION\" array in ${MANIFEST#"$PROJECT_ROOT/"} and to .gitignore, or record it in SANCTIONED in scripts/core/check-ignore-parity.sh with the reason it stays apart." >&2
+  echo "Add the entry to the \"$SECTION\" array in ${MANIFEST#"$PROJECT_ROOT/"} and to .gitignore. The two lists are compared exactly, and nothing here records an exception." >&2
   exit 1
-fi
-
-if [ -n "$sanction_notes" ]; then
-  echo "Sanctioned divergences from the ignore set a target receives:"
-  printf '%s' "$sanction_notes"
 fi

@@ -977,7 +977,7 @@ export function governedPaths(statement: string): string[] {
 /**
  * The words a governed path offers a filename. Each segment gives its own word
  * and, where it carries a prefix or a placeholder, the parts either side of a
- * hyphen, so `.claude/tasks/session-<slug>.md` offers `tasks` and `session`.
+ * hyphen, so `.canon/tasks/session-<slug>.md` offers `tasks` and `session`.
  *
  * A dotted segment gives nothing. It names the folder holding the artifact
  * rather than the artifact, and a standard named for it would pass this check

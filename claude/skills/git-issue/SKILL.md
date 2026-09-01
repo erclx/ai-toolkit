@@ -48,12 +48,12 @@ The `pull_request` check the git-pr surface carries reads a pull request's own t
 Map a bug to `--label bug` and a task to `--label enhancement`.
 
 ```bash
-mkdir -p .claude/.tmp/issue
-cat <<'BODY' > .claude/.tmp/issue/body.md
+mkdir -p .canon/tmp/issue
+cat <<'BODY' > .canon/tmp/issue/body.md
 <body following the issue.md sections>
 BODY
-gh issue create --title "<type>: <subject>" --label <bug or enhancement> --body-file .claude/.tmp/issue/body.md
-rm -rf .claude/.tmp/issue
+gh issue create --title "<type>: <subject>" --label <bug or enhancement> --body-file .canon/tmp/issue/body.md
+rm -rf .canon/tmp/issue
 ```
 
 ## After execution

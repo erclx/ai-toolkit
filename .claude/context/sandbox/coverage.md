@@ -33,17 +33,17 @@ The rule explains the arms already written as well as the next ones. Every skill
 
 ### The task board arms
 
-`claude/tasks.sh` carries two arms, split because create and archive have disjoint preconditions and one arm running both would assert the second against a tree the first mutated. Both stage the board rather than inheriting one, since `SANDBOX_INJECT_SEEDS` drops `.claude/tasks/` and fills it with nothing but the seeded `index.md`.
+`claude/tasks.sh` carries two arms, split because create and archive have disjoint preconditions and one arm running both would assert the second against a tree the first mutated. Both stage the board rather than inheriting one, since `SANDBOX_INJECT_SEEDS` drops `.canon/tasks/` and fills it with nothing but the seeded `index.md`.
 
 The two arms cover different things, and the split follows what already has a test. `canon tasks archive` is a typed verb whose refusals `src/tasks/archive.test.ts` covers at 27 tests, so the archive arm stages a board that satisfies every gate and asserts the successful move. An arm asserting that the command refuses an open outcome would re-test a unit test through a model session at a dollar a run. The create path has no CLI verb at all, so the skill writes the file from `standards/tasks.md` and the whole of that arm is prose with nothing underneath it.
 
 Three fixture properties are load-bearing:
 
-- The create board runs three consecutive versions with no gaps, which is what forces the next one and puts the proposed label under an assertion. The slug stays free, so the arm pins the label through a `.claude/tasks/` reply fragment carrying the forced version and leaves the rest to the run.
-- The archive task carries a `Pull request:` line and its `Plan:` line already points into `.claude/plans/archive/`. The first satisfies the skill's work-reached-main check without staging a remote, and the second clears the `plan-unswept` gate. A board missing either exercises a refusal, and a `paths` entry over the source file still holds because nothing moved.
+- The create board runs three consecutive versions with no gaps, which is what forces the next one and puts the proposed label under an assertion. The slug stays free, so the arm pins the label through a `.canon/tasks/` reply fragment carrying the forced version and leaves the rest to the run.
+- The archive task carries a `Pull request:` line and its `Plan:` line already points into `.canon/plans/archive/`. The first satisfies the skill's work-reached-main check without staging a remote, and the second clears the `plan-unswept` gate. A board missing either exercises a refusal, and a `paths` entry over the source file still holds because nothing moved.
 - `priority.md` puts the archived task's row first and the control's second. An `absent` entry cannot express a removed table row, so the arm pins the separator line and the row that follows it, and a run that left the row in place pushes the control down and fails the match.
 
-Neither arm asserts `.claude/tasks/index.md`. A hook regenerates it, so an assertion there would read hook behavior rather than the skill's. Both leave the main-worktree-root guard in `manual`: a standalone sandbox repository has no linked worktree, so `pwd` and the main root are one path and no run distinguishes them.
+Neither arm asserts `.canon/tasks/index.md`. A hook regenerates it, so an assertion there would read hook behavior rather than the skill's. Both leave the main-worktree-root guard in `manual`: a standalone sandbox repository has no linked worktree, so `pwd` and the main root are one path and no run distinguishes them.
 
 ### The intake arms
 
@@ -161,7 +161,7 @@ An arm that staged the state without asserting it would have shipped a step that
 
 `claude/orchestrate.sh` drives a skill that reads a board and reports state, so it is proposal-only and inherits what the superseded arm generalized. Three `reply` pins carry the verdict and two `absent` entries carry the tree, and nothing asserts that the staged board is still staged, since a pin over provisioning counts the same as a real one and is what makes a coverage number lie.
 
-The pins split the skill's one routing decision. `.claude/plans/feature-log-entry.md` proves the run opened the plans folder rather than reporting the task board alone, and `claude-autoship` is the route a task with a plan earns. That route is spelled without a leading slash, because a session invoking through the plugin writes `/canon:claude-autoship`, which carries the bare name and not the slashed one. `Next:` asserts the output contract's last slot and neither the singleness the scenario expects nor the route it names, which are the fourth and fifth of seven `manual` entries.
+The pins split the skill's one routing decision. `.canon/plans/feature-log-entry.md` proves the run opened the plans folder rather than reporting the task board alone, and `claude-autoship` is the route a task with a plan earns. That route is spelled without a leading slash, because a session invoking through the plugin writes `/canon:claude-autoship`, which carries the bare name and not the slashed one. `Next:` asserts the output contract's last slot and neither the singleness the scenario expects nor the route it names, which are the fourth and fifth of seven `manual` entries.
 
 The fixture gained a second task row to make that split reachable. Its board staged one task and that task had a plan, so the needs-a-plan branch could never fire, and the first run failed the `claude-feature` pin against a session that had read the board correctly. A feature no task carries is not on the ready list at all, so the row is what the expectation was always describing.
 

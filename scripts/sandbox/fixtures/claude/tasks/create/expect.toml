@@ -21,20 +21,20 @@ max_turns = 30
 # fit its new entry, or rewrote a neighbor while reading it, goes red here
 # rather than passing on the one file it was asked to write.
 paths = [
-  ".claude/tasks/v04.0-csv-export.md",
-  ".claude/tasks/v01.0-rate-limit.md",
-  ".claude/tasks/v02.0-pagination.md",
-  ".claude/tasks/v03.0-search.md",
+  ".canon/tasks/v04.0-csv-export.md",
+  ".canon/tasks/v01.0-rate-limit.md",
+  ".canon/tasks/v02.0-pagination.md",
+  ".canon/tasks/v03.0-search.md",
 ]
 
 # Create writes one file and the index hook rewrites another. Nothing else on
 # this path has a reason to leave the board.
-write_scope = [".claude/tasks/**"]
+write_scope = [".canon/tasks/**"]
 
 # The skill's Output block emits the full relative path from the project root,
 # since a bare filename is not clickable. The fragment stops at the label so the
 # assertion reads the part the board determines and leaves the slug free.
-reply = [".claude/tasks/v04.0-"]
+reply = [".canon/tasks/v04.0-"]
 
 manual = [
   "The proposed label is reported with the neighbors it sits between. Semantic: the sentence is prose and any pin over it goes red on a rewording.",
@@ -50,31 +50,31 @@ manual = [
 # and a basic string would reintroduce the backslash doubling the literal form
 # exists to avoid.
 [[content]]
-path = ".claude/tasks/v04.0-csv-export.md"
+path = ".canon/tasks/v04.0-csv-export.md"
 pattern = '^title: .v04\.0: '
 
 [[content]]
-path = ".claude/tasks/v04.0-csv-export.md"
+path = ".canon/tasks/v04.0-csv-export.md"
 pattern = '^description: \S'
 
 [[content]]
-path = ".claude/tasks/v04.0-csv-export.md"
+path = ".canon/tasks/v04.0-csv-export.md"
 pattern = '^# v04\.0: '
 
-# The origin line, written relative to `.claude/tasks/` rather than from the
+# The origin line, written relative to `.canon/tasks/` rather than from the
 # project root. A root-relative path still renders as a link and resolves to
 # nothing in an editor rooted at the project, which is the failure the form
 # exists to prevent and which no reader notices until they click it.
 [[content]]
-path = ".claude/tasks/v04.0-csv-export.md"
+path = ".canon/tasks/v04.0-csv-export.md"
 pattern = '^Plan: \[feature-csv-export\]\(\.\./plans/feature-csv-export\.md\)'
 
 # An outcome, open. A task written with its outcomes already marked would
 # archive on the next unattended sweep without the work ever happening.
 [[content]]
-path = ".claude/tasks/v04.0-csv-export.md"
+path = ".canon/tasks/v04.0-csv-export.md"
 pattern = '^- \[ \] Outcome: '
 
 [[content]]
-path = ".claude/tasks/v04.0-csv-export.md"
+path = ".canon/tasks/v04.0-csv-export.md"
 pattern = '^> Test strategy: '

@@ -50,7 +50,7 @@ Seeds live in `tooling/base/seeds/`. Sync drops each once on first install and n
 - `pre-commit` runs `bunx lint-staged`.
 - `commit-msg` runs `bunx commitlint --edit "$1"`.
 - `pre-push` runs `bun run check`.
-- `post-merge` names `.claude/tasks/` archive candidates, staying silent otherwise and when the board is absent.
+- `post-merge` names `.canon/tasks/` archive candidates, staying silent otherwise and when the board is absent.
 - `post-rewrite` delegates to `post-merge` on `rebase`, so a `pull.rebase=true` machine still gets the check.
 
 ## lint-staged

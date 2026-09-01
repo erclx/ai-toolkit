@@ -23,29 +23,29 @@ max_turns = 30
 # and any other value fails here. What the arm gives up is the topic derivation,
 # which is one line of the body against the whole of the workspace shape.
 paths = [
-  ".claude/teach/01-regex/MISSION.md",
-  ".claude/teach/01-regex/RESOURCES.md",
-  ".claude/teach/01-regex/GLOSSARY.md",
+  ".canon/teach/01-regex/MISSION.md",
+  ".canon/teach/01-regex/RESOURCES.md",
+  ".canon/teach/01-regex/GLOSSARY.md",
 ]
 
 # Three wrong turns, none of them present in the seeded tree. The first two
 # catch a workspace opened with no ordinal or with the ordinal counting from
 # zero, and the third catches a run that answered the request by planning it.
 absent = [
-  ".claude/teach/regex",
-  ".claude/teach/00-regex",
-  ".claude/plans",
+  ".canon/teach/regex",
+  ".canon/teach/00-regex",
+  ".canon/plans",
 ]
 
 # The floor the skill's own guard states. A run that wrote a lesson into the
 # project source or dropped a page beside the code fails here rather than in a
 # reading.
-write_scope = [".claude/teach/**"]
+write_scope = [".canon/teach/**"]
 
 # The output names the workspace it opened. `01-regex` is the load-bearing
 # token, since a reply naming the topic without the ordinal reads the same
 # whether the folder was named correctly or not.
-reply = [".claude/teach/01-regex/"]
+reply = [".canon/teach/01-regex/"]
 
 manual = [
   "The starting point in the mission reflects what the invocation supplied rather than a guess. Semantic: the section is prose either way, and a pattern over it cannot tell an answer from an assumption.",
@@ -60,38 +60,38 @@ manual = [
 # only date in the folder, so a run that dated each file instead leaves this
 # field missing.
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^title: \S'
 
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^description: \S'
 
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^date: \d{4}-\d{2}-\d{2}$'
 
 # The three sections the mission owes. The success list is the one a later
 # session reads as exit criteria, so a mission carrying the other two and not
 # this one can never be called finished.
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^## Starting point$'
 
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^## Success looks like$'
 
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^## Out of scope$'
 
 # The resources file splits what was read from what was found. The leads heading
 # is what stops a link to an unopened page being cited as a source.
 [[content]]
-path = ".claude/teach/01-regex/RESOURCES.md"
+path = ".canon/teach/01-regex/RESOURCES.md"
 pattern = '^#+ [Ll]eads'
 
 [[content]]
-path = ".claude/teach/01-regex/GLOSSARY.md"
+path = ".canon/teach/01-regex/GLOSSARY.md"
 pattern = '^title: \S'

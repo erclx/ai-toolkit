@@ -47,7 +47,7 @@ interface AnswerCommandOptions {
 export function register(program: Command): void {
   const intake = program
     .command('intake')
-    .description('Read and answer intake folders in .claude/intake/')
+    .description('Read and answer intake folders in .canon/intake/')
     .helpOption('-h, --help', 'Show this help message')
 
   intake

@@ -7,7 +7,7 @@ description: What branch splitting is for, the gaps it closes, and how it differ
 
 ## Gap
 
-Without this skill, a branch carrying unrelated commits ships as one pull request, which a reviewer reads by skimming because no single concern holds it together. Split by hand, commits get cherry-picked in an order that leaves a branch missing something it depends on. Merge order is the sharpest failure: merging the wrong branch first lands every other branch's content on main and leaves the remaining pull requests empty after rebase, with no signal that anything went wrong. Every body it writes stages under `.claude/.tmp/` and leaves through `gh`, neither of which the audit hook watches, so a banned character survives into a published pull request and has to be edited on the remote.
+Without this skill, a branch carrying unrelated commits ships as one pull request, which a reviewer reads by skimming because no single concern holds it together. Split by hand, commits get cherry-picked in an order that leaves a branch missing something it depends on. Merge order is the sharpest failure: merging the wrong branch first lands every other branch's content on main and leaves the remaining pull requests empty after rebase, with no signal that anything went wrong. Every body it writes stages under `.canon/tmp/` and leaves through `gh`, neither of which the audit hook watches, so a banned character survives into a published pull request and has to be edited on the remote.
 
 ## Must
 

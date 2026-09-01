@@ -13,7 +13,7 @@ Wrap the `EnterWorktree` entry path with name derivation so the user does not pi
 - If neither command resolves, the session is not in a git repo and no `WorktreeCreate` hook is configured. Stop: `❌ Not a git repository. EnterWorktree needs git or a WorktreeCreate hook.`
 - If the two match and `git rev-parse --show-superproject-working-tree` prints a path, the session is inside a submodule checkout. Stop: `❌ Inside a submodule of <path>. Run this from there instead.`
 
-The submodule guard sits on the matching branch rather than ahead of the first one, and a measurement decided that. Inside a submodule at git 2.43.0 both reads return the same absorbed path under the superproject's `.git/modules/`, so the first guard does not fire and the session proceeds. Every derivation below then reads the submodule as the project: Step 1 resolves the main root to the submodule, the plan lookup reads a `.claude/plans/` the project never wrote, and entry builds `.claude/worktrees/` inside a tree the superproject tracks as a commit. The superproject read is empty in a linked worktree of a submodule and in one of the superproject alike, which is why it separates the two states rather than qualifying the first guard.
+The submodule guard sits on the matching branch rather than ahead of the first one, and a measurement decided that. Inside a submodule at git 2.43.0 both reads return the same absorbed path under the superproject's `.git/modules/`, so the first guard does not fire and the session proceeds. Every derivation below then reads the submodule as the project: Step 1 resolves the main root to the submodule, the plan lookup reads a `.canon/plans/` the project never wrote, and entry builds `.claude/worktrees/` inside a tree the superproject tracks as a commit. The superproject read is empty in a linked worktree of a submodule and in one of the superproject alike, which is why it separates the two states rather than qualifying the first guard.
 
 ## Step 1: resolve the main worktree root
 
@@ -38,8 +38,8 @@ The directory test separates the defect from a genuinely bare repository, which 
 Try each source in order. Stop at the first match.
 
 0. **Caller-supplied.** The invocation carried an argument. Take it as the name and infer nothing further. Accept `<name>` or `<type>/<name>`, where a leading segment matching a type in `${CLAUDE_SKILL_DIR}/../../standards/branch.md` sets `<type>` and the rest is `<name>`. A bare `<name>` falls to the default type below.
-1. **Plan matched to current branch.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. An empty result falls through to the next source here rather than becoming `latest`, since the slug is one candidate among several. If `<main-root>/.claude/plans/feature-<slug>.md` exists, use `<slug>`.
-2. **Single plan file.** List `<main-root>/.claude/plans/feature-*.md`. If exactly one match, derive `<slug>` from the filename.
+1. **Plan matched to current branch.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. An empty result falls through to the next source here rather than becoming `latest`, since the slug is one candidate among several. If `<main-root>/.canon/plans/feature-<slug>.md` exists, use `<slug>`.
+2. **Single plan file.** List `<main-root>/.canon/plans/feature-*.md`. If exactly one match, derive `<slug>` from the filename.
 3. **Multiple plan files, no branch match.** Ask the user which plan. Show the candidate slugs as a numbered list. Do not pick.
 4. **Current branch.** When no plan exists, use the `<slug>` from step 1 if it is not `main` or `master`.
    4b. **Session context.** When on `main` or `master` with no matching plan, read the current conversation to infer a kebab slug from the topic being discussed. Propose it: `Infer: <slug>. Confirm or rename?` Do not enter the worktree until the user confirms or provides a corrected name.

@@ -27,7 +27,7 @@ root=$(git worktree list --porcelain 2>/dev/null | grep -m 1 '^worktree ' | cut 
 # The board is shared scratch at the main worktree root, and `git worktree
 # list` puts that root first. A pull inside a linked worktree fires this same
 # hook, so trusting the working directory would read a board that is not there.
-board="$root/.claude/tasks"
+board="$root/.canon/tasks"
 [ -d "$board" ] || exit 0
 
 closed=""

@@ -252,8 +252,8 @@ export function AddTaskModal({ onClose }: { onClose: () => void }) {
 }
 EOF
 
-  mkdir -p .claude/tasks
-  cat <<'EOF' >.claude/tasks/index.md
+  mkdir -p .canon/tasks
+  cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -266,7 +266,7 @@ One file per task, ordered by phase label
 - [v01.0: Polish task list before review](v01.0-task-list-polish.md): Tidy the task list and add modal ahead of review
 EOF
 
-  cat <<'EOF' >.claude/tasks/v01.0-task-list-polish.md
+  cat <<'EOF' >.canon/tasks/v01.0-task-list-polish.md
 ---
 title: 'v01.0: Polish task list before review'
 description: Tidy the task list and add modal ahead of review
@@ -291,5 +291,5 @@ EOF
   log_info "  TaskList.tsx has no error state"
   log_info "  AddTaskModal.tsx has two primary buttons. Cancel should be secondary"
   log_info "Action:  /claude-ux-audit"
-  log_info "Expect:  observations grouped by surface, written to .claude/review/ux-audit-<slug>.md"
+  log_info "Expect:  observations grouped by surface, written to .canon/review/ux-audit-<slug>.md"
 }

@@ -10,7 +10,7 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 
 ## Guards
 
-- All `.claude/plans/` and `.claude/review/` reads resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- All `.canon/plans/` and `.canon/review/` reads resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 - Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. This skill takes the stop rather than the `latest` fallback, since it commits and opens a pull request. If empty, stop: `❌ Detached HEAD. Checkout the feature branch first.` Every later step keys its output on this slug, being the worktree, the review receipt, the branch, and the memory proposal, regardless of which plan Step 1 reads.
 - Resolve `<plan>` in Step 1, ahead of any other read.
 - If the working tree has uncommitted changes unrelated to the plan, stop: `❌ Uncommitted changes outside the plan. Commit or stash before autoshipping.`
@@ -45,13 +45,13 @@ If the two commands differ, the session is already in a linked worktree. Continu
 
 Resolve `<plan>` in this order, stopping at the first match:
 
-1. **Caller-supplied task.** The invocation carried a path under `.claude/tasks/`. If it does not resolve to a file, stop: `❌ No task at <path>. Path was supplied, not derived, so check it and re-run.` Read that task's first `Plan:` line and take what it names as `<plan>`, per `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`.
-2. **Caller-supplied plan.** The invocation carried something else. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.claude/plans/feature-<slug>.md`, and a path is taken as given from the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
-3. **Derived.** `.claude/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
+1. **Caller-supplied task.** The invocation carried a path under `.canon/tasks/`. If it does not resolve to a file, stop: `❌ No task at <path>. Path was supplied, not derived, so check it and re-run.` Read that task's first `Plan:` line and take what it names as `<plan>`, per `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`.
+2. **Caller-supplied plan.** The invocation carried something else. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.canon/plans/feature-<slug>.md`, and a path is taken as given from the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
+3. **Derived.** `.canon/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .canon/plans/feature-<slug>.md. Run /claude-feature first.`
 
 Only a path reaches tier 1, and a bare slug is read as a plan's throughout. The two would collide on any similar name, and a caller who means the task holds its path already, having read it off the board. One plan per task is what makes the tier 1 read unambiguous, so it takes the first `Plan:` line and never scans for a second.
 
-Read the target out of the link's parentheses, and take the rest of the line when the line carries no link, since an older task writes the target as a plain path with nothing around it. Resolve a relative target against the directory holding the task file rather than against `.claude/tasks/`, and take a project-root target from the root. The archived task is what makes that base matter, since the standard points its line at `../../plans/archive/feature-<slug>.md` once the task sits a folder deeper, and reading that from `.claude/tasks/` lands on a repository-root `plans/archive/` that never exists.
+Read the target out of the link's parentheses, and take the rest of the line when the line carries no link, since an older task writes the target as a plain path with nothing around it. Resolve a relative target against the directory holding the task file rather than against `.canon/tasks/`, and take a project-root target from the root. The archived task is what makes that base matter, since the standard points its line at `../../plans/archive/feature-<slug>.md` once the task sits a folder deeper, and reading that from `.canon/tasks/` lands on a repository-root `plans/archive/` that never exists.
 
 ### When a tier fails
 
@@ -61,13 +61,13 @@ Tier 1 stops on three failures, and each names a different repair:
 - The pointer resolves into a plans archive. Stop: `❌ <path> points at an archived plan, which describes work that already shipped. Reopen the task against a live plan, or pass that plan directly.` Test the resolved path rather than the task's outcomes or its `Pull request:` line, since a stale board gets its ticks wrong and the standard fixes where a shipped pointer lands.
 - The pointer resolves to no file. Stop: `❌ <path> points at <target>, which does not exist. The citation is stale, so repoint the task or pass the plan path directly.`
 
-An archive is `.claude/plans/archive/` and also the two older spellings `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` leaves in place for a project that archived plans before the folder nested, written from a task as `../plans-archive/` and `../.tmp/plans-archive/`. Test all three, since a shipped pointer in a project nobody migrated lands on the older two. Run the archive test ahead of the existence test, so a pointer into an archive that no longer holds the file still refuses as shipped work rather than as a stale citation.
+An archive is `.canon/plans/archive/` and also the two older spellings `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` leaves in place for a project that archived plans before the folder nested, written from a task as `../plans-archive/` and `../.tmp/plans-archive/`. Test all three, since a shipped pointer in a project nobody migrated lands on the older two. Run the archive test ahead of the existence test, so a pointer into an archive that no longer holds the file still refuses as shipped work rather than as a stale citation.
 
 Each tier fails for a different reason and says so. A supplied path resolving to nothing is a typo, a derived path resolving to nothing is a plan nobody wrote, and a task pointer resolving to nothing is a stale citation the board should have caught.
 
 Test the shape of whatever `<plan>` resolved to before reading it as one. A file resolving under any tier can still be the wrong document, and tier 1 resolves through a pointer rather than from the caller, so the test runs after all three rather than guarding a supplied path alone.
 
-Check for a `**Files to touch:**` or `## Files to touch` marker per `${CLAUDE_SKILL_DIR}/../../standards/plan.md`, the one section every plan carries structurally and a task never does, where `## Outcomes` and `## Findings` are the task's own. If neither form is present, stop: `❌ <path> carries no plan sections. A plan lives at .claude/plans/feature-<slug>.md, and a task reaches one through its Plan: line only from .claude/tasks/. Point autoship at either and re-run.`
+Check for a `**Files to touch:**` or `## Files to touch` marker per `${CLAUDE_SKILL_DIR}/../../standards/plan.md`, the one section every plan carries structurally and a task never does, where `## Outcomes` and `## Findings` are the task's own. If neither form is present, stop: `❌ <path> carries no plan sections. A plan lives at .canon/plans/feature-<slug>.md, and a task reaches one through its Plan: line only from .canon/tasks/. Point autoship at either and re-run.`
 
 Read `<plan>` at the main worktree root. This file is the scope for this run.
 
@@ -91,7 +91,7 @@ Do not loop. Do not bypass hooks.
 
 If the diff touches UI files (JSX, TSX, Vue, Svelte, HTML, or CSS under `src/`), invoke `canon:claude-ui-test`.
 
-If `claude-ui-test` produces a manual checklist, stop: `❌ UI requires visual verification. Checklist at .claude/review/ui-checklist-<slug>.md. Verify manually, then run /git-ship.`
+If `claude-ui-test` produces a manual checklist, stop: `❌ UI requires visual verification. Checklist at .canon/review/ui-checklist-<slug>.md. Verify manually, then run /git-ship.`
 
 If all UI changes are covered by e2e tests, continue.
 
@@ -113,7 +113,7 @@ Say in the run which of the two decided, the verb or the written fallback, since
 
 An empty list stops the chain: `❌ No changed files to classify. Re-run when the plan has yet to produce its output. When the output is gitignored by design, autoship cannot ship it, so take the work out of the chain.` An empty list satisfies the prose-only test vacuously, so reading it as prose-only routes the branch past review instead of through it.
 
-The two causes want different responses. A plan that has yet to produce its output is a re-run once it has. A plan whose output is gitignored by design, such as a read pass writing to `.claude/.tmp/`, is work the chain cannot carry at all, since `git-stage` finds nothing to commit six steps later. Never advise removing the output from `.gitignore`, which trades a stopped run for scratch committed into the repository.
+The two causes want different responses. A plan that has yet to produce its output is a re-run once it has. A plan whose output is gitignored by design, such as a read pass writing to `.canon/tmp/`, is work the chain cannot carry at all, since `git-stage` finds nothing to commit six steps later. Never advise removing the output from `.gitignore`, which trades a stopped run for scratch committed into the repository.
 
 ### When the verb is absent
 
@@ -142,17 +142,17 @@ The verb reads the same set from `src/autoship/paths.ts`, so a path added here b
 
 ## Step 6: evaluate findings
 
-Skip this step when Step 5 skipped review. Otherwise read `.claude/review/branch/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
+Skip this step when Step 5 skipped review. Otherwise read `.canon/review/branch/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
 
 - **This run caused it, at any severity.** Fix it, re-run the Step 3 verify commands, re-read the fixed file against what the finding claimed, and continue. Do not report it as a stop and do not offer the fix as a choice, which is the same stop wearing a proposal.
-- **It predates this run, critical or should-fix.** Stop: `❌ Review found non-minor issues that predate this run. See .claude/review/branch/review-<slug>.md. Fix and run /git-ship.`
+- **It predates this run, critical or should-fix.** Stop: `❌ Review found non-minor issues that predate this run. See .canon/review/branch/review-<slug>.md. Fix and run /git-ship.`
 - **It predates this run, minor only.** Continue. The minor findings stay in the on-disk review receipt. Fold any a reviewer needs into the PR's `## Technical Context`. Do not add a separate review-notes section to the PR body.
 
 Read origin as causation rather than authorship. Staleness this run induced in a file it never opened is a finding it caused, and the plan's "Files to touch" list scopes what the run builds rather than what it may repair.
 
-Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .claude/review/branch/review-<slug>.md. Fix and run /git-ship.`
+Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .canon/review/branch/review-<slug>.md. Fix and run /git-ship.`
 
-This chain owns the receipt's lifetime, which is what makes the Output block's citation resolve on a run that reaches it. `claude-docs` used to delete the current slug's receipt while running under Step 7 below, so the closing line named a file the same run had already removed. That sweep now reaches only reports whose branch is gone, which collects this one a branch later rather than during the run that wrote it. The cost is one receipt per live branch left in `.claude/review/branch/`, bounded by the branch count rather than by the lifetime of the checkout.
+This chain owns the receipt's lifetime, which is what makes the Output block's citation resolve on a run that reaches it. `claude-docs` used to delete the current slug's receipt while running under Step 7 below, so the closing line named a file the same run had already removed. That sweep now reaches only reports whose branch is gone, which collects this one a branch later rather than during the run that wrote it. The cost is one receipt per live branch left in `.canon/review/branch/`, bounded by the branch count rather than by the lifetime of the checkout.
 
 ## Step 7: ship
 
@@ -174,10 +174,10 @@ Respond with up to five lines:
 
 ```plaintext
 ✅ Autoshipped (draft): <PR url>
-<N minor findings kept in .claude/review/branch/review-<slug>.md>
+<N minor findings kept in .canon/review/branch/review-<slug>.md>
 <N facts routed to context entries>
-<N memories captured in .claude/memory/>
-<Memory proposal at .claude/review/memory/memory-review-<slug>.md>
+<N memories captured in .canon/memory/>
+<Memory proposal at .canon/review/memory/memory-review-<slug>.md>
 ```
 
 Omit the second line if there were no minor findings, and the third if nothing routed. Omit the fourth and fifth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal. A run that routes every fact and writes none is the shape to expect, and it reports three lines.
@@ -196,7 +196,7 @@ Every stop point leaves recoverable state. The user resumes manually from the ap
 | Task carries no `Plan:` line               | Write the plan, point the task's `Plan:` line at it, then re-run                                                                               |
 | Task points at an archived plan            | The work already shipped. Reopen the task against a live plan, or pass that plan's path directly.                                              |
 | Task's `Plan:` pointer resolves to nothing | Repoint the task's `Plan:` line at the plan that exists, then re-run                                                                           |
-| Resolved file carries no plan shape        | Point autoship at a plan under `.claude/plans/feature-<slug>.md` or at a task under `.claude/tasks/`, then re-run                              |
+| Resolved file carries no plan shape        | Point autoship at a plan under `.canon/plans/feature-<slug>.md` or at a task under `.canon/tasks/`, then re-run                                |
 | No diff baseline                           | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
 | Empty changed-file list                    | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
 | Branch collision on worktree entry         | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |

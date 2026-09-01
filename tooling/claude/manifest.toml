@@ -8,7 +8,17 @@ runtime = ""
 scaffold = ""
 
 # Checked against this repository's own `.gitignore` by
-# scripts/core/check-ignore-parity.sh, which also holds the two `.claude/` paths
-# this array deliberately omits and the reason each stays out.
+# scripts/core/check-ignore-parity.sh, which carries no sanctioned divergence
+# now that both sides ship the same two entries.
+#
+# One root entry rather than a folder apiece, so a target that gains a record
+# folder later receives no manifest edit and no sync. `.claude/worktrees/` is
+# the carve-out, since the harness requires a worktree to sit there.
+#
+# The cost is recorded rather than mitigated, and the operator took it on
+# 2026-09-01 against the two alternatives. A target that syncs and never runs
+# `canon migrate records` still holds its records under `.claude/`, and this
+# array no longer tells it to ignore them, so the first sign is a memory file or
+# a task board appearing in someone's commit.
 [gitignore]
-"# Claude" = [".canon/", ".claude/.records.git/", ".claude/.tmp/", ".claude/groundwork/", ".claude/intake/", ".claude/memory/", ".claude/plans/", ".claude/proposals/", ".claude/review/", ".claude/worktrees/", ".claude/tasks/", ".claude/teach/"]
+"# Claude" = [".canon/", ".claude/worktrees/"]

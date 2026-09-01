@@ -22,22 +22,22 @@ max_turns = 30
 # would leave every assertion here naming a folder that may not exist. What the
 # arm gives up is the slug derivation, which is one line of the body against the
 # whole of the folder shape. The ordinal stays derivable: the seeded tree opens
-# with neither `.claude/intake/` nor `.claude/groundwork/`, so the standard's
+# with neither `.canon/intake/` nor `.canon/groundwork/`, so the standard's
 # highest-plus-one rule can only land on `01`.
-paths = [".claude/intake/01-cli-cleanup/00-overview.md"]
+paths = [".canon/intake/01-cli-cleanup/00-overview.md"]
 
 # Two folders the pass must not open. Neither exists in the seeded tree, so each
 # catches a run that answered the dump by planning it or by opening a track
 # instead of filing it.
-absent = [".claude/plans", ".claude/groundwork"]
+absent = [".canon/plans", ".canon/groundwork"]
 
-write_scope = [".claude/intake/**"]
+write_scope = [".canon/intake/**"]
 
 # The output names the folder and reports the routing split. `groundwork` is the
 # load-bearing token, since the dump carries one item nobody can answer by
 # reading the tree and a run that filed it as an ordinary finding reports no
 # candidates at all.
-reply = [".claude/intake/01-cli-cleanup/", "groundwork"]
+reply = [".canon/intake/01-cli-cleanup/", "groundwork"]
 
 manual = [
   "Every problem line carries a number or a file path measured this pass. Semantic: a count sits in prose and any pattern over it either pins one phrasing or matches any digit in the file.",
@@ -51,15 +51,15 @@ manual = [
 # date in the folder, so a run that dated each cluster file instead leaves this
 # field missing.
 [[content]]
-path = ".claude/intake/01-cli-cleanup/00-overview.md"
+path = ".canon/intake/01-cli-cleanup/00-overview.md"
 pattern = '^title: \S'
 
 [[content]]
-path = ".claude/intake/01-cli-cleanup/00-overview.md"
+path = ".canon/intake/01-cli-cleanup/00-overview.md"
 pattern = '^description: \S'
 
 [[content]]
-path = ".claude/intake/01-cli-cleanup/00-overview.md"
+path = ".canon/intake/01-cli-cleanup/00-overview.md"
 pattern = '^date: \d{4}-\d{2}-\d{2}$'
 
 # The numbering, read through the index rather than through a directory listing.
@@ -67,5 +67,5 @@ pattern = '^date: \d{4}-\d{2}-\d{2}$'
 # index writes proves both halves at once. `00` is excluded because the index
 # linking itself would satisfy a looser pattern.
 [[content]]
-path = ".claude/intake/01-cli-cleanup/00-overview.md"
+path = ".canon/intake/01-cli-cleanup/00-overview.md"
 pattern = '\]\((?!00-)\d\d-[a-z][a-z0-9-]*\.md'

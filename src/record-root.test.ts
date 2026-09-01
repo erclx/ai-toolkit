@@ -4,7 +4,6 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   CREATION_ROOT,
-  creationDir,
   creationRel,
   RECORD_ROOTS,
   recordDir,
@@ -32,8 +31,8 @@ describe('RECORD_ROOTS', () => {
     expect(RECORD_ROOTS).toEqual(['.canon', '.claude'])
   })
 
-  it('should create at the old root while the move is pending', () => {
-    expect(CREATION_ROOT).toBe('.claude')
+  it('should create at the new root now the move has landed', () => {
+    expect(CREATION_ROOT).toBe('.canon')
   })
 })
 
@@ -58,7 +57,7 @@ describe('recordDir', () => {
   })
 
   it('should fall back to the creation default when neither carries it', () => {
-    expect(recordDir(ROOT, 'plans')).toBe(join(ROOT, '.claude', 'plans'))
+    expect(recordDir(ROOT, 'plans')).toBe(join(ROOT, '.canon', 'plans'))
   })
 
   it('should read presence on the record folder rather than on what sits inside it', () => {
@@ -88,7 +87,7 @@ describe('recordDir', () => {
   it('should not read a new root that carries the old scratch spelling', () => {
     seed('.canon', '.tmp')
 
-    expect(recordDir(ROOT, SCRATCH)).toBe(join(ROOT, '.claude', '.tmp'))
+    expect(recordDir(ROOT, SCRATCH)).toBe(join(ROOT, '.canon', 'tmp'))
   })
 })
 
@@ -108,20 +107,33 @@ describe('recordDirs', () => {
   })
 })
 
-describe('creationDir', () => {
-  it('should stay at the old root even where the new one carries the folder', () => {
-    seed('.canon', 'review')
-
-    expect(creationDir(ROOT, 'review', 'feedback')).toBe(
-      join(ROOT, '.claude', 'review', 'feedback'),
+describe('creationRel', () => {
+  it('should spell the destination relative to the project root', () => {
+    expect(creationRel(ROOT, 'review', 'slides')).toBe(
+      join('.canon', 'review', 'slides'),
     )
   })
-})
 
-describe('creationRel', () => {
-  it('should spell the creation destination relative to the project root', () => {
-    expect(creationRel('review', 'slides')).toBe(
-      join('.claude', 'review', 'slides'),
+  it('should write beside records a tree has not migrated yet', () => {
+    seed('.claude', 'review')
+
+    expect(creationRel(ROOT, 'review', 'feedback')).toBe(
+      join('.claude', 'review', 'feedback'),
+    )
+  })
+
+  it('should take the new root once the tree carries it', () => {
+    seed('.canon', 'review')
+    seed('.claude', 'review')
+
+    expect(creationRel(ROOT, 'review', 'feedback')).toBe(
+      join('.canon', 'review', 'feedback'),
+    )
+  })
+
+  it('should rename the scratch folder at the new root', () => {
+    expect(creationRel(ROOT, SCRATCH, 'gov', 'rules.md')).toBe(
+      join('.canon', 'tmp', 'gov', 'rules.md'),
     )
   })
 })
@@ -141,6 +153,6 @@ describe('recordRoot', () => {
   })
 
   it('should fall back to the creation default when neither exists', () => {
-    expect(recordRoot(ROOT)).toBe(join(ROOT, '.claude'))
+    expect(recordRoot(ROOT)).toBe(join(ROOT, '.canon'))
   })
 })

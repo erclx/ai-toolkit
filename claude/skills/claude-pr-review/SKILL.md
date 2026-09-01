@@ -36,8 +36,8 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: project type, conventions, and commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: technical design decisions
-- `.claude/tasks/priority.md`: where this feature sits on the board and what each neighboring row waits on. Resolve this one at the main worktree root per Worktrees in `CLAUDE.md`, since the board is gitignored and a linked worktree holds no copy of it
-- `.claude/plans/feature-<slug>.md` for the branch, when present: the intent the PR should satisfy
+- `.canon/tasks/priority.md`: where this feature sits on the board and what each neighboring row waits on. Resolve this one at the main worktree root per Worktrees in `CLAUDE.md`, since the board is gitignored and a linked worktree holds no copy of it
+- `.canon/plans/feature-<slug>.md` for the branch, when present: the intent the PR should satisfy
 
 Coding standards from `.claude/rules/` are auto-loaded by Claude Code.
 
@@ -141,7 +141,7 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`, which the rest of this step calls `<body-file>`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered.
+Write the comment to `.canon/tmp/pr-review/body-<number>-<short-sha>.md`, which the rest of this step calls `<body-file>`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered.
 
 Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
 
@@ -228,12 +228,12 @@ The `What is right` section is optional, capped at three bullets, and included o
 
 Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
-Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
+Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.canon/tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
 
 Do not run the command below when `<prior-heading>` from Step 2 reads `## Review closed` and this pass carries nothing owed. That pass replaces the standing comment rather than adding one, under `### A close-out that repeats the standing one` at the end of this step. Posting first and reaching that section afterward leaves two close-outs both naming the new head, which is worse than the pair the guard exists against.
 
 ```bash
-gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md
+gh pr review <number> --comment --body-file .canon/tmp/pr-review/body-<number>-<short-sha>.md
 ```
 
 A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No findings. Reviewed against project docs and the board.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`

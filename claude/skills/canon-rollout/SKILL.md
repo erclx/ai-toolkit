@@ -10,7 +10,7 @@ This skill runs outward. Every other skill for operating on a target assumes the
 
 One wave takes one toolkit change to every target and ends with a pull request per target for a person to merge. Two roles carry three phases over one target list. The orchestrator enumerates, dispatches, reviews, and routes. The worker holds one target from the worktree entry to the merge of the branch it opened.
 
-`claude-orchestrate` owns this repository's own board and is a different subject. Read nothing from `.claude/tasks/` here and write nothing to it.
+`claude-orchestrate` owns this repository's own board and is a different subject. Read nothing from `.canon/tasks/` here and write nothing to it.
 
 ## Take a role before anything else
 

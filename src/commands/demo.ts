@@ -61,7 +61,7 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '',
         'Examples:',
-        '  canon demo compile .claude/.tmp/screencast/inline-edit.md',
+        '  canon demo compile .canon/tmp/screencast/inline-edit.md',
         '  canon demo compile draft.md --out demos --force',
         '',
       ].join('\n'),

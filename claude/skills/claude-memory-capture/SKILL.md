@@ -1,11 +1,11 @@
 ---
 name: claude-memory-capture
-description: Extracts durable patterns from the current session, routes a domain fact to the context entry that owns it, and writes the residue to `.claude/memory/` as feedback, project, user, or reference files. Use when asked to "capture memory", "capture lessons", "wrap up the session", "end of session memory", or as a step in autoship. Do NOT use to curate existing memory. Use `claude-memory-review` for that.
+description: Extracts durable patterns from the current session, routes a domain fact to the context entry that owns it, and writes the residue to `.canon/memory/` as feedback, project, user, or reference files. Use when asked to "capture memory", "capture lessons", "wrap up the session", "end of session memory", or as a step in autoship. Do NOT use to curate existing memory. Use `claude-memory-review` for that.
 ---
 
 # Claude memory capture
 
-Scan the current session for patterns worth persisting, send each to the surface that owns it, and leave in `.claude/memory/` only what no surface owns. Pair with `claude-memory-review` for later curation.
+Scan the current session for patterns worth persisting, send each to the surface that owns it, and leave in `.canon/memory/` only what no surface owns. Pair with `claude-memory-review` for later curation.
 
 A fact about a domain belongs in that domain's context entry, which the three-tier model already loads on demand. Writing it to memory instead puts it in a folder nothing opens. Routing is therefore the point of this skill and the memory file is the fallback.
 
@@ -13,9 +13,9 @@ The filename and its type prefix, the frontmatter, the body shape each type carr
 
 ## Guards
 
-- All `.claude/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- All `.canon/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 - From a linked worktree the file-editing tools refuse every path below, so each write in this skill goes out through `Bash` as a plain single command. A memory entry holds one fact and this session has read it, so an update rewrites the whole file with a heredoc rather than editing a line inside it.
-- If `.claude/memory/` does not exist at the main worktree root, create it, along with an `index.md` carrying `title` and `subtitle` frontmatter. `canon claude init` seeds both, and a project predating that seed has neither. Regeneration errors without the index, so the first write into a bare folder would report a frontmatter failure against a file that is fine.
+- If `.canon/memory/` does not exist at the main worktree root, create it, along with an `index.md` carrying `title` and `subtitle` frontmatter. `canon claude init` seeds both, and a project predating that seed has neither. Regeneration errors without the index, so the first write into a bare folder would report a frontmatter failure against a file that is fine.
 - If the session produced no user corrections, confirmations, or context disclosures worth persisting, stop: `✅ Nothing worth capturing.`
 - Routing edits a tracked file, so it runs only where the caller commits. When the session is in the main worktree, or the caller states it does not commit, skip Step 3 and write every candidate as a memory file. `claude-orchestrate` is the caller this covers.
 
@@ -25,7 +25,7 @@ Read in parallel, skipping any that do not exist:
 
 - `${CLAUDE_SKILL_DIR}/../../standards/memory.md`: the filename, frontmatter, body shape, and lifecycle every entry follows
 - `CLAUDE.md`: the project's write location and any rule it states over the folder
-- `.claude/memory/index.md`: existing index, to avoid duplicates
+- `.canon/memory/index.md`: existing index, to avoid duplicates
 - `.claude/context/index.md`: the domain catalog Step 3 routes against
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting applied to memory file bodies
 - The `write-human` skill: voice, rhythm, and sentence construction applied to memory file bodies
@@ -44,7 +44,7 @@ For each project candidate, match its subject against `.claude/context/index.md`
 
 Fail closed. A project candidate matching no entry stays a memory file, and so does one matching two entries where neither is clearly the owner. The residue is what the folder is for, and a fact filed under the wrong entry is worse than one in memory because a context entry is a surface sessions trust.
 
-Do not edit a context entry here. `claude-docs` owns those edits and folds the routed facts in on its own pass, or two skills write one file at the same step. Write each routed fact to `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root instead, appending when the file exists. An append is a whole-file operation the shell does directly, so send it as a plain single `Bash` command carrying a heredoc:
+Do not edit a context entry here. `claude-docs` owns those edits and folds the routed facts in on its own pass, or two skills write one file at the same step. Write each routed fact to `.canon/tmp/memory-routing/<slug>.md` at the main worktree root instead, appending when the file exists. An append is a whole-file operation the shell does directly, so send it as a plain single `Bash` command carrying a heredoc:
 
 ```markdown
 ## .claude/context/<domain>.md
@@ -58,20 +58,20 @@ The handoff is a file rather than a spoken result so the routed fact survives a 
 
 ## Step 4: dedupe
 
-For each remaining candidate, grep `.claude/memory/` for an existing file on the same topic. If one exists, update it in place rather than create a new file. Read it first and write the whole file back, since the guard above rules out editing a line inside it.
+For each remaining candidate, grep `.canon/memory/` for an existing file on the same topic. If one exists, update it in place rather than create a new file. Read it first and write the whole file back, since the guard above rules out editing a line inside it.
 
 ## Step 5: write the residue
 
-Write each remaining candidate to `.claude/memory/<type>-<slug>.md`, following the template and the shape rules in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every entry.
+Write each remaining candidate to `.canon/memory/<type>-<slug>.md`, following the template and the shape rules in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every entry.
 
 Two of its rules are the ones a capture pass gets wrong under time pressure. State the rule rather than the incident that produced it, since the session ending is the only reader who has the narrative. Write the `title` as the rule itself, never as the filename stem.
 
-Do not edit the index. `.claude/memory/index.md` is generated from sibling frontmatter by a `PostToolUse` hook, the same way the task board's index is, so a hand-appended row is drift the next regeneration discards.
+Do not edit the index. `.canon/memory/index.md` is generated from sibling frontmatter by a `PostToolUse` hook, the same way the task board's index is, so a hand-appended row is drift the next regeneration discards.
 
 The hook matches `Write|Edit|MultiEdit`, so nothing fires on the shell writes a linked worktree makes. Regenerate the index once after the last write when the entries went out through `Bash`:
 
 ```bash
-canon indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
+canon indexes regen --no-stage --root <main-root> <main-root>/.canon/memory/index.md
 ```
 
 Run `canon records validate memory` when the writes are done and fix what it names. It reads the whole pen rather than this session's writes, so treat a finding on a carried entry as one to fix in place rather than as a reason to stop.
@@ -81,12 +81,12 @@ Run `canon records validate memory` when the writes are done and fix what it nam
 Respond with one line per fact routed, written, or updated:
 
 - `➡️ Routed: <fact subject> → .claude/context/<domain>.md`
-- `✅ Wrote: .claude/memory/<file> (<type>)`
-- `✏️ Updated: .claude/memory/<file> (<type>)`
+- `✅ Wrote: .canon/memory/<file> (<type>)`
+- `✏️ Updated: .canon/memory/<file> (<type>)`
 
 When anything routed, add a line naming the handoff so the caller knows a `claude-docs` pass is owed:
 
-`→ Routed facts wait at .claude/.tmp/memory-routing/<slug>.md. Run /claude-docs to fold them in.`
+`→ Routed facts wait at .canon/tmp/memory-routing/<slug>.md. Run /claude-docs to fold them in.`
 
 Omit that line when the caller runs `claude-docs` itself later in its own chain.
 

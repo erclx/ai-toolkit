@@ -5,44 +5,86 @@ import { join } from 'node:path'
  * The roots a session record folder is read at, in precedence order.
  *
  * `.canon/` wins because a tree that carries it has been migrated, and reading
- * `.claude/` there would answer from the copy the move left behind. A tree that
- * carries neither is every tree today, which is what keeps this branch a no-op
- * until the move lands.
+ * `.claude/` there would answer from the copy the move left behind. The second
+ * spelling is what an unmigrated project still resolves through, so it stays
+ * until no target reaches one, which nothing measures.
  *
  * The shape is `readStamp`'s: order the spellings, take the first that exists,
  * and stand the creation default in when none does.
  */
+// canon-keep-record-root
 export const RECORD_ROOTS = ['.canon', '.claude'] as const
 
 export type RecordRoot = (typeof RECORD_ROOTS)[number]
 
 /**
- * The root a record folder is created at.
+ * The root a record folder is created at when no root carries it yet.
  *
- * It disagrees with the read precedence above on purpose, and the disagreement
- * is the whole of this branch. Creating under `.canon/` before the move would
- * write records to a root whose ignore line may not have reached a target yet,
- * and it would split one project's records across two roots with no verb able
- * to reconcile them. The move flips this line and nothing else.
+ * It agrees with the head of the read precedence, which is what the move
+ * changed. While the two disagreed, creation stayed at `.claude/` so a record
+ * could not land under a root whose ignore line had yet to reach the project.
+ * The ignore line ships now, so a fresh project scaffolds one root and an
+ * unmigrated one keeps resolving its own through the fallback above.
  */
-export const CREATION_ROOT: RecordRoot = '.claude'
+export const CREATION_ROOT: RecordRoot = '.canon'
 
 /**
  * The deletable scratch folder, named at the spelling `.claude/` gives it.
  *
- * It is the one folder whose name differs by root. Inside a dotted root the
- * leading dot hides nothing already hidden and costs a bare `ls` that omits the
- * folder, so the move drops it. Every other record folder keeps its name,
- * `.records.git` included, where the dot marks the mechanism apart from a
- * payload rather than hiding it.
+ * It is the one folder whose name differs by root, and callers name it at the
+ * old spelling because `spell` is the only place the variant is decided. Inside
+ * a dotted root the leading dot hides nothing already hidden and costs a bare
+ * `ls` that omits the folder, so the move dropped it. Every other record folder
+ * keeps its name, `.records.git` included, where the dot marks the mechanism
+ * apart from a payload rather than hiding it.
  */
 export const SCRATCH = '.tmp'
 
 /** The scratch folder's name under `.canon/`. */
 const CANON_SCRATCH = 'tmp'
 
-/** How a root spells a folder name. Only the scratch folder differs. */
-function spell(root: RecordRoot, folder: string): string {
+/**
+ * Every entry that lives under the record root, at the name `.claude/` gave it.
+ *
+ * These are the twelve ignore patterns the move to `.canon/` collapsed into one,
+ * so the list counts entries rather than record folders: `.records.git` is the
+ * backup history rather than a record, and `README.md` is a file a records pull
+ * writes back. `worktrees` is absent because the harness creates a worktree
+ * under `.claude/` and requires its target to sit there.
+ *
+ * Everything absent from this list is committed and stays where it is, which is
+ * the rule the move ran on. `context`, `rules`, `skills`, `hooks`, `wireframes`,
+ * and the loose documents at the root are all in that set, which is why a seed
+ * and a superseded-layout report each ask this rather than assuming a root.
+ */
+export const RECORD_ENTRIES: readonly string[] = [
+  '.records.git',
+  SCRATCH,
+  'README.md',
+  'diagrams',
+  'groundwork',
+  'intake',
+  'memory',
+  'plans',
+  'proposals',
+  'review',
+  'tasks',
+  'teach',
+]
+
+/** Whether a name under `.claude/` is one the record root owns. */
+export function isRecordEntry(name: string): boolean {
+  return RECORD_ENTRIES.includes(name)
+}
+
+/**
+ * How a root spells a folder name. Only the scratch folder differs.
+ *
+ * Exported because the migration verb has to name a folder's destination and
+ * deriving it there would state the one naming variant in a second place, where
+ * a tree half-moved by one rule and read by the other resolves nothing.
+ */
+export function spell(root: RecordRoot, folder: string): string {
   return root === '.canon' && folder === SCRATCH ? CANON_SCRATCH : folder
 }
 
@@ -98,21 +140,29 @@ export function recordDirs(
   )
 }
 
-/** Where a record folder is created, which is the creation default always. */
-export function creationDir(
+/**
+ * The creation destination relative to the project root, which is the form a
+ * message displays and an option default carries.
+ *
+ * It resolves the root the same way a read does rather than pinning the
+ * creation default, because the two stopped disagreeing when the move flipped
+ * `CREATION_ROOT`. Pinning it now would write a new record to `.canon/` in a
+ * project whose board is still `.claude/`, which splits one project's records
+ * across two roots and leaves every reader answering from the half the writer
+ * did not use.
+ *
+ * The root is a parameter rather than the working directory, because two of the
+ * callers spell a path they later join onto a target root. Resolving against
+ * the working directory there would read one project to answer about another.
+ */
+export function creationRel(
   root: string,
   folder: string,
   ...rest: string[]
 ): string {
-  return join(root, CREATION_ROOT, spell(CREATION_ROOT, folder), ...rest)
-}
+  const at = rootOf(root, folder)
 
-/**
- * The creation destination relative to the project root, which is the form a
- * message displays and an option default carries.
- */
-export function creationRel(folder: string, ...rest: string[]): string {
-  return join(CREATION_ROOT, spell(CREATION_ROOT, folder), ...rest)
+  return join(at, spell(at, folder), ...rest)
 }
 
 /**

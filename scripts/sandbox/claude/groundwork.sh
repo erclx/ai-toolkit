@@ -100,9 +100,9 @@ EOF
 
 stage_setup() {
   log_step "Groundwork sandbox"
-  log_info "open    : drifted workspace, no .claude/groundwork/ folder yet"
+  log_info "open    : drifted workspace, no .canon/groundwork/ folder yet"
   log_info "resume  : live folder with README.md and 01-current-state.md, no decision"
-  log_info "decline : one-file change already decided in .claude/tasks/"
+  log_info "decline : one-file change already decided in .canon/tasks/"
   log_info ""
   log_info "Invoke the prefixed form. The dev-skill injection copies SKILL.md alone,"
   log_info "so the unprefixed copy cannot resolve the bundled standards/groundwork.md."
@@ -128,8 +128,8 @@ Three independent packages under `packages/`. Each was scaffolded separately and
 No shared preset exists. Config drift between packages has never been measured.
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -142,7 +142,7 @@ One file per task, ordered by phase label
 - [v01.0: Decide what to do about tooling config drift](v01.0-config-drift.md): Settle whether the three packages share tooling config
 EOF
 
-    cat <<'EOF' >.claude/tasks/v01.0-config-drift.md
+    cat <<'EOF' >.canon/tasks/v01.0-config-drift.md
 ---
 title: 'v01.0: Decide what to do about tooling config drift'
 description: Settle whether the three packages share tooling config
@@ -159,18 +159,18 @@ EOF
 
     log_step "Scenario ready: groundwork open mode"
     log_info "Context: three packages with drifted eslint and tsconfig, drift never measured"
-    log_info "         Two or more approaches are live and no .claude/groundwork/ folder exists"
+    log_info "         Two or more approaches are live and no .canon/groundwork/ folder exists"
     log_info "Action:  /canon:claude-groundwork tooling config drift across the three packages"
-    log_info "Expect:  qualifying test passes, folder created at .claude/groundwork/<nn>-<slug>/"
+    log_info "Expect:  qualifying test passes, folder created at .canon/groundwork/<nn>-<slug>/"
     log_info "         README.md written first, then 01-current-state.md with measured drift"
-    log_info "         NOTHING written to .claude/plans/, packages/, or any config file"
+    log_info "         NOTHING written to .canon/plans/, packages/, or any config file"
     log_info "         Output lists full relative paths and the open questions"
     ;;
   "resume")
     seed_duplicated_workspace
 
-    mkdir -p .claude/groundwork/01-tooling-drift
-    cat <<'EOF' >.claude/groundwork/01-tooling-drift/README.md
+    mkdir -p .canon/groundwork/01-tooling-drift
+    cat <<'EOF' >.canon/groundwork/01-tooling-drift/README.md
 ---
 title: Tooling drift
 description: Whether the three packages should share a tooling preset, and how far their configs have drifted
@@ -204,7 +204,7 @@ External: not yet done. Shared-preset patterns from comparable workspaces are un
 None. This is the first pass at the question.
 EOF
 
-    cat <<'EOF' >.claude/groundwork/01-tooling-drift/01-current-state.md
+    cat <<'EOF' >.canon/groundwork/01-tooling-drift/01-current-state.md
 # Current state
 
 Verified facts only, measured 2026-07-20.
@@ -225,7 +225,7 @@ EOF
     git add . && git commit -m "feat(workspace): three packages with independent tooling" --no-verify -q
 
     log_step "Scenario ready: groundwork resume mode"
-    log_info "Context: .claude/groundwork/01-tooling-drift/ exists with README.md and 01-current-state.md"
+    log_info "Context: .canon/groundwork/01-tooling-drift/ exists with README.md and 01-current-state.md"
     log_info "         No 06-decision.md, so the folder is live"
     log_info "         01-current-state.md was measured at two packages and the workspace now has three"
     log_info "         It carries two open questions at the end"
@@ -263,8 +263,8 @@ export function run(args: string[]) {
 }
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -277,7 +277,7 @@ One file per task, ordered by phase label
 - [v01.0: Add a --help flag to the CLI](v01.0-help-flag.md): Print the usage line explicitly behind a --help flag
 EOF
 
-    cat <<'EOF' >.claude/tasks/v01.0-help-flag.md
+    cat <<'EOF' >.canon/tasks/v01.0-help-flag.md
 ---
 title: 'v01.0: Add a --help flag to the CLI'
 description: Print the usage line explicitly behind a --help flag
@@ -293,11 +293,11 @@ EOF
     git add . && git commit -m "feat(cli): version flag and usage line" --no-verify -q
 
     log_step "Scenario ready: groundwork qualifying test declines"
-    log_info "Context: one-file change, current state known, approach already decided in .claude/tasks/"
+    log_info "Context: one-file change, current state known, approach already decided in .canon/tasks/"
     log_info "         Only one of the three qualifying tests can hold"
     log_info "Action:  /canon:claude-groundwork adding a --help flag"
     log_info "Expect:  skill declines and points at /claude-feature"
-    log_info "         NO folder created under .claude/groundwork/"
+    log_info "         NO folder created under .canon/groundwork/"
     log_info "         No measuring pass, no README.md"
     ;;
   *)

@@ -76,7 +76,7 @@ interface OutcomeCommandOptions {
 export function register(program: Command): void {
   const tasks = program
     .command('tasks')
-    .description('Manage the task board in .claude/tasks/')
+    .description('Manage the task board in .canon/tasks/')
     .helpOption('-h, --help', 'Show this help message')
 
   tasks
@@ -157,8 +157,8 @@ export function register(program: Command): void {
         '',
         'Locations:',
         '  unstated  the task carries no Plan: line',
-        '  live      the target resolves inside .claude/plans/',
-        '  archived  the target resolves inside .claude/plans/archive/',
+        '  live      the target resolves inside .canon/plans/',
+        '  archived  the target resolves inside .canon/plans/archive/',
         '  outside   the target resolves somewhere else',
         '',
         'Exit codes:',
@@ -201,11 +201,11 @@ export function register(program: Command): void {
         'exit code, which a shell function wrapping canon can flatten to zero.',
         '',
         'A relative path resolves against the project root first and against',
-        '.claude/tasks/ second, so the ../plans/ link a board row writes works.',
+        '.canon/tasks/ second, so the ../plans/ link a board row writes works.',
         '',
         'Examples:',
         '  canon tasks plan-answers dispatch-answer-gate',
-        '  canon tasks plan-answers .claude/plans/feature-dispatch-answer-gate.md',
+        '  canon tasks plan-answers .canon/plans/feature-dispatch-answer-gate.md',
         '  canon tasks plan-answers ../plans/feature-dispatch-answer-gate.md',
         '  canon tasks plan-answers dispatch-answer-gate --json',
         '',

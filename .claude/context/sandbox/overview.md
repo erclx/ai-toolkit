@@ -43,7 +43,7 @@ What `write_scope` cannot do is prevent the write, and it cannot see a write out
 
 ### A per-arm escape scope for the one arm meant to reach past the tree
 
-`claude:canon-rollout` is the only catalog entry whose skill's own job is dispatching a nested `claude --bg` session, and the one bound on it before this row was a line of narration asking the driven model to dispatch nothing. `run.sh`'s escape watch never enforced that, since it only ever reported a write under the four scratch directories as an unattributed warning, so a dispatch that reached the toolkit's own `.claude/plans/` or `.claude/tasks/` would have passed the arm cleanly.
+`claude:canon-rollout` is the only catalog entry whose skill's own job is dispatching a nested `claude --bg` session, and the one bound on it before this row was a line of narration asking the driven model to dispatch nothing. `run.sh`'s escape watch never enforced that, since it only ever reported a write under the four scratch directories as an unattributed warning, so a dispatch that reached the toolkit's own `.canon/plans/` or `.canon/tasks/` would have passed the arm cleanly.
 
 `escape_scope` in an arm's `expect.toml` closes that with the mechanism `write_scope` already models: a set of globs matched against what `escape_roots` and `ESCAPE_SCRATCH_DIRS` found, checked by the same harness that finds them rather than left to the skill's own restraint. Declaring the key, even at `escape_scope = []`, turns the warning into a mechanical result. A write matching a declared glob passes as expected, and everything else fails the arm outright, which is what "the harness asserts them" means in practice.
 
@@ -207,7 +207,7 @@ Six things a run cannot reach. Each is a property of the harness rather than a g
 - A mid-session rule change. Rules are discovered at session start and the harness spawns a fresh session per run, so this binds the session doing the editing rather than the run.
 - Host-conditional behavior such as linked-worktree locks or remote-state failures. A standalone sandbox repo cannot reproduce the trigger.
 - The standards fallback of a skill the branch changed. Both resolution routes can land on one file, and no assertion tells them apart.
-- A write landing outside both the sandbox tree and the four watched scratch directories. `snapshot_tree` reads the sandbox, and `run.sh` watches `.claude/plans/`, `.claude/review/`, `.claude/memory/`, and `.claude/tasks/` under the toolkit roots for escapes.
+- A write landing outside both the sandbox tree and the four watched scratch directories. `snapshot_tree` reads the sandbox, and `run.sh` watches `.canon/plans/`, `.canon/review/`, `.canon/memory/`, and `.canon/tasks/` under the toolkit roots for escapes.
 - Git state. `snapshot_tree` excludes `.git`, and the seven declaration keys read paths, file content, the write list, the reply, and the turn count, so no key reaches a commit, a branch, or a rewritten history.
 
 A nested background dispatch used to belong on that list and no longer does. It is bounded by a shim and recorded on `sessions`, and the three things that bound still cannot reach are stated where the bound is, under the decision above.

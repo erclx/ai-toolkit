@@ -18,22 +18,44 @@ esac
 file_path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // empty')
 [ -n "$file_path" ] || exit 0
 
+# Both record roots, and the scratch folder loses its leading dot under the new
+# one, since inside a dotted root the dot hides nothing already hidden. A guard
+# fixed at the old spelling warns on every correct scratch write in a project
+# the move has reached.
 case "$file_path" in
-*/.claude/.tmp/*) exit 0 ;;
+*/.claude/.tmp/* | */.canon/tmp/*) exit 0 ;;
 esac
 
-case "$file_path" in
+# A project whose own root sits under a path carrying a tmp segment is not
+# writing to system temp, and the bare pattern below would trip on every source
+# file it holds. The project root is stripped before the match rather than
+# exiting on it, so the segments the patterns look for are the ones the write
+# adds. Exiting on any path under the project gives up <project>/tmp/ as well,
+# which is a genuine violation this still warns on.
+matched=$file_path
+if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
+  case "$file_path" in
+  "$CLAUDE_PROJECT_DIR"/*) matched=${file_path#"$CLAUDE_PROJECT_DIR"} ;;
+  esac
+fi
+
+case "$matched" in
 */tmp/* | *\\tmp\\* | */Temp/* | *\\Temp\\* | */var/folders/*) ;;
 *) exit 0 ;;
 esac
 
 session=$(printf '%s' "$input" | jq -r '.session_id // "none"')
 key=$(printf '%s' "$session" | tr -c 'A-Za-z0-9' '_')
-marker_dir="${CLAUDE_PROJECT_DIR:-.}/.claude/.tmp/scratch-guard"
+project="${CLAUDE_PROJECT_DIR:-.}"
+if [ -d "$project/.canon" ]; then
+  marker_dir="$project/.canon/tmp/scratch-guard"
+else
+  marker_dir="$project/.claude/.tmp/scratch-guard"
+fi
 marker="$marker_dir/$key"
 [ -f "$marker" ] && exit 0
 mkdir -p "$marker_dir"
 : >"$marker"
 
-msg='Temporary file write outside .claude/.tmp/. Write temp files to .claude/.tmp/<slug>/ in the project root, not system temp. See the Scratch rule in CLAUDE.md.'
+msg='Temporary file write outside the project scratch folder. Write temp files to .claude/.tmp/<slug>/ in the project root, or .canon/tmp/<slug>/ where the project carries that root, not system temp. See the Scratch rule in CLAUDE.md.'
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PreToolUse",additionalContext:$msg}}'

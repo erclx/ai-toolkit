@@ -55,9 +55,9 @@ The context-entry half of that defect recurs on rules written after the repairs 
 A rule scoped to a folder only a plugin skill creates is inert rather than broken for a target holding governance alone. The folder never exists there, so the file glob never matches and the citation never fires. No repair applies. The row exists so a later pass does not misread inertness as a defect.
 
 - `governance/rules/claude/510-context.md`, scoped to `.claude/context/**`. Nothing but `claude-docs` and `claude-memory-capture` writes an entry there.
-- `governance/rules/claude/556-groundwork.md`, scoped to `.claude/groundwork/**`. Nothing but `claude-groundwork` creates a track folder.
-- `governance/rules/claude/557-intake.md`, scoped to `.claude/intake/**`. Nothing but `claude-intake` creates a dump folder.
-- `governance/rules/claude/561-teach.md`, scoped to `.claude/teach/**`. Nothing but `claude-teach` creates a workspace.
+- `governance/rules/claude/556-groundwork.md`, scoped to `.canon/groundwork/**`. Nothing but `claude-groundwork` creates a track folder.
+- `governance/rules/claude/557-intake.md`, scoped to `.canon/intake/**`. Nothing but `claude-intake` creates a dump folder.
+- `governance/rules/claude/561-teach.md`, scoped to `.canon/teach/**`. Nothing but `claude-teach` creates a workspace.
 - `governance/rules/core/025-indexes.md` names both `.claude/context/` and `.claude/wireframes/` as places to check an index before searching. Only the second is moot. A governance-only target can hand-author a wireframe entry against `standards/wireframes.md` with no plugin skill involved, so that half of the rule is a clean pointer.
 - `governance/rules/snippets/505-at-references.md`, an always-on rule with no `paths:` glob, carries no skill or standard citation and states what to do when a snippet is referenced with `@`. It landed on `base.toml`'s stack after `#1168`, and the same install channel that dropped means a governance-only target holding no `.claude/snippets/` folder has no `@`-reference the rule ever fires on. The inertness reasons the same way as the other four rows even though the mechanism differs: theirs is a glob that never matches, this one is a rule that always loads but governs a reference that never appears.
 
@@ -93,8 +93,8 @@ What it reads is bounded three ways, and each bound is a shape the corpus alread
 
 Two classes resolve to nothing and are correct to, and both are reported by name rather than dropped.
 
-- **Governed.** A path the citing rule spells exactly in its own frontmatter `paths:` names an artifact a target holds rather than a file here. `claude/560-diagrams.md` declares `.claude/DIAGRAMS.md` and then tells its reader to convert one an older install left. Only an exact declaration excuses, never a glob match against one, so a typo under `.claude/diagrams/**` is still a finding.
-- **Ignored.** A path git ignores is session scratch no clone holds. `claude/555-tasks.md` cites `.claude/tasks/index.md`, which is real at the main root and absent from a fresh clone and from every linked worktree. Without this the verdict would depend on which tree the stage ran in.
+- **Governed.** A path the citing rule spells exactly in its own frontmatter `paths:` names an artifact a target holds rather than a file here. `claude/560-diagrams.md` declares `.claude/DIAGRAMS.md` and then tells its reader to convert one an older install left. Only an exact declaration excuses, never a glob match against one, so a typo under `.canon/diagrams/**` is still a finding.
+- **Ignored.** A path git ignores is session scratch no clone holds. `claude/555-tasks.md` cites `.canon/tasks/index.md`, which is real at the main root and absent from a fresh clone and from every linked worktree. Without this the verdict would depend on which tree the stage ran in.
 
 The ignored class is what makes the counts tree-dependent, and the two readings were taken side by side on 2026-08-31 over one corpus and one commit. From the main worktree the run reports 34 resolved and 0 ignored, since the board is there and the path resolves. From a linked worktree it reports 33 and 1. The verdict is the same either way, which is the whole point of the exemption, so a count quoted from one tree names which tree it came from.
 

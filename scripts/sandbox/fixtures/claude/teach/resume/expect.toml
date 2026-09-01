@@ -41,17 +41,17 @@ max_turns = 40
 # the seeded one already covers, which is what the skill's guard refuses, and
 # the third catches a run that answered by planning instead of teaching.
 absent = [
-  ".claude/teach/02-regex",
-  ".claude/teach/01-regular-expressions",
-  ".claude/plans",
+  ".canon/teach/02-regex",
+  ".canon/teach/01-regular-expressions",
+  ".canon/plans",
 ]
 
-write_scope = [".claude/teach/01-regex/**"]
+write_scope = [".canon/teach/01-regex/**"]
 
 # The reply names the workspace it resumed and the ordinal it landed on. `0002`
 # is the load-bearing token, since a run that resumed correctly and then
 # overwrote `0001` reports the same workspace and a different number.
-reply = [".claude/teach/01-regex/", "0002"]
+reply = [".canon/teach/01-regex/", "0002"]
 
 manual = [
   "The next lesson opens on the two recorded wrong answers before anything new. Semantic: retrieval and review are both prose at the top of a generated page, and the difference is whether the learner is asked or told.",
@@ -67,22 +67,22 @@ manual = [
 # and a run that revised the success lines to match what it taught has moved the
 # target rather than met it.
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^- Rewrite a vulnerable pattern so it cannot backtrack$'
 
 [[content]]
-path = ".claude/teach/01-regex/MISSION.md"
+path = ".canon/teach/01-regex/MISSION.md"
 pattern = '^date: 2026-08-10$'
 
 # The first record survives untouched. Its two wrong answers are what the next
 # session places the learner from, so a run that edited it in place destroyed
 # the evidence it was reading.
 [[content]]
-path = ".claude/teach/01-regex/learning-records/0001-reading-patterns.md"
+path = ".canon/teach/01-regex/learning-records/0001-reading-patterns.md"
 pattern = 'lazy quantifier was read as a separate token'
 
 # The seeded lesson is not overwritten. A second lesson lands at `0002`, and a
 # run reusing `0001` leaves this file holding the new subject instead.
 [[content]]
-path = ".claude/teach/01-regex/lessons/0001-reading-patterns.html"
+path = ".canon/teach/01-regex/lessons/0001-reading-patterns.html"
 pattern = 'Reading a pattern aloud'

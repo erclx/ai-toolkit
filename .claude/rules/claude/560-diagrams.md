@@ -1,7 +1,7 @@
 ---
-description: Route .claude/diagrams edits to the diagrams standard for Mermaid conventions
+description: Route .canon/diagrams edits to the diagrams standard for Mermaid conventions
 paths:
-  - '.claude/diagrams/**'
+  - '.canon/diagrams/**'
   - '.claude/DIAGRAMS.md'
 ---
 
@@ -14,5 +14,5 @@ paths:
 
 ## Scope
 
-- Write a new diagram to `.claude/diagrams/<kind>.md`, never to `.claude/DIAGRAMS.md`
+- Write a new diagram to `.canon/diagrams/<kind>.md`, never to `.claude/DIAGRAMS.md`
 - Convert a `.claude/DIAGRAMS.md` left by an older install into per-kind entries before editing it

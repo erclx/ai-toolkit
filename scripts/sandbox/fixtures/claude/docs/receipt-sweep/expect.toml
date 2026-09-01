@@ -20,21 +20,21 @@
 max_turns = 30
 
 paths = [
-  ".claude/review/memory-review-stale-pen.md",
-  ".claude/memory/feedback-confirm-before-editing.md",
-  ".claude/memory/reference-transport-dashboard.md",
+  ".canon/review/memory-review-stale-pen.md",
+  ".canon/memory/feedback-confirm-before-editing.md",
+  ".canon/memory/reference-transport-dashboard.md",
 ]
 
 # The resolved receipt goes. Both its items are decided, so the collection rule
 # in `standards/memory.md` folds the declines and deletes the file.
-absent = [".claude/review/memory-review-legacy-inbox.md"]
+absent = [".canon/review/memory-review-legacy-inbox.md"]
 
 write_scope = [".claude/**"]
 
 # The type rule has no negative assertion available, so it reports as unchecked
 # and a reader settles it.
 manual = [
-  "`.claude/memory/reference-transport-dashboard.md` carries no decline. It is a `reference` entry, whose body is one sentence with no `**Why:**` line, and it was declined for having no in-repo target, which its type already states. A run that wrote a decline onto it restated the type and broke the body shape.",
+  "`.canon/memory/reference-transport-dashboard.md` carries no decline. It is a `reference` entry, whose body is one sentence with no `**Why:**` line, and it was declined for having no in-repo target, which its type already states. A run that wrote a decline onto it restated the type and broke the body shape.",
 ]
 
 # The pending receipt is the control. Its second item is still 📝, which the
@@ -43,7 +43,7 @@ manual = [
 # the arm cannot tell a sweep that reads item status from one that deletes every
 # receipt it finds.
 [[content]]
-path = ".claude/review/memory-review-stale-pen.md"
+path = ".canon/review/memory-review-stale-pen.md"
 pattern = '^## 2\. 📝 Retire'
 
 # The fold lands in the `**Why:**` line, which is where a decline belongs on a
@@ -51,18 +51,18 @@ pattern = '^## 2\. 📝 Retire'
 # against. The pattern stays loose on wording and strict on placement, since the
 # sentence is written by the run and the line it goes on is fixed.
 [[content]]
-path = ".claude/memory/feedback-confirm-before-editing.md"
+path = ".canon/memory/feedback-confirm-before-editing.md"
 pattern = '^\*\*Why:\*\*.*(declined|decline|not promoted|turned down|rejected)'
 
 # The entry keeps its original signal too. A fold that replaced the Why line
 # rather than extending it loses what earned the rule, which is the half a later
 # reader needs to tell whether it still holds.
 [[content]]
-path = ".claude/memory/feedback-confirm-before-editing.md"
+path = ".canon/memory/feedback-confirm-before-editing.md"
 pattern = 'four files under `src/`'
 
 # The board work still lands, so a run that swept receipts and skipped the rest
 # of the step fails here rather than reading as a pass.
 [[content]]
-path = ".claude/tasks/v01.0-notify.md"
+path = ".canon/tasks/v01.0-notify.md"
 pattern = '^- \[x\] Outcome: a notification carries a retry budget'

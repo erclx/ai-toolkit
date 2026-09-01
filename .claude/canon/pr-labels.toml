@@ -61,7 +61,7 @@ context = [
   ".claude/ARCHITECTURE.md",
   ".claude/REQUIREMENTS.md",
   ".claude/DESIGN.md",
-  ".claude/diagrams/",
+  ".canon/diagrams/",
   "CLAUDE.md",
 ]
 # Repository configuration belonging to no domain, this map included. The

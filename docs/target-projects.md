@@ -70,7 +70,7 @@ Scaffold installs tooling and seeds. It does not fill the planning docs or the d
 
 1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
 2. For a UI project, invoke `canon:claude-design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
-3. Optionally invoke `canon:claude-diagram` to draft entries under `.claude/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
+3. Optionally invoke `canon:claude-diagram` to draft entries under `.canon/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
 4. Start the feature loop. See [AI workflow](ai-workflow.md) for the per-feature sequence.
 
 A machine without a renderer still gets the diagrams and is told which check was skipped.
@@ -124,6 +124,26 @@ Per-domain mechanics live in the corresponding `docs/<domain>.md`. The skill bod
 
 When the toolkit updates, target projects pull changes per domain. There is one catch-all and several targeted entry points.
 
+### Move the records first, once
+
+Session records moved out of `.claude/` and into a root of their own. What is committed stays where it is, and everything gitignored, being the task board, the plans, the memory pen, the review reports, and the scratch folder, now lives under `.canon/`, which a single ignore entry covers.
+
+**`canon migrate records` is not in a published release yet.** It ships with the change that split the roots, so an installed binary answers `unknown command` until the next release carries it. Until then, run it out of a canon checkout against the project by path:
+
+```bash
+canon tooling sync claude . --write
+bun src/cli.ts migrate records --root /path/to/project --json
+bun src/cli.ts migrate records --root /path/to/project --write --json
+```
+
+Once the release lands, the same three lines read `canon migrate records` from inside the project. Either way the first line takes the `.canon/` ignore entry, and the verb refuses until the project has it, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. The second reports the plan and the third applies it, moving the folders and repointing every tracked file that cites one.
+
+Read the `ok` field out of the `--json` record rather than the exit code. A shell profile that wraps `canon` in a function takes its status from whatever the function runs last, so an absent subcommand and a clean run can both exit 0, and a reader watching the exit alone concludes the move happened.
+
+A tracked file that names an old record path on purpose, such as prose dating a decision, keeps it by carrying `canon-keep-record-root` on that line or the one above. The report pass prints every file it would rewrite, which is where to catch one before `--write` runs.
+
+Until the move runs, the project is exposed. The shipped ignore set no longer names the old record paths, so a project holding records at `.claude/` stops ignoring them on its next `canon tooling sync`, and the first sign is a memory file or a task board appearing in a commit. Every command reads either root, so nothing else breaks in the meantime, and running the move is what closes it.
+
 ### Check first
 
 `canon sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.
@@ -142,7 +162,7 @@ Each domain holds its own toolkit commit, so syncing governance today does not m
 
 A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
-Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `canon:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated`, and no command moves it either. The project moves the content itself.
+Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `canon:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.canon/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated`, and no command moves it either. The project moves the content itself.
 
 `unmigrated` currently names no domain, since standards and snippets are the two the toolkit ever installed at the project root and both closed their install channel. A target still holding a root `standards/` or `snippets/` folder from an older toolkit is carrying its own authoring surface now, not an unfinished install, and nothing proposes moving either.
 

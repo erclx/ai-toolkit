@@ -23,7 +23,14 @@ entry=".claude/context/development/index.md"
 [ -f "${CLAUDE_PROJECT_DIR:-.}/$entry" ] || exit 0
 
 key=$(printf '%s' "$session" | tr -c 'A-Za-z0-9' '_')
-marker_dir="${CLAUDE_PROJECT_DIR:-.}/.claude/.tmp/dev-command-reminder"
+# The marker is scratch, so it follows the scratch folder to whichever record
+# root the project carries rather than creating a second one beside it.
+project="${CLAUDE_PROJECT_DIR:-.}"
+if [ -d "$project/.canon" ]; then
+  marker_dir="$project/.canon/tmp/dev-command-reminder"
+else
+  marker_dir="$project/.claude/.tmp/dev-command-reminder"
+fi
 marker="$marker_dir/$key"
 [ -f "$marker" ] && exit 0
 mkdir -p "$marker_dir"

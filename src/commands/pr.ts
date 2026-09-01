@@ -130,7 +130,7 @@ export function register(program: Command): void {
         'Examples:',
         '  canon pr key-changes',
         '  canon pr key-changes 1265 --json',
-        '  canon pr key-changes --body .claude/.tmp/body.md --base origin/main',
+        '  canon pr key-changes --body .canon/tmp/body.md --base origin/main',
         '',
       ].join('\n'),
     )

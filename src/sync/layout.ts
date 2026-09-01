@@ -1,6 +1,7 @@
 import { existsSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { SUBDIRS } from '@/claude/seeds'
+import { creationRel, isRecordEntry } from '@/record-root'
 import type { StampDomain } from '@/sync/stamp'
 
 const CLAUDE_DIR = '.claude'
@@ -52,7 +53,7 @@ export interface UnmigratedDomain {
 /**
  * Pairs each seed subdirectory against an uppercase-stem sibling in the target,
  * so a project still holding `.claude/TASKS.md` is reported against the
- * `.claude/tasks/` folder that replaced it.
+ * `.canon/tasks/` folder that replaced it.
  *
  * Deriving from the seed tree rather than from a fixed list means a folder
  * added later is covered without editing this file. The cost is that only an
@@ -66,7 +67,15 @@ export function collectSuperseded(target: string): SupersededEntry[] {
     const rel = join(CLAUDE_DIR, `${subdir.toUpperCase()}.md`)
     if (!isFile(join(target, rel))) continue
 
-    entries.push({ rel, replacedBy: join(CLAUDE_DIR, subdir) })
+    // A record subdir now lives under the record root, so the replacement this
+    // names is resolved against the target rather than fixed at `.claude/`.
+    // Naming a folder the target does not have sends a person to migrate their
+    // legacy file into a path nothing reads.
+    const replacedBy = isRecordEntry(subdir)
+      ? creationRel(target, subdir)
+      : join(CLAUDE_DIR, subdir)
+
+    entries.push({ rel, replacedBy })
   }
 
   return entries

@@ -7,11 +7,11 @@ description: The two roots a record folder resolves at, validating the session r
 
 ## Record roots
 
-Every verb here resolves a record folder at two roots rather than one. `.canon/<folder>` is read first, `.claude/<folder>` second, and a folder neither root carries resolves to the creation default, which is `.claude/`. The scratch folder is the one name that differs by root, spelled `.claude/.tmp` and `.canon/tmp`, since inside a dotted root the leading dot hides nothing already hidden.
+Every verb here resolves a record folder at two roots rather than one. `.canon/<folder>` is read first, `.claude/<folder>` second, and a folder neither root carries resolves to the creation default, which is `.claude/`. The scratch folder is the one name that differs by root, spelled `.canon/tmp` and `.canon/tmp`, since inside a dotted root the leading dot hides nothing already hidden.
 
 The read order and the creation default disagree deliberately. The gitignored record folders are moving to a root of their own, and the CLI learns to read both roots in a release that ships ahead of the move, so the binary a session already holds knows where to look by the time a tree relocates. Creating under the new root before then would write records to a root whose ignore line may not have reached a project yet, and it would split one project's records across two roots with no verb able to reconcile them. The move flips the default and nothing else.
 
-A caller never spells a record root by hand for the same reason. A path written as `.claude/plans/...` resolves against one root and reports nothing when it is wrong, which is the quiet failure this ordering exists to prevent: a stale binary meeting a moved layout, writing to the old path, and reporting success. Read a folder through the verb that owns it, and where a skill needs the path itself, take it from that verb's record rather than composing one.
+A caller never spells a record root by hand for the same reason. A path written as `.canon/plans/...` resolves against one root and reports nothing when it is wrong, which is the quiet failure this ordering exists to prevent: a stale binary meeting a moved layout, writing to the old path, and reporting success. Read a folder through the verb that owns it, and where a skill needs the path itself, take it from that verb's record rather than composing one.
 
 A refusal names every root it looked at, so a message reading `no-folder` says where a write would land as well as where the read failed.
 
@@ -126,7 +126,7 @@ The reading carries two windows rather than one, at 7 and 30 days. A single wind
 
 Nothing fails on a number here. A record folder has no correct size, so the reading is a number to notice rather than a threshold to gate, and the point of the verb is that the next reading is taken by a command instead of by someone remembering to count the folder. The memory pen went from 44 entries to 236 between two readings taken by hand two weeks apart, which is the measurement this replaces.
 
-The scratch folder is read here and skipped by a backup, because deletable without loss is not the same as empty. The routing handoffs and the memory archive both sit there and both accumulate. `.claude/.records.git` stays out because it is the backup history rather than a record, and `.claude/worktrees/` stays out because each entry is a checkout of the project with its own removal verb, and one of them outweighs every record folder combined.
+The scratch folder is read here and skipped by a backup, because deletable without loss is not the same as empty. The routing handoffs and the memory archive both sit there and both accumulate. `.canon/.records.git` stays out because it is the backup history rather than a record, and `.claude/worktrees/` stays out because each entry is a checkout of the project with its own removal verb, and one of them outweighs every record folder combined.
 
 The window counts read `mtime`, so what they report is a file written inside the window rather than one created there. An entry edited long after it landed reads as recent, which overstates growth and never understates it, and these folders are append-mostly so the two readings agree on nearly every file. The one reading that is wrong rather than early is a machine restored by `canon records pull`, which resets the work tree hard and re-dates every file it writes, so a window taken there counts the restore. Nothing on the filesystem separates the two, since a restored file is new by every stamp it carries.
 
@@ -142,7 +142,7 @@ canon records push --json
 canon records pull
 ```
 
-The backed folders are `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, all under whichever record root the project carries. Eight of them are the Claude ignore group the claude manifest ships, minus three entries: `.claude/.tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.claude/.records.git/`, which is the history the rest are pushed into. `diagrams` is the one that group does not carry at all, since a target still tracks its own copies, which is why the list is spelled out rather than derived. Each name is a top-level record folder and every archive sits inside the one it archives, so the list stays at one entry per surface however many archives appear. It is a constant rather than configuration, and it deliberately does not match the six record kinds `validate` hardcodes.
+The backed folders are `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, all under whichever record root the project carries. They are the record root's own entries less three: `tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.records.git/`, which is the history the rest are pushed into. Nothing bounds the list from outside any more, since the claude manifest ships one `.canon/` root entry and names no folder, so spelling the nine out is what keeps a record folder added later from silently entering the payload. Each name is a top-level record folder and every archive sits inside the one it archives, so the list stays at one entry per surface however many archives appear. It is a constant rather than configuration, and it deliberately does not match the six record kinds `validate` hardcodes.
 
 Records are gitignored by design, so the history lives in a second git directory at `.records.git` inside the record root, with that root as its work tree. Both resolve off the root together rather than folder by folder, since a history opened at one root beside a work tree at the other would stage the deletion of every folder a move relocated. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the nine folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched. Each pathspec is a bare folder name and git reads it against the current directory rather than against the work tree the same call names, so the invocation carries `-C` at the work tree beside the other two flags. That is what lets either verb run from a linked worktree under `.claude/worktrees/`, which sits inside the records work tree and would otherwise prefix every name with its own path.
 
@@ -151,12 +151,12 @@ Records are gitignored by design, so the history lives in a second git directory
 A person creates the records repository once per machine, and the verbs refuse with the commands when it is absent:
 
 ```bash
-git --git-dir=.claude/.records.git init
-git --git-dir=.claude/.records.git remote add origin <private-repo-url>
-printf '.claude/.records.git/\n' >> .gitignore
+git --git-dir=.canon/.records.git init
+git --git-dir=.canon/.records.git remote add origin <private-repo-url>
+printf '.canon/\n' >> .gitignore
 ```
 
-The ignore line is repeated here rather than left to the install, because the person running these commands is the one who creates the directory and the rule is worth reading beside the command that needs it. The claude manifest ships `.claude/.records.git/` as the first entry of its group, so a project that ran `canon claude sync` already carries it and this line is a no-op there. What the group buys is the project that never sets records up: it holds a rule for a directory it will never create, which costs nothing, and the backed-folder derivation above subtracts that entry from the group rather than from a list it does not sit in.
+The ignore line is repeated here rather than left to the install, because the person running these commands is the one who creates the directory and the rule is worth reading beside the command that needs it. The claude manifest ships `.canon/` too, so a project that ran `canon tooling sync` already carries it and this line is a no-op there. One root entry covers the history and every record beside it, which is what makes the rule worth stating once rather than per folder.
 
 Point it at a private repository, and at one that is not a remote of the project. Records carry the memory pen, the review reports, and the groundwork trails, so a public project publishes all of it to anyone who fetches all refs. `push` compares the configured origin against every remote of the project and refuses on a match. A read of that list which fails refuses as well, since an empty list clears the comparison for every origin and a gate that passes on its own failure is no gate.
 
@@ -164,7 +164,8 @@ Point it at a private repository, and at one that is not a remote of the project
 
 | Reason              | What fired                                                                           |
 | ------------------- | ------------------------------------------------------------------------------------ |
-| `no-repository`     | No `.claude/.records.git`, answered with the two setup commands                      |
+| `split-roots`       | Record folders sit under both roots, so the resolved work tree is not the whole set  |
+| `no-repository`     | No `.canon/.records.git`, answered with the two setup commands                       |
 | `no-remote`         | The records history has no `origin`                                                  |
 | `remote-unreadable` | The project's own remotes could not be read, so the shared-origin gate could not run |
 | `remote-shared`     | The records origin is also a remote of the project                                   |
@@ -172,6 +173,8 @@ Point it at a private repository, and at one that is not a remote of the project
 | `local-changes`     | `pull` found records on disk that the history does not carry                         |
 | `local-ahead`       | `pull` found local commits that never reached the origin                             |
 | `git-failed`        | A git call failed, with its stderr in the message                                    |
+
+`split-roots` runs ahead of every gate below it and fires on a half-migrated tree, which is what a `canon migrate records` run that failed partway leaves. `recordRoot` answers for the whole tree on the first root that exists, so a folder left at the old root is absent from the work tree while the records index still names it, and an unguarded `add -A` would stage its deletion and drop it from the remote on the next push. Finish the move, or put the stranded folders back beside the others.
 
 The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the ten has nothing to lose, so a restore onto a fresh checkout runs straight through.
 

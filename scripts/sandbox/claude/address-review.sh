@@ -15,7 +15,7 @@ use_config() {
 seed_base_tree() {
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
-  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n.claude/.tmp/\n' >.gitignore
+  printf 'node_modules\n.canon/plans/\n.canon/review/\n.canon/memory/\n.canon/tmp/\n' >.gitignore
 
   cat <<'EOF' >package.json
 {

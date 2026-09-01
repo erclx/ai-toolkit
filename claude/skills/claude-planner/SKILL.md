@@ -21,9 +21,9 @@ from here.
 
 ## Where the session stands
 
-- Write one file, the plan, at `.claude/plans/feature-<slug>.md` on the main worktree root. Everything else this session touches is a read.
+- Write one file, the plan, at `.canon/plans/feature-<slug>.md` on the main worktree root. Everything else this session touches is a read.
 - Never enter a worktree, never create a branch, and never write a tracked file. A planner that builds has stopped being one, and the row loses the independent read the worker's own session was going to bring to it.
-- Resolve `.claude/plans/`, `.claude/tasks/`, and `.claude/review/` at the main worktree root. Those folders are gitignored, so a copy beside a linked worktree is absent rather than empty.
+- Resolve `.canon/plans/`, `.canon/tasks/`, and `.canon/review/` at the main worktree root. Those folders are gitignored, so a copy beside a linked worktree is absent rather than empty.
 - Plan the row the launch named. Report a second row met while reading rather than planning it, since which rows run is the controller's call.
 
 ## What to read before deciding
@@ -33,9 +33,9 @@ Each item below is something a plan needed and a launch string did not carry.
 - The task file, and its `## Findings` before deciding anything. A row can carry its own disproof under a title that still states the original claim, which is how one trial nearly planned against a premise the file had already recorded as dead.
 - The source files themselves, opened rather than summarized. Never a count quoted from the task file, which was wrong or stale in ten places across four plans.
 - `CLAUDE.md` and `.claude/ARCHITECTURE.md`, for the decision and the alternative it was taken against rather than for the decision alone.
-- The plan of any row this one is sequenced behind, including one already moved to `.claude/plans/archive/`. Reading a shipped plan produced the strongest constraint in the first trial and no brief asked for it.
-- `.claude/tasks/priority.md` for the row's Touches column and its stated blocker. That column is the file set the dispatch disjointness gate already reads.
-- `${CLAUDE_SKILL_DIR}/../../standards/plan.md` for the shape, then `canon records validate plans` and `canon markdown audit <the plan file>` on the file once it is written. Nothing else opens a plan, since `.claude/plans/` is gitignored and the audit's default path set is what git lists.
+- The plan of any row this one is sequenced behind, including one already moved to `.canon/plans/archive/`. Reading a shipped plan produced the strongest constraint in the first trial and no brief asked for it.
+- `.canon/tasks/priority.md` for the row's Touches column and its stated blocker. That column is the file set the dispatch disjointness gate already reads.
+- `${CLAUDE_SKILL_DIR}/../../standards/plan.md` for the shape, then `canon records validate plans` and `canon markdown audit <the plan file>` on the file once it is written. Nothing else opens a plan, since `.canon/plans/` is gitignored and the audit's default path set is what git lists.
 
 ## Read what is in flight rather than inferring it
 
@@ -46,7 +46,7 @@ Each item below is something a plan needed and a launch string did not carry.
 
 ## The board is read-only
 
-- Never write `.claude/tasks/priority.md` or `.claude/tasks/backlog.md`. Both are gitignored, so an overwrite drops a row with no history to recover it from.
+- Never write `.canon/tasks/priority.md` or `.canon/tasks/backlog.md`. Both are gitignored, so an overwrite drops a row with no history to recover it from.
 - Never write the task file either. The plan is the whole output, and a row edited from here changes what the controller reads back as the state of the board.
 - Report what the row got wrong rather than repairing it. A stale count, a moved line, or a path that no longer resolves goes into the plan and into the handback, and the controller decides which of the two carries the correction.
 - Leave the cross-feature call alone. Which rows collide, what merges before what, and whether a row should run at all stay with the controller. `priority.md` shows blockers and file sets and is enough to write a confident merge order off a partial picture, which is the failure this boundary exists to prevent.

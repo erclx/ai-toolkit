@@ -1,6 +1,6 @@
 ---
 name: claude-tasks
-description: Creates a task file in `.claude/tasks/` with the filename, phase label, and frontmatter the standard requires, and archives a shipped one out of the folder. Use when asked to "add a task", "create a task", "queue this", "put this on the board", "archive that task", or "close out a shipped task". Do NOT use to mark an outcome `[x]` or to archive a plan. That is `claude-docs`.
+description: Creates a task file in `.canon/tasks/` with the filename, phase label, and frontmatter the standard requires, and archives a shipped one out of the folder. Use when asked to "add a task", "create a task", "queue this", "put this on the board", "archive that task", or "close out a shipped task". Do NOT use to mark an outcome `[x]` or to archive a plan. That is `claude-docs`.
 ---
 
 # Claude tasks
@@ -13,9 +13,9 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` before writing any file. It 
 
 - Resolve the board at the main worktree root, not `pwd`. Run `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` outside a git repo. Every read and write below resolves against that root. The board is gitignored scratch shared across worktrees, so a linked worktree writing to its own `pwd` creates a second board nothing else reads.
 - From a linked worktree the file-editing tools refuse that root, so a new task file goes out through `Bash` as a plain single command carrying a heredoc. Archiving already runs through `canon tasks archive`, which resolves the root in-process. Marking an outcome shipped is `claude-docs` and runs through `canon tasks outcome`. See Worktrees in `CLAUDE.md`.
-- If `.claude/tasks/` does not exist at that root, stop: `❌ No .claude/tasks/ board. Run canon claude init to set it up.`
+- If `.canon/tasks/` does not exist at that root, stop: `❌ No .canon/tasks/ board. Run canon claude init to set it up.`
 - Route on the request rather than on a flag. Creating names work that does not exist yet, archiving names a task file already on the board. If the request fits neither, stop: `❌ Ambiguous. Say whether to create a task or archive one.`
-- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter after a write. Do not run the regen command directly, except after a shell write from a linked worktree: the hook matches `Write|Edit|MultiEdit` and nothing fires on `Bash`, so that one case regenerates explicitly with `canon indexes regen --no-stage --root <main-root> <main-root>/.claude/tasks/index.md`.
+- Never hand-edit `.canon/tasks/index.md`. A hook regenerates it from sibling frontmatter after a write. Do not run the regen command directly, except after a shell write from a linked worktree: the hook matches `Write|Edit|MultiEdit` and nothing fires on `Bash`, so that one case regenerates explicitly with `canon indexes regen --no-stage --root <main-root> <main-root>/.canon/tasks/index.md`.
 
 ## Create
 
@@ -29,15 +29,15 @@ Accept work whose origin is the conversation itself only when the user says so e
 
 ### Step 2: propose the phase label
 
-List the existing filenames in `.claude/tasks/` and read `index.md` for what each holds. Propose the next label from what is already on the board, and say which neighbors it sits between.
+List the existing filenames in `.canon/tasks/` and read `index.md` for what each holds. Propose the next label from what is already on the board, and say which neighbors it sits between.
 
 Do not derive the label from a version file. `${CLAUDE_SKILL_DIR}/../../standards/versioning.md` permits free renumbering, so the board is the only surface that knows what a label currently means. Pad the phase to two digits in the filename, since index entries sort by filename alone and a bare `v9.0` sorts after `v15.0`.
 
 ### Step 3: write the file
 
-Write `.claude/tasks/vXX.Y-<slug>.md` following the format in `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`. Include a link line only when the file or folder it names exists. A link to a plan nobody has written yet is the broken pointer the archive rules exist to prevent.
+Write `.canon/tasks/vXX.Y-<slug>.md` following the format in `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`. Include a link line only when the file or folder it names exists. A link to a plan nobody has written yet is the broken pointer the archive rules exist to prevent.
 
-Write `Plan:`, `Groundwork:`, and `Intake:` as markdown links relative to `.claude/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
+Write `Plan:`, `Groundwork:`, and `Intake:` as markdown links relative to `.canon/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
 
 Never write a `Pull request:` line here. `git-pr` adds it when a pull request opens, and a number guessed at create time points at someone else's work.
 
@@ -45,7 +45,7 @@ Write it immediately. Claude Code's tool permission dialog is the confirmation g
 
 ### Step 4: place it on a surface
 
-A task file with no row is a dropped task, so name the surface it lands on in the same pass that creates it. A task that would plausibly be planned within the next few waves takes a row under `## Needs a plan` in `.claude/tasks/priority.md`, positioned by where it sits against the rows already there, with the reason for that position in its `Waiting on` cell. Anything else takes a line in `.claude/tasks/backlog.md`, which is unordered and where in the file it goes means nothing.
+A task file with no row is a dropped task, so name the surface it lands on in the same pass that creates it. A task that would plausibly be planned within the next few waves takes a row under `## Needs a plan` in `.canon/tasks/priority.md`, positioned by where it sits against the rows already there, with the reason for that position in its `Waiting on` cell. Anything else takes a line in `.canon/tasks/backlog.md`, which is unordered and where in the file it goes means nothing.
 
 The test and both file shapes are in `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`. From a linked worktree the file-editing tools refuse the main root, so a row lands through the same `Bash` route the file itself took.
 
@@ -55,9 +55,9 @@ Say which surface it went to and why in the report. The call is a judgment resta
 
 Scan for work that has been decided and would otherwise be forgotten. Three origins carry it, and every run reads all three.
 
-List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
+List `.canon/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
 
-Read the dumps through `canon intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/tasks/archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
+Read the dumps through `canon intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.canon/tasks/` and `.canon/tasks/archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
 
 A dump is the stronger case for this scan rather than the weaker one. A track holds one question and stays visible, while a dump holds dozens of items whose verdicts were reached and then left with nothing carrying them forward.
 
@@ -122,7 +122,7 @@ Leave `TASK-ARCHIVE.md` alone when it is present in the archive folder. It recor
 
 ### Step 4: clear prose naming the task
 
-The command drops the task's row from `.claude/tasks/priority.md` and leaves prose alone. Remove any sentence that still names the archived task or counts the rows that changed, since a stale count reads as board state.
+The command drops the task's row from `.canon/tasks/priority.md` and leaves prose alone. Remove any sentence that still names the archived task or counts the rows that changed, since a stale count reads as board state.
 
 ## Output
 
@@ -131,21 +131,21 @@ Emit the full relative path from the project root for every file written or move
 Create:
 
 ```plaintext
-✅ Created: .claude/tasks/vXX.Y-<slug>.md
+✅ Created: .canon/tasks/vXX.Y-<slug>.md
 
 <label> sits between <neighbor> and <neighbor>.
 <board or backlog, and why it landed there>.
 
 **Origin with no task:**
 
-- `.claude/groundwork/<slug>/`: open, touched <date>
-- `.claude/intake/<slug>/`: every item answered, nothing promoted
+- `.canon/groundwork/<slug>/`: open, touched <date>
+- `.canon/intake/<slug>/`: every item answered, nothing promoted
 - #NNN: <issue title>
 
 **Waiting on you:**
 
-- `.claude/intake/<slug>/`: <n> of <n> items unread
-- `.claude/intake/<slug>/`: <n> items carry no answer slot, so no verb reaches them
+- `.canon/intake/<slug>/`: <n> of <n> items unread
+- `.canon/intake/<slug>/`: <n> items carry no answer slot, so no verb reaches them
 ```
 
 Drop either block when it carries no rows. When both are empty, which is the ordinary result, replace them with one line naming what was read: `Read <n> tracks, <n> dumps, and <n> open issues. Nothing unlinked.`
@@ -153,7 +153,7 @@ Drop either block when it carries no rows. When both are empty, which is the ord
 Archive, reporting the paths the command returned:
 
 ```plaintext
-📦 Archived: .claude/tasks/archive/vXX.Y-<slug>.md
+📦 Archived: .canon/tasks/archive/vXX.Y-<slug>.md
 
 <ordering and index disposition in one line>
 ```

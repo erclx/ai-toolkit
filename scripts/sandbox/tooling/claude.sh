@@ -31,8 +31,8 @@ EOF
   log_info "  2. canon claude sync        : verify .gitignore reconciles against the manifest"
   log_info ""
   log_info "Verify after init:"
-  log_info "  .claude/tasks/index.md, REQUIREMENTS.md, ARCHITECTURE.md exist"
+  log_info "  .canon/tasks/index.md, REQUIREMENTS.md, ARCHITECTURE.md exist"
   log_info "  .claude/wireframes/index.md exists"
   log_info "  .claude/DESIGN.md exists only if UI was selected"
-  log_info "  .gitignore contains .claude/.tmp/"
+  log_info "  .gitignore contains .canon/tmp/"
 }

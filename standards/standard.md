@@ -48,7 +48,7 @@ A standard failing these questions is non-conforming even when it satisfies ever
 
 ### Naming the file
 
-- Name the file for the artifact the scope statement governs, taking the word from the deepest path segment that names the artifact rather than the folder holding it. `plan.md` over `.claude/plans/feature-<slug>.md` and `session.md` over `.claude/tasks/session-<slug>.md` both follow it.
+- Name the file for the artifact the scope statement governs, taking the word from the deepest path segment that names the artifact rather than the folder holding it. `plan.md` over `.canon/plans/feature-<slug>.md` and `session.md` over `.canon/tasks/session-<slug>.md` both follow it.
 - Take the singular or the plural of that word, whichever reads as the artifact. A standard over one document takes the singular, and one over a set may take either.
 - Name an attribute standard for the attribute itself, since it governs no path to derive a word from.
 - Write the derived word alone. A standard installs as a sibling and is cited by bare filename, so a qualifier makes an outlier that every later citation has to carry.

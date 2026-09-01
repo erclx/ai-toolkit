@@ -1,8 +1,9 @@
 import { $ } from 'bun'
-import { readFile, mkdir, rmdir, writeFile } from 'node:fs/promises'
+import { readFile, mkdir, rename, rmdir, writeFile } from 'node:fs/promises'
 import { dirname, join, relative } from 'node:path'
 import { gitEnv } from '@/git-env'
 import type { RenamePlan, RenameSource } from '@/migrate/plan'
+import { FROM_ROOT as OLD_ROOT, type RecordsPlan } from '@/migrate/records'
 
 /**
  * A file whose bytes carry a NUL is read as binary and its content is left
@@ -31,6 +32,71 @@ export interface ApplyResult {
   readonly written: number
   readonly moved: number
   readonly failed: readonly string[]
+}
+
+/**
+ * Writes the records move: the citations first, then the folders.
+ *
+ * The order is the reverse of `applyRename`'s reasoning and lands in the same
+ * place. Every folder here is untracked, so a failed move leaves the records
+ * where they were and the rewritten citations point at a root nothing has
+ * reached yet, which reads as pending. Moving first and failing the rewrite
+ * strands the records at a root nothing points at, which reads as lost.
+ *
+ * A plain rename rather than `git mv`, since none of these paths is tracked and
+ * git has no history to carry. The destination root is created once; a rename
+ * across filesystems is not handled, because both paths sit inside one project.
+ *
+ * The folder loop stops on the first failure rather than carrying on. Each move
+ * that lands makes the tree more split, and a split tree is what `pushRecords`
+ * refuses on, so continuing turns one unmovable folder into a longer list of
+ * folders to put back by hand. Stopping does not undo what already moved,
+ * which is why the refusal on the push side exists as well.
+ */
+export async function applyRecordsMove(
+  root: string,
+  plan: RecordsPlan,
+): Promise<ApplyResult> {
+  let written = 0
+  let moved = 0
+  const failed: string[] = []
+
+  for (const entry of plan.entries) {
+    // A rejected write leaves the tree half-rewritten with nothing said, since
+    // this runs inside a commander action that would unwind past the report.
+    // Reads still resolve through the root fallback, so the recorded failure is
+    // what a caller needs rather than a stop.
+    const done = await writeFile(join(root, entry.path), entry.text)
+      .then(() => true)
+      .catch(() => false)
+
+    if (done) written += 1
+    else failed.push(entry.path)
+  }
+
+  for (const move of plan.moves) {
+    await mkdir(dirname(join(root, move.to)), { recursive: true })
+    const done = await rename(join(root, move.from), join(root, move.to))
+      .then(() => true)
+      .catch(() => false)
+
+    if (!done) {
+      failed.push(move.from)
+      break
+    }
+
+    moved += 1
+  }
+
+  // The old root survives the moves as an empty directory when it held records
+  // and nothing else. `rmdir` refuses a directory that still holds anything, so
+  // a project keeping its rules, skills, and settings there is untouched and the
+  // refusal is ignored rather than reported.
+  if (moved > 0) {
+    await rmdir(join(root, OLD_ROOT)).catch(() => undefined)
+  }
+
+  return { written, moved, failed }
 }
 
 /**

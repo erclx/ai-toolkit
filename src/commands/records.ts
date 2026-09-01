@@ -226,7 +226,7 @@ function backupHelp(verb: 'push' | 'pull'): string {
     '',
     ...direction,
     '',
-    'The history lives in a second git directory at .claude/.records.git, pointed at a',
+    'The history lives in a second git directory at .canon/.records.git, pointed at a',
     'private repository a person creates once. The verbs refuse with the setup command',
     'when it is absent, and refuse when its origin is also a remote of this project.',
     '',

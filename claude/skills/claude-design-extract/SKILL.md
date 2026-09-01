@@ -90,13 +90,13 @@ Write the filled template to `.claude/DESIGN.md` from the project root. Then run
 canon design render
 ```
 
-The command writes an HTML plus CSS preview to `.claude/review/design/`. Output the path in chat so the user can open it.
+The command writes an HTML plus CSS preview to `.canon/review/design/`. Output the path in chat so the user can open it.
 
 ## Response format
 
 ```plaintext
 📝 Wrote .claude/DESIGN.md
-📝 Wrote .claude/review/design/index.html
+📝 Wrote .canon/review/design/index.html
 
 Ran the <source|greenfield> path. N cells marked `? verify`. Open the preview and confirm before committing.
 ```

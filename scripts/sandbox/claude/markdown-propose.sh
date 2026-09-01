@@ -67,7 +67,7 @@ EOF
   log_info "         as the inflated-claims proposal"
   log_info "Expect:  declared in fixtures/claude/markdown-propose/expect.toml"
   log_info "         Check it with: canon sandbox check claude:markdown-propose"
-  log_info "         A folder at .claude/proposals/<slug>/ carrying a corrected"
+  log_info "         A folder at .canon/proposals/<slug>/ carrying a corrected"
   log_info "         single-replacement change in each file and one drafted"
   log_info "         change with three labelled variants, every You: slot empty."
   log_info "         Three expectations need a reader and report as unchecked."

@@ -43,7 +43,7 @@ const MIRRORS: readonly (readonly [string, string])[] = [
  *
  * Under one percent of the 2750 statements this repository offers. Tuned
  * against that corpus rather than reasoned to, which is what the plan asked of
- * the first run: `.claude/plans/` sits at 14 and is the anchor the motivating
+ * the first run: `.canon/plans/` sits at 14 and is the anchor the motivating
  * case turns on, while `file` sits at 371 and matches most of the tree.
  */
 export const COMMON_CEILING = 20
@@ -55,7 +55,7 @@ export const ANCHOR_FLOOR = 3
  * What a backticked token is worth against a plain word.
  *
  * An author marking a span as code named an identifier rather than describing
- * one, so `.claude/plans/archive/` says more about what a statement governs
+ * one, so `.canon/plans/archive/` says more about what a statement governs
  * than any two prose words do. Weighting it is what lets the floor rise high
  * enough to drop a coincidental word pair without losing a rule two surfaces
  * spelled entirely differently around one shared path.
@@ -267,7 +267,7 @@ interface Indexed<T extends Statement> {
 /**
  * Splits text into the tokens an anchor can be drawn from.
  *
- * A code span keeps its inner text whole, since `.claude/plans/archive/` is the
+ * A code span keeps its inner text whole, since `.canon/plans/archive/` is the
  * strongest anchor this corpus offers and splitting it on the punctuation would
  * leave three words every second bullet also carries.
  */

@@ -16,7 +16,7 @@ max_turns = 20
 # Nothing was written. The first entry is the refusal, and the other two catch a
 # run that took the question somewhere rather than declining it. All three are
 # absent from the seeded tree, so each one failing names a different wrong turn.
-absent = [".claude/intake", ".claude/plans", ".claude/groundwork"]
+absent = [".canon/intake", ".canon/plans", ".canon/groundwork"]
 
 # The guard names its destination. A refusal that stops without routing leaves
 # the operator where the groundwork guard already leaves them, which is the loop

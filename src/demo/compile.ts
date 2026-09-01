@@ -5,7 +5,7 @@ import type { Beat, Draft } from '@/demo/beats'
  * separate artifacts on purpose: a beat carries no target, no wait condition,
  * and no timing, and putting those four fields on every beat would destroy the
  * property the draft was designed around. See
- * `.claude/groundwork/38-demo-recorder/06-decision.md`.
+ * `.canon/groundwork/38-demo-recorder/06-decision.md`.
  *
  * A compiled plan is committed rather than scratch, because the timing below is
  * a starting point the operator tunes and the draft cannot reproduce a tuned

@@ -73,7 +73,7 @@ Stage numbering carries ordering, not identity. A stage exists because a commit 
 
 ### Rewriting a file provisioning already wrote
 
-`init_empty_sandbox` writes a `.gitignore` holding `.claude/.tmp/` and `node_modules` before `stage_setup` runs, so a scenario modelling ignore-entry drift is rewriting a file it did not create. Truncating that file drops both entries beside the ones the arm meant to strip, and a session that installs anything inside the sandbox then has `node_modules` tracked. Copy the file before the write that dirties it and restore the copy afterwards, which removes exactly what the write added and hardcodes nothing about what provisioning put there. Restating the two entries inline works until provisioning gains a third.
+`init_empty_sandbox` writes a `.gitignore` holding `.canon/tmp/` and `node_modules` before `stage_setup` runs, so a scenario modelling ignore-entry drift is rewriting a file it did not create. Truncating that file drops both entries beside the ones the arm meant to strip, and a session that installs anything inside the sandbox then has `node_modules` tracked. Copy the file before the write that dirties it and restore the copy afterwards, which removes exactly what the write added and hardcodes nothing about what provisioning put there. Restating the two entries inline works until provisioning gains a third.
 
 The same shape covers any file the harness seeds and a scenario has to modify. A rewrite from a remembered baseline drifts the moment the baseline moves, and nothing reports it, since the arm still provisions and still asserts.
 

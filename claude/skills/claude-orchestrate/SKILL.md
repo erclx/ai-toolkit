@@ -25,10 +25,10 @@ session's review are different passes, and how a feature is sized.
 
 Read the board in parallel, resolving the paths at the main worktree root per Worktrees in `CLAUDE.md`:
 
-- `.claude/tasks/priority.md`: execution order and what each task is waiting on
-- `.claude/tasks/backlog.md`: what is not being scheduled, when the file exists
-- `.claude/tasks/index.md`: what is queued
-- `.claude/plans/*.md`: features already planned and ready to hand off
+- `.canon/tasks/priority.md`: execution order and what each task is waiting on
+- `.canon/tasks/backlog.md`: what is not being scheduled, when the file exists
+- `.canon/tasks/index.md`: what is queued
+- `.canon/plans/*.md`: features already planned and ready to hand off
 - open PRs via `gh pr list --json number,title,headRefName,isDraft`
 
 Then output the state of play so the human knows what to launch, review, and merge.
@@ -59,7 +59,7 @@ Orchestrator ready.
 Ready to build (hand each to its own worker):
 
 <feature>
-  plan: .claude/plans/feature-<slug>.md
+  plan: .canon/plans/feature-<slug>.md
   → /claude-autoship
 
 <feature>
@@ -85,7 +85,7 @@ Omit any section with nothing in it. Recommend a handoff only for a plan whose f
 
 `In flight` covers the state between the other two, which lasts ten to thirty minutes and is most of what an operator sees once this session dispatches its own workers. Before it existed, a session holding running workers reported them under no section and invented a shape per report, which the block below forbids two paragraphs down while giving it no term to use. Read the progress figures off each worker's worktree rather than from the worker, since a busy status says a session is alive and nothing about whether it is moving, and name the model because a dispatcher now picks one per row.
 
-Leave a plan out of `Ready to build` once a row in flight names it. The plan file stays in `.claude/plans/` for the whole build, so listing it there recommends handing off work already underway, and the disjointness rule below withdraws the recommendation only for a reader who already knows what is running.
+Leave a plan out of `Ready to build` once a row in flight names it. The plan file stays in `.canon/plans/` for the whole build, so listing it there recommends handing off work already underway, and the disjointness rule below withdraws the recommendation only for a reader who already knows what is running.
 
 The block opens on the board rather than on a version, because no committed file states one. Adding a version line here would restate what a reader can already see on the rows, dated by nothing, which is how the retired sequencing surface produced an unsourced claim on every run.
 
@@ -164,7 +164,7 @@ It counts unclaimed plans against workers rather than reading the reserve in ste
 3. Archive what closed.
    - A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive
    - A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
-4. Read `.claude/tasks/priority.md` and count entries under its `## Run now` heading that carry a written plan. Keep one in reserve beyond what is running.
+4. Read `.canon/tasks/priority.md` and count entries under its `## Run now` heading that carry a written plan. Keep one in reserve beyond what is running.
 5. Promote from the top of `## Needs a plan`, which is where the last sweep recorded what to plan next. Depart from that order when something has changed under it and say what changed, since a position nobody honors is the ordering going stale on the surface built to hold it. What sets the order in the first place is whether a task establishes functionality rather than how old it is, so prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
    - Re-take the board-or-backlog call while the file is open. A row that has stopped being near-term moves to `backlog.md`, and a backlogged task the last wave made near-term moves onto the board. Both are one line removed from one surface and written to the other, and the standard states the test.
 6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint.
@@ -191,7 +191,7 @@ Do not promote a task to fill the queue when nothing qualifies. A thin queue is 
 
 ### Writing the board
 
-Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, and this session is the only writer apart from `canon tasks archive`. Moving a task between the board and `.claude/tasks/backlog.md` writes both files, and this session is that file's only writer.
+Promoting, demoting, and archiving a row all write `.canon/tasks/priority.md`, and this session is the only writer apart from `canon tasks archive`. Moving a task between the board and `.canon/tasks/backlog.md` writes both files, and this session is that file's only writer.
 
 - Edit the file with the file-editing tool. A shell stream editor and an inline string replace both exit clean on a non-match, so a promotion that matched nothing leaves the board wrong with nothing reporting it, and the file-editing tool errors instead.
 - Write both halves of a move before reporting it. A row removed from one surface and not written to the other leaves a task file nothing names, and the folder is gitignored with no history to recover the row from. `canon tasks validate` reports that state, so run it after any move.
@@ -201,7 +201,7 @@ Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, 
 - Re-resolve every Plan pointer after anything archives a plan
 - Read the file back after writing it, since the row that lands is the row a worker acts on
 
-A Plan pointer goes stale from a branch this board never sees. `claude-docs` moves a plan to `.claude/plans/archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.claude/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
+A Plan pointer goes stale from a branch this board never sees. `claude-docs` moves a plan to `.canon/plans/archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.canon/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
 
 ## Parallelism
 

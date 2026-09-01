@@ -68,7 +68,7 @@ Before proposing an Update, grep the target section for the seed text's keywords
 
 Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-Write the full proposal to `.claude/review/seed-audit-<slug>.md` at the main worktree root. Do not print the proposal inline.
+Write the full proposal to `.canon/review/seed-audit-<slug>.md` at the main worktree root. Do not print the proposal inline.
 
 From a linked worktree the file-editing tools refuse that path, so the proposal goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
@@ -123,7 +123,7 @@ Decision:
 
 Update items show both sides in one `diff` block: removed lines from the project version with `-`, added lines from the seed version with `+`, unchanged context lines without a prefix. Add items show only `+` lines. Customized sections appear in the scope table only, never numbered. A file with no drift still appears in the scope table as `in sync`.
 
-After writing, tell the user `✅ Wrote proposal to .claude/review/seed-audit-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping or use the chat shortcut.
+After writing, tell the user `✅ Wrote proposal to .canon/review/seed-audit-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping or use the chat shortcut.
 
 Rewrite the review file in place whenever the proposal changes mid-review. The file stays the source of truth for the current decisions.
 

@@ -46,7 +46,7 @@ async function writePlan(
   questions: readonly QuestionFixture[],
 ): Promise<void> {
   await writeFile(
-    join(ROOT, '.claude', 'plans', `feature-${slug}.md`),
+    join(ROOT, '.canon', 'plans', `feature-${slug}.md`),
     planBody(questions),
     'utf8',
   )
@@ -60,7 +60,8 @@ function assertOk(
 
 beforeEach(() => {
   ROOT = mkdtempSync(join(tmpdir(), 'answers-'))
-  mkdirSync(join(ROOT, '.claude', 'plans'), { recursive: true })
+  mkdirSync(join(ROOT, '.canon', 'plans'), { recursive: true })
+  mkdirSync(join(ROOT, '.canon', 'tasks'), { recursive: true })
 })
 
 afterEach(() => {
@@ -163,7 +164,7 @@ describe('planAnswers', () => {
 
   it('should launch a plan carrying no questions section at all', async () => {
     await writeFile(
-      join(ROOT, '.claude', 'plans', 'feature-bare.md'),
+      join(ROOT, '.canon', 'plans', 'feature-bare.md'),
       [
         '# Feature: Bare',
         '',
@@ -198,10 +199,10 @@ describe('planAnswers', () => {
   it('should read a plan named by path as well as by slug', async () => {
     await writePlan('gate', [{ suggested: 'needs your call, either.' }])
 
-    const outcome = await planAnswers(ROOT, '.claude/plans/feature-gate.md')
+    const outcome = await planAnswers(ROOT, '.canon/plans/feature-gate.md')
 
     assertOk(outcome)
-    expect(outcome.plan).toBe(join('.claude', 'plans', 'feature-gate.md'))
+    expect(outcome.plan).toBe(join('.canon', 'plans', 'feature-gate.md'))
   })
 
   it('should read the task-relative link a board row writes', async () => {
@@ -210,21 +211,21 @@ describe('planAnswers', () => {
     const outcome = await planAnswers(ROOT, '../plans/feature-gate.md')
 
     assertOk(outcome)
-    expect(outcome.plan).toBe(join('.claude', 'plans', 'feature-gate.md'))
+    expect(outcome.plan).toBe(join('.canon', 'plans', 'feature-gate.md'))
     expect(outcome.launchable).toBe(false)
   })
 
   it('should refuse a plan sitting in the archive as already shipped', async () => {
-    mkdirSync(join(ROOT, '.claude', 'plans', 'archive'), { recursive: true })
+    mkdirSync(join(ROOT, '.canon', 'plans', 'archive'), { recursive: true })
     await writeFile(
-      join(ROOT, '.claude', 'plans', 'archive', 'feature-gate.md'),
+      join(ROOT, '.canon', 'plans', 'archive', 'feature-gate.md'),
       planBody([{ suggested: 'a technical default settles it.' }]),
       'utf8',
     )
 
     const outcome = await planAnswers(
       ROOT,
-      '.claude/plans/archive/feature-gate.md',
+      '.canon/plans/archive/feature-gate.md',
     )
 
     expect(outcome.ok).toBe(false)
@@ -236,7 +237,7 @@ describe('planAnswers', () => {
 
     expect(outcome.ok).toBe(false)
     expect(outcome.ok === false && outcome.message).toContain(
-      join('.claude', 'plans', 'feature-absent.md'),
+      join('.canon', 'plans', 'feature-absent.md'),
     )
   })
 })
@@ -244,13 +245,13 @@ describe('planAnswers', () => {
 describe('planCandidates', () => {
   it('should add the folder, the prefix, and the extension to a bare slug', () => {
     expect(planCandidates('/root', 'gate')).toEqual([
-      join('/root', '.claude', 'plans', 'feature-gate.md'),
+      join('/root', '.canon', 'plans', 'feature-gate.md'),
     ])
   })
 
   it('should not repeat a prefix the caller already spelled', () => {
     expect(planCandidates('/root', 'feature-gate')).toEqual([
-      join('/root', '.claude', 'plans', 'feature-gate.md'),
+      join('/root', '.canon', 'plans', 'feature-gate.md'),
     ])
   })
 
@@ -261,7 +262,7 @@ describe('planCandidates', () => {
       join('/root', '.claude', 'plans', 'archive', 'feature-gate.md'),
       join(
         '/root',
-        '.claude',
+        '.canon',
         'tasks',
         '.claude',
         'plans',
@@ -273,7 +274,7 @@ describe('planCandidates', () => {
 
   it('should land a board link on the plans folder through its second base', () => {
     expect(planCandidates('/root', '../plans/feature-gate.md')[1]).toBe(
-      join('/root', '.claude', 'plans', 'feature-gate.md'),
+      join('/root', '.canon', 'plans', 'feature-gate.md'),
     )
   })
 

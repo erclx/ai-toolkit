@@ -99,7 +99,7 @@ moved, which the earlier test could not see. Rebase again under
 continue. The second push costs one extra force-push in a
 case that needs the fix and the sibling to touch the same lines.
 
-Then write a summary reply to `.claude/.tmp/address-review/reply-<number>.md`
+Then write a summary reply to `.canon/tmp/address-review/reply-<number>.md`
 mapping each finding to what changed, or to a one-line reason when it is a
 conscious-accept rather than a defect. Key the filename on the PR number so two
 sessions addressing different pull requests never overwrite each other between
@@ -152,11 +152,11 @@ matches it.
 
 Before posting, run the scan in
 `${CLAUDE_SKILL_DIR}/../../standards/publish.md`
-against the reply. The hook skips `.claude/.tmp/`, so this scan is the
+against the reply. The hook skips `.canon/tmp/`, so this scan is the
 only gate on the published reply. Post it to the PR:
 
 ```bash
-gh pr comment <number> --body-file .claude/.tmp/address-review/reply-<number>.md
+gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md
 ```
 
 ## Step 7: confirm resolution
@@ -208,5 +208,5 @@ Not everything worth reaching the reviewing session surfaces inside the numbered
 Open with `## Post-review findings` rather than `## Review response`, since nothing on the thread is being answered. `claude-pr-review` states the full heading set this belongs to and routes it the same as a response: `claude-orchestrate`'s poll picks it up and sends the reviewing session back for a pass. Close the body with `🤖 Addressed by Claude Code` on its own line, matching the reply's footer.
 
 ```bash
-gh pr comment <number> --body-file .claude/.tmp/address-review/reply-<number>.md
+gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md
 ```

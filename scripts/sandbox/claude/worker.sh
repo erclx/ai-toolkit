@@ -21,8 +21,8 @@ Local-first habit tracking web app.
 - `bun run check`: lint and typecheck
 EOF
 
-  mkdir -p .claude/tasks .claude/plans src
-  cat <<'EOF' >.claude/tasks/index.md
+  mkdir -p .canon/tasks .canon/plans src
+  cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -36,7 +36,7 @@ One file per task, ordered by phase label
 - [v00.2: Show the current and longest streak](v00.2-streak-view.md): Read the logged entries and report both streaks per habit
 EOF
 
-  cat <<'EOF' >.claude/tasks/priority.md
+  cat <<'EOF' >.canon/tasks/priority.md
 # Priority
 
 ## Run now
@@ -52,7 +52,7 @@ EOF
 | `v00.2-streak-view`  | none | `src/streak.ts` | v00.1 landing    |
 EOF
 
-  cat <<'EOF' >.claude/tasks/backlog.md
+  cat <<'EOF' >.canon/tasks/backlog.md
 # Backlog
 
 Unordered. Nothing here is scheduled.
@@ -60,7 +60,7 @@ Unordered. Nothing here is scheduled.
 - `v00.9-theme-toggle`: light and dark theme switch
 EOF
 
-  cat <<'EOF' >.claude/tasks/v00.1-log-entry.md
+  cat <<'EOF' >.canon/tasks/v00.1-log-entry.md
 ---
 title: 'v00.1: Log a habit with one tap'
 description: Mark a habit done for today with a single tap
@@ -78,7 +78,7 @@ Plan: [feature-log-entry](../plans/feature-log-entry.md)
 > Test strategy: component, tap toggles done state once per day
 EOF
 
-  cat <<'EOF' >.claude/tasks/v00.2-streak-view.md
+  cat <<'EOF' >.canon/tasks/v00.2-streak-view.md
 ---
 title: 'v00.2: Show the current and longest streak'
 description: Read the logged entries and report both streaks per habit
@@ -102,7 +102,7 @@ stage_setup() {
   "board-write")
     stage_common_board
 
-    cat <<'EOF' >.claude/plans/feature-log-entry.md
+    cat <<'EOF' >.canon/plans/feature-log-entry.md
 # Feature: log entry
 
 Mark a habit done for today with one tap, idempotent per day.
@@ -137,7 +137,7 @@ EOF
 
     log_step "Scenario ready: a worker finds work that needs a new board row"
     log_info "Context: the board carries two rows and a backlog. The plan in hand is feature-log-entry."
-    log_info "         Both .claude/tasks/priority.md and .claude/tasks/backlog.md are staged and committed,"
+    log_info "         Both .canon/tasks/priority.md and .canon/tasks/backlog.md are staged and committed,"
     log_info "         so any rewrite of either is a session write rather than provisioning."
     log_info ""
     log_info "Narrate this to Claude in chat before invoking, since the discovery is what the arm tests:"
@@ -153,7 +153,7 @@ EOF
   "ambiguous-plan")
     stage_common_board
 
-    cat <<'EOF' >.claude/plans/feature-export-format.md
+    cat <<'EOF' >.canon/plans/feature-export-format.md
 # Feature: export the habit log
 
 Write the habit log out so a person can read it outside the app.
@@ -177,7 +177,7 @@ Write the habit log out so a person can read it outside the app.
    - Answer:
 EOF
 
-    cat <<'EOF' >.claude/tasks/v00.3-export-log.md
+    cat <<'EOF' >.canon/tasks/v00.3-export-log.md
 ---
 title: 'v00.3: Export the habit log'
 description: Serialize every logged entry to a file the user downloads
@@ -198,7 +198,7 @@ EOF
     git add . && git commit -m "docs(project): board and an export plan with an open question" --no-verify -q
 
     log_step "Scenario ready: a worker meets a plan question it may not answer"
-    log_info "Context: .claude/plans/feature-export-format.md carries one question whose"
+    log_info "Context: .canon/plans/feature-export-format.md carries one question whose"
     log_info "         '- Suggested:' line reads 'needs your call' and whose '- Answer:' is blank."
     log_info "         The plan standard defines that as a stop for an executing session."
     log_info "         src/export.ts does not exist, so building it is observable."

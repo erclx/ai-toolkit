@@ -66,7 +66,17 @@ import {
   select,
 } from '@/ui'
 
-const PAYLOAD_REL = creationRel(SCRATCH, 'gov', 'rules.md')
+/**
+ * Where the rules payload lands, resolved per target rather than once at import.
+ *
+ * The record root a project uses is a fact about that project, and this command
+ * writes into a target the caller named, so a value computed here against this
+ * process's own tree would point every target at whichever root the toolkit
+ * happens to hold.
+ */
+function payloadRel(root: string): string {
+  return creationRel(root, SCRATCH, 'gov', 'rules.md')
+}
 const RULES_REL = join('.claude', 'rules')
 
 interface InstallOptions {
@@ -170,7 +180,7 @@ export function register(program: Command): void {
 
   gov
     .command('build')
-    .description('Concatenate installed rules into .claude/.tmp/gov/rules.md')
+    .description('Concatenate installed rules into .canon/tmp/gov/rules.md')
     .argument('[target]', 'Target directory', '.')
     .helpOption('-h, --help', 'Show this help message')
     .action(async (target: string) => {
@@ -1222,6 +1232,7 @@ async function runBuild(target: string): Promise<number> {
   intro('canon gov build')
 
   const resolved = resolve(target)
+  const payload = payloadRel(resolved)
   const rulesDir = join(resolved, RULES_REL)
 
   if (!existsSync(rulesDir)) {
@@ -1237,7 +1248,7 @@ async function runBuild(target: string): Promise<number> {
   }
 
   const shouldBuild = await select({
-    message: `Build ${files.length} rules to ${PAYLOAD_REL}?`,
+    message: `Build ${files.length} rules to ${payload}?`,
     options: [
       { value: true, label: 'Yes' },
       { value: false, label: 'No' },
@@ -1252,15 +1263,15 @@ async function runBuild(target: string): Promise<number> {
   }
 
   logStep('Building rules payload')
-  const output = join(resolved, PAYLOAD_REL)
+  const output = join(resolved, payload)
   await mkdir(dirname(output), { recursive: true })
   await writeFile(output, buildRulesPayload(files))
-  logAdd(PAYLOAD_REL)
+  logAdd(payload)
 
   const { GREEN, NC } = palette(process.stderr)
   outro()
   process.stderr.write(
-    `${GREEN}✓ Rules built (${files.length} rules → ${PAYLOAD_REL})${NC}\n`,
+    `${GREEN}✓ Rules built (${files.length} rules → ${payload})${NC}\n`,
   )
   return 0
 }

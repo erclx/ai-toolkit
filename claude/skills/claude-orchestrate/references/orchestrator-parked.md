@@ -15,7 +15,7 @@ The sweep's own question stays distinct from this one. It asks which parked row 
 
 ## Scope
 
-Every row under `## Up next` and `## Needs a plan` in `.claude/tasks/priority.md`. A `## Run now` row carries no blocker by definition, so the pass skips it. Resolve the board and each task file at the main worktree root, per Worktrees in `CLAUDE.md`.
+Every row under `## Up next` and `## Needs a plan` in `.canon/tasks/priority.md`. A `## Run now` row carries no blocker by definition, so the pass skips it. Resolve the board and each task file at the main worktree root, per Worktrees in `CLAUDE.md`.
 
 Take the rows in board order and finish one before opening the next. Clearing a row changes what the next row collides with, so a pass that measures every row first and writes afterwards writes against a board it has already invalidated.
 

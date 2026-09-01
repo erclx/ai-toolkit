@@ -99,8 +99,8 @@ router.post("/", (req, res) => {
 export default router;
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -113,7 +113,7 @@ One file per task, ordered by phase label
 - [v01.0: Add due dates and priority to tasks](v01.0-due-dates.md): Persist and expose a due date and a priority on every task
 EOF
 
-    cat <<'EOF' >.claude/tasks/v01.0-due-dates.md
+    cat <<'EOF' >.canon/tasks/v01.0-due-dates.md
 ---
 title: 'v01.0: Add due dates and priority to tasks'
 description: Persist and expose a due date and a priority on every task
@@ -131,9 +131,9 @@ EOF
     git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
 
     log_step "Scenario ready: feature planning (full mode)"
-    log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and .claude/tasks/ present"
-    log_info "Action:  /claude-feature (reference the task in .claude/tasks/)"
-    log_info "Expect:  plan written to .claude/plans/feature-<slug>.md with files to touch, risks, and questions, each question carrying a Suggested line and an Answer slot"
+    log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and .canon/tasks/ present"
+    log_info "Action:  /claude-feature (reference the task in .canon/tasks/)"
+    log_info "Expect:  plan written to .canon/plans/feature-<slug>.md with files to touch, risks, and questions, each question carrying a Suggested line and an Answer slot"
     ;;
   "small")
     cat <<'EOF' >CLAUDE.md
@@ -178,8 +178,8 @@ description: Sentinel surface that should not be read for prose-only changes.
 SENTINEL: this file should NOT be read for prose-only changes.
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -192,7 +192,7 @@ One file per task, ordered by phase label
 - [v01.0: Tighten the README intro paragraph](v01.0-readme-intro.md): Break the run-on opening paragraph into shorter sentences
 EOF
 
-    cat <<'EOF' >.claude/tasks/v01.0-readme-intro.md
+    cat <<'EOF' >.canon/tasks/v01.0-readme-intro.md
 ---
 title: 'v01.0: Tighten the README intro paragraph'
 description: Break the run-on opening paragraph into shorter sentences
@@ -209,8 +209,8 @@ EOF
 
     log_step "Scenario ready: feature planning (small mode)"
     log_info "Context: prose-only repo, single README task, decoy DESIGN and wireframes/ with sentinel text"
-    log_info "Action:  /claude-feature (reference the task in .claude/tasks/)"
-    log_info "Expect:  chat-only output, NO .claude/plans/ file written, decoys NOT surfaced"
+    log_info "Action:  /claude-feature (reference the task in .canon/tasks/)"
+    log_info "Expect:  chat-only output, NO .canon/plans/ file written, decoys NOT surfaced"
     ;;
   "multi-concern")
     cat <<'EOF' >CLAUDE.md
@@ -233,8 +233,8 @@ EOF
 Welcome to the project. This intro paragraph reads dry and dense, with one long run-on thought that does not break for the reader and keeps stacking clauses without giving the eye a place to rest.
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -248,7 +248,7 @@ One file per task, ordered by phase label
 - [v02.0: Tighten the docs intro paragraph](v02.0-docs-intro.md): Break the run-on docs opening into two short paragraphs
 EOF
 
-    cat <<'EOF' >.claude/tasks/v01.0-users-pagination.md
+    cat <<'EOF' >.canon/tasks/v01.0-users-pagination.md
 ---
 title: 'v01.0: Add pagination to GET /users'
 description: Page the user list with limit and offset query params
@@ -260,7 +260,7 @@ description: Page the user list with limit and offset query params
 - [ ] Outcome: defaults applied when params omitted
 EOF
 
-    cat <<'EOF' >.claude/tasks/v02.0-docs-intro.md
+    cat <<'EOF' >.canon/tasks/v02.0-docs-intro.md
 ---
 title: 'v02.0: Tighten the docs intro paragraph'
 description: Break the run-on docs opening into two short paragraphs
@@ -274,9 +274,9 @@ EOF
     git add . && git commit -m "chore(sandbox): initial state" --no-verify -q
 
     log_step "Scenario ready: feature planning (multi-concern)"
-    log_info "Context: two unrelated tasks in .claude/tasks/, one API change and one prose edit"
+    log_info "Context: two unrelated tasks in .canon/tasks/, one API change and one prose edit"
     log_info "Action:  /claude-feature 'add pagination to /users and tighten the docs intro'"
-    log_info "Expect:  two plan files in .claude/plans/, one per concern, not a single bundled slug"
+    log_info "Expect:  two plan files in .canon/plans/, one per concern, not a single bundled slug"
     ;;
   "constraint")
     cat <<'EOF' >CLAUDE.md
@@ -319,8 +319,8 @@ description: Stage boundaries and where each transform runs
 Stage boundaries are stated in `docs/reference.md`. The transform stage is the one carrying retries, and `docs/reference.md` covers the retry budget.
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -333,7 +333,7 @@ One file per task, ordered by phase label
 - [v01.0: Split the reference doc into a folder](v01.0-reference-split.md): Break docs/reference.md into one file per stage under docs/reference/
 EOF
 
-    cat <<'EOF' >.claude/tasks/v01.0-reference-split.md
+    cat <<'EOF' >.canon/tasks/v01.0-reference-split.md
 ---
 title: 'v01.0: Split the reference doc into a folder'
 description: Break docs/reference.md into one file per stage under docs/reference/

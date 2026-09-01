@@ -1,6 +1,6 @@
 ---
 name: session-map
-description: Writes the session map, the pre-compaction handoff at `.claude/tasks/session-<slug>.md`, from any session whatever role it holds, running the skill-drift step the write procedure opens with. Use when asked to "write the handoff", "write the session map", "save the session before it compacts", "we are about to compact", "hand off to the next session", or "leave a note for whoever picks this up". Do NOT use to route session facts to a context entry or the memory folder, which is `claude-memory-capture` and writes a different artifact, and do NOT use to read a handoff back, which is `session-resume`.
+description: Writes the session map, the pre-compaction handoff at `.canon/tasks/session-<slug>.md`, from any session whatever role it holds, running the skill-drift step the write procedure opens with. Use when asked to "write the handoff", "write the session map", "save the session before it compacts", "we are about to compact", "hand off to the next session", or "leave a note for whoever picks this up". Do NOT use to route session facts to a context entry or the memory folder, which is `claude-memory-capture` and writes a different artifact, and do NOT use to read a handoff back, which is `session-resume`.
 ---
 
 # Session map
@@ -56,7 +56,7 @@ The file sits at the main worktree root, which the file-editing tools refuse fro
 ## Output
 
 ```plaintext
-✅ Session map written: .claude/tasks/session-<slug>.md
+✅ Session map written: .canon/tasks/session-<slug>.md
 <what the drift verb named, or the boundary it refused at>
 ```
 

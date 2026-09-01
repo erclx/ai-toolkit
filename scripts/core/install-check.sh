@@ -7,7 +7,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
-TMP_ROOT="$PROJECT_ROOT/.claude/.tmp/install-check"
+TMP_ROOT="$PROJECT_ROOT/.canon/tmp/install-check"
 CLONE_DIR="$TMP_ROOT/clone"
 TARGET_DIR="$TMP_ROOT/target"
 KEEP=0
@@ -20,10 +20,10 @@ for arg in "$@"; do
 Usage: scripts/core/install-check.sh [--keep]
 
 Verifies the README install path end to end:
-  1. Clones this repo into .claude/.tmp/install-check/clone
+  1. Clones this repo into .canon/tmp/install-check/clone
   2. Runs bun install in the clone
   3. Runs the CLI with --help to confirm it executes
-  4. Scaffolds a fresh project in .claude/.tmp/install-check/target
+  4. Scaffolds a fresh project in .canon/tmp/install-check/target
   5. Runs canon init and asserts a scaffold landed
 
 Flags:
@@ -83,7 +83,7 @@ log_step "Assert scaffold"
 # `@`-reference convention rule is the one snippets-domain file that still
 # installs, since `base` carries `governance/rules/snippets/` as a
 # folder-whole entry the same way it does `core` and `claude`.
-for path in "CLAUDE.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".claude/diagrams/index.md" \
+for path in "CLAUDE.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".canon/diagrams/index.md" \
   ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
   ".claude/rules/core/000-constitution.md" ".claude/rules/snippets/505-at-references.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then

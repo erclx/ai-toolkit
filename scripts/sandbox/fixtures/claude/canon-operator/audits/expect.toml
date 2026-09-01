@@ -41,5 +41,5 @@ path = ".claude/context/billing.md"
 pattern = 'Subscriptions renew nightly'
 
 [[content]]
-path = ".claude/plans/feature-invoice-retry.md"
+path = ".canon/plans/feature-invoice-retry.md"
 pattern = 'Retry a timed-out renewal once'

@@ -33,8 +33,8 @@ Power users evaluating note-taking tools.
 - Keyboard nav across the note list
 EOF
 
-    mkdir -p .claude/tasks
-    cat <<'EOF' >.claude/tasks/index.md
+    mkdir -p .canon/tasks
+    cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -47,7 +47,7 @@ One file per task, ordered by phase label
 - [v02.0: Record v2 launch screencast](v02.0-launch-screencast.md): Walk the inline edit flow end to end for the v2 launch
 EOF
 
-    cat <<'EOF' >.claude/tasks/v02.0-launch-screencast.md
+    cat <<'EOF' >.canon/tasks/v02.0-launch-screencast.md
 ---
 title: 'v02.0: Record v2 launch screencast'
 description: Walk the inline edit flow end to end for the v2 launch
@@ -64,9 +64,9 @@ EOF
     git add . && git commit -m "feat(notes): v2 scope notes" --no-verify -q
 
     log_step "Scenario ready: screencast draft (with project context)"
-    log_info "Context: notes app v2 launch with REQUIREMENTS, .claude/tasks/, and CLAUDE.md present"
+    log_info "Context: notes app v2 launch with REQUIREMENTS, .canon/tasks/, and CLAUDE.md present"
     log_info "Action:  /canon:canon-screencast 'v2 inline edit launch'"
-    log_info "Expect:  4 discovery questions with seeded defaults, then draft to .claude/.tmp/screencast/<slug>.md with 8 sections and 5 pre-seeded beats"
+    log_info "Expect:  4 discovery questions with seeded defaults, then draft to .canon/tmp/screencast/<slug>.md with 8 sections and 5 pre-seeded beats"
     log_info "Expect:  the closing block names canon demo compile as the next step and the session stops there rather than compiling or recording"
     ;;
   "bare")
@@ -79,7 +79,7 @@ EOF
     git add . && git commit -m "chore: initial state" --no-verify -q
 
     log_step "Scenario ready: screencast draft (no project context)"
-    log_info "Context: bare repo, no CLAUDE.md or .claude/tasks/"
+    log_info "Context: bare repo, no CLAUDE.md or .canon/tasks/"
     log_info "Action:  /canon:canon-screencast 'cli onboarding walkthrough'"
     log_info "Expect:  discovery falls back to generic defaults and the draft is still written"
     log_info "Expect:  no recording tool, editing tool, font, or window manager inside the draft, and no selector, URL, or timing on a beat"

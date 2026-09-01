@@ -94,13 +94,13 @@ The cost is disk per tree plus one install wait. A package manager with a conten
 
 ## Shared session scratch
 
-`.claude/plans/`, `.claude/review/`, and `.claude/memory/` are gitignored and live at the main worktree root, not inside a linked worktree. Agents running inside a worktree resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` when not in a git repo. The canonical rule is the Worktrees bullet in `CLAUDE.md`.
+`.canon/plans/`, `.canon/review/`, and `.canon/memory/` are gitignored and live at the main worktree root, not inside a linked worktree. Agents running inside a worktree resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` when not in a git repo. The canonical rule is the Worktrees bullet in `CLAUDE.md`.
 
 Resolving the path is not enough to write it. Claude Code's session isolation refuses an editing-tool write to any path outside the worktree and offers the worktree copy instead, while reads resolve normally, so the boundary is tool-scoped rather than filesystem-scoped. An agent that accepts the offered redirect reports success and leaves the file where no later session looks.
 
 A shell command reaches the main root, though only as a plain single command, since a compound one whose target cannot be statically verified is refused for complexity. That covers writing a whole file and not changing a line inside one, which needs a tool that resolves the main root in its own process.
 
-Ephemeral per-command scratch like `.claude/.tmp/pr/body.md` stays in the current worktree. It is deleted the same turn it is created, so centralizing buys nothing.
+Ephemeral per-command scratch like `.canon/tmp/pr/body.md` stays in the current worktree. It is deleted the same turn it is created, so centralizing buys nothing.
 
 ## Tooling caveats
 

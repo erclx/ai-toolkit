@@ -5,13 +5,13 @@ description: Filename and type prefix, frontmatter, the body shape per type, lin
 
 # Memory reference
 
-Applies to a memory entry at `.claude/memory/<type>-<slug>.md`. One file holds one rule or one fact, written at the end of the session that produced it and read by a session that holds none of it. Which surface owns a given fact is settled before an entry is written at all, and that routing is project policy rather than a shape rule.
+Applies to a memory entry at `.canon/memory/<type>-<slug>.md`. One file holds one rule or one fact, written at the end of the session that produced it and read by a session that holds none of it. Which surface owns a given fact is settled before an entry is written at all, and that routing is project policy rather than a shape rule.
 
 The folder is gitignored and unbacked. Nothing recovers a deleted entry, which is why the retire step below is a move rather than a cleanup.
 
 ## Scope
 
-Governs a memory entry under `.claude/memory/<type>-<slug>.md`: the filename and its type prefix, the frontmatter, the body shape each type carries, links between entries, and the lifecycle from the first write to retirement.
+Governs a memory entry under `.canon/memory/<type>-<slug>.md`: the filename and its type prefix, the frontmatter, the body shape each type carries, links between entries, and the lifecycle from the first write to retirement.
 
 Does not govern:
 

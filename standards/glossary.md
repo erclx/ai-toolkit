@@ -9,7 +9,7 @@ Applies to a glossary, the file holding one entry per term a body of material de
 
 ## Scope
 
-Governs a glossary at `.claude/teach/<nn>-<topic>/GLOSSARY.md` and at whatever path a surface fixes for one it holds: its frontmatter, entry shape, ordering, grouping, and the rules deciding which terms it carries.
+Governs a glossary at `.canon/teach/<nn>-<topic>/GLOSSARY.md` and at whatever path a surface fixes for one it holds: its frontmatter, entry shape, ordering, grouping, and the rules deciding which terms it carries.
 
 Does not govern:
 

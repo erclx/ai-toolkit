@@ -165,7 +165,7 @@ EOF
   log_info "Expect:  Playwright named as the harness, a median per metric beside its threshold,"
   log_info "         a Shifted line naming the banner img the seeded shift moves,"
   log_info "         taken off the run that produced the median rather than merged across three,"
-  log_info "         and a reading written to .claude/review/ux-measure-<slug>.md"
+  log_info "         and a reading written to .canon/review/ux-measure-<slug>.md"
   log_info "Second arm: delete playwright.config.ts and the two Playwright entries in package.json,"
   log_info "         re-run, and expect a statement of what the measurement needs rather than a failure"
 }

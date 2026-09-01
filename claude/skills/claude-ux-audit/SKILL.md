@@ -21,7 +21,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 ## Step 2: identify surfaces
 
-List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `.claude/tasks/` as in-progress.
+List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `.canon/tasks/` as in-progress.
 
 ## Step 3: audit each surface
 
@@ -59,13 +59,13 @@ If nothing is wrong, use: `✅ No observations.`
 
 Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-Write the full report directly to `.claude/review/ux-audit-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
+Write the full report directly to `.canon/review/ux-audit-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 
 From a linked worktree the file-editing tools refuse that path, so the report goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
 If there are no observations, write `✅ No observations.` to the file with a timestamp.
 
-The `.claude/review/` directory is gitignored. Do not stage or commit the file.
+The `.canon/review/` directory is gitignored. Do not stage or commit the file.
 
 ### Chat output
 
@@ -73,7 +73,7 @@ Output only the summary line and the file path. Do not repeat the full report in
 
 ```plaintext
 X observations across N surfaces.
-📝 Wrote .claude/review/ux-audit-<slug>.md
+📝 Wrote .canon/review/ux-audit-<slug>.md
 ```
 
-If no observations: `✅ No observations. Wrote .claude/review/ux-audit-<slug>.md`
+If no observations: `✅ No observations. Wrote .canon/review/ux-audit-<slug>.md`

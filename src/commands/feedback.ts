@@ -40,10 +40,10 @@ function isToolkitSource(): boolean {
  * single ignore entry and the single backed-folder entry it already had.
  */
 function writeLocal(body: string): string {
-  // Creation, so the destination is the creation default rather than the
-  // resolved read root. A toolkit checkout that has migrated its records already
-  // carries the folder and resolves the same path either way.
-  const relativeDir = creationRel('review', 'feedback')
+  // Resolved against the same root the write joins onto, so a checkout that has
+  // not migrated its records writes this beside the ones already there rather
+  // than opening a second root nothing reads.
+  const relativeDir = creationRel(PROJECT_ROOT, 'review', 'feedback')
   const reviewDir = join(PROJECT_ROOT, relativeDir)
   mkdirSync(reviewDir, { recursive: true })
   const filename = `feedback-${deriveSlug(body)}-${timestamp()}.md`
@@ -57,7 +57,7 @@ export function register(program: Command): void {
   program
     .command('feedback')
     .description(
-      'Write toolkit feedback from stdin to .claude/review/feedback/, or open a GitHub issue with --github',
+      'Write toolkit feedback from stdin to .canon/review/feedback/, or open a GitHub issue with --github',
     )
     .option(
       '--github',

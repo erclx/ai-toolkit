@@ -17,7 +17,7 @@ Local-first habit tracking web app.
 - `bun run check`: lint and typecheck
 EOF
 
-  mkdir -p .claude/plans
+  mkdir -p .canon/plans
   cat <<'EOF' >.claude/REQUIREMENTS.md
 # Requirements
 
@@ -28,8 +28,8 @@ EOF
 3. Trend chart: weekly and monthly completion chart
 EOF
 
-  mkdir -p .claude/tasks
-  cat <<'EOF' >.claude/tasks/index.md
+  mkdir -p .canon/tasks
+  cat <<'EOF' >.canon/tasks/index.md
 ---
 title: Tasks
 subtitle: One file per task, ordered by phase label
@@ -43,7 +43,7 @@ One file per task, ordered by phase label
 - [v00.2: Show the current and longest streak](v00.2-streak-view.md): Read the logged entries and report both streaks per habit
 EOF
 
-  cat <<'EOF' >.claude/tasks/priority.md
+  cat <<'EOF' >.canon/tasks/priority.md
 # Priority
 
 ## Run now
@@ -55,7 +55,7 @@ EOF
 - `v00.2-streak-view`: no plan yet
 EOF
 
-  cat <<'EOF' >.claude/tasks/v00.1-log-entry.md
+  cat <<'EOF' >.canon/tasks/v00.1-log-entry.md
 ---
 title: 'v00.1: Log a habit with one tap'
 description: Mark a habit done for today with a single tap
@@ -69,7 +69,7 @@ description: Mark a habit done for today with a single tap
 > Test strategy: component, tap toggles done state once per day
 EOF
 
-  cat <<'EOF' >.claude/tasks/v00.2-streak-view.md
+  cat <<'EOF' >.canon/tasks/v00.2-streak-view.md
 ---
 title: 'v00.2: Show the current and longest streak'
 description: Read the logged entries and report both streaks per habit
@@ -83,7 +83,7 @@ description: Read the logged entries and report both streaks per habit
 > Test strategy: unit, streak arithmetic over a seeded entry list
 EOF
 
-  cat <<'EOF' >.claude/plans/feature-log-entry.md
+  cat <<'EOF' >.canon/plans/feature-log-entry.md
 # Feature: log entry
 
 Mark a habit done for today with one tap, idempotent per day.

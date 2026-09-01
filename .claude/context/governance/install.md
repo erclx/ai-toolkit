@@ -44,7 +44,7 @@ A rule whose source no stack names never installs, and the drift assertion still
 | ------------------- | ----------------------------------------------------------------- |
 | `canon gov install` | Bootstrap rules for a stack into `.claude/rules/`                 |
 | `canon gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
-| `canon gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
+| `canon gov build`   | Concatenate installed rules into `.canon/tmp/gov/rules.md`        |
 | `canon gov regen`   | Rebuild this repository's own `.claude/rules/` from its record    |
 | `canon gov list`    | Emit catalog of stacks, rules, and rules no stack reaches         |
 

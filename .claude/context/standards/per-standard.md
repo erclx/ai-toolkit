@@ -18,13 +18,13 @@ What each one settled belongs here rather than in the file itself, which states 
 
 ## The plan standard
 
-`standards/plan.md` fixes the section list, the suggested-and-answer contract, and the lifecycle from `.claude/plans/` to `.claude/plans/archive/`. `claude-feature` defined that shape inside its own body and two more skills consumed it, which is past the second-case bar, so the body now cites the standard and `claude-autoship` and `claude-docs` each point at the half they read.
+`standards/plan.md` fixes the section list, the suggested-and-answer contract, and the lifecycle from `.canon/plans/` to `.canon/plans/archive/`. `claude-feature` defined that shape inside its own body and two more skills consumed it, which is past the second-case bar, so the body now cites the standard and `claude-autoship` and `claude-docs` each point at the half they read.
 
 The section markers are mixed on purpose, `## Summary` as a heading and the other four as bold labels, because that is what the corpus writes. Across 178 archived plans, `Summary` is a heading in 176 and a label in none, while `Files to touch` is a label in 146 against 21 headings and the other three split the same way.
 
 The mix reads as an inconsistency until the counts are in front of you, which is why they are recorded here.
 
-Sampling the live folder is what got that wrong the first time. Three plans were in `.claude/plans/`, two of them writing `## Risks` and `## Questions`, so the minority variant looked like the convention and the standard shipped requiring headings for all five.
+Sampling the live folder is what got that wrong the first time. Three plans were in `.canon/plans/`, two of them writing `## Risks` and `## Questions`, so the minority variant looked like the convention and the standard shipped requiring headings for all five.
 
 Running the new check against the real folder returned a finding for every plan present, all of them that one rule, which is the signal that the rule rather than the corpus was wrong.
 
@@ -42,7 +42,7 @@ The operator-call line's separator varies in the corpus and the standard fixes o
 
 Reading the phrase also means reading the `Questions` section rather than the file. A plan discussing the operator-call form in its own `Risks` carries the exact phrase in backticks, which `feature-dispatch-answer-gate.md` does, so a whole-file match reads that plan as waiting on its own author. `splitPlanSections` holds the read to the section, and it is the split `checkQuestionContract` already runs, which is what leaves one definition of a question for both readers.
 
-`558-plan` routes `.claude/plans/**` and joins `base`, following `556-groundwork` and `557-intake`. That one glob covers the archive as well, since a shipped plan moves into `.claude/plans/archive/` rather than to a folder of its own, so the second `paths` entry the rule used to carry came off with the move. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
+`558-plan` routes `.canon/plans/**` and joins `base`, following `556-groundwork` and `557-intake`. That one glob covers the archive as well, since a shipped plan moves into `.canon/plans/archive/` rather than to a folder of its own, so the second `paths` entry the rule used to carry came off with the move. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
 
 ## Where an execution-time deviation goes
 
@@ -86,7 +86,7 @@ No check parses the block. Nothing reads a plan's constraints today, and a valid
 
 `standards/memory.md` fixes the filename and its type prefix, the frontmatter, the body shape each type carries, links between entries, and the lifecycle. The format sat in three places, as eight bullets in `CLAUDE.md`, the write format in `claude-memory-capture`, and the retire rule in `claude-memory-review`.
 
-`CLAUDE.md` keeps two bullets, the write location because `.claude/memory/` rather than `~/.claude/projects/` is project policy, and the routing rule because it has to fire before an entry is written at all rather than once the standard is opened.
+`CLAUDE.md` keeps two bullets, the write location because `.canon/memory/` rather than `~/.claude/projects/` is project policy, and the routing rule because it has to fire before an entry is written at all rather than once the standard is opened.
 
 The delete prohibition stayed in `CLAUDE.md` while the rest of the block moved. A path-scoped rule fires when a session edits a file the glob matches, and a bulk retire runs through the shell as a `mv`, so `559-memory.md` is never loaded at the moment the irreversible act happens.
 

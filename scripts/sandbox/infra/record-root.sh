@@ -6,10 +6,10 @@ use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
 }
 
-# A tree whose records already sit at the new root, built by hand because no verb
-# creates one. Creation stays at `.claude/` until the move ships, so staging the
-# shape the migrate verb will have to produce is the only way to reach the
-# fallback's other branch before then.
+# A record tree at whichever root the caller names, built by hand so one seeder
+# serves both sides of the fallback. The arms below differ only in that argument,
+# which is what keeps a difference in outcome attributable to the resolution
+# rather than to two fixtures that drifted apart.
 #
 seed_records() {
   local root=$1 scratch=$2
@@ -90,12 +90,15 @@ run_cli() {
 
 stage_setup() {
   log_step "Record root sandbox"
-  log_info "migrated   : records staged at .canon/, every verb resolves there"
-  log_info "unmigrated : the same records at .claude/, the fallback's other branch"
-  log_info "refusal    : neither root carries the folder, so both are named"
+  log_info "migrated        : records staged at .canon/, every verb resolves there"
+  log_info "unmigrated      : the same records at .claude/, the fallback's other branch"
+  log_info "refusal         : neither root carries the folder, so both are named"
+  log_info "migrate         : the verb moving an unmigrated tree, then re-running clean"
+  log_info "migrate-refusal : the same tree with no .canon/ ignore entry to land under"
+  log_info "records-push    : push and pull across the moved history, and the split-root refusal"
 
   select_or_route_scenario "Which scenario?" \
-    "migrated" "unmigrated" "refusal"
+    "migrated" "unmigrated" "refusal" "migrate" "migrate-refusal" "records-push"
 
   case "$SELECTED_OPTION" in
   "migrated")
@@ -122,16 +125,105 @@ stage_setup() {
     seed_records .claude .tmp
     log_step "Running: canon records validate plans --root ."
     run_cli records validate plans --root . --json
+    # This arm asserts the fallback, so the old root is the answer it checks for.
+    # A sweep rewriting it leaves the branch reading as covered while checking
+    # the migrated case twice.
+    # canon-keep-record-root
     log_info "Expect: 1 record read, the live plan under .claude/plans"
     log_step "Running: canon tasks archive v1.1-staged-row --root ."
     run_cli tasks archive v1.1-staged-row --root . --json
+    # canon-keep-record-root
     log_info "Expect: from and to both spelling .claude/tasks/, behavior unchanged"
     ;;
+
+  "migrate")
+    seed_records .claude .tmp
+    printf '.canon/\n' >.gitignore
+    log_step "Running: canon migrate records --root ."
+    run_cli migrate records --root . --json
+    log_info "Expect: 12 entries considered, the 4 on disk named as folders to move"
+    log_info "Expect: exit 2 and nothing written, since --write was not passed"
+    log_step "Running: canon migrate records --root . --write"
+    run_cli migrate records --root . --write --json
+    log_step "Reading the tree back"
+    find . -not -path './.git/*' | sort
+    # canon-keep-record-root
+    log_info "Expect: plans, tasks, and memory now under .canon/, and .claude/.tmp as .canon/tmp"
+    # canon-keep-record-root
+    log_info "Expect: no .claude/ directory left, since every seeded entry moved"
+    log_step "Running: canon records validate plans --root ."
+    run_cli records validate plans --root . --json
+    log_info "Expect: 1 record read, resolved at the root the move produced"
+    log_step "Running: canon migrate records --root ."
+    run_cli migrate records --root . --json
+    log_info "Expect: 0 folders and 0 citations, which is the idempotence check"
+    ;;
+
+  "migrate-refusal")
+    seed_records .claude .tmp
+    printf 'node_modules/\n' >.gitignore
+    log_step "Running: canon migrate records --root ."
+    run_cli migrate records --root . --json
+    log_info "Expect: exit 1 refusing, since this project does not ignore .canon/"
+    log_info "Expect: the repair names canon tooling sync rather than an edit by hand"
+    # canon-keep-record-root
+    log_info "Expect: the records still under .claude/, untouched by a refused run"
+    find . -not -path './.git/*' | sort
+    ;;
+  "records-push")
+    seed_records .claude .tmp
+    printf '.canon/\n' >.gitignore
+
+    # A bare repository on this disk stands in for the private records remote.
+    # The gate this has to clear compares the records origin against every
+    # remote of the project, and a sandbox project has none, so a local path
+    # passes it the way a real private repository would.
+    origin="$PWD/../records-origin.git"
+    rm -rf "$origin"
+    git init --quiet --bare "$origin"
+    git --git-dir=.claude/.records.git init --quiet
+    git --git-dir=.claude/.records.git remote add origin "$origin"
+
+    log_step "Running: canon records push --root ."
+    run_cli records push --root . --json
+    log_info "Expect: ok true, the three seeded folders, and a commit on the bare origin"
+    log_step "Reading the origin back"
+    git -C "$origin" ls-tree -r --name-only main | sort
+    log_info "Expect: bare paths such as tasks/index.md, with no record root in any of them"
+
+    # Half a move is what a failed rename leaves, and it is the state the push
+    # guard exists for. Moving one folder is enough: `recordRoot` then answers
+    # `.canon` for the whole tree while the index still names the eight left
+    # behind, so an unguarded `add -A` would stage every one of them as deleted.
+    log_step "Half-migrating the tree, one folder moved"
+    mkdir -p .canon
+    mv .claude/memory .canon/memory
+    log_step "Running: canon records push --root ."
+    run_cli records push --root . --json
+    log_info "Expect: ok false with reason split-roots, naming the two left at .claude/"
+    log_step "Reading the origin back"
+    git -C "$origin" ls-tree -r --name-only main | sort
+    log_info "Expect: unchanged, so the refusal is what kept the folders on the remote"
+    log_step "Running: canon records pull --root ."
+    run_cli records pull --root . --json
+    log_info "Expect: ok false with reason split-roots, the same reading from the other verb"
+
+    log_step "Finishing the move"
+    run_cli migrate records --root . --write --json
+    log_step "Running: canon records push --root ."
+    run_cli records push --root . --json
+    log_info "Expect: ok true again, the work tree now resolving at .canon/"
+    log_step "Reading the origin back"
+    git -C "$origin" ls-tree -r --name-only main | sort
+    log_info "Expect: the same paths and changed 0, since the history stores none of the root"
+    ;;
+
   "refusal")
     seed_records .canon tmp
     rm -rf .canon/memory
     log_step "Running: canon records validate memory --root ."
     run_cli records validate memory --root . --json
+    # canon-keep-record-root
     log_info "Expect: no-folder naming .canon/memory or .claude/memory"
     log_info "Expect: the creation default named second, which is where a write lands"
     ;;

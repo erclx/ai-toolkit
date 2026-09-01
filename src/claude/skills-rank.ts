@@ -8,7 +8,7 @@ import { listSkillsAt, resolveSkillsCorpus } from '@/claude/skills-list'
  * asks whether the descriptions are separable by the words they use, and
  * Claude Code does not route this way.
  *
- * Ported from `.claude/groundwork/42-ai-blueprint/evidence/rank.ts`, which
+ * Ported from `.canon/groundwork/42-ai-blueprint/evidence/rank.ts`, which
  * ran once against this catalog and named the collisions this measure now
  * tracks on a cadence.
  */

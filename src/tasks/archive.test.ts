@@ -97,8 +97,8 @@ describe('tasksDir', () => {
     expect(archiveDir(ROOT)).toBe(join(ROOT, '.claude', 'tasks', 'archive'))
   })
 
-  it('should create the board at the old root while the move is pending', () => {
-    expect(tasksDir(ROOT)).toBe(join(ROOT, '.claude', 'tasks'))
+  it('should create the board at the new root now the move has landed', () => {
+    expect(tasksDir(ROOT)).toBe(join(ROOT, '.canon', 'tasks'))
   })
 })
 

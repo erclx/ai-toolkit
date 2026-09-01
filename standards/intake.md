@@ -5,13 +5,13 @@ description: Folder layout, ordinal naming, reserved index number, frontmatter a
 
 # Intake reference
 
-Applies to an intake folder at `.claude/intake/<nn>-<slug>/`. One folder holds one dump, filed by domain, and every finding in it is an item carrying a measured problem, one proposed fix, and a verdict.
+Applies to an intake folder at `.canon/intake/<nn>-<slug>/`. One folder holds one dump, filed by domain, and every finding in it is an item carrying a measured problem, one proposed fix, and a verdict.
 
 The folder is gitignored and unbacked. No check reaches its contents, so the shape below survives only by being read.
 
 ## Scope
 
-Governs an intake folder under `.claude/intake/<nn>-<slug>/`: folder layout, ordinal naming, the reserved index number, frontmatter and dating, the item format, the answer contract, and retrieval.
+Governs an intake folder under `.canon/intake/<nn>-<slug>/`: folder layout, ordinal naming, the reserved index number, frontmatter and dating, the item format, the answer contract, and retrieval.
 
 Does not govern:
 
@@ -25,7 +25,7 @@ Does not govern:
 ## Folder name
 
 - Name the folder `<nn>-<slug>`, a two-digit zero-padded ordinal followed by a kebab-case slug. This is the folder's own ordinal, distinct from the `NN-<domain>.md` numbering a cluster file carries inside it.
-- Take the ordinal from the highest one already present across both `.claude/intake/` and `.claude/groundwork/`, incremented. A listing then sorts by when each folder opened rather than alphabetically, and the count includes both kinds because the two share one creation-order line.
+- Take the ordinal from the highest one already present across both `.canon/intake/` and `.canon/groundwork/`, incremented. A listing then sorts by when each folder opened rather than alphabetically, and the count includes both kinds because the two share one creation-order line.
 - With neither folder holding an entry, the first one opened takes `01`. Do not read this off the numbering inside a dump, which starts at `00` and disagrees with groundwork's own first required file.
 - Never renumber an existing folder. The ordinal is the order it opened, and a later reader cites it by that name.
 

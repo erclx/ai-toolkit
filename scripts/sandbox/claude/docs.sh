@@ -26,9 +26,9 @@ stage_setup() {
     log_info "Context: planning docs are stale relative to HEAD"
     log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
     log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
-    log_info "  .claude/tasks/ has 'Migrate storage to Postgres' open, but it shipped in HEAD"
-    log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be archived"
-    log_info "  .claude/plans/feature-some-old-plan.md has no task backlink and should survive"
+    log_info "  .canon/tasks/ has 'Migrate storage to Postgres' open, but it shipped in HEAD"
+    log_info "  .canon/plans/feature-postgres-migration.md is linked from that task and should be archived"
+    log_info "  .canon/plans/feature-some-old-plan.md has no task backlink and should survive"
     log_info ""
     log_info "Before invoking the skill, narrate the pivot to Claude in chat:"
     log_info "  'We pivoted this session: switched storage from SQLite to Postgres,'"
@@ -125,7 +125,7 @@ stage_setup() {
     stage_fixtures claude docs board-sweep 03-plans
 
     log_step "Scenario ready: plans sweep reaches a task the session never touched"
-    log_info "Context: three tasks on the board, each citing a plan in .claude/plans/"
+    log_info "Context: three tasks on the board, each citing a plan in .canon/plans/"
     log_info "  v02.0-pagination.md has open outcomes that HEAD ships, so this run closes it"
     log_info "  v01.0-rate-limit.md is already all [x], closed by an earlier session"
     log_info "  That earlier run never swept its plan, which is the defect this arm reproduces"
@@ -151,7 +151,7 @@ stage_setup() {
     stage_fixtures claude docs receipt-sweep 03-receipts
 
     log_step "Scenario ready: review sweep collects a resolved memory receipt"
-    log_info "Context: two memory-review receipts in .claude/review/, neither named for this branch"
+    log_info "Context: two memory-review receipts in .canon/review/, neither named for this branch"
     log_info "  memory-review-legacy-inbox.md has every item decided, so it is collected"
     log_info "  Its two skips are the fold: one feedback entry takes a decline, one reference entry does not"
     log_info "  memory-review-stale-pen.md still carries a 📝 item and is the control. It must survive."

@@ -120,13 +120,13 @@ If nothing is wrong, use: `✅ No findings.`
 
 Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-Write the full report directly to `.claude/review/branch/review-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
+Write the full report directly to `.canon/review/branch/review-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 
 From a linked worktree the file-editing tools refuse that path, so the report goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
 If there are no findings, write `✅ No findings.` to the file with a timestamp.
 
-The `.claude/review/` directory is gitignored. Do not stage or commit the file.
+The `.canon/review/` directory is gitignored. Do not stage or commit the file.
 
 The report is disposable. It outlives the ship chain that reads it, and `claude-docs` sweeps it once the branch it names is gone, because the durable record of what a review found is the comment `claude-pr-review` posts on the pull request. A review run on a branch that never opens one leaves nothing behind once that branch is gone, so fold anything worth keeping into the pull request body or a task finding while the report is still on disk.
 
@@ -136,7 +136,7 @@ Output only the summary line and the file path. Do not repeat the full report in
 
 ```plaintext
 X critical, Y should-fix, Z minor across N files.
-📝 Wrote .claude/review/branch/review-<slug>.md
+📝 Wrote .canon/review/branch/review-<slug>.md
 ```
 
-If no findings: `✅ No findings. Wrote .claude/review/branch/review-<slug>.md`
+If no findings: `✅ No findings. Wrote .canon/review/branch/review-<slug>.md`

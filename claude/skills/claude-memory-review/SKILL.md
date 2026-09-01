@@ -1,11 +1,11 @@
 ---
 name: claude-memory-review
-description: Reviews `.claude/memory/` and proposes per-entry actions (promote to `CLAUDE.md`, move into a skill body, route to a context entry, hand off to governance, or retire as stale). Also runs the discuss, challenge, apply, and cleanup phases on an existing review file. Use when asked to "review memory", "discuss memory questions", "challenge the promotes", "apply memory decisions", "cleanup memory review", "promote memory", or "consolidate memories". Do NOT auto-apply. Output a grouped proposal and wait for block-by-block approval.
+description: Reviews `.canon/memory/` and proposes per-entry actions (promote to `CLAUDE.md`, move into a skill body, route to a context entry, hand off to governance, or retire as stale). Also runs the discuss, challenge, apply, and cleanup phases on an existing review file. Use when asked to "review memory", "discuss memory questions", "challenge the promotes", "apply memory decisions", "cleanup memory review", "promote memory", or "consolidate memories". Do NOT auto-apply. Output a grouped proposal and wait for block-by-block approval.
 ---
 
 # Claude memory review
 
-This skill drives the full memory review lifecycle in five phases. Pick the phase from what the user said and whether a review receipt already exists at `<main-root>/.claude/review/memory/memory-review-*.md`.
+This skill drives the full memory review lifecycle in five phases. Pick the phase from what the user said and whether a review receipt already exists at `<main-root>/.canon/review/memory/memory-review-*.md`.
 
 What an entry looks like and why a retired one is moved rather than deleted are fixed by `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Read it before rewriting an entry, since a promotion rewrites the rule and a rewrite has to leave the entry conforming.
 
@@ -21,10 +21,10 @@ If the user re-pings the skill with no new phrase and a receipt exists, default 
 
 ## Guards
 
-- All `.claude/memory/` reads, edits, and archive moves resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
-- If no `.claude/memory/` directory exists at the main worktree root, stop: `❌ No .claude/memory/ directory found.`
-- If `.claude/memory/` contains no `*.md` entries other than `index.md`, stop: `✅ No memory entries to review.`
-- Cleanup is exempt from the two stops above. It works on receipts in `.claude/review/`, and a drained pen is the normal state once Apply has run, so a pen-shaped stop would strand the receipt it exists to delete.
+- All `.canon/memory/` reads, edits, and archive moves resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- If no `.canon/memory/` directory exists at the main worktree root, stop: `❌ No .canon/memory/ directory found.`
+- If `.canon/memory/` contains no `*.md` entries other than `index.md`, stop: `✅ No memory entries to review.`
+- Cleanup is exempt from the two stops above. It works on receipts in `.canon/review/`, and a drained pen is the normal state once Apply has run, so a pen-shaped stop would strand the receipt it exists to delete.
 - Resolve the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`. All review and memory reads anchor here.
 - From a linked worktree the file-editing tools refuse every main-root path, so each write below goes out through `Bash` as a plain single command. The receipt and a memory entry are both short and this session has read them whole, so a rewrite replaces the file with a heredoc rather than editing a line inside it. Promotion targets are tracked files at `pwd` and keep taking `Edit`.
 
@@ -41,8 +41,8 @@ Propose is the ship-time entry point. The ship skills run it right after capture
 
 Read in parallel from the project root:
 
-- `.claude/memory/index.md`: the generated index
-- every other `*.md` file under `.claude/memory/`: individual entries with frontmatter (`title`, `description`, `category`)
+- `.canon/memory/index.md`: the generated index
+- every other `*.md` file under `.canon/memory/`: individual entries with frontmatter (`title`, `description`, `category`)
 
 ### Step 2: read promotion targets
 
@@ -56,7 +56,7 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 
 ### Step 3: classify each entry
 
-`.claude/memory/` is a holding pen. Default every entry to promote or retire on review. Skip is the rare exception, reserved for active task overlap or user-type memories with no in-repo target.
+`.canon/memory/` is a holding pen. Default every entry to promote or retire on review. Skip is the rare exception, reserved for active task overlap or user-type memories with no in-repo target.
 
 `claude-memory-capture` routes a project fact naming a domain with a context entry to that entry, so a pen filled since routing shipped is mostly feedback: rules about how to work, which no context entry owns. Propose against what the pen holds rather than expecting the older mix. An entry carried from before routing may still name a domain that has a context entry, and that entry's action is **Promote to a context entry**, which hands it to `claude-docs` the same way capture does rather than editing the entry here.
 
@@ -65,11 +65,11 @@ For each in-scope entry (see Scope), pick one action:
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in the project's own standards folder as `<domain>.md`.
-- **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.claude/.tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
+- **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.canon/tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
 - **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Never edit the synced `.claude/rules/` copies of toolkit rules, because `canon gov sync` overwrites them. Stop at handoff.
   - In the toolkit repo, point the user at `internal-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
   - In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`.
-- **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
+- **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.canon/tmp/memory-archive/` rather than deleting it.
 
 Retire is an archive, not a deletion, which `${CLAUDE_SKILL_DIR}/../../standards/memory.md` states as the rule and this skill executes. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why the move is cheap rather than free.
 
@@ -89,11 +89,11 @@ Rules that resist crisp one-line phrasing default to **Retire** over promote. Ne
 
 Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-Write the full proposal to `.claude/review/memory/memory-review-<slug>.md` at the main worktree root. Do not print it inline. Read `${CLAUDE_SKILL_DIR}/references/receipt-format.md` for the file structure, the item template, and how each action type varies the body. The four phases below rewrite items inside an existing receipt rather than authoring one, so none of them opens it.
+Write the full proposal to `.canon/review/memory/memory-review-<slug>.md` at the main worktree root. Do not print it inline. Read `${CLAUDE_SKILL_DIR}/references/receipt-format.md` for the file structure, the item template, and how each action type varies the body. The four phases below rewrite items inside an existing receipt rather than authoring one, so none of them opens it.
 
 A phase changing items reads the receipt, applies every change for that phase, and writes the whole file back in one command. Batching is what keeps a per-item rewrite from costing a full read each time, and it is the only route from a linked worktree, where the guard above rules out editing a line in place.
 
-Tell the user `✅ Wrote proposal to .claude/review/memory/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping with "discuss" for question rounds or "apply" to commit.
+Tell the user `✅ Wrote proposal to .canon/review/memory/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping with "discuss" for question rounds or "apply" to commit.
 
 Rewrite the review file in place whenever the proposal changes mid-review. The file stays the source of truth for the current decisions.
 
@@ -101,7 +101,7 @@ Rewrite the review file in place whenever the proposal changes mid-review. The f
 
 Trigger: user says "challenge the promotes", "challenge before apply", or asks for a high-bar pass. Run before Apply. No mutations to memory files or promotion targets. Review file only.
 
-1. Read the latest `.claude/review/memory/memory-review-*.md` at the main root.
+1. Read the latest `.canon/review/memory/memory-review-*.md` at the main root.
 2. For each promote item, apply three tests:
    - **Absorbed**: grep the target surface for the rule's keywords. If already stated or implied, flip to retire.
    - **Delta**: if the rule is a nice-to-have next to existing bullets, flip to retire.
@@ -112,7 +112,7 @@ Trigger: user says "challenge the promotes", "challenge before apply", or asks f
 
 Trigger: user says "discuss", "respond to questions", or any `Decision:` value contains `?` or an unrecognized verb. No mutations to memory files or targets. Review file only. Multi-round.
 
-1. Read the latest `.claude/review/memory/memory-review-*.md` at the main root.
+1. Read the latest `.canon/review/memory/memory-review-*.md` at the main root.
 2. For each item whose `Decision:` contains `?` or any unrecognized verb (anything other than `apply`, `skip`, `defer`):
    - Write a `Take:` line under `Decision:`, separated by exactly one blank line. If a `Take:` line already exists, overwrite it.
    - Format: pick + one-line reason. Max 2 sentences. Decision-help style. State the recommendation (`apply` / `skip` / `retire` / specific alternative) first, then the reason. Do not enumerate tradeoffs unless one changes the call.
@@ -132,7 +132,7 @@ Before applying any item, check the worktree state:
 [ "$(git rev-parse --git-dir 2>/dev/null)" = "$(git rev-parse --git-common-dir 2>/dev/null)" ] && echo "MAIN" || echo "LINKED"
 ```
 
-If the result is `MAIN`, stop and tell the user: `❌ Apply phase mutates tracked files. Run /claude-worktree first.` Discuss and Challenge phases only touch `.claude/review/` scratch and run from anywhere.
+If the result is `MAIN`, stop and tell the user: `❌ Apply phase mutates tracked files. Run /claude-worktree first.` Discuss and Challenge phases only touch `.canon/review/` scratch and run from anywhere.
 
 Before applying a promote to root `CLAUDE.md`, load `internal-claude` so its seed-mirror rule fires on the edit.
 
@@ -150,16 +150,16 @@ Free-form text after the verb is a reason. Capture it in the receipt but do not 
 Action by action type:
 
 - **Promote**: use `Edit` to insert the rewritten rule into the target surface, then archive the memory file.
-- **Promote to a context entry**: append the fact to `.claude/.tmp/memory-routing/<slug>.md`, then archive the memory file. `claude-docs` folds it in on its next run from a branch, which is what keeps one skill writing context entries.
+- **Promote to a context entry**: append the fact to `.canon/tmp/memory-routing/<slug>.md`, then archive the memory file. `claude-docs` folds it in on its next run from a branch, which is what keeps one skill writing context entries.
 - **Hand off**: do not edit governance. Archive the memory file only if the user confirmed the handoff explicitly. Otherwise leave it in place.
 - **Retire**: archive the memory file.
 
-Archiving means creating `.claude/.tmp/memory-archive/` at the main worktree root and moving the file there under its original name, overwriting any file already at that name. Send the `mkdir -p` and the `mv` as two plain commands rather than joining them with `&&`, which is refused as compound from a linked worktree. Never delete a memory entry. Nothing recovers one from a gitignored folder.
+Archiving means creating `.canon/tmp/memory-archive/` at the main worktree root and moving the file there under its original name, overwriting any file already at that name. Send the `mkdir -p` and the `mv` as two plain commands rather than joining them with `&&`, which is refused as compound from a linked worktree. Never delete a memory entry. Nothing recovers one from a gitignored folder.
 
-Do not hand-edit `.claude/memory/index.md`. Once every archive move is done, regenerate it instead:
+Do not hand-edit `.canon/memory/index.md`. Once every archive move is done, regenerate it instead:
 
 ```bash
-canon indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
+canon indexes regen --no-stage --root <main-root> <main-root>/.canon/memory/index.md
 ```
 
 The `PostToolUse` hook that keeps the index current matches `Write|Edit|MultiEdit`, and an archive move is a shell `mv`, so nothing fires on it. Without this call the index keeps a row per archived entry and drifts exactly the way the hand-appended one did. Run it once after the last move rather than per item.
@@ -186,11 +186,11 @@ End with: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Om
 
 Trigger: user says "cleanup" or "delete the receipt" after Apply has run.
 
-Cleanup folds one receipt's skips and removes that receipt, and does nothing else. It is the fallback route now that Apply and `claude-docs` Step 10 each collect a resolved receipt on their own, so it reaches a file those two left behind rather than being the only collector. Apply is still the only phase that moves a memory entry out of the pen, and it does so per approved item into `.claude/.tmp/memory-archive/`. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
+Cleanup folds one receipt's skips and removes that receipt, and does nothing else. It is the fallback route now that Apply and `claude-docs` Step 10 each collect a resolved receipt on their own, so it reaches a file those two left behind rather than being the only collector. Apply is still the only phase that moves a memory entry out of the pen, and it does so per approved item into `.canon/tmp/memory-archive/`. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
 
-If no `.claude/review/memory/memory-review-*.md` exists at the main root, stop: `✅ No review receipt to clean up.` Every other refusal in this skill carries a message, and the phase reads a receipt before it does anything else.
+If no `.canon/review/memory/memory-review-*.md` exists at the main root, stop: `✅ No review receipt to clean up.` Every other refusal in this skill carries a message, and the phase reads a receipt before it does anything else.
 
-1. Read the latest `.claude/review/memory/memory-review-*.md` at the main root and confirm Apply has run against it. If any item is still 📝 pending, stop and name the pending numbers.
+1. Read the latest `.canon/review/memory/memory-review-*.md` at the main root and confirm Apply has run against it. If any item is still 📝 pending, stop and name the pending numbers.
 2. Collect it per the collection rule in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`, folding each ⏭ skipped item before the file goes. The fold happens wherever a receipt is collected, so this phase runs the same rule the Apply sweep does.
 3. Delete that one file. Leave every other receipt beside it in place, because the pending test above covers the file it read and nothing has tested the rest.
 4. Leave every memory entry in the pen. A skip records the decline on the entry and keeps the file, and applied promotions, governance handoffs, and user-type memories each stay as the review left them.
@@ -201,10 +201,10 @@ Do not promote or archive a memory entry. The skip fold is the one rewrite this 
 
 Output one line per action taken in the most recent phase:
 
-- `✅ Promoted: .claude/memory/<memory-file> → <target>`
-- `✅ Handed off: .claude/memory/<memory-file> → governance`
-- `📦 Retired: .claude/memory/<memory-file> → .claude/.tmp/memory-archive/`
-- `🗑  Swept: .claude/review/<review-file>, folded <n> skips`
-- `⏭ Kept: .claude/review/<review-file>, <n> items pending`
+- `✅ Promoted: .canon/memory/<memory-file> → <target>`
+- `✅ Handed off: .canon/memory/<memory-file> → governance`
+- `📦 Retired: .canon/memory/<memory-file> → .canon/tmp/memory-archive/`
+- `🗑  Swept: .canon/review/<review-file>, folded <n> skips`
+- `⏭ Kept: .canon/review/<review-file>, <n> items pending`
 
 If the user accepted nothing, output: `✅ No changes applied.`

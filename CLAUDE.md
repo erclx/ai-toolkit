@@ -99,7 +99,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Tasks
 
-- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.
+- Never hand-edit `.canon/tasks/index.md`. A hook regenerates it from sibling frontmatter.
 
 ## Parallel sessions
 

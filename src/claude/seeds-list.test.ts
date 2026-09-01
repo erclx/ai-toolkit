@@ -101,7 +101,7 @@ describe('readSeedContents', () => {
           'tasks',
           'index.md',
         ),
-        target: join('.claude', 'tasks', 'index.md'),
+        target: join('.canon', 'tasks', 'index.md'),
         content: 'Tasks body',
       },
     ])

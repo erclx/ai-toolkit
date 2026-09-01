@@ -2,6 +2,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  renameSync,
   rmSync,
   writeFileSync,
 } from 'node:fs'
@@ -491,6 +492,72 @@ describe('pullRecords', () => {
 
   it('should refuse when no records history exists', async () => {
     const outcome = await pullRecords(ROOT)
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('no-repository')
+  })
+})
+
+describe('a tree whose records sit under both roots', () => {
+  /** Moves every backed folder but one, which is what a failed move leaves. */
+  function halfMigrate(root: string, leaveBehind: string): void {
+    for (const folder of BACKED_FOLDERS) {
+      if (folder === leaveBehind) continue
+      mkdirSync(join(root, '.canon'), { recursive: true })
+      renameSync(join(root, '.claude', folder), join(root, '.canon', folder))
+    }
+  }
+
+  it('should refuse a push rather than stage the stranded folder as deleted', async () => {
+    await makeRecordsRepo(ROOT, ORIGIN)
+    halfMigrate(ROOT, 'memory')
+
+    const outcome = await pushRecords(ROOT)
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('split-roots')
+    expect(outcome.message).toContain(join('.claude', 'memory'))
+  })
+
+  it('should refuse a pull on the same reading', async () => {
+    await makeRecordsRepo(ROOT, ORIGIN)
+    halfMigrate(ROOT, 'plans')
+
+    const outcome = await pullRecords(ROOT)
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('split-roots')
+  })
+
+  it('should refuse ahead of the remote gates, which a half-moved tree fails later', async () => {
+    halfMigrate(ROOT, 'tasks')
+
+    const outcome = await pushRecords(ROOT)
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('split-roots')
+  })
+
+  it('should name every stranded folder rather than the first', async () => {
+    mkdirSync(join(ROOT, '.canon', 'plans'), { recursive: true })
+
+    const outcome = await pushRecords(ROOT)
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    for (const folder of BACKED_FOLDERS) {
+      expect(outcome.message).toContain(join('.claude', folder))
+    }
+  })
+
+  it('should let a fully moved tree through to the ordinary gates', async () => {
+    halfMigrate(ROOT, '')
+
+    const outcome = await pushRecords(ROOT)
 
     expect(outcome.ok).toBe(false)
     if (outcome.ok) return

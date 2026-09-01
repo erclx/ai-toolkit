@@ -56,7 +56,7 @@ export type AnswersOutcome = PlanAnswers | AnswersRefused
  * project root and against the board directory both.
  *
  * The second base is the one a dispatcher actually has to hand. A board row
- * writes its `Plan:` link relative to `.claude/tasks/`, so the href reads
+ * writes its `Plan:` link relative to `.canon/tasks/`, so the href reads
  * `../plans/feature-<slug>.md`, and resolving that against the root alone lands
  * a directory above the repository and refuses a plan that exists.
  *

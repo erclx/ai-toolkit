@@ -4,7 +4,7 @@ Governs the proposal `claude-markdown-propose` writes before it edits anything. 
 
 ## Folder
 
-- One folder per screening pass at `.claude/proposals/<slug>/`, where the slug names the subject rather than the activity
+- One folder per screening pass at `.canon/proposals/<slug>/`, where the slug names the subject rather than the activity
 - One proposal file per source file, named `<nn>-<source filename, its own extension dropped>.md`, so a source already named `CLAUDE.md` becomes `01-CLAUDE.md` rather than `01-CLAUDE.md.md`
 - `00-overview.md` when the pass spans more than two source files, holding the cross-file pattern, the change counts, and the settle order
 - `applied.md` once the first change lands, holding every applied change with its reason and the answer it carried
@@ -95,13 +95,13 @@ The folder is gitignored and unbacked. It carries decision state rather than gen
 Count the unread changes per file:
 
 ```bash
-grep -c '^- \*\*You:\*\*$' .claude/proposals/<slug>/*.md
+grep -c '^- \*\*You:\*\*$' .canon/proposals/<slug>/*.md
 ```
 
 Report every answer given, against the change it sits under:
 
 ```bash
-awk '/^### /{h=FILENAME": "$0} /^- \*\*You:\*\*./{print h; print "   "$0}' .claude/proposals/<slug>/*.md
+awk '/^### /{h=FILENAME": "$0} /^- \*\*You:\*\*./{print h; print "   "$0}' .canon/proposals/<slug>/*.md
 ```
 
 Both walk `###` headings, which is the mechanical reason an answer typed anywhere else is lost.

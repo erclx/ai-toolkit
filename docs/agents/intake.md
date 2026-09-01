@@ -7,7 +7,7 @@ description: Reading intake folder counts and items, the three read states an it
 
 ## List
 
-`canon intake list` reports the intake folders under `.claude/intake/`, or the items one folder holds. It reads and never writes, because an answer belongs to the operator and a verb that filled one would decide what the folder exists to ask.
+`canon intake list` reports the intake folders under `.canon/intake/`, or the items one folder holds. It reads and never writes, because an answer belongs to the operator and a verb that filled one would decide what the folder exists to ask.
 
 A folder carries a two-digit ordinal ahead of its slug, as in `21-toolkit-overview`, so a listing sorts by when each opened. A bare slug still resolves: passing `toolkit-overview` matches the one folder whose name is an ordinal ahead of it, and the folder's real name is what every command reports back.
 

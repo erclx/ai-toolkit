@@ -33,7 +33,7 @@ pattern = '"rel": "\.claude/TASKS\.md"'
 
 [[content]]
 path = "drift-report.json"
-pattern = '"replacedBy": "\.claude/tasks"'
+pattern = '"replacedBy": "\.canon/tasks"'
 
 [[content]]
 path = "drift-report.json"

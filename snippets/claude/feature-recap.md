@@ -1,4 +1,4 @@
-Recap the implementation this session completed. Read the plan file referenced in the session (usually `.claude/plans/feature-<slug>.md`) and produce a verification block.
+Recap the implementation this session completed. Read the plan file referenced in the session (usually `.canon/plans/feature-<slug>.md`) and produce a verification block.
 
 Output this shape, nothing else:
 

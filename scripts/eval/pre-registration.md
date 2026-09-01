@@ -83,13 +83,13 @@ Eleven bullets across four sections, addressed by their text rather than by thei
 | Memory  | 4       | Where memory files go, when a feedback memory is worth saving, the 3-line shape, and the check for an existing file            |
 | Indexes | 2       | `index.md` is regenerated from sibling frontmatter and is not hand-edited, and `auto: false` opts a folder out                 |
 | Output  | 3       | Relative paths in the main worktree, absolute paths in a linked one, and the `**Created:**` grouping for a multi-file response |
-| Tasks   | 2       | A plan lives in `.claude/plans/` and is linked from the task intro, and it is written in the same session as the task          |
+| Tasks   | 2       | A plan lives in `.canon/plans/` and is linked from the task intro, and it is written in the same session as the task           |
 
 ### Governance coverage, audited before the runs
 
 A candidate the `base` stack already delivers path-scoped cannot show a difference, because the cut half still carries the rule through another file. Auditing this first is what separates a null meaning the section is dead from a null meaning governance carried it. Both are nulls and only one is evidence about the seed.
 
-- **Memory**: no rule and no installed standard mentions `.claude/memory/`. The cut half loses the rule outright.
+- **Memory**: no rule and no installed standard mentions `.canon/memory/`. The cut half loses the rule outright.
 - **Indexes**: `standards/context.md` tells a session to skip `index.md` because `canon indexes regen` rewrites it, and `555-tasks.md` forbids hand-editing the task index. Neither covers the `auto: false` escape. Coverage is partial and lands on the first candidate bullet.
 - **Output**: no rule and no installed standard mentions the `**Created:**` grouping. The cut half loses the rule outright.
 - **Tasks**: `standards/tasks.md` covers the `Plan:` link, the `../plans/` path, and the `../.tmp/plans-archive/` destination in full, and `555-tasks.md` names that file the single source. Coverage is complete.
@@ -100,7 +100,7 @@ One hook bears on the Indexes pair. `index-reminder.sh` fires on `Grep` and `Glo
 
 Fixed here so a miss cannot be reinterpreted afterward.
 
-1. **Memory discriminates.** The kept half writes to `.claude/memory/` in the 3-line shape. The cut half writes the correction somewhere else or not at all. This is the cleanest candidate and the cheapest place to learn the method does not work.
+1. **Memory discriminates.** The kept half writes to `.canon/memory/` in the 3-line shape. The cut half writes the correction somewhere else or not at all. This is the cleanest candidate and the cheapest place to learn the method does not work.
 2. **Indexes discriminates weakly.** Both halves should leave `.claude/context/index.md` alone, since `standards/context.md` carries that much. A difference should appear on the `auto: false` escape alone, which nothing else covers, and the prompt may not reach it.
 3. **Output discriminates on one bullet of three.** The grouping bullet is reachable through a prompt that creates, modifies, and deletes at once. The two worktree bullets are not reachable by a headless run in a single worktree, so a null on those two is evidence about the prompt.
 4. **Tasks does not discriminate.** Governance covers both candidate bullets in full. A null here means the seed is duplicating an installed standard, which is the `v24.0` cut criterion rather than this task's.
