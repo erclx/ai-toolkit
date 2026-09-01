@@ -72,8 +72,8 @@ Infer only where no operator is present. Read `canon sessions list --json` and
 take the sessions holding no feature branch as the candidates, since a
 controlling session holds none. Say the addressee was inferred so the reader can
 correct it. Never filter that roster by name prefix: every self-dispatched
-worker is named `worker-<slug>`, so a prefix scan returns a sibling or this
-session itself, which is the defect that sent messages owed to a controller
+worker is named `worker-<project>-<slug>`, so a prefix scan returns a sibling or
+this session itself, which is the defect that sent messages owed to a controller
 somewhere else.
 
 Report a resolution that returns nothing rather than falling back to a guess.

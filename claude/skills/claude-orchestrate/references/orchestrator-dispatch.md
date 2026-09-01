@@ -73,12 +73,16 @@ Name `<model>` on the launch, and pick it against the task rather than copying w
 ## Dispatch
 
 ```bash
-claude --bg --model <model> -n "worker-<slug>" "Run /canon:claude-worktree <type>/<slug>, then /canon:claude-autoship <plan>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the pull request opens, carrying the number, the branch, the head sha, the CI state, and every point you departed from the plan on, and message it again if you stop on a question."
+claude --bg --model <model> -n "worker-<project>-<slug>" "Run /canon:claude-worktree <type>/<slug>, then /canon:claude-autoship <plan>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the pull request opens, carrying the number, the branch, the head sha, the CI state, and every point you departed from the plan on, and message it again if you stop on a question."
 ```
 
 `--bg, --background` starts the session as a background agent and returns immediately, `-n, --name` sets the display name that tells a self-dispatched worker from an operator's own launch in `canon sessions list`, and `--model` overrides the inheritance the section above measured. Pass `-n` on every dispatch rather than letting the client derive one. A launch that omits it leaves the session named for a fragment of its own identifier, which is both its address on the send channel and the whole of what the operator sees for it in agent view.
 
 The prefix reads `worker-` because that is the role it marks. It read `orchestrator-` until 2026-08-31, and no controlling session ever carried it, so a worker filtering the roster for that string found a sibling or itself on every row. Nothing matches the prefix programmatically, which is what kept the rename down to three strings.
+
+`<project>` is the basename of the main worktree root, not of wherever the dispatcher happens to be running. Resolve the main root first, the way `claude-worktree` Step 1 does, since a bare `git rev-parse --show-toplevel` inside a linked worktree returns the worktree path rather than the project's. See Worktrees in `CLAUDE.md`.
+
+`claude agents` lists every session on the machine with no path column and no per-project filter, so `<project>` in the name is the only thing left telling two fleets apart, and a session named off the worktree path instead would carry the branch folder rather than the project. Two projects each dispatching a bare `worker-page-driver` used to read as one row in that view.
 
 Read `<dispatcher-id>` with `canon sessions list --self --json` and interpolate the `sessionId` that row carries. Carry the id rather than the name. A name is derived from whatever the session turned out to be doing, and across the 181 records stamping both fields, nine were renamed after launch at a median of 5.4 minutes and a maximum of 509. Three landed more than ten minutes in, which is inside the window a worker announces its pull request in, so a name written into the prompt is aimed at a send that happens after it goes stale.
 
@@ -165,11 +169,11 @@ directly with `Bash`, `Read`, and `Edit` instead of retrying the tool, which
 is the route two workers already took today on two different branches.
 
 ```bash
-claude --bg --model <model> -n "worker-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /canon:claude-worker, then /canon:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
+claude --bg --model <model> -n "worker-<project>-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /canon:claude-worker, then /canon:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
 ```
 
-`<dispatcher-id>` and `<model>` resolve the same way the build shape resolves
-them above.
+`<dispatcher-id>`, `<model>`, and `<project>` resolve the same way the build
+shape resolves them above.
 
 Take this shape wherever a review needs answering and no live session already
 holds the branch. Where one does, message it to run `claude-address-review`
@@ -196,14 +200,15 @@ gitignored file at the main worktree root, so this shape names the row's task
 file rather than a branch and opens with the role instead of a worktree call.
 
 ```bash
-claude --bg --model <model> -n "planner-<slug>" "Run /canon:claude-planner, then /canon:claude-feature <task>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the plan lands, carrying the path and what the task file got wrong, and message it again if you stop on a question."
+claude --bg --model <model> -n "planner-<project>-<slug>" "Run /canon:claude-planner, then /canon:claude-feature <task>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the plan lands, carrying the path and what the task file got wrong, and message it again if you stop on a question."
 ```
 
 `<task>` is the row's task file path and `<slug>` the slug its plan will take,
 resolved off the row the way the build shape resolves one off a plan.
-`<dispatcher-id>` and `<model>` resolve the same way they do above. The prefix
-reads `planner-` for the reason the worker's reads `worker-`, which is that it
-marks the role of the session it names rather than the one that launched it.
+`<dispatcher-id>`, `<model>`, and `<project>` resolve the same way they do
+above. The prefix reads `planner-` for the reason the worker's reads `worker-`,
+which is that it marks the role of the session it names rather than the one
+that launched it.
 
 None of the three checks above binds this shape. The branch check has no
 candidate to read, and the disjointness gate has nothing to compare, since a
