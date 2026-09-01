@@ -6,6 +6,7 @@ import { applyRecordsMove, applyRename, readSources } from '@/migrate/apply'
 import { isToolkitOwned, planRename, type RenamePlan } from '@/migrate/plan'
 import {
   ignoresDestination,
+  isRecordArtifact,
   planRecordsMove,
   type RecordsPlan,
 } from '@/migrate/records'
@@ -176,17 +177,24 @@ async function runRecords(opts: RecordsOptions): Promise<number> {
     return 1
   }
 
-  const plan = planRecordsMove(root, await readSources(root, files))
+  // Filtered before the read rather than inside the planner, because the
+  // records are the largest thing in the tree and `readSources` awaits one file
+  // at a time. This repository's own record tree is 9,744 files at 83M, and the
+  // backup history under it is object files read whole and discarded as binary.
+  const toSweep = files.filter((path) => !isRecordArtifact(path))
+  const records = files.length - toSweep.length
+
+  const plan = planRecordsMove(root, await readSources(root, toSweep))
 
   // stdout, so the record pipes clean. `pipeOutput` frames to stderr, which is
   // where this command's report belongs and where a JSON record does not.
   if (opts.json) {
     process.stdout.write(
-      `${JSON.stringify(toRecordsRecord(plan, opts.write))}\n`,
+      `${JSON.stringify(toRecordsRecord(plan, records, opts.write))}\n`,
     )
   }
 
-  reportRecords(plan)
+  reportRecords(plan, records)
 
   if (plan.collisions.length > 0) {
     logError(
@@ -229,13 +237,21 @@ function readGitignore(root: string): string | undefined {
   }
 }
 
-function reportRecords(plan: RecordsPlan): void {
+function reportRecords(plan: RecordsPlan, records: number): void {
   logInfo(`${plural(plan.moves.length, 'folder')} to move.`)
   for (const move of plan.moves) logInfo(`  ${move.from} -> ${move.to}`)
   logInfo(
     `${plural(plan.entries.length, 'file')} to change, ${plural(plan.rewritten, 'citation')} to rewrite.`,
   )
   logInfo(`${plural(plan.kept, 'citation')} marked to keep the old root.`)
+
+  // A count rather than a list, and its own line rather than a place in
+  // `excluded`. That field exists so a reader can go and check a handful by
+  // hand, and a record tree would bury them. The count is what answers the
+  // question a target actually has, which is where the rest of the files went.
+  if (records > 0) {
+    logInfo(`${plural(records, 'file')} under a record root, left alone.`)
+  }
 
   if (plan.excluded.length > 0) {
     logInfo(`${plural(plan.excluded.length, 'file')} excluded from the sweep.`)
@@ -244,6 +260,7 @@ function reportRecords(plan: RecordsPlan): void {
 
 function toRecordsRecord(
   plan: RecordsPlan,
+  records: number,
   wrote: boolean | undefined,
 ): unknown {
   return {
@@ -255,6 +272,7 @@ function toRecordsRecord(
     rewritten: plan.rewritten,
     kept: plan.kept,
     excluded: plan.excluded.length,
+    records,
     paths: plan.entries.map((entry) => ({
       path: entry.path,
       rewritten: entry.rewritten,
@@ -293,6 +311,11 @@ export function register(program: Command): void {
         '',
         'A line carrying canon-keep-record-root, or the line below it, keeps the',
         'old root. Prose that dates a decision needs it; a live path does not.',
+        '',
+        'The records themselves are never swept. Everything under .canon/ and',
+        'every .claude/ record folder is left alone and reported as a count, so',
+        'a run after the ignore entries collapse touches the same files as one',
+        'before it.',
         '',
         'Examples:',
         '  canon migrate records',

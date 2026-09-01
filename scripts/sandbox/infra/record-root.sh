@@ -139,10 +139,23 @@ stage_setup() {
   "migrate")
     seed_records .claude .tmp
     printf '.canon/\n' >.gitignore
+
+    # A record carrying a citation, which nothing else in this fixture has. The
+    # ignore file above names the new root alone, which is what the documented
+    # first-run order produces, so every record still at the old root is visible
+    # to the sweep as though it were source. Without the record-root skip this
+    # one file is what the verb reports and rewrites.
+    #
+    # The seeding line spells the old root twice and is protected for it, so the
+    # arm demonstrates the defect it measures rather than becoming an instance.
+    # canon-keep-record-root
+    printf 'The row is at .claude/plans/feature-live-row.md\n' >.claude/memory/pen-entry.md
+
     log_step "Running: canon migrate records --root ."
     run_cli migrate records --root . --json
     log_info "Expect: 12 entries considered, the 4 on disk named as folders to move"
     log_info "Expect: exit 2 and nothing written, since --write was not passed"
+    log_info "Expect: the pen entry in neither paths nor files, and records counting it"
     log_step "Running: canon migrate records --root . --write"
     run_cli migrate records --root . --write --json
     log_step "Reading the tree back"
@@ -154,6 +167,10 @@ stage_setup() {
     log_step "Running: canon records validate plans --root ."
     run_cli records validate plans --root . --json
     log_info "Expect: 1 record read, resolved at the root the move produced"
+    log_step "Reading the pen entry back"
+    cat .canon/memory/pen-entry.md
+    # canon-keep-record-root
+    log_info "Expect: the citation still spelling .claude/plans, since a record is never swept"
     log_step "Running: canon migrate records --root ."
     run_cli migrate records --root . --json
     log_info "Expect: 0 folders and 0 citations, which is the idempotence check"
@@ -181,7 +198,14 @@ stage_setup() {
     origin="$PWD/../records-origin.git"
     rm -rf "$origin"
     git init --quiet --bare "$origin"
+
+    # The history is opened at the old root because this arm builds an
+    # unmigrated tree, which is what gives the split-root refusal below
+    # something to refuse. A sweep rewriting either line would have the arm
+    # push a tree that was never split.
+    # canon-keep-record-root
     git --git-dir=.claude/.records.git init --quiet
+    # canon-keep-record-root
     git --git-dir=.claude/.records.git remote add origin "$origin"
 
     log_step "Running: canon records push --root ."
@@ -197,6 +221,7 @@ stage_setup() {
     # behind, so an unguarded `add -A` would stage every one of them as deleted.
     log_step "Half-migrating the tree, one folder moved"
     mkdir -p .canon
+    # canon-keep-record-root
     mv .claude/memory .canon/memory
     log_step "Running: canon records push --root ."
     run_cli records push --root . --json

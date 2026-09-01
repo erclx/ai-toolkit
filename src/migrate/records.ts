@@ -10,7 +10,12 @@
 
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { type RecordRoot, RECORD_ENTRIES, spell } from '@/record-root'
+import {
+  type RecordRoot,
+  RECORD_ENTRIES,
+  RECORD_ROOTS,
+  spell,
+} from '@/record-root'
 
 /** The root the entries below leave, exported so the writer can prune it. */
 export const FROM_ROOT: RecordRoot = '.claude'
@@ -102,6 +107,66 @@ export function isExcludedPath(path: string): boolean {
   if (EXCLUDED_PATHS.includes(path)) return true
   if (EXCLUDED_PREFIXES.some((prefix) => path.startsWith(prefix))) return true
   return EXCLUDED_SUFFIXES.some((suffix) => path.endsWith(suffix))
+}
+
+/**
+ * The roots holding nothing but records, so a path under one is a record
+ * whatever it is named.
+ *
+ * `.canon/` qualifies by construction. `.claude/ARCHITECTURE.md` fixes the rule
+ * that every gitignored session record moves there and nothing tracked ever
+ * lands there, which covers a record folder `RECORD_ENTRIES` has yet to learn
+ * about. The old root is the one that cannot take a whole-root reading, and it
+ * is derived by exclusion rather than named, so a third root added later reads
+ * as records-only unless someone says otherwise.
+ */
+const RECORD_ONLY_ROOTS: readonly RecordRoot[] = RECORD_ROOTS.filter(
+  (root) => root !== FROM_ROOT,
+)
+
+/**
+ * Every prefix under which a path is a record rather than a file to sweep.
+ *
+ * The asymmetry is the point. A whole-root prefix is correct for the new root
+ * and wrong for the old one, which is mixed: this repository tracks 163 files
+ * under `.claude/`, and a target's installed `.claude/rules/core/035-tasks.md`
+ * is the file the sweep exists to repoint, so a bare `.claude/` prefix strands
+ * it silently. The old root is therefore entry-scoped, through `spell` so the
+ * one naming variant stays decided in `record-root.ts`.
+ *
+ * Joined with a literal separator rather than through `join`, the way
+ * `EXCLUDED_PREFIXES` already is. These are matched against what `git ls-files`
+ * returns, which is forward-slashed on every platform, where `join` would spell
+ * a backslash on Windows and match nothing.
+ */
+const RECORD_PREFIXES: readonly string[] = [
+  ...RECORD_ONLY_ROOTS,
+  ...RECORD_ENTRIES.map((entry) => `${FROM_ROOT}/${spell(FROM_ROOT, entry)}`),
+]
+
+/**
+ * Whether a path is a record artifact, which the sweep passes over entirely.
+ *
+ * Separate from `isExcludedPath`, which reports what it skips because a reader
+ * has to check those by hand. A record artifact is never something to check,
+ * and a target's record tree is large enough that reporting each one would bury
+ * the handful of exclusions that matter.
+ *
+ * A record folder becomes visible to the sweep at the moment `canon tooling
+ * sync claude` prunes the twelve old ignore entries down to one `.canon/` line,
+ * which is the step the documented first-run order puts immediately before this
+ * verb. Without this predicate the run that follows reads the memory pen and
+ * the groundwork trails as source and rewrites them.
+ *
+ * The three retired flat archives stay outside this, the way `CITATION` already
+ * leaves them alone: `.claude/plans-archive/x.md` does not start with
+ * `.claude/plans/`, and widening the entry list to catch it would change what
+ * `MOVED_ENTRIES` means for the folder half of the verb.
+ */
+export function isRecordArtifact(path: string): boolean {
+  return RECORD_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  )
 }
 
 /**
@@ -244,6 +309,11 @@ export function planRecordsMove(
   let kept = 0
 
   for (const source of sources) {
+    // Silently, and ahead of the exclusion test. The command boundary filters
+    // these out before it reads them, so this is what keeps the pure function
+    // correct under a direct call rather than what the verb relies on.
+    if (isRecordArtifact(source.path)) continue
+
     if (isExcludedPath(source.path)) {
       // Only an excluded file that actually carries a citation is reported. The
       // predicate covers every test file in the tree, so counting them all would

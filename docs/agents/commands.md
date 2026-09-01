@@ -142,7 +142,9 @@ Common patterns:
 
 `migrate rename` moves a project off the retired `aitk` name. It reports until `--write` is passed, and `--scope target` rewrites the toolkit-owned folders alone, reporting every other citation as one the project owns rather than editing prose somebody wrote. A project installing `canon` fresh never needs it.
 
-`migrate records` moves a project's session records from `.claude/` to `.canon/` and rewrites every tracked file that cites one. It reports until `--write` is passed, and refuses outright when the project does not already ignore `.canon/`, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. Take the ignore entry with `canon tooling sync --write` first. A record folder already present at the destination is a refusal rather than a merge, and a line carrying `canon-keep-record-root`, or the line below it, keeps the old spelling for prose that dates a decision. Running it twice rewrites nothing, which is the check that the exclusions and the markers fired.
+`migrate records` moves a project's session records from `.claude/` to `.canon/` and rewrites every tracked file that cites one. It reports until `--write` is passed, and refuses outright when the project does not already ignore `.canon/`, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. Take the ignore entry with `canon tooling sync --write` first.
+
+A record folder already present at the destination is a refusal rather than a merge, and a line carrying `canon-keep-record-root`, or the line below it, keeps the old spelling for prose that dates a decision. The records themselves are never swept: everything under `.canon/` and every `.claude/` record folder is passed over and reported as a count on its own line, which is what keeps the run that follows the ignore collapse touching the same files as one before it. Running it twice rewrites nothing, which is the check that the exclusions, the markers, and that skip all fired.
 
 ## Version skew
 
