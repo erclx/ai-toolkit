@@ -37,3 +37,6 @@ jobs:
 
       - name: Verify
         run: bun run check:ci
+
+      - name: Verify install
+        run: bun run check:install
