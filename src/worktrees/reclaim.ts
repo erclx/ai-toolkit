@@ -1,5 +1,6 @@
 import { $ } from 'bun'
 import { execa } from 'execa'
+import { existsSync } from 'node:fs'
 import { gitEnv } from '@/git-env'
 import {
   repositoryOf,
@@ -52,6 +53,11 @@ export interface WorktreeVerdict {
   /** The names of the live sessions holding this worktree, which is what `claude rm` takes. */
   readonly sessions: readonly string[]
   readonly route: RemovalRoute
+  /**
+   * True when the directory is already gone and only the registration remains,
+   * which is what decides whether a sweep is owed after the removals.
+   */
+  readonly missing: boolean
 }
 
 export interface MergedPullRequest {
@@ -71,6 +77,11 @@ export interface StatusReport {
   /** False when the status read itself failed, so a clean `dirty` says nothing. */
   readonly readable: boolean
   readonly dirty: boolean
+  /**
+   * True when no directory stands at the path. Readable and clean rather than
+   * unreadable, since nothing is there to hold work.
+   */
+  readonly missing: boolean
 }
 
 export type ReclaimReport =
@@ -153,19 +164,33 @@ async function mergedPullRequests(cwd: string): Promise<MergedReport> {
 /**
  * Reports whether a worktree holds work no history is behind.
  *
- * Untracked files count, since a worktree is gitignored scratch and a directory
- * removed with them takes them nowhere recoverable. A failed read is separated
- * from a clean tree, because the two produce the same empty output and only one
- * of them is safe to act on.
+ * Untracked files count for a directory that still exists, since a worktree is
+ * gitignored scratch and a directory removed with them takes them nowhere
+ * recoverable.
+ *
+ * Three states rather than two. A directory that is gone holds nothing at all,
+ * so it reads as clean and leaves the merged and session checks to decide. A
+ * read that failed is separated from both, because it produces the same empty
+ * output as a clean tree and only one of them is safe to act on. The directory
+ * test runs first because `git status` exits 128 for a missing path and for an
+ * unreadable one alike, which folded the two into one refusal and reported
+ * every hand-deleted worktree as unreadable.
  */
 async function worktreeStatus(path: string): Promise<StatusReport> {
+  if (!existsSync(path)) return { readable: true, dirty: false, missing: true }
+
   const result = await $`git -C ${path} status --porcelain`
     .env(gitEnv())
     .quiet()
     .nothrow()
-  if (result.exitCode !== 0) return { readable: false, dirty: false }
+  if (result.exitCode !== 0)
+    return { readable: false, dirty: false, missing: false }
 
-  return { readable: true, dirty: result.stdout.toString().trim().length > 0 }
+  return {
+    readable: true,
+    dirty: result.stdout.toString().trim().length > 0,
+    missing: false,
+  }
 }
 
 /**
@@ -226,6 +251,7 @@ function verdict(
     // here rather than in the reporter keeps the record and the framed output
     // answering the same way, since the two consumers act on different halves.
     route: isMain ? null : held.length > 0 ? 'session' : 'worktree',
+    missing: status.missing,
   }
 }
 
@@ -295,7 +321,7 @@ export async function reclaimReport(
     verdict(
       entry,
       index === 0,
-      statuses[index] ?? { readable: false, dirty: false },
+      statuses[index] ?? { readable: false, dirty: false, missing: false },
       byBranch,
       sessions.sessions,
       repository,

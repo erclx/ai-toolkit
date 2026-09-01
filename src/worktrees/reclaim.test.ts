@@ -235,12 +235,54 @@ describe('reclaimReport', () => {
       cwd: ROOT,
       resolve: async () => roster(),
       mergedPullRequests: async () => merged(['feat/parser', 673]),
-      worktreeStatus: async () => ({ readable: false, dirty: false }),
+      worktreeStatus: async () => ({
+        readable: false,
+        dirty: false,
+        missing: false,
+      }),
     })
 
     const verdict = verdictFor(report, path)
     expect(verdict.reclaimable).toBe(false)
     expect(verdict.refusals).toContain('unreadable-worktree')
+  })
+
+  // A directory deleted by hand and a status read that failed both exit 128, and
+  // folding them together is what reported eight reclaimable worktrees as
+  // unreadable. The real status read runs here rather than an injected one,
+  // since the separation is the thing under test.
+  it('should reclaim a worktree whose directory was already deleted by hand', async () => {
+    const path = linked('wt-parser', 'feat/parser')
+    rmSync(path, { recursive: true, force: true })
+
+    const report = await reclaimReport({
+      cwd: ROOT,
+      resolve: async () => roster(),
+      mergedPullRequests: async () => merged(['feat/parser', 673]),
+    })
+
+    const verdict = verdictFor(report, path)
+    expect(verdict.reclaimable).toBe(true)
+    expect(verdict.refusals).toEqual([])
+    expect(verdict.missing).toBe(true)
+  })
+
+  // Reading a missing directory as clean must not clear anything else with it,
+  // so the merged check still decides and names its own refusal.
+  it('should still refuse a deleted directory whose branch never merged', async () => {
+    const path = linked('wt-verdicts', 'docs/verdicts')
+    rmSync(path, { recursive: true, force: true })
+
+    const report = await reclaimReport({
+      cwd: ROOT,
+      resolve: async () => roster(),
+      mergedPullRequests: async () => merged(),
+    })
+
+    const verdict = verdictFor(report, path)
+    expect(verdict.reclaimable).toBe(false)
+    expect(verdict.refusals).toEqual(['no-merged-pull-request'])
+    expect(verdict.missing).toBe(true)
   })
 
   it('should name every failing condition rather than only the first', async () => {
