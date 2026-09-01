@@ -61,7 +61,7 @@ The published tarball is what settles why the health guard fires rather than the
 
 Validation needs no credential, confirmed by running it under `env -i` with a fresh `HOME`, so this is an install step rather than a secret. The stage still skips on a machine where the CLI is absent or cannot run, and fails instead when `CI` is set, because a silent skip on the runner would report the pass the stage exists to withhold.
 
-`check:install` now runs in CI as its own step, after `check:ci`, rather than staying out of it entirely. The local gate and the pre-push hook still exclude it, since packing and a production install cost more than everything else the gate runs, and CI is where that cost is paid once per push rather than on every developer machine.
+`check:install` now runs in CI as its own step, after `check:ci`, rather than staying out of it entirely. Measured on this branch's own first run, `Verify install` cost 3 seconds against `Verify`'s 70, since the runner's `bun install --frozen-lockfile` step had already primed the same package cache moments earlier in the same job. The local gate and the pre-push hook still exclude it anyway, because a contributor's first run gets no such head start, and what a cold pack-and-install actually costs there is unmeasured.
 
 The exclusion reversed once the check itself changed: a clone answered whether a checkout installs, which `bun install --frozen-lockfile` already proves earlier in the same job, so keeping it out cost nothing. Packing and installing from the extracted tarball answers what the `files` field ships, which nothing else in this workflow tests, and `.claude/context/cli/packaging.md` covers what that check now proves and what it still cannot see.
 

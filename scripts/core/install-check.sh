@@ -52,7 +52,7 @@ mkdir -p "$PACK_DIR" "$EXTRACT_DIR"
 open_timeline "Install verification"
 
 log_step "Pack"
-TARBALL_PATH="$(bun pm pack --quiet --ignore-scripts --destination "$PACK_DIR" | tail -n 1)"
+TARBALL_PATH="$(cd "$PROJECT_ROOT" && bun pm pack --quiet --ignore-scripts --destination "$PACK_DIR" | tail -n 1)"
 log_info "Packed to $TARBALL_PATH"
 
 log_step "Extract"
