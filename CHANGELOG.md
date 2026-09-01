@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.9.2](https://github.com/erclx/canon/compare/v4.9.1...v4.9.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* **autoship:** read the draft flag back and drop the bound it claimed ([#1328](https://github.com/erclx/canon/issues/1328)) ([bbb79ea](https://github.com/erclx/canon/commit/bbb79eaef18690f2ab4f845378f11ad681df6ff1))
+
 ## [4.9.1](https://github.com/erclx/canon/compare/v4.9.0...v4.9.1) (2026-09-01)
 
 
