@@ -48,6 +48,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon records pull`          | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                                               |
 | `canon migrate rename`        | Rewrite every unprotected `aitk` token to `canon` and move the paths that carry the name, reporting the plan without `--write` (`--scope`, `--json`)                  |
 | `canon migrate records`       | Move the gitignored session records to `.canon/` and repoint every tracked citation, reporting the plan without `--write` (`--root`, `--json`)                        |
+| `canon migrate record-tree`   | Repoint the old-root citations inside the records themselves, scoped to the live folders and reporting every line without `--write` (`--root`, `--json`)              |
 | `canon sessions list`         | Resolve live sessions to the worktree and branch each holds, filtered by `--branch` (`--json`)                                                                        |
 | `canon worktrees list`        | Report which worktrees are reclaimable, keyed on the pull request having merged, with every refusal and the removal route named (`--json`)                            |
 | `canon comments scan`         | Measure comment density by language and comment kind, with a trend recomputed from git                                                                                |
@@ -145,6 +146,10 @@ Common patterns:
 `migrate records` moves a project's session records from `.claude/` to `.canon/` and rewrites every tracked file that cites one. It reports until `--write` is passed, and refuses outright when the project does not already ignore `.canon/`, since every folder it relocates is ignored where it stands and landing one under a tracked root commits the memory pen. Take the ignore entry with `canon tooling sync --write` first.
 
 A record folder already present at the destination is a refusal rather than a merge, and a line carrying `canon-keep-record-root`, or the line below it, keeps the old spelling for prose that dates a decision. The records themselves are never swept: everything under `.canon/` and every `.claude/` record folder is passed over and reported as a count on its own line, which is what keeps the run that follows the ignore collapse touching the same files as one before it. Running it twice rewrites nothing, which is the check that the exclusions, the markers, and that skip all fired.
+
+`migrate record-tree` is what reaches the records the sweep above passes over, and the two share no scope. That one enumerates through git, so it sees every tracked file and none of the records, which are gitignored by construction. This one walks `.canon/` itself and is scoped to the folders a session still follows a path into: `diagrams`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, each minus its own `archive/` subtree. A closed groundwork or intake trail, the scratch folder, and the backup history are reported as counts and never rewritten, because a path inside a closed trail sits in a sentence about work that already ended. Run it after the move, since there is no new root to walk before one.
+
+Every citation in scope is reported with its file, its line number, and the line text. The record tree is untracked, so a wrong rewrite has no git undo, and that report is what a reader judges before passing `--write`. Marking a line that has to keep the old spelling uses the same `canon-keep-record-root` comment, and a second run rewriting nothing is the idempotence check.
 
 ## Version skew
 
