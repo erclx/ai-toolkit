@@ -172,8 +172,8 @@ is the route two workers already took today on two different branches.
 claude --bg --model <model> -n "worker-<project>-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /canon:claude-worker, then /canon:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
 ```
 
-`<dispatcher-id>` and `<model>` resolve the same way the build shape resolves
-them above.
+`<dispatcher-id>`, `<model>`, and `<project>` resolve the same way the build
+shape resolves them above.
 
 Take this shape wherever a review needs answering and no live session already
 holds the branch. Where one does, message it to run `claude-address-review`
@@ -205,9 +205,10 @@ claude --bg --model <model> -n "planner-<project>-<slug>" "Run /canon:claude-pla
 
 `<task>` is the row's task file path and `<slug>` the slug its plan will take,
 resolved off the row the way the build shape resolves one off a plan.
-`<dispatcher-id>` and `<model>` resolve the same way they do above. The prefix
-reads `planner-` for the reason the worker's reads `worker-`, which is that it
-marks the role of the session it names rather than the one that launched it.
+`<dispatcher-id>`, `<model>`, and `<project>` resolve the same way they do
+above. The prefix reads `planner-` for the reason the worker's reads `worker-`,
+which is that it marks the role of the session it names rather than the one
+that launched it.
 
 None of the three checks above binds this shape. The branch check has no
 candidate to read, and the disjointness gate has nothing to compare, since a
