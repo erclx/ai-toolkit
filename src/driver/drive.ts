@@ -23,19 +23,18 @@ import type {
  * `src/commands/driver.ts` reaches it through a dynamic import so no other
  * command resolves the engine at startup.
  *
- * Like `@/demo/drive` and `@/inventory/walk`, and unlike `@/capture/render`,
- * this module ships. A command whose whole purpose is measuring someone else's
- * page cannot stay toolkit-only, and nothing here reaches into `@/capture/`,
- * which `files` in `package.json` excludes from the published package, so the
- * two surfaces move independently.
+ * Like `@/demo/drive`, `@/inventory/walk`, and `@/capture/render`, this module
+ * ships. A command whose whole purpose is measuring someone else's page cannot
+ * stay toolkit-only, and nothing here reaches into `@/capture/`, so the two
+ * surfaces move independently.
  *
  * What separates it from `canon capture` is the axis it adds. A render answers
  * about a page as it loads, and every defect that exists only after a menu
  * opens, an answer is chosen, or the page scrolls is invisible to one. Probes
  * therefore run after a step rather than on arrival, and a run reaches the load
- * state by opening with a `wait` step of its own. That matters most where
- * capture does not run, since it is toolkit-only and this command is then the
- * only thing measuring the page at all.
+ * state by opening with a `wait` step of its own. That matters most where no
+ * capture runs against the page, since this command is then the only thing
+ * measuring it at all.
  */
 
 /** Each probe keyed by the name a caller writes in the run. */
