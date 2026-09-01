@@ -1,21 +1,23 @@
 ---
 title: Packaging
-description: What the published package carries and excludes, how a command reaches an excluded engine, and the two capture sources
+description: What the published package carries and excludes, how a browser command keeps its engine off the startup path, and the two capture sources
 ---
 
 # Packaging
 
-The CLI ships to the registry as `@erclx/canon` with nothing built, so what the package carries is decided entirely by the `files` list. Three trees are excluded, and the one command backed by an excluded engine is what sets the pattern any later exclusion follows.
+The CLI ships to the registry as `@erclx/canon` with nothing built, so what the package carries is decided entirely by the `files` list. Two trees are excluded plus every test file, and the four browser commands are what set the pattern any command backed by a heavy import follows.
 
-## Reaching an excluded engine
+## Keeping an engine off the startup path
 
-A command whose engine the package excludes reaches that engine through a dynamic import inside the action. `src/cli.ts` imports every command's `register` at module scope, so a browser reference at a command's top level would make an installed `canon` fail before parsing argv, on every command rather than on the one that is missing. `src/commands/capture.ts` therefore holds wiring only, `src/capture/render.ts` holds every browser reference, and the caught import failure turns the absence into one readable line for the single command that is gone. Any later command backed by a `devDependency` copies this split rather than gating on an environment check. `src/commands/demo.ts`, `src/commands/inventory.ts`, and `src/commands/driver.ts` are the second, third, and fourth to take it, and the two engine-absence predicates they share with `src/demo/drive.ts` sit in `src/browser/engine.ts` rather than being spelled once per command. Only `capture` is excluded from the package, so the other three take the split for the startup cost rather than for an absence they ever meet.
+A command backed by a browser reaches its engine through a dynamic import inside the action. `src/cli.ts` imports every command's `register` at module scope, so a browser reference at a command's top level would put a browser resolution in front of every other command rather than in front of the one that needs it. `src/commands/capture.ts` therefore holds wiring only and `src/capture/render.ts` holds every browser reference, which `src/commands/demo.ts`, `src/commands/inventory.ts`, and `src/commands/driver.ts` each repeat against a module of their own. The two engine-absence predicates the four share sit in `src/browser/engine.ts` rather than being spelled once per command.
 
-The availability check runs before any check on the command's own arguments. Whether the feature exists at all is a precondition of whether its argument means anything, and validating the argument first hides the absence behind whatever that check reports. `canon capture` defaults its source to `assets`, so an installed package answered `assets not found` from the caller's own working directory and the toolkit-only message was unreachable on the ordinary invocation.
+All four ship. The split reads as a startup cost now rather than as a way to report an absence, and `capture` is what changed: it was the one command whose engine the package excluded, and the exclusion carried a defect underneath it, since `src/capture/render.ts` imported `@playwright/test` and no published tarball carries a development dependency. Removing the exclusion without moving that import to `playwright-core` would have shipped a command throwing `ERR_MODULE_NOT_FOUND` on its first dynamic import in every target.
 
-Both aliases the command uses for the excluded module's types are `typeof import(...)` queries rather than `import type` statements, which keeps the excluded path out of the shipped file's import list where a reviewer checks for it.
+Both aliases the command uses for the render module's types are `typeof import(...)` queries rather than `import type` statements, which keeps the dynamic path out of the shipped file's import list where a reviewer checks for it.
 
-`canon sandbox` is the second surface under this rule, and it detects a missing directory rather than a missing module, so the guard is an existence check on where `SANDBOX_DIR` resolves rather than a caught import. One check there serves the interactive picker and `coverage` both, and it makes `coverage` exit 1 without printing a percentage. A denominator nobody looked at is not a zero, and reporting one reads as a suite that examined everything and found it clean.
+An argument check runs in the order that puts the message on what was actually wrong. `canon capture` defaults its source to `assets` and requires `--selector`, so validating the source first would answer `assets not found` from the caller's own working directory and never name the flag that was missing. The refusal on the flag therefore runs first. That ordering used to serve the availability check, which asked whether the feature existed at all before asking what its argument meant, and it survives the check it was written for.
+
+`canon sandbox` is the one surface left where availability is the question, and it detects a missing directory rather than a missing module, so the guard is an existence check on where `SANDBOX_DIR` resolves rather than a caught import. One check there serves the interactive picker and `coverage` both, and it makes `coverage` exit 1 without printing a percentage. A denominator nobody looked at is not a zero, and reporting one reads as a suite that examined everything and found it clean.
 
 ## The capture sources
 
@@ -35,7 +37,7 @@ Nothing on the frame comes from `package.json`, since a pull request builds agai
 
 `scripts/sandbox` and `scripts/eval` are excluded by negation rather than by leaving `scripts/` out, since the domain scripts beside them are what `execScript` dispatches to. Both are toolkit-development harnesses whose roots (`.sandbox/`, the eval ledger) never ship, so shipping them would carry a quarter of the file count for a command that can only fail.
 
-`src/capture` is the third exclusion and the first outside `scripts/`, since it imports a `devDependency` and the `assets/` sources it renders were never in the allowlist to begin with. Verifying any of the three means packing the tarball and loading the CLI from it, because every check in the repository runs where the excluded files are present and passes either way.
+`src/capture` was a third exclusion and is not one now. It was excluded for importing a `devDependency` and for rendering `assets/` sources that were never in the allowlist, and the second half is still true: a target installs the command without this repository's sources, which is correct, since it renders its own. Verifying an exclusion means packing the tarball and loading the CLI from it, because every check in the repository runs where the excluded files are present and passes either way.
 
 ### What `.claude/` costs by being absent
 
