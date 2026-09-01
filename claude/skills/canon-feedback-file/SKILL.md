@@ -17,28 +17,49 @@ Format a `## Toolkit feedback` block from the current session, then ship it to t
 
 From the conversation so far, identify:
 
-- Target project name or path
+- Target project name or kind, never its full path. The path names a folder on one machine and says nothing a triage session can route on, where the project's own name does. Name a private project by its kind instead, such as `a Next.js app`, since the report leaves the machine.
 - Toolkit surface and its type (plugin skill, snippet, tooling config, governance rule, seed, or CLI)
 - Specific toolkit file or name when the session cites one
 - Observed behavior
 - Expected behavior, or `unclear`
 - Repro details already in context (commands run, files touched), or `none`
-- Proposed fix when the user stated one, or `open`
+- Proposed fix, or `open` when the session settled on no direction
 
-Format as a single fenced markdown block:
+Format as a single fenced markdown block, one `###` heading per field:
 
 ```markdown
 ## Toolkit feedback
 
-**From project:** <name or path>
-**Surface:** <type>, <file path or name>
-**Observed:** <one or two lines>
-**Expected:** <one or two lines, or "unclear">
-**Repro:** <commands or steps, or "none">
-**Proposed fix:** <one line, or "open">
+### From project
+
+<name or kind>
+
+### Surface
+
+<type>, <file path or name>
+
+### Observed
+
+<one or two lines>
+
+### Expected
+
+<one or two lines, or "unclear">
+
+### Repro
+
+<commands or steps, or "none">
+
+### Proposed fix
+
+<one line, or "open">
 ```
 
-Keep each field to one or two lines. Write the literal fallback shown above when a field has nothing.
+`canon feedback` refuses a report missing `### Surface`, `### Observed`, or `### Proposed fix`, naming the one it did not find. The other three are optional, so write the literal fallback shown above rather than dropping the heading, which is what keeps a field the session cannot fill reading as absent instead of unreported.
+
+Headings rather than bold labels, because a GitHub issue form renders a submitted field as `### <label>`. One shape reaches the toolkit whichever route a report takes, and the CLI parses both with one parser. The retired `**Surface:**` form is refused rather than accepted, so a block carrying it has to be rewritten.
+
+Keep each field to one or two lines.
 
 ## Step 2: ship to the toolkit
 
@@ -60,7 +81,7 @@ EOF
 
 Report the printed path back to the user on its own line, in the form the project's instruction file sets under `## Output`.
 
-For a durable, cross-machine report instead of local scratch, add `--github`. The CLI opens a GitHub issue on the toolkit repo and prints the issue URL. It needs `gh` authenticated, and falls back to local scratch with a warning when `gh` is absent.
+For a durable, cross-machine report instead of local scratch, add `--github`. The CLI opens a GitHub issue on the toolkit repo and prints the issue URL. It needs `gh` authenticated, and falls back to local scratch with the reason on stderr when the call produces no URL.
 
 ```bash
 cat <<'EOF' | canon feedback --github
@@ -73,6 +94,15 @@ EOF
 Default to local scratch for a quick note. Use `--github` for a report worth tracking across sessions and machines.
 
 If `canon` is not on PATH, fall back: print the block in chat and tell the user `📋 Copy the block above into a toolkit-repo session.`
+
+## Step 3: read what the CLI said back
+
+The command exits 1 and writes nothing on a report it refuses, so a non-zero run is a block to repair rather than a report that shipped. Two refusals reach this step:
+
+- A named missing field. Add that heading with a real value or its stated fallback, then re-run. Do not report the defect as filed.
+- `gh` absent or its call failed, on `--github` from a machine holding no toolkit source. The stderr names which, since installing `gh` and fixing an authenticated call are different repairs. Fall back to printing the block in chat.
+
+A `--github` run from a toolkit checkout warns and writes local scratch instead, which is a report filed on the other route rather than a failure.
 
 ## Notes
 

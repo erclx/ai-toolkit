@@ -1,0 +1,4 @@
+# A blank issue reaches triage carrying none of the fields the form and
+# `canon feedback` both require, which is the one route around a validator that
+# now runs on every other path.
+blank_issues_enabled: false
