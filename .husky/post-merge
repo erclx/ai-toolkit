@@ -118,9 +118,17 @@ fi
 # `canon` presence check ran already, at the top of this file.
 if [ -z "$CANON_SKIP_UPGRADE" ]; then
   if upgrade=$(CANON_NON_INTERACTIVE=1 canon upgrade --json 2>/dev/null); then
-    message=$(printf '%s' "$upgrade" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
-    if [ -n "$message" ]; then
-      printf '\n⬆️  %s\n\n' "$message"
+    state=$(printf '%s' "$upgrade" | sed -n 's/.*"state":"\([^"]*\)".*/\1/p')
+
+    # Current is the ordinary outcome on most merges. The archive block above
+    # stays quiet on no-match and no-board, and the records push prints only
+    # when something changed, so this stays quiet on the same shape of
+    # no-op rather than putting a line on every merge that says nothing moved.
+    if [ "$state" != "current" ]; then
+      message=$(printf '%s' "$upgrade" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
+      if [ -n "$message" ]; then
+        printf '\n⬆️  %s\n\n' "$message"
+      fi
     fi
   else
     # A record on stdout is a refusal reported the same way an install

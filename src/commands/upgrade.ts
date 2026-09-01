@@ -248,5 +248,21 @@ function refuse(
 
 function emit(opts: UpgradeOptions, record: UpgradeRecord): void {
   if (opts.json !== true) return
-  process.stdout.write(`${JSON.stringify(record)}\n`)
+  process.stdout.write(
+    `${JSON.stringify({ ...record, message: singleLine(record.message) })}\n`,
+  )
+}
+
+/**
+ * `message` is the one field carrying arbitrary text: `describeSkew`'s
+ * `unknown` branch embeds a registry error verbatim, and a registry answering
+ * with HTML produces one already carrying a double quote. `.husky/post-merge`
+ * reads this field with a pattern rather than a parser, so a quote makes it
+ * through `JSON.stringify` as an escaped `\"` that the pattern stops at,
+ * truncating the line it prints. Collapsing whitespace and swapping the quote
+ * for an apostrophe here, once, is what keeps every emitter of `message` from
+ * having to reason about that reader.
+ */
+export function singleLine(text: string): string {
+  return text.replace(/\s+/g, ' ').replace(/"/g, "'")
 }
