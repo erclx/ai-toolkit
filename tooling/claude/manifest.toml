@@ -11,4 +11,4 @@ scaffold = ""
 # scripts/core/check-ignore-parity.sh, which also holds the two `.claude/` paths
 # this array deliberately omits and the reason each stays out.
 [gitignore]
-"# Claude" = [".claude/.records.git/", ".claude/.tmp/", ".claude/groundwork/", ".claude/intake/", ".claude/memory/", ".claude/plans/", ".claude/proposals/", ".claude/review/", ".claude/worktrees/", ".claude/tasks/", ".claude/teach/"]
+"# Claude" = [".canon/", ".claude/.records.git/", ".claude/.tmp/", ".claude/groundwork/", ".claude/intake/", ".claude/memory/", ".claude/plans/", ".claude/proposals/", ".claude/review/", ".claude/worktrees/", ".claude/tasks/", ".claude/teach/"]

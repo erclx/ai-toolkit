@@ -117,11 +117,17 @@ for entry in "${shipped[@]}"; do
 done
 
 # Claude-scoped patterns this repository ignores that the manifest does not
-# ship. Scoped to `.claude/` because the manifest is the claude stack and says
-# nothing about `node_modules/` or `.env`.
+# ship. Scoped to the two record roots because the manifest is the claude stack
+# and says nothing about `node_modules/` or `.env`.
+#
+# `.canon` is read as a bare root as well as a prefix, since it is one line
+# covering a whole tree where `.claude/` is thirteen lines naming folders inside
+# a root that also holds tracked content. Leaving it out is what would let a new
+# entry sit outside the only stage comparing the two lists, which is the
+# direction that goes silently blind.
 for pattern in "${ignored[@]}"; do
   case "$pattern" in
-  .claude/*) ;;
+  .claude/* | .canon | .canon/*) ;;
   *) continue ;;
   esac
   contains "$pattern" "${shipped[@]}" && continue

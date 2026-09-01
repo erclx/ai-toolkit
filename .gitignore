@@ -11,6 +11,11 @@
 node_modules/
 
 # Claude
+# The root the gitignored record folders move to. It names nothing yet: the CLI
+# reads it ahead of .claude/ and creates nothing there, so the entry lands ahead
+# of the move rather than behind it. Checked in both directions by
+# scripts/core/check-ignore-parity.sh alongside the .claude/ patterns.
+.canon/
 # Every .claude/ pattern below is checked against the "# Claude" array in
 # tooling/claude/manifest.toml by scripts/core/check-ignore-parity.sh, which
 # holds the reason for each of the two that stays out of it.
