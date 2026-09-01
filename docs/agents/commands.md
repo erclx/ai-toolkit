@@ -28,7 +28,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon design sync`           | Update a base stylesheet already installed under `.claude/design/`                                                                                                    |
 | `canon slides render`         | Render a `.claude/SLIDES.md` source into a PowerPoint deck, reporting any unrecognized layout name on stderr                                                          |
 | `canon slides list`           | List the available slide layouts (`--json` for the catalog)                                                                                                           |
-| `canon feedback`              | Write toolkit feedback from stdin to `.canon/review/feedback/`, or open a GitHub issue with `--github`                                                                |
+| `canon feedback`              | Write toolkit feedback from stdin to `.canon/review/feedback/`, or open a GitHub issue with `--github`, refusing either when a required field is absent               |
 | `canon transcripts <url>`     | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                                                                                                 |
 | `canon tasks archive`         | Move a shipped task and its plan off the board, clear its ordering row, and regenerate the index                                                                      |
 | `canon tasks pull-request`    | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)                                                                              |
