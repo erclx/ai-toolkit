@@ -11,7 +11,9 @@ All `.sh` files live under `scripts/`, except Claude Code hooks, which live in `
 
 ## Claude hooks
 
-`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Six carry the same names as the hooks `canon claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `.claude/context/claude-plugin/cli.md`, and four of those are byte-identical to their seeded copies. `scratch-guard.sh` and `standards-audit.sh` are the two that diverge, so a fix to either is owed to its counterpart by hand.
+`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Six carry the same names as the hooks `canon claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `.claude/context/claude-plugin/cli.md`, and `path-form.sh` is the one still byte-identical to its seeded copy. The other five diverge, so a fix to any of them is owed to its counterpart by hand.
+
+The count moved from two to five on purpose and the reason is worth reading before anyone closes the gap. Five seeded hooks learned the second record root, being `index-reminder.sh`, `memory-index.sh`, `scratch-guard.sh`, `standards-audit.sh`, and `tasks-index.sh`, each matching `.canon/tasks/` beside `.claude/tasks/` and spelling the scratch folder `tmp` under the new root. A seeded hook matches on the edited file's own path rather than resolving a root, so one fixed at the old spelling stops matching the moment a target migrates and the index goes stale with nothing said. Two of the five already diverged, which leaves three new pairs. The local copies were left alone because this repository moves its own records in one edit rather than by widening, and porting the widening here would leave a rewrite to undo.
 
 ### The stdin guard
 

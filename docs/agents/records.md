@@ -1,9 +1,19 @@
 ---
 title: Records
-description: Validating the session records under .claude/ and the standards corpus, the per-kind checks, the refusal reasons, migrating a record a frontmatter change orphaned, reading each folder's size and growth, backing the folders to a private remote, and which root each kind defaults to
+description: The two roots a record folder resolves at, validating the session records and the standards corpus, the per-kind checks, the refusal reasons, migrating a record a frontmatter change orphaned, reading each folder's size and growth, backing the folders to a private remote, and which root each kind defaults to
 ---
 
 # Records
+
+## Record roots
+
+Every verb here resolves a record folder at two roots rather than one. `.canon/<folder>` is read first, `.claude/<folder>` second, and a folder neither root carries resolves to the creation default, which is `.claude/`. The scratch folder is the one name that differs by root, spelled `.claude/.tmp` and `.canon/tmp`, since inside a dotted root the leading dot hides nothing already hidden.
+
+The read order and the creation default disagree deliberately. The gitignored record folders are moving to a root of their own, and the CLI learns to read both roots in a release that ships ahead of the move, so the binary a session already holds knows where to look by the time a tree relocates. Creating under the new root before then would write records to a root whose ignore line may not have reached a project yet, and it would split one project's records across two roots with no verb able to reconcile them. The move flips the default and nothing else.
+
+A caller never spells a record root by hand for the same reason. A path written as `.claude/plans/...` resolves against one root and reports nothing when it is wrong, which is the quiet failure this ordering exists to prevent: a stale binary meeting a moved layout, writing to the old path, and reporting success. Read a folder through the verb that owns it, and where a skill needs the path itself, take it from that verb's record rather than composing one.
+
+A refusal names every root it looked at, so a message reading `no-folder` says where a write would land as well as where the read failed.
 
 ## Validate
 
@@ -56,7 +66,7 @@ A section runs to the next marker-shaped line whatever it names, so a plan carry
 
 ### Exit codes and refusals
 
-Exit codes: `0` every check passed, `1` refused, `2` at least one record carries a finding. A `reason` field carries which gate fired: `no-folder` when none of the kind's directories exist, and `unknown-kind` when the argument names no published kind. A `no-folder` message names every candidate, so the `standards` refusal names both roots.
+Exit codes: `0` every check passed, `1` refused, `2` at least one record carries a finding. A `reason` field carries which gate fired: `no-folder` when none of the kind's directories exist, and `unknown-kind` when the argument names no published kind. A `no-folder` message names every candidate, so a record kind's refusal names both record roots and the `standards` refusal names the authoring root and the installed copy.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `findings` array and its `reason` rather than the exit when a skill consumes this.
 
@@ -96,7 +106,7 @@ Exit codes: `0` nothing carried a known transform, or `--write` repaired everyth
 
 ## Size
 
-`canon records size` reports what each record folder holds and how much of it is recent. It reads the ten backed folders named under Push and pull, plus `.claude/.tmp`, and it gates nothing.
+`canon records size` reports what each record folder holds and how much of it is recent. It reads the ten backed folders named under Push and pull, plus the scratch folder, and it gates nothing.
 
 ```bash
 canon records size
@@ -116,11 +126,11 @@ The reading carries two windows rather than one, at 7 and 30 days. A single wind
 
 Nothing fails on a number here. A record folder has no correct size, so the reading is a number to notice rather than a threshold to gate, and the point of the verb is that the next reading is taken by a command instead of by someone remembering to count the folder. The memory pen went from 44 entries to 236 between two readings taken by hand two weeks apart, which is the measurement this replaces.
 
-`.claude/.tmp` is read here and skipped by a backup, because deletable without loss is not the same as empty. The routing handoffs and the memory archive both sit there and both accumulate. `.claude/.records.git` stays out because it is the backup history rather than a record, and `.claude/worktrees/` stays out because each entry is a checkout of the project with its own removal verb, and one of them outweighs every record folder combined.
+The scratch folder is read here and skipped by a backup, because deletable without loss is not the same as empty. The routing handoffs and the memory archive both sit there and both accumulate. `.claude/.records.git` stays out because it is the backup history rather than a record, and `.claude/worktrees/` stays out because each entry is a checkout of the project with its own removal verb, and one of them outweighs every record folder combined.
 
 The window counts read `mtime`, so what they report is a file written inside the window rather than one created there. An entry edited long after it landed reads as recent, which overstates growth and never understates it, and these folders are append-mostly so the two readings agree on nearly every file. The one reading that is wrong rather than early is a machine restored by `canon records pull`, which resets the work tree hard and re-dates every file it writes, so a window taken there counts the restore. Nothing on the filesystem separates the two, since a restored file is new by every stamp it carries.
 
-Exit codes: `0` the reading completed, `1` refused. The one refusal is `no-folder`, raised when the root holds no `.claude` directory at all.
+Exit codes: `0` the reading completed, `1` refused. The one refusal is `no-folder`, raised when the project holds neither record root. A project holding a root and no records is empty rather than absent, and each folder's own `present` flag already says which of the ten it carries.
 
 ## Push and pull
 
@@ -132,9 +142,9 @@ canon records push --json
 canon records pull
 ```
 
-The backed folders are `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, all under `.claude/`. Eight of them are the Claude ignore group the claude manifest ships, minus three entries: `.claude/.tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.claude/.records.git/`, which is the history the rest are pushed into. `diagrams` is the one that group does not carry at all, since a target still tracks its own copies, which is why the list is spelled out rather than derived. Each name is a top-level record folder and every archive sits inside the one it archives, so the list stays at one entry per surface however many archives appear. It is a constant rather than configuration, and it deliberately does not match the six record kinds `validate` hardcodes.
+The backed folders are `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, all under whichever record root the project carries. Eight of them are the Claude ignore group the claude manifest ships, minus three entries: `.claude/.tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.claude/.records.git/`, which is the history the rest are pushed into. `diagrams` is the one that group does not carry at all, since a target still tracks its own copies, which is why the list is spelled out rather than derived. Each name is a top-level record folder and every archive sits inside the one it archives, so the list stays at one entry per surface however many archives appear. It is a constant rather than configuration, and it deliberately does not match the six record kinds `validate` hardcodes.
 
-Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the nine folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched. Each pathspec is a bare folder name and git reads it against the current directory rather than against the work tree the same call names, so the invocation carries `-C` at the work tree beside the other two flags. That is what lets either verb run from a linked worktree under `.claude/worktrees/`, which sits inside the records work tree and would otherwise prefix every name with its own path.
+Records are gitignored by design, so the history lives in a second git directory at `.records.git` inside the record root, with that root as its work tree. Both resolve off the root together rather than folder by folder, since a history opened at one root beside a work tree at the other would stage the deletion of every folder a move relocated. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the nine folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched. Each pathspec is a bare folder name and git reads it against the current directory rather than against the work tree the same call names, so the invocation carries `-C` at the work tree beside the other two flags. That is what lets either verb run from a linked worktree under `.claude/worktrees/`, which sits inside the records work tree and would otherwise prefix every name with its own path.
 
 ### Setup
 
