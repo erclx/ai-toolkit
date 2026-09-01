@@ -95,11 +95,21 @@ canon teach lesson <topic> --json \
 It writes nothing and reports four things:
 
 - `lesson`, the numbered path the lesson takes. Write it there.
-- `stylesheet` with `stylesheetExists` and `stylesheetHref`. Write the stylesheet only when it reports absent, which is the first lesson in the workspace. Every lesson after that links the file already on disk and adds to it rather than replacing it, since overwriting discards what the last lesson put there.
+- `stylesheet` with `stylesheetExists` and `stylesheetHref`. Link it at `stylesheetHref` and seed it through the verb below when `stylesheetExists` is false, which is the first lesson in the workspace. Every lesson after that links the file already on disk and adds to it rather than replacing it, since overwriting discards what the last lesson put there.
 - `success`, the mission's success lines, carried here so Step 5 needs no second read.
 - `quiz`, one entry per question, carrying `order` and `answer`.
 
 Write the correct option first, then present the options in the order `order` reports, reading it as authored indices where `0` is the correct one. Take the order as given. Position drawn here rather than chosen is the whole reason the verb exists, and a lesson that reorders on its own judgment puts the answer back in the first slot.
+
+Seed the stylesheet through the verb rather than authoring a palette, on the first lesson in a workspace:
+
+```bash
+canon teach stylesheet <topic> --json
+```
+
+It writes the design tokens as custom properties and the components built on them, from the one source every other rendered surface reads. Add lesson rules under the seed and reach a value through its property rather than restating the hex, which is what let each workspace fork the palette from every other. It refuses to overwrite, so running it again on a workspace that has grown its own rules is safe and reports `written` as false.
+
+Report it rather than proceeding silently when the verb does not resolve, which is an installed CLI predating it. Do not fall back to writing a palette by hand.
 
 Add every term the lesson defines to `GLOSSARY.md` through the verb, which places the entries alphabetically in the shape the standard fixes:
 

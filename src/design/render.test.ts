@@ -191,7 +191,7 @@ describe('renderDesignDoc', () => {
     expect(html).not.toContain('verify')
     expect(html).not.toContain('anchored to a source')
     expect(html).toContain(
-      '  .empty { color: #999; font-style: italic; }\n</style>',
+      '  .empty { color: var(--preview-muted); font-style: italic; }\n</style>',
     )
     expect(css).toContain('--color-accent: #e0724b;')
   })

@@ -139,6 +139,8 @@ export interface SyncAdapter {
   collectMissing?(target: string): RetiredSurface[]
   /** Dropped from the walk, so neither matching nor orphaned. */
   isExcluded?(file: InstalledFile): boolean
+  /** Glob the walk lists. Defaults to `DEFAULT_INSTALL_PATTERN`. */
+  readonly installPattern?: string
   /**
    * Top-level folder under `installedRoot` that is project-authored by
    * location rather than by the name inference `locateSource` runs.
@@ -158,15 +160,26 @@ export interface SyncAdapter {
 }
 
 /**
- * Lists installed markdown, dotfiles included. `Bun.Glob` skips entries
- * beginning with a dot unless `dot` is set, and every domain installs under
- * `.claude/`, so a nested dot-directory would silently drop out of the walk.
+ * What a domain installs, when it installs something other than markdown.
+ * Design ships a stylesheet, and every other domain ships prose.
  */
-export function listInstalled(root: string, target: string): InstalledFile[] {
+export const DEFAULT_INSTALL_PATTERN = '**/*.md'
+
+/**
+ * Lists installed files matching the domain's pattern, dotfiles included.
+ * `Bun.Glob` skips entries beginning with a dot unless `dot` is set, and every
+ * domain installs under `.claude/`, so a nested dot-directory would silently
+ * drop out of the walk.
+ */
+export function listInstalled(
+  root: string,
+  target: string,
+  pattern: string = DEFAULT_INSTALL_PATTERN,
+): InstalledFile[] {
   if (!existsSync(root)) return []
 
   return [
-    ...new Bun.Glob('**/*.md').scanSync({
+    ...new Bun.Glob(pattern).scanSync({
       cwd: root,
       onlyFiles: true,
       dot: true,
@@ -192,7 +205,11 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   const hashes = stampedHashes(readStamp(target), adapter.stamp?.domain)
   const walked = new Set<string>()
 
-  for (const file of listInstalled(adapter.installedRoot(target), target)) {
+  for (const file of listInstalled(
+    adapter.installedRoot(target),
+    target,
+    adapter.installPattern,
+  )) {
     if (adapter.isExcluded?.(file) === true) continue
     walked.add(toStampKey(file.rel))
 
@@ -562,7 +579,11 @@ export async function recordStamp(
 
   const hashes: Record<string, string> = {}
 
-  for (const file of listInstalled(adapter.installedRoot(target), target)) {
+  for (const file of listInstalled(
+    adapter.installedRoot(target),
+    target,
+    adapter.installPattern,
+  )) {
     if (adapter.isExcluded?.(file) === true) continue
     if (isProjectAuthored(adapter, file)) continue
 

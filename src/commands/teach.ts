@@ -16,6 +16,7 @@ import {
   type Term,
   type TermOutcome,
   type WorkspaceSummary,
+  writeStylesheet,
 } from '@/teach/workspace'
 import {
   intro,
@@ -276,6 +277,77 @@ export function register(program: Command): void {
     .action(async (topic: string, opts: LessonCommandOptions) => {
       process.exitCode = await runLesson(topic, opts)
     })
+
+  teach
+    .command('stylesheet')
+    .description('Seed a workspace stylesheet from the design source')
+    .argument('<topic>', 'Workspace folder or topic, as in regular-expressions')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--force', 'Rewrite a stylesheet the workspace already carries')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the workspace carries a stylesheet, written now or already there',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'The file it writes carries the design tokens as custom properties and',
+        'the component rules built on them, so a workspace renders in the same',
+        'system every other surface does. Add lesson rules under the seed and',
+        'read a value through its property rather than restating the hex.',
+        '',
+        'An existing stylesheet is left alone, since a workspace adds to this',
+        'file as it goes. Pass --force to take the seed back over it.',
+        '',
+        'Examples:',
+        '  canon teach stylesheet regular-expressions --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string, opts: StylesheetCommandOptions) => {
+      process.exitCode = await runStylesheet(topic, opts)
+    })
+}
+
+interface StylesheetCommandOptions {
+  readonly force?: boolean
+  readonly json?: boolean
+  readonly root?: string
+}
+
+async function runStylesheet(
+  topic: string,
+  opts: StylesheetCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const root = await rootFor(opts.root)
+  const outcome = await writeStylesheet(root, topic, opts.force ?? false)
+
+  if (!outcome.ok) {
+    return reportRefusal('canon teach stylesheet', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        slug: outcome.slug,
+        path: outcome.path,
+        written: outcome.written,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('canon teach stylesheet')
+  logStep(outcome.written ? 'Written' : 'Already present, left alone')
+  logInfo(outcome.path)
+  outro()
+  return 0
 }
 
 function collect(value: string, previous: string[]): string[] {

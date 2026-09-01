@@ -9,11 +9,18 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 
 `.claude/DESIGN.md` holds visual intent as prose and token tables. The toolkit treats it as the tool-agnostic source of truth for any project's design system. Two surfaces sit around it: a Claude Code skill drafts the file from existing project signals, and a CLI command renders a token preview for human inspection.
 
+This repository's own record is the one that is generated rather than authored. `src/design/tokens.ts` holds the values and `canon design regen` renders both the record and `src/design/base.css` from it, which the `design` gate stage asserts for drift. A target keeps the hand-authored shape, so the markdown parser serves that reader and this repository reads the module instead.
+
 ## Layout
 
-- `src/design/` owns the DESIGN.md parser and the preview renderer
+- `src/design/tokens.ts` owns the values, and `components.ts` beside it owns the component layer built on them
+- `src/design/document.ts` renders the record, `css.ts` renders the stylesheet, and `regen.ts` writes both through `canon design regen`
+- `src/design/parse.ts` and `render.ts` own the markdown parser and the preview renderer, which serve a target's hand-authored record
+- `src/design/adapter.ts` owns the sync adapter, and `src/design/base.css` is the generated file it installs
+- `src/design/contrast.ts` owns the WCAG reading, asserted over the record in `contrast.test.ts`
 - `claude/skills/claude-design-extract/` owns the skill that drafts the file, from an existing codebase or from a greenfield project
 - `.canon/review/design/` owns the rendered preview, gitignored
+- `.claude/design/base.css` is where an install lands in a target, and `.claude/design/project/` is where that target's own values go
 
 ## Decisions
 
@@ -21,8 +28,11 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 - The skill picks its path from whether UI code exists, never from a flag. The general ban on dispatch flags in `standards/skill.md` targets a toggle the model reads and misapplies. A test against the tree has no such failure.
 - Switching paths later is a rewrite of `DESIGN.md`, not a migration.
 - Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
-- The toolkit's own record anchors its dark palette to `assets/hero.html` and its light palette to the `LIGHT` theme in `src/slides/styles.ts`. Deriving a light set from the hero's neutrals was the alternative, and it makes every light value a proposal where the slide theme supplies five of the six roles as readings. The two surfaces reconcile on no value, so the light half is anchored by a surface shipping it rather than by following from the dark half.
-- No surface consumes `.claude/DESIGN.md`. The hero, the slide theme, the token preview, the terminal framing, and the capture pipeline each carry their own values, so the record names all five as independent rather than listing a consumer it would be predicting.
+- The toolkit's own record is rendered from `src/design/tokens.ts` rather than authored. Leaving the document as the source was the outcome as boarded and the operator overturned it, because a table a person edits is one a parser has to be taught to read back where a module is checked by the compiler. The cost is two artifacts from one source, and the `design` gate stage is the only thing that catches them disagreeing.
+- Three surfaces consume that module. The slide theme takes bare hex through `bareHex`, since `PptxGenJS` receives `{ color: theme.background }` and PowerPoint has no concept of a custom property. The token preview's own chrome and a teach workspace stylesheet take custom properties through `@/design/css`. The hero and the terminal framing carry their own copies still, so the record is the source for three surfaces and a description of two.
+- The consolidated dark set is the palette the hero already drew, which is why no capture moved. It also fixed one of the two contrast failures on its own, since the hero's rust reads 5.77 and 5.36 against the two dark grounds where the slide theme's read 4.36 and 3.99.
+- The component layer lives in `src/design/components.ts` rather than in the record, because `standards/design.md` keeps CSS class names out of that document and says they live in code. It has two members, a status marker and a scrollbar, and its own prose says two repairs is thin evidence for an abstraction.
+- The light theme is a remap of the roles the record declares a `light-` counterpart for, and `unmappedOnLight` names the ones it does not. Filling those in was the alternative and it would put a color in the system that no surface ever read off anything, so the emitted stylesheet names the gap in a comment instead.
 - The parser carries the uncertainty tag instead of discarding it. A parsed cell is a `{ value, tagged }` pair rather than a string, so `Row` is a map of cells and every swatch, sample, bar, and custom property is built from the value while the marker renders beside it as its own element. Leaving the marker inside the string was the alternative, and it puts the strip back in every emitter where one that forgets writes the tag into a `style` attribute.
 - A tagged cell wrapping itself in a code span keeps the span. The tag is matched against the cell with any surrounding span removed, then the span is restored around the clean value, because dropping it outright would change how an untagged code-span cell renders. Holding an untagged record byte-identical is what decides that, and it is checked against the module as it stood before the tag survived.
 - The confidence count reads the columns a source could anchor rather than every cell. Each table's first column names its row, and `Multiplier` and `When used` restate what the row already carries, so none of the four is counted. A cell tagged outside that set counts anyway, which keeps a marker the preview draws from sitting outside the ratio beside it.
@@ -33,7 +43,8 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 
 - A code-span cell still emits its backticks. `` `#E4DCD0` `` reaches `design.css` and the `style` attribute with the backticks intact, so that swatch paints nothing whether or not the cell carries a tag. Write a token cell as a bare value, which is what the seed shows.
 - The greenfield extract path tags nearly every cell, so the confidence count there reads near-total uncertainty. That is the path reporting itself accurately rather than a defect in the record.
-- The slide theme and the hero reconcile on none of their five dark roles. The nearest miss is the primary text step, where `F4EFE6` and `#f4efe9` differ in the last digit and read as a match on a quick scan. The slide theme also sets Arial and Calibri where every other surface is monospace, so a single-family claim describes the hero and the terminal rather than the whole tree.
+- The slide theme and the hero now draw the same five dark values, because the slide theme reads the module and the module carries the hero's palette. The two agree by value rather than by construction, since nothing makes the hero read the module and `scripts/core/regen-hero.sh` still writes its own. The slide theme also sets Arial and Calibri where every other surface is monospace, so a single-family claim describes the hero and the terminal rather than the whole tree.
+- `canon design regen` resolves its outputs from `PROJECT_ROOT`, which is the installed package directory in a target. It refuses where `.claude/DESIGN.md` is absent at that root, which is what an installed package looks like, rather than writing two files into `node_modules` and reporting success.
 - The three terminal color rows emit a token no consumer resolves. `--color-success: ANSI 32` is not a color and the matching `style` attribute is dropped, so those swatches paint nothing in the preview. Recording the ANSI code is still right, since no rendered surface implements an equivalent, and the gap is that the render has no answer for a non-hex token.
 
 ## Seed shape

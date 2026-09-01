@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Cell, DesignDoc, Row } from '@/design/parse'
 import { parseDesignDoc } from '@/design/parse'
+import { colorValue } from '@/design/tokens'
 
 export interface RenderResult {
   htmlPath: string
@@ -135,6 +136,38 @@ function escape(s: string): string {
     .replace(/"/g, '&quot;')
 }
 
+/**
+ * The preview page's own chrome, read off the toolkit's design source rather
+ * than written as literals here.
+ *
+ * It takes a `--preview-` prefix rather than the `--color-` one the sheet beside
+ * it emits, because that sheet is built from whichever document is being
+ * previewed. A target's record is free to declare a role this page also uses,
+ * and sharing one name would let the page being previewed repaint the page
+ * doing the previewing.
+ *
+ * The light roles are the ones read, since the preview is a light document.
+ */
+function previewChrome(): string {
+  const roles: ReadonlyArray<readonly [string, string]> = [
+    ['paper', 'light-background'],
+    ['panel', 'light-surface'],
+    ['ink', 'light-text'],
+    ['muted', 'light-muted'],
+    ['rule', 'light-border'],
+    ['accent', 'light-accent'],
+  ]
+
+  const lines = roles
+    .map(([name, role]) => {
+      const value = colorValue(role)
+      return value === undefined ? '' : `    --preview-${name}: ${value};`
+    })
+    .filter((line) => line !== '')
+
+  return ['  :root {', ...lines, '  }'].join('\n')
+}
+
 function buildHtml(doc: DesignDoc): string {
   const sections = [
     sectionPersonality(doc.personality),
@@ -147,7 +180,7 @@ function buildHtml(doc: DesignDoc): string {
   ]
   const { tagged, total } = confidence(doc)
   const verifyStyle = tagged
-    ? '\n  .verify { color: #a4471c; font-size: 12px; font-weight: 600; margin-left: 0.35rem; white-space: nowrap; }'
+    ? '\n  .verify { color: var(--preview-accent); font-size: 12px; font-weight: 600; margin-left: 0.35rem; white-space: nowrap; }'
     : ''
   const verb = tagged === 1 ? 'carries' : 'carry'
   const summary = tagged
@@ -160,16 +193,17 @@ function buildHtml(doc: DesignDoc): string {
 <title>Design tokens</title>
 <link rel="stylesheet" href="design.css">
 <style>
-  body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 960px; color: #222; }
+${previewChrome()}
+  body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 960px; color: var(--preview-ink); background: var(--preview-paper); }
   h1 { margin-top: 0; }
-  h2 { margin-top: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 0.25rem; }
+  h2 { margin-top: 2rem; border-bottom: 1px solid var(--preview-rule); padding-bottom: 0.25rem; }
   table { border-collapse: collapse; width: 100%; margin-top: 0.5rem; }
-  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #eee; font-size: 14px; }
-  th { background: #f7f7f7; font-weight: 600; }
-  .swatch { display: inline-block; width: 1.5rem; height: 1.5rem; border-radius: 4px; border: 1px solid #ddd; vertical-align: middle; margin-right: 0.5rem; }
-  .bar { display: inline-block; height: 1rem; background: #888; border-radius: 2px; vertical-align: middle; }
-  .note { color: #666; font-size: 13px; margin-top: 0.5rem; }
-  .empty { color: #999; font-style: italic; }${verifyStyle}
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--preview-rule); font-size: 14px; }
+  th { background: var(--preview-panel); font-weight: 600; }
+  .swatch { display: inline-block; width: 1.5rem; height: 1.5rem; border-radius: 4px; border: 1px solid var(--preview-rule); vertical-align: middle; margin-right: 0.5rem; }
+  .bar { display: inline-block; height: 1rem; background: var(--preview-muted); border-radius: 2px; vertical-align: middle; }
+  .note { color: var(--preview-muted); font-size: 13px; margin-top: 0.5rem; }
+  .empty { color: var(--preview-muted); font-style: italic; }${verifyStyle}
 </style>
 </head>
 <body>

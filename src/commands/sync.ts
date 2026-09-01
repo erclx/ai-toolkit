@@ -7,7 +7,7 @@ import {
   buildCheckReport,
   type CheckReport,
   hasDrift,
-  SCANNED_DOMAINS,
+  uncoveredDomains,
 } from '@/sync/check'
 import { createGitRunner, createPullRequestOpener, hasGh } from '@/sync/git'
 import {
@@ -35,6 +35,7 @@ import { describeSkew } from '@/version/skew'
 
 const SYNC_ARGS: Record<SyncDomain, readonly string[]> = {
   governance: ['gov', 'sync'],
+  design: ['design', 'sync'],
   claude: ['claude', 'sync'],
 }
 
@@ -195,10 +196,7 @@ function renderCheck(report: CheckReport): void {
   // naming it here repeats what that section already said under a second
   // remedy, where a scanned domain nobody installed has no section at all and
   // this line is the only place it appears.
-  const unmigrated = report.unmigrated.map((entry) => entry.domain)
-  const uncovered = SCANNED_DOMAINS.filter(
-    (domain) => !report.covers.includes(domain) && !unmigrated.includes(domain),
-  )
+  const uncovered = uncoveredDomains(report)
   if (uncovered.length === 0) return
 
   const { GREY, NC } = palette(process.stderr)

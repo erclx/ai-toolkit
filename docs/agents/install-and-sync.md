@@ -27,7 +27,29 @@ number bands behind that placement, where `900-999` is the range a
 project-authored rule takes and everything below it belongs to the toolkit.
 
 `canon sync --check` does not report an orphaned entry. It skips every one, so
-the destination reaches `canon gov sync` alone, the one domain sync verb left.
+the destination reaches `canon gov sync` alone among the two per-file domain
+syncs, since design's own orphans are the target's overrides and are meant to
+stay where they are.
+
+`canon design install` copies one toolkit-owned file to
+`.claude/design/base.css` and creates no override. A project overrides a value
+by writing `.claude/design/project/` itself, which `canon design sync` never
+touches, because that subfolder is project-authored by location the way
+`.claude/rules/project/` is. An override named exactly like the shipped file is
+still the project's.
+
+The override ships absent rather than empty. An empty file is one the project
+did not ask for and did not write, the reconciliation already handles a missing
+side, and an empty override invites a target to fill it before it has an
+opinion.
+
+Nothing arrives on a project that has not run `canon design install`. The
+domain is detected by that folder existing, so `canon sync` skips it entirely on
+a target that never installed it, and the unstamped line at the end of
+`canon sync --check` stays quiet about it for the same reason. Governance is
+named there when it is absent and design is not, because a managed project
+without governance has yet to install what every project carries, while one
+without design chose that.
 
 When the target's install recorded a stack, `canon gov sync` also reports a
 rule that stack lists and `.claude/rules/` does not hold, as a `missing` entry

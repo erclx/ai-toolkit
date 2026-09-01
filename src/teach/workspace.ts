@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
+import { buildDesignCss } from '@/design/css'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
 import { type BodyLine, bodyLines } from '@/markdown/scan'
 import { recordDir } from '@/record-root'
@@ -840,4 +841,60 @@ export async function defineTerms(
   await writeFile(path, written)
 
   return { ok: true, slug: found.slug, path, defined: terms }
+}
+
+export interface StylesheetWritten {
+  readonly ok: true
+  readonly slug: string
+  /** Relative to the root, so a caller prints a path a reader can open. */
+  readonly path: string
+  /** False when the workspace already held one and this call left it alone. */
+  readonly written: boolean
+}
+
+export type StylesheetOutcome = StylesheetWritten | TeachRefused
+
+const STYLESHEET_BANNER = [
+  'Seeded by `canon teach stylesheet` from the design source in',
+  'src/design/tokens.ts. The tokens and the two components below are the',
+  'system this workspace renders in. Add lesson rules under them and read a',
+  'value through its custom property rather than restating the hex, which is',
+  'what let one workspace fork the palette from every other.',
+].join('\n   ')
+
+/**
+ * Writes a workspace's one stylesheet from the design source.
+ *
+ * Every workspace used to carry a hand-authored copy, which is how the course
+ * palette forked once per workspace. The name is fixed at `TEACH_STYLESHEET`
+ * and the folder at `TEACH_ASSETS` for the same reason a second lesson has to
+ * reach the file the first one wrote, and this is what puts the values in it.
+ *
+ * An existing stylesheet is left alone rather than replaced. A workspace adds
+ * lesson rules to this file as it goes, so overwriting would discard them, and
+ * `--force` is the caller saying it wants the seed back.
+ */
+export async function writeStylesheet(
+  root: string,
+  selector: string,
+  force = false,
+): Promise<StylesheetOutcome> {
+  const found = await readWorkspace(root, selector)
+  if (!found.ok) return found
+
+  const workspace = found.workspace
+  const rel = join(workspace.path, TEACH_ASSETS, TEACH_STYLESHEET)
+  const path = join(root, rel)
+
+  if (existsSync(path) && !force) {
+    return { ok: true, slug: workspace.slug, path: rel, written: false }
+  }
+
+  await mkdir(join(root, workspace.path, TEACH_ASSETS), { recursive: true })
+  await writeFile(
+    path,
+    buildDesignCss(undefined, { banner: STYLESHEET_BANNER }),
+  )
+
+  return { ok: true, slug: workspace.slug, path: rel, written: true }
 }
