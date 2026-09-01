@@ -69,6 +69,8 @@ Detect whether `canon` is on PATH:
 command -v canon >/dev/null 2>&1
 ```
 
+Before either pipe below, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the composed block. `.canon/review/` is gitignored, so no hook reaches either write, and this scan is the only gate. The banned-character half runs on both branches, including the local write. The phase-label half applies only on the `--github` branch, where the block reaches a remote.
+
 If present, pipe the block to `canon feedback`. The CLI writes to its own repo's `.canon/review/feedback/feedback-<slug>-<ts>.md` and prints the absolute path on stdout:
 
 ```bash
