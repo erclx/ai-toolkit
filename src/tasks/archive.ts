@@ -3,11 +3,11 @@ import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import { regenOne } from '@/indexes/regen'
 import { isUnder } from '@/paths'
+import { recordDir, recordDirs } from '@/record-root'
 
-const TASKS_DIR = join('.claude', 'tasks')
-const ARCHIVE_DIR = join(TASKS_DIR, 'archive')
-const PLANS_DIR = join('.claude', 'plans')
-const PLANS_ARCHIVE_DIR = join(PLANS_DIR, 'archive')
+const TASKS = 'tasks'
+const PLANS = 'plans'
+const ARCHIVE = 'archive'
 
 /**
  * Siblings that sit on the board without being tasks: the generated index, the
@@ -77,11 +77,11 @@ export interface TaskOutcomes {
 }
 
 export function tasksDir(root: string): string {
-  return join(root, TASKS_DIR)
+  return recordDir(root, TASKS)
 }
 
 export function archiveDir(root: string): string {
-  return join(root, ARCHIVE_DIR)
+  return recordDir(root, TASKS, ARCHIVE)
 }
 
 export const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
@@ -201,15 +201,20 @@ export function resolveLivePlan(
   dir: string,
   root: string,
 ): string | undefined {
-  const plans = join(root, PLANS_DIR)
-  const archive = join(root, PLANS_ARCHIVE_DIR)
+  // Both roots are tested rather than the one this tree resolves at, since a
+  // task's line is a string somebody wrote and a path spelling the root the tree
+  // has since left is still a path into the plans folder. Reading it as outside
+  // would report a shipped plan as still live.
+  const plans = recordDirs(root, PLANS)
+  const archives = recordDirs(root, PLANS, ARCHIVE)
+  const live = (path: string): boolean =>
+    plans.some((dir) => isUnder(path, dir)) &&
+    !archives.some((dir) => isUnder(path, dir))
   const fromBoard = resolve(dir, target)
   const fromRoot = resolve(root, target)
 
-  if (isUnder(fromBoard, plans) && !isUnder(fromBoard, archive)) {
-    return fromBoard
-  }
-  if (isUnder(fromRoot, plans) && !isUnder(fromRoot, archive)) return fromRoot
+  if (live(fromBoard)) return fromBoard
+  if (live(fromRoot)) return fromRoot
   return undefined
 }
 
@@ -308,7 +313,12 @@ export async function planCitations(
 
   const live = resolveLivePlan(target, dir, root)
   if (!live) {
-    const location = resolvesUnder(target, dir, root, PLANS_ARCHIVE_DIR)
+    const location = resolvesUnder(
+      target,
+      dir,
+      root,
+      recordDirs(root, PLANS, ARCHIVE),
+    )
       ? 'archived'
       : 'outside'
     return { ok: true, stem, target, location, citedBy: [] }
@@ -324,21 +334,21 @@ export async function planCitations(
 }
 
 /**
- * Runs the two-spelling resolution `resolveLivePlan` applies against a folder
- * other than the live one, so an archived plan is read as archived whichever
- * root the task wrote its path against.
+ * Runs the two-base resolution `resolveLivePlan` applies against folders other
+ * than the live ones, so an archived plan is read as archived whichever base the
+ * task wrote its path against and whichever record root it spelled.
  */
 function resolvesUnder(
   target: string,
   dir: string,
   root: string,
-  folder: string,
+  dirs: readonly string[],
 ): boolean {
-  const resolved = join(root, folder)
+  const fromBoard = resolve(dir, target)
+  const fromRoot = resolve(root, target)
 
-  return (
-    isUnder(resolve(dir, target), resolved) ||
-    isUnder(resolve(root, target), resolved)
+  return dirs.some(
+    (resolved) => isUnder(fromBoard, resolved) || isUnder(fromRoot, resolved),
   )
 }
 

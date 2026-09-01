@@ -9,6 +9,7 @@ import {
   readItems,
   writeAnswerLine,
 } from '@/intake/items'
+import { recordDir } from '@/record-root'
 
 export const INTAKE_REFUSALS = [
   'no-intake',
@@ -80,7 +81,7 @@ function refuse(
 }
 
 export function intakeDir(root: string): string {
-  return join(root, '.claude', 'intake')
+  return recordDir(root, 'intake')
 }
 
 /**

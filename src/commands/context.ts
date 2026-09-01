@@ -180,7 +180,7 @@ async function runAudit(
   if (folders.length === 0) {
     return refuse(
       'no-folders',
-      `No audited folder found ${named ? 'under .claude/ or the project root' : 'under .claude/'}, since resolving one needs its own index.md file. Looked for: ${names.join(', ')}.`,
+      `No audited folder found ${named ? 'under a record root or the project root' : 'under a record root'}, since resolving one needs its own index.md file. Looked for: ${names.join(', ')}.`,
       gateOnly,
       root,
       opts.json ?? false,
@@ -200,7 +200,7 @@ async function runAudit(
   if (gateOnly && cited.length === 0) {
     return refuse(
       'no-citation-scope',
-      `The citation check spells the .claude/ prefix and no audited folder resolved there. Looked for: ${names.join(', ')}.`,
+      `The citation check spells the record-root prefixes and no audited folder resolved under one. Looked for: ${names.join(', ')}.`,
       gateOnly,
       root,
       opts.json ?? false,
@@ -414,7 +414,7 @@ function reportCitations(
 
   if (cited.length === 0) {
     logInfo(
-      'Out of scope. The pattern spells the .claude/ prefix, and no audited folder resolved there.',
+      'Out of scope. The pattern spells the record-root prefixes, and no audited folder resolved under one.',
     )
     return
   }

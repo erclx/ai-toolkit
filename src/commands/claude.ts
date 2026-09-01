@@ -51,6 +51,7 @@ import {
 import { copyPreservingMode } from '@/copy'
 import { execScript } from '@/exec'
 import { PROJECT_ROOT } from '@/project-root'
+import { recordDir } from '@/record-root'
 import { isDirectory, resolveTarget } from '@/target'
 import { injectGitignore, pruneGitignore } from '@/tooling/inject'
 import {
@@ -491,13 +492,18 @@ async function runSync(target: string): Promise<number> {
   const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
 
+  // A record folder resolves at either root, so a migrated target is reported as
+  // seeded rather than sent to `canon claude init` to re-create records it
+  // already holds. The three seeded files and `wireframes` are tracked and stay
+  // at `.claude/`, which the resolver answers for them anyway, since nothing
+  // ever creates a second root copy for a name that does not move.
   logStep('Seeded')
   for (const name of SEEDED_FILES) {
     if (existsSync(join(resolved, '.claude', name))) logInfo(name)
     else logWarn(`${name} missing. Run \`canon claude init\``)
   }
   for (const name of SEEDED_DIRS) {
-    if (isDirectory(join(resolved, '.claude', name))) logInfo(`${name}/`)
+    if (isDirectory(recordDir(resolved, name))) logInfo(`${name}/`)
     else logWarn(`${name}/ missing. Run \`canon claude init\``)
   }
 

@@ -1,9 +1,10 @@
 import { existsSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { INDEX_FILE, listIndexes } from '@/indexes/walk'
+import { RECORD_ROOTS } from '@/record-root'
 
 /**
- * Folder names under `.claude/` audited by default.
+ * Folder names under a record root audited by default.
  *
  * A named list rather than the index-plus-entry contract read off disk, so a
  * generated tree satisfying that contract is never measured against a rule
@@ -12,8 +13,8 @@ import { INDEX_FILE, listIndexes } from '@/indexes/walk'
  * here.
  *
  * It doubles as the citation check's scope, since `citationPattern` spells only
- * these names. A `.claude/` folder left off the list is never resolved, so a
- * path into one goes stale silently rather than failing a push.
+ * these names. A folder left off the list is never resolved, so a path into one
+ * goes stale silently rather than failing a push.
  */
 export const DEFAULT_FOLDERS: readonly string[] = [
   'context',
@@ -21,8 +22,17 @@ export const DEFAULT_FOLDERS: readonly string[] = [
   'wireframes',
 ]
 
-/** The base every folder in the default list sits under. */
-const CLAUDE_BASE = '.claude'
+/**
+ * The bases every folder in the default list is looked for under, in the record
+ * roots' own precedence order.
+ *
+ * `diagrams` is the one name here that is a session record and moves with them,
+ * so the list has to carry the root it moves to. `context` and `wireframes` are
+ * tracked and stay, which leaves them resolvable at a root nothing will ever put
+ * them under. That costs one `existsSync` apiece and is cheaper than a per-name
+ * base map that would state the same split twice.
+ */
+const CLAUDE_BASES: readonly string[] = RECORD_ROOTS
 
 /** The project root, reached only by a name the caller asked for. */
 const ROOT_BASE = '.'
@@ -58,7 +68,7 @@ export interface AuditedFolder {
 }
 
 /**
- * Names the requested `.claude/` folders that actually exist, which is the
+ * Names the requested record-root folders that actually exist, which is the
  * citation check's scope.
  *
  * A skill or seed pointing into `.claude/wireframes/` is a live instruction for
@@ -76,7 +86,7 @@ export function presentNames(folders: readonly AuditedFolder[]): string[] {
   return [
     ...new Set(
       folders
-        .filter((folder) => folder.base === CLAUDE_BASE)
+        .filter((folder) => CLAUDE_BASES.includes(folder.base))
         .map((folder) => folder.name),
     ),
   ]
@@ -157,7 +167,7 @@ export async function resolveFolders(
   names: readonly string[] = DEFAULT_FOLDERS,
   { canResolveAtRoot = false }: ResolveOptions = {},
 ): Promise<FolderResolution> {
-  const bases = canResolveAtRoot ? [CLAUDE_BASE, ROOT_BASE] : [CLAUDE_BASE]
+  const bases = canResolveAtRoot ? [...CLAUDE_BASES, ROOT_BASE] : CLAUDE_BASES
   const folders: AuditedFolder[] = []
   const missing: string[] = []
 

@@ -34,6 +34,16 @@ describe('citationPattern', () => {
   it('should not match a folder outside the audited set', () => {
     expect(paths('Read `.claude/standards/prose.md` first.')).toEqual([])
   })
+
+  it('should match a path at the new record root', () => {
+    expect(paths('See `.canon/diagrams/deploy.md` for the flow.')).toEqual([
+      '.canon/diagrams/deploy.md',
+    ])
+  })
+
+  it('should not match a folder outside the audited set at the new root', () => {
+    expect(paths('Read `.canon/standards/prose.md` first.')).toEqual([])
+  })
 })
 
 describe('collectCitations', () => {

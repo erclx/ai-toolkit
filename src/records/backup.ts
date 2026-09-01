@@ -1,16 +1,18 @@
 import { existsSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 import { $ } from 'bun'
 import { gitEnv } from '@/git-env'
+import { recordRoot } from '@/record-root'
 
 /**
- * The folders a backup carries, relative to `.claude/`. Most of them are the
- * `# Claude` group the claude manifest ships, minus three: `.claude/.tmp`,
- * which is defined as deletable without loss, `.claude/worktrees/`, whose
- * contents belong to the enclosing repository already, and
- * `.claude/.records.git/`, which is the history the rest are pushed into. The
- * list is spelled out rather than read off that group so adding an ignore entry
- * cannot silently enlarge the payload.
+ * The folders a backup carries, relative to the record root `workTree` resolves
+ * rather than to `.claude/` specifically, since the same nine names sit under
+ * whichever root a tree holds. Most of them are the `# Claude` group the claude
+ * manifest ships, minus three: the scratch folder, which is defined as deletable
+ * without loss, `worktrees/`, whose contents belong to the enclosing repository
+ * already, and `.records.git/`, which is the history the rest are pushed into.
+ * The list is spelled out rather than read off that group so adding an ignore
+ * entry cannot silently enlarge the payload.
  *
  * `diagrams` is the one name the manifest group does not carry, so a target
  * tracks it where this repository ignores it. That is the second reason to
@@ -65,10 +67,25 @@ const RETIRED_FOLDERS = [
   'task-archive',
 ] as const
 
-/** Holds the records history beside the folders it tracks, ignored by the enclosing repository. */
-const RECORDS_GIT_DIR = join('.claude', '.records.git')
+/** The history directory's own name, which keeps its dot at either record root. */
+const RECORDS_GIT_NAME = '.records.git'
 
-const WORK_TREE = '.claude'
+/**
+ * The tree a backup stages, which is the record root itself.
+ *
+ * It resolves the root rather than each folder under it, so the history and the
+ * work tree are one answer. Resolving them apart would let a half-migrated tree
+ * open a history at one root and stage a work tree at the other, which stages
+ * the deletion of every folder the move relocated and pushes it.
+ */
+function workTree(root: string): string {
+  return recordRoot(root)
+}
+
+/** Holds the records history beside the folders it tracks, ignored by the enclosing repository. */
+function recordsGitDir(root: string): string {
+  return join(workTree(root), RECORDS_GIT_NAME)
+}
 
 /** Both directions name the branch, so a machine whose `init.defaultBranch` differs still lands on it. */
 const RECORDS_BRANCH = 'main'
@@ -150,11 +167,11 @@ interface GitResult {
  * work tree.
  */
 async function records(root: string, args: string[]): Promise<GitResult> {
-  const gitDir = resolve(root, RECORDS_GIT_DIR)
-  const workTree = resolve(root, WORK_TREE)
+  const gitDir = resolve(recordsGitDir(root))
+  const tree = resolve(workTree(root))
 
   const result =
-    await $`git -C ${workTree} --git-dir=${gitDir} --work-tree=${workTree} ${args}`
+    await $`git -C ${tree} --git-dir=${gitDir} --work-tree=${tree} ${args}`
       .env(gitEnv())
       .quiet()
       .nothrow()
@@ -237,13 +254,15 @@ async function enclosingRemoteUrls(
  * cannot be read is what keeps a failed comparison from reading as a pass.
  */
 async function resolveRemote(root: string): Promise<string | BackupRefused> {
-  if (!existsSync(join(root, RECORDS_GIT_DIR))) {
+  const gitDir = recordsGitDir(root)
+
+  if (!existsSync(gitDir)) {
     return refuse(
       'no-repository',
       [
-        `No records history at ${RECORDS_GIT_DIR}. Create it once, against a private repository:`,
-        `  git --git-dir=${join(root, RECORDS_GIT_DIR)} init`,
-        `  git --git-dir=${join(root, RECORDS_GIT_DIR)} remote add origin <private-repo-url>`,
+        `No records history at ${relative(root, gitDir)}. Create it once, against a private repository:`,
+        `  git --git-dir=${gitDir} init`,
+        `  git --git-dir=${gitDir} remote add origin <private-repo-url>`,
       ].join('\n'),
     )
   }
@@ -254,7 +273,7 @@ async function resolveRemote(root: string): Promise<string | BackupRefused> {
       'no-remote',
       [
         'The records history has no origin. Point it at a private repository:',
-        `  git --git-dir=${join(root, RECORDS_GIT_DIR)} remote add origin <private-repo-url>`,
+        `  git --git-dir=${gitDir} remote add origin <private-repo-url>`,
       ].join('\n'),
     )
   }
@@ -299,8 +318,7 @@ async function scopedFolders(root: string): Promise<string[]> {
   )
 
   return [...BACKED_FOLDERS, ...RETIRED_FOLDERS].filter(
-    (folder) =>
-      existsSync(join(root, WORK_TREE, folder)) || indexed.has(folder),
+    (folder) => existsSync(join(workTree(root), folder)) || indexed.has(folder),
   )
 }
 
@@ -311,7 +329,7 @@ function topSegment(path: string): string {
 /** What a report names, which is the folders a reader can go and open. */
 function presentFolders(root: string): string[] {
   return BACKED_FOLDERS.filter((folder) =>
-    existsSync(join(root, WORK_TREE, folder)),
+    existsSync(join(workTree(root), folder)),
   )
 }
 

@@ -9,6 +9,7 @@ import {
   scanCounts,
 } from '@/counts/scan'
 import { PROJECT_ROOT } from '@/project-root'
+import { creationRel, SCRATCH } from '@/record-root'
 import { createGovAdapter } from '@/gov/adapter'
 import { regenConsumedRules } from '@/gov/consumed'
 import { installRules, lookupRules } from '@/gov/install'
@@ -65,7 +66,7 @@ import {
   select,
 } from '@/ui'
 
-const PAYLOAD_REL = join('.claude', '.tmp', 'gov', 'rules.md')
+const PAYLOAD_REL = creationRel(SCRATCH, 'gov', 'rules.md')
 const RULES_REL = join('.claude', 'rules')
 
 interface InstallOptions {

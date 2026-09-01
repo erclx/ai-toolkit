@@ -3,6 +3,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
 import { type BodyLine, bodyLines } from '@/markdown/scan'
+import { recordDir } from '@/record-root'
 
 export const TEACH_REFUSALS = [
   'no-teach',
@@ -173,7 +174,7 @@ export function refuse(
  * this takes one and never reads the working directory.
  */
 export function teachDir(root: string): string {
-  return join(root, '.claude', 'teach')
+  return recordDir(root, 'teach')
 }
 
 async function listSlugs(dir: string): Promise<string[]> {

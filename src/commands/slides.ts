@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
+import { creationRel } from '@/record-root'
 import { LAYOUTS } from '@/slides/layouts'
 import { openDeck } from '@/slides/open'
 import { renderSlidesDoc } from '@/slides/render'
@@ -16,7 +17,11 @@ export function register(program: Command): void {
     .command('render')
     .description('Render a SLIDES.md source into a PowerPoint deck')
     .option('-s, --source <path>', 'Source SLIDES.md path', '.claude/SLIDES.md')
-    .option('-o, --out <path>', 'Output directory', '.claude/review/slides')
+    .option(
+      '-o, --out <path>',
+      'Output directory',
+      creationRel('review', 'slides'),
+    )
     .option('-v, --variant <variant>', 'Override variant (light or dark)')
     .option(
       '-m, --mirror <path>',

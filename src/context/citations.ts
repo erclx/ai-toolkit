@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { listRepositoryFiles } from '@/git-files'
+import { RECORD_ROOTS } from '@/record-root'
 
 /**
  * Suppresses citation checking for the source line carrying it.
@@ -76,21 +77,31 @@ export function isFixture(rel: string): boolean {
   return rel.split('/').some((segment) => FIXTURE_SEGMENTS.includes(segment))
 }
 
+/**
+ * Both record roots are spelled, so a citation into a folder that has moved is
+ * still resolved. A pattern fixed at one root matches nothing after the move and
+ * reports nothing, which is a stale reference passing the check that exists to
+ * find it rather than a check that fails.
+ */
 export function citationPattern(folders: readonly string[]): RegExp {
-  const names = folders.map((name) =>
-    name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-  )
+  const names = folders.map((name) => escape(name))
+  const roots = RECORD_ROOTS.map((name) => escape(name))
+
   return new RegExp(
-    `\\.claude/(?:${names.join('|')})/[A-Za-z0-9._/-]+\\.md`,
+    `(?:${roots.join('|')})/(?:${names.join('|')})/[A-Za-z0-9._/-]+\\.md`,
     'g',
   )
+}
+
+function escape(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 /**
  * A backticked filename carrying no folder, the form a reference takes when it
  * names a sibling rather than a path.
  *
- * `citationPattern` spells the `.claude/` prefix and cannot see this shape at
+ * `citationPattern` spells a record-root prefix and cannot see this shape at
  * all, which is the reason the form rule exists. Widening that expression to
  * admit a bare name was the alternative and it puts one match in the position of
  * answering two questions, since a spelled path is a reference by construction
