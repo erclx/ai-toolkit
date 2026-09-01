@@ -106,7 +106,7 @@ bun install
 bun run bootstrap
 ```
 
-The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. It confirms the install by resolving `canon --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does and how to opt out of the block.
+The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. That also means it leaves an alias block you already have alone rather than refreshing it, so an alias added upstream needs the block deleted and the script re-run. It confirms the install by resolving `canon --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does, how to pick up a new one, and how to opt out of the block.
 
 With the CLI linked, scaffold a fresh project.
 

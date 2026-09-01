@@ -12,6 +12,8 @@ Claude Code auto-discovers the toolkit plugin from `claude/.claude-plugin/plugin
 
 `bun run bootstrap` installs this block. It owns the canonical copy in `scripts/core/bootstrap.sh`, appends it to `~/.zshrc` wrapped in the two marker comments below, and sets `TOOLKIT` to the cloned path. The markers are how a re-run recognizes its own block and skips.
 
+Skipping means a re-run never updates a block already installed, so a shell that ran the bootstrap before the canonical block grew keeps whatever it got that day. To pick up an alias added since, delete the marked block and re-run the bootstrap, or paste the new lines into the block by hand.
+
 A block installed by hand before the managed one has no markers. Bootstrap detects that case through the `alias clp=` line instead, warns, and leaves the block untouched rather than appending a second copy. To switch over, delete the hand-rolled block and re-run the bootstrap.
 
 ```zsh
