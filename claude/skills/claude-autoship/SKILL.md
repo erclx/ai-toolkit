@@ -161,11 +161,11 @@ Invoke `canon:git-ship`. That body owns the sequence, being the verify gate, mem
 One thing this chain adds. Mark the pull request as a draft as soon as `git-ship`'s pull request step returns, ahead of its CI watch, then read the flag back:
 
 ```bash
-gh pr ready --undo
+gh pr ready --undo <number>
 gh pr view <number> --json isDraft
 ```
 
-Name the number `git-ship`'s pull request step returned rather than leaving the read to resolve by branch, since `gh pr view` matches a head ref and ignores state, so a reused branch name answers with a merged namesake's flag.
+Name the number `git-ship`'s pull request step returned on both calls rather than leaving either to resolve by branch, since each matches a head ref and ignores state, so a reused branch name reaches a merged namesake. The read is where that costs the most, answering with the wrong record's flag, and the write above it errors rather than mutating one.
 
 Report what the read returned rather than what the command printed, since the exit says the call ran and says nothing about the state. A `true` reports a draft. A `false` reports the pull request as opened ready and unsupervised, and the chain stops there. Never re-issue the undo on a disagreeing read, which fights whoever readied it instead of guarding anything.
 
