@@ -4,15 +4,18 @@
 # Only the HTML regenerates here. The PNG beside it is a chromium render whose
 # bytes move with the browser version, so asserting it in verify.sh would fail
 # on a machine whose chromium differs rather than on a stale count. Rebuild the
-# image with `canon capture assets/hero.html` after this script reports a change.
+# image with `canon capture assets/hero.html --selector .window` after this
+# script reports a change. The selector has no default, since the element a
+# capture crops to belongs to the page rather than to the command, and `.window`
+# is the class this repository's own two sources declare.
 # That capture also writes assets/hero.stamp, which records the digest of the
 # markup it rendered and is what the Hero stage compares, so all three files
 # commit together. The frame carries no version. `package.json` is bumped on main by the release
 # tooling, so embedding it drifts every open branch on the next release and the
 # stage then fails for work that touched nothing.
 #
-# Clone-only. `src/capture` is excluded from the published tarball, and this
-# script reads the repository's own catalogs, so a registry install has neither.
+# Clone-only. `canon capture` ships now, but this script reads the repository's
+# own catalogs, which a registry install does not carry.
 set -e
 set -o pipefail
 

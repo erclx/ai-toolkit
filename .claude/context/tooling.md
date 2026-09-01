@@ -60,7 +60,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 ## Gotchas
 
 - Commit golden config changes with `--no-verify`. Lint-staged runs against the template files themselves, not project source.
-- `canon capture` and `bun run screenshot` both produce PNGs and overlap nowhere else. `src/capture/render.ts` drives Chromium over static HTML files and never a running app, and `files` in `package.json` excludes `src/capture` so an installed `canon` refuses the command.
+- `canon capture` and `bun run screenshot` both produce PNGs and overlap nowhere else. `src/capture/render.ts` drives Chromium over static HTML files and never a running app. Both are available in a target now that `src/capture` ships, so the two are told apart by what they point at rather than by which one an install carries.
 - `bun run screenshot` is a web-stack config a target owns, and it builds that target, serves it, and captures the running application
 
 ### Manifest syntax

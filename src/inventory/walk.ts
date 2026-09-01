@@ -15,9 +15,9 @@ import type { Subject } from '@/inventory/subjects'
  * and `src/commands/inventory.ts` reaches it through a dynamic import so no
  * other command resolves the engine at startup.
  *
- * Like `@/demo/drive` and unlike `@/capture/render`, this module ships, because
- * a command whose whole purpose is running inside someone else's project cannot
- * stay toolkit-only.
+ * Like `@/demo/drive`, `@/driver/drive`, and `@/capture/render`, this module
+ * ships, because a command whose whole purpose is running inside someone else's
+ * project cannot stay toolkit-only.
  */
 
 /**

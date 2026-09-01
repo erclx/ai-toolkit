@@ -33,7 +33,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/labels/` owns the pull request label map, splitting the TOML read from the matcher so a caller holding a changed set can resolve coverage without touching git. Reasoned about in `.claude/context/cli/audits.md`
 - `src/git-files.ts` owns `listRepositoryFiles()`, the tracked-plus-untracked listing the citation check, the markdown corpus, and the secret scan all take their file set from
 - `src/git-files.ts` also owns `resolveBaseRef()` and `listChangedFiles()`, the branch-range pair the label audit reads. The changed set diffs the base against the working tree rather than against `HEAD`, so a surface added before the branch commits is still in scope
-- `src/capture/` owns the documentation capture render, the one folder under `src/` the package excludes
+- `src/capture/` owns the capture render, one of the four browser modules under `src/` and the last of them to start shipping
 
 ## Gotchas
 

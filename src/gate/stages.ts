@@ -189,7 +189,7 @@ export const STAGES: readonly Stage[] = [
         kind: 'drift',
         pathspec: 'assets/hero.html',
         failure:
-          'Hero counts drifted. Run bun run check, then canon capture assets/hero.html, and commit assets/hero.html with assets/hero.png and assets/hero.stamp.',
+          'Hero counts drifted. Run bun run check, then canon capture assets/hero.html --selector .window, and commit assets/hero.html with assets/hero.png and assets/hero.stamp.',
       },
       { kind: 'measure', measure: heroStamp },
     ],
