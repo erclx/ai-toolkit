@@ -111,12 +111,18 @@ describe('extractKeyChangePaths', () => {
     ).toEqual([])
   })
 
-  it('should drop a file named for context after the claim (#1265)', () => {
-    expect(
-      pathsOf(
+  it('should mark a file named for context after the claim as trailing (#1265)', () => {
+    const read = extractKeyChangePaths(
+      body(
         '- Add `canon autoship classify` in `src/commands/autoship.ts`, following `src/commands/labels.ts` for the frame, the stream split, and the exit ladder.',
       ),
-    ).toEqual(['src/commands/autoship.ts'])
+      ROOTS,
+    )
+
+    expect(read.kind === 'read' && read.claims).toMatchObject([
+      { path: 'src/commands/autoship.ts', leading: true },
+      { path: 'src/commands/labels.ts', leading: false },
+    ])
   })
 
   it('should drop a grep pattern that reads as a folder (#1241)', () => {
@@ -181,6 +187,61 @@ describe('extractKeyChangePaths', () => {
 })
 
 describe('extractKeyChangePaths', () => {
+  it('should take every path a bullet names across its commas (#1329)', () => {
+    expect(
+      pathsOf(
+        '- Update `.claude/context/cli/packaging.md` with what the check now proves and what it still cannot see, `.claude/context/development/gates.md` with the working-tree read the pack replaces the last-commit read with, and `.claude/context/ci.md` to reverse its stated decision.',
+      ),
+    ).toEqual([
+      '.claude/context/cli/packaging.md',
+      '.claude/context/development/gates.md',
+      '.claude/context/ci.md',
+    ])
+  })
+
+  it('should mark only the path ahead of the first comma as leading (#1329)', () => {
+    const read = extractKeyChangePaths(
+      body(
+        '- Update `.claude/context/cli/packaging.md` with what the check proves, `.claude/context/ci.md` to reverse its stated decision.',
+      ),
+      ROOTS,
+    )
+
+    expect(read.kind === 'read' && read.claims).toMatchObject([
+      { path: '.claude/context/cli/packaging.md', leading: true },
+      { path: '.claude/context/ci.md', leading: false },
+    ])
+  })
+
+  it('should drop a trailing path when the bullet opens by disclaiming (#1274)', () => {
+    expect(
+      pathsOf(
+        '- Leave `scripts/sandbox/fixtures/claude/autoship/prose-executable/expect.toml` untouched, since `src/autoship/paths.ts` already reads the set.',
+      ),
+    ).toEqual([])
+  })
+
+  it('should drop a bullet disclaiming with as written past a leading path', () => {
+    expect(
+      pathsOf('- Ship `standards/plan.md` as written, and add `docs/plan.md`.'),
+    ).toEqual([])
+  })
+
+  it('should keep the first reading when a path repeats leading in a later bullet', () => {
+    const read = extractKeyChangePaths(
+      body(
+        '- Add `src/pr/paths.ts`, following `src/pr/bijection.ts` for the shape.',
+        '- Rewrite `src/pr/bijection.ts` to split the second direction.',
+      ),
+      ROOTS,
+    )
+
+    expect(read.kind === 'read' && read.claims).toMatchObject([
+      { path: 'src/pr/paths.ts', leading: true },
+      { path: 'src/pr/bijection.ts', leading: false },
+    ])
+  })
+
   it('should take every path in a claim region with no comma (#1269)', () => {
     expect(
       pathsOf(

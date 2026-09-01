@@ -24,6 +24,16 @@ export interface PathClaim {
    * genuinely wrong one.
    */
   readonly anchored: boolean
+  /**
+   * True when the span sits ahead of the bullet's first comma.
+   *
+   * A trailing span is a path the bullet names without the reader being able to
+   * tell a second claim from a file cited for context, so it credits a changed
+   * file and never accuses one. Same asymmetry as `anchored`, on a second
+   * question: both mark evidence strong enough to confirm and too weak to
+   * accuse with.
+   */
+  readonly leading: boolean
   /** The span exactly as the body wrote it, before the line suffix came off. */
   readonly span: string
   /** One-based index of the bullet inside the section. */
@@ -101,7 +111,7 @@ function maskSpans(text: string): string {
 }
 
 /**
- * The part of a bullet that asserts a change, which ends at its first comma.
+ * The part of a bullet that can accuse, which ends at its first comma.
  *
  * This is the one lever that separates a claim from a mention, and it was
  * chosen by measurement rather than by grammar. Over the 23 merged pull
@@ -113,10 +123,27 @@ function maskSpans(text: string): string {
  * removed nothing the comma had not already removed, because this corpus
  * punctuates every one of them.
  *
- * What it costs is a claim in a second coordinated clause, as in "Add `x` to
- * `a.ts`, and delete the old inline `y` from `b.ts`", where `b.ts` stops being
- * claimed and falls to the unnamed direction instead. That direction reports
- * without grading, so the cost lands where it does no damage.
+ * The cut used to bound what the scan collected at all, and that is the half
+ * that came out. A path past the comma was left out of the claim set entirely
+ * and fell to the unnamed direction, accepted here on the ground that the
+ * direction reports without grading. It graded anyway, one consumer removed:
+ * `claude-pr-review` reads `unnamed` as a question to put to the branch author,
+ * and on 2026-09-01 the question went to three pull requests over bullets that
+ * had named the files all along, with `#1329` gaining bullets it did not need.
+ *
+ * Collecting the whole bullet as claims was measured against the 40 most recent
+ * merged pull requests carrying the section and is not the repair: it takes
+ * `unmet` from 10 to 19, and every one of the nine is the class the cut was
+ * tuned to exclude, as in `#1276`'s "following the frame, the stream split, and
+ * the exit ladder `src/commands/labels.ts` already carries". So the scan reads
+ * the whole bullet and this cut decides `leading` instead, which is what lets a
+ * trailing path credit a changed file while `unmet` stays where the corpus put
+ * it. The same 40 give claims 243 to 314, unnamed 1124 to 1058, and unmet 10
+ * either way.
+ *
+ * `disclaimsChange` reads this region too, and for its own reason rather than
+ * by sharing this one: a disclaimer opens its bullet, so the cut reaches every
+ * one the corpus carries, and `NO_CHANGE` below records what depends on that.
  */
 function claimRegion(bullet: string): string {
   const at = maskSpans(bullet).indexOf(',')
@@ -149,8 +176,8 @@ function claimRegion(bullet: string): string {
 const NO_CHANGE =
   /\b(?:untouched|unchanged)\b|\bas written\b|^\s*(?:do not|don't|never)\b/i
 
-function disclaimsChange(region: string): boolean {
-  return NO_CHANGE.test(maskSpans(region))
+function disclaimsChange(bullet: string): boolean {
+  return NO_CHANGE.test(maskSpans(claimRegion(bullet)))
 }
 
 /**
@@ -296,12 +323,12 @@ export function extractKeyChangePaths(
       trimmed.length > PREVIEW_LIMIT
         ? `${trimmed.slice(0, PREVIEW_LIMIT)}…`
         : trimmed
-    const region = claimRegion(trimmed)
-    if (disclaimsChange(region)) continue
+    if (disclaimsChange(trimmed)) continue
 
+    const accusesBefore = claimRegion(trimmed).length
     let claimed = false
 
-    for (const match of region.matchAll(BACKTICKED)) {
+    for (const match of trimmed.matchAll(BACKTICKED)) {
       const span = match[1] ?? ''
       const bare = span.replace(LINE_SUFFIX, '')
 
@@ -317,6 +344,9 @@ export function extractKeyChangePaths(
       const resolved = resolveSpan(bare)
       if (resolved === undefined) continue
       claimed = true
+      // First occurrence wins, across bullets as well as inside one. A path
+      // named trailing here and leading three bullets later keeps the weaker
+      // reading, which loses an accusation and can never add one.
       if (seen.has(resolved.path)) continue
       seen.add(resolved.path)
 
@@ -324,6 +354,7 @@ export function extractKeyChangePaths(
         path: resolved.path,
         directory: resolved.directory,
         anchored: roots.has(resolved.path.slice(0, resolved.path.indexOf('/'))),
+        leading: (match.index ?? 0) < accusesBefore,
         span,
         bullet: index + 1,
         preview,

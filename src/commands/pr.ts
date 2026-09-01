@@ -107,12 +107,14 @@ export function register(program: Command): void {
         'bullet names leaves it incomplete.',
         '',
         'The two directions carry different weight:',
-        '  unmet      a whole path the body claims and the diff does not carry,',
-        '             which is the graded direction',
-        '  unnamed    a changed file no bullet reached, reported without a grade,',
-        '             since a lockfile or a generated asset earns no bullet',
-        '  unresolved a path written partially, which can credit a changed file',
-        '             and never accuse one',
+        "  unmet      a whole path the body claims ahead of its bullet's first",
+        '             comma and the diff does not carry, the graded direction',
+        '  unnamed    a changed file no bullet reached that a reader might have',
+        '             wanted one for, reported without a grade',
+        '  incidental a changed file no bullet reached that owes none: a test, a',
+        '             fixture, or a lockfile, held apart so the count above reads',
+        '  unresolved a path written partially, or one past its first comma,',
+        '             which can credit a changed file and never accuse one',
         '',
         `Only ## ${KEY_CHANGES} is read. ## Technical Context legitimately names`,
         'files a branch never touched, so widening the read manufactures findings.',
@@ -361,11 +363,16 @@ async function runKeyChanges(
       )
     }
   }
+  if (report.incidental.length > 0) {
+    logInfo(
+      `${plural(report.incidental.length, 'further changed file')} set aside as owing no bullet, whole in the --json record.`,
+    )
+  }
 
   if (report.unresolved.length > 0) {
     logStep('Unresolved')
     logInfo(
-      `${plural(report.unresolved.length, 'path')} written partially, so neither direction judged it.`,
+      `${plural(report.unresolved.length, 'path')} written partially or trailing its bullet's first comma, so neither direction judged it.`,
     )
     for (const claim of report.unresolved) logInfo(claim.path)
   }
@@ -384,6 +391,7 @@ async function runKeyChanges(
         claims: report.claims,
         unmet: report.unmet,
         unnamed: report.unnamed,
+        incidental: report.incidental,
         unresolved: report.unresolved,
       })}\n`,
     )
