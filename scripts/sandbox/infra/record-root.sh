@@ -73,10 +73,10 @@ Pull request: #1
 TASK
 
   # A second plan, already archived, is what the task points at. A live target
-  # makes `tasks archive` refuse as `plan-unswept`, which is correct behavior and
-  # answers nothing about which root either file resolved at. The live one beside
-  # it is what gives `records validate plans` a record to count, since the walk
-  # skips the archive.
+  # would have `tasks archive` carry the plan across as well, which moves a file
+  # this arm is measuring the root of and answers nothing about where it resolved.
+  # The live one beside it is what gives `records validate plans` a record to
+  # count, since the walk skips the archive.
   cp "$root/plans/feature-live-row.md" "$root/plans/archive/feature-shipped-row.md"
 
   printf 'scratch\n' >"$root/$scratch/note.txt"

@@ -27,8 +27,8 @@ stage_setup() {
     log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
     log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
     log_info "  .canon/tasks/ has 'Migrate storage to Postgres' open, but it shipped in HEAD"
-    log_info "  .canon/plans/feature-postgres-migration.md is linked from that task and should be archived"
-    log_info "  .canon/plans/feature-some-old-plan.md has no task backlink and should survive"
+    log_info "  .canon/plans/feature-postgres-migration.md is linked from that task and must stay live"
+    log_info "  .canon/plans/feature-some-old-plan.md has no task backlink and must stay live too"
     log_info ""
     log_info "Before invoking the skill, narrate the pivot to Claude in chat:"
     log_info "  'We pivoted this session: switched storage from SQLite to Postgres,'"
@@ -124,21 +124,19 @@ stage_setup() {
 
     stage_fixtures claude docs board-sweep 03-plans
 
-    log_step "Scenario ready: plans sweep reaches a task the session never touched"
+    log_step "Scenario ready: closing an outcome settles no plan"
     log_info "Context: three tasks on the board, each citing a plan in .canon/plans/"
     log_info "  v02.0-pagination.md has open outcomes that HEAD ships, so this run closes it"
     log_info "  v01.0-rate-limit.md is already all [x], closed by an earlier session"
-    log_info "  That earlier run never swept its plan, which is the defect this arm reproduces"
-    log_info "  v03.0-search.md is the control. Its outcomes stay open and its plan must survive."
+    log_info "  v03.0-search.md is the control. Its outcomes stay open."
     log_info ""
-    log_info "Narrate nothing about rate limiting. The arm fails if the sweep only"
-    log_info "reaches the task the session or the prompt put in front of it, and it"
-    log_info "fails the other way if the sweep archives the control's plan too."
+    log_info "A plan is settled by the merge rather than by a tick, and canon tasks"
+    log_info "archive carries it. Narrate nothing about rate limiting. The arm fails"
+    log_info "if the run moves any plan, whichever task put it in front of the run."
     log_info ""
     log_info "Action:  /claude-docs"
     log_info "Expect:  declared in fixtures/claude/docs/board-sweep/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:docs board-sweep"
-    log_info "         Two plans archived, two Plan: lines retargeted, the control untouched"
+    log_info "         One outcome marked, all three plans live, no plans archive created"
     log_info "         Runs under the default turn cap. A clean run cost 28 on 2026-07-31."
     ;;
   "receipt-sweep")

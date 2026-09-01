@@ -14,10 +14,18 @@
 
 max_turns = 30
 
-# The destination, not the source. A board staged without a swept plan, or with
-# an open outcome, exercises the refusal rather than the archive, and a run that
-# declined leaves the source file exactly where a `paths` entry over it would
-# find it. Asserting the destination is what separates the two.
+# The destination, not the source. A board staged with an open outcome exercises
+# a refusal rather than the archive, and a run that declined leaves the source
+# file exactly where a `paths` entry over it would find it. Asserting the
+# destination is what separates the two.
+#
+# The plan is the second half of the same move. `v01.0-rate-limit` cites a live
+# plan no other task holds, so the archive carries it across, and asserting only
+# the task would pass a run that archived the task and stranded the plan.
+#
+# The control's plan is what keeps that honest. `feature-pagination.md` belongs
+# to a task whose outcomes stay open, so a run that swept the plans folder rather
+# than following the one task it was given moves it too.
 #
 # `priority.md` is listed because the content pin below reads it. A run that
 # deleted the file rather than dropping one row would otherwise report a content
@@ -26,18 +34,23 @@ paths = [
   ".canon/tasks/archive/v01.0-rate-limit.md",
   ".canon/tasks/v02.0-pagination.md",
   ".canon/tasks/priority.md",
+  ".canon/plans/archive/feature-rate-limit.md",
+  ".canon/plans/feature-pagination.md",
 ]
 
-# The source is gone and the control never moved. The second entry is what
-# catches a run that archived the board rather than the task it was given.
+# Both sources are gone and the control never moved. The second entry catches a
+# run that archived the board rather than the task it was given, and the third
+# separates a moved plan from a copied one.
 absent = [
   ".canon/tasks/v01.0-rate-limit.md",
   ".canon/tasks/archive/v02.0-pagination.md",
+  ".canon/plans/feature-rate-limit.md",
 ]
 
-# One entry rather than two. The archive sits inside the board, so the board's
-# own glob already reaches the destination the move writes to.
-write_scope = [".canon/tasks/**"]
+# Two entries now. The task archive sits inside the board, so the board's own
+# glob already reaches it, and the plans glob is what the archive verb writes
+# through when it carries the plan across.
+write_scope = [".canon/tasks/**", ".canon/plans/**"]
 
 # The skill reports the paths the command returned, in full from the project
 # root. The archive destination is the token worth pinning, since a reply naming
@@ -63,6 +76,19 @@ pattern = '^\| ---- \| ------- \| ---- \|\n\| \[v02\.0 pagination\]\(v02\.0-pagi
 [[content]]
 path = ".canon/tasks/archive/v01.0-rate-limit.md"
 pattern = '^- \[x\] Outcome: a client over the request budget is rejected'
+
+# The retarget. The archived task sits a folder deeper than the live one, so the
+# pointer it carried is wrong by one level the moment the task moves, and
+# `.canon/plans/` is gitignored so nothing recovers the target it named.
+[[content]]
+path = ".canon/tasks/archive/v01.0-rate-limit.md"
+pattern = '^Plan: \[feature-rate-limit\]\(\.\./\.\./plans/archive/feature-rate-limit\.md\)'
+
+# The control's pointer stays put, at the live path it was staged with. Asserting
+# the plan's location alone would pass a run that retargeted every line it found.
+[[content]]
+path = ".canon/tasks/v02.0-pagination.md"
+pattern = '^Plan: \[feature-pagination\]\(\.\./plans/feature-pagination\.md\)'
 
 # The control's outcomes stay open. A run that marked them to get the control
 # past the open-outcome gate would leave both tasks archivable, and every other
