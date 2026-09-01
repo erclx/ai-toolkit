@@ -208,8 +208,12 @@ async function runRecords(opts: RecordsOptions): Promise<number> {
     `Rewrote ${plural(applied.written, 'file')} and moved ${plural(applied.moved, 'folder')}.`,
   )
 
+  // `failed` carries a citation the write loop could not land as well as a
+  // folder the rename loop stopped on, so the line names a path rather than a
+  // folder. Reading a rejected write back as a folder that would not move sends
+  // the reader looking at the wrong half of the verb.
   if (applied.failed.length > 0) {
-    logError(`Could not move ${plural(applied.failed.length, 'folder')}.`)
+    logError(`Could not write ${plural(applied.failed.length, 'path')}.`)
     for (const path of applied.failed) logError(`  ${path}`)
     return 1
   }
