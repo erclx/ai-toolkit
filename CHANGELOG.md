@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.1](https://github.com/erclx/canon/compare/v4.8.0...v4.8.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **tasks:** settle a plan on the merge rather than on the tick ([#1322](https://github.com/erclx/canon/issues/1322)) ([faaab65](https://github.com/erclx/canon/commit/faaab65558cf61a27cf00c13d1a04a135bd3ae36))
+
 ## [4.8.0](https://github.com/erclx/canon/compare/v4.7.0...v4.8.0) (2026-09-01)
 
 
