@@ -18,6 +18,7 @@ import { register as capture } from '@/commands/capture'
 import { register as serve } from '@/commands/serve'
 import { register as demo } from '@/commands/demo'
 import { register as inventory } from '@/commands/inventory'
+import { register as driver } from '@/commands/driver'
 import { register as feedback } from '@/commands/feedback'
 import { register as transcripts } from '@/commands/transcripts'
 import { register as tasks } from '@/commands/tasks'
@@ -70,6 +71,7 @@ function showHelp(): void {
     `${GREY}│${NC}    serve [dir]        ${GREY}# Serve a directory over localhost and print the preview link${NC}`,
     `${GREY}│${NC}    demo [cmd]         ${GREY}# Record a running app (compile, run)${NC}`,
     `${GREY}│${NC}    inventory [subj]   ${GREY}# Report one computed property across every route${NC}`,
+    `${GREY}│${NC}    drive <url> <run>  ${GREY}# Walk a page through named interactions and measure each state${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/feedback/${NC}`,
     `${GREY}│${NC}    transcripts <url>  ${GREY}# Fetch a YouTube transcript with metadata frontmatter${NC}`,
     `${GREY}│${NC}    tasks [cmd]        ${GREY}# Task board commands (archive)${NC}`,
@@ -121,6 +123,7 @@ function showHelp(): void {
     `${GREY}│${NC}    canon capture assets/install.html`,
     `${GREY}│${NC}    canon serve .claude/teach`,
     `${GREY}│${NC}    canon inventory focus --json`,
+    `${GREY}│${NC}    canon drive http://localhost:4173 run.json --json`,
     `${GREY}│${NC}    pbpaste | canon feedback`,
     `${GREY}│${NC}    canon transcripts https://youtu.be/VIDEO_ID`,
     `${GREY}│${NC}    canon tasks archive --pull-request 673 --json`,
@@ -177,6 +180,7 @@ capture(program)
 serve(program)
 demo(program)
 inventory(program)
+driver(program)
 feedback(program)
 transcripts(program)
 tasks(program)
