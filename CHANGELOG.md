@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.1](https://github.com/erclx/canon/compare/v4.6.0...v4.6.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **seeds:** drop four bullets a scaffolded project cannot act on ([#1313](https://github.com/erclx/canon/issues/1313)) ([693ffc0](https://github.com/erclx/canon/commit/693ffc0dbdfd24a51fe211b42d88df4fab9276bd))
+
 ## [4.6.0](https://github.com/erclx/canon/compare/v4.5.0...v4.6.0) (2026-09-01)
 
 
