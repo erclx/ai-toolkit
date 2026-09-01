@@ -18,6 +18,7 @@ import {
   readNewRules,
   selectNewRules,
   type ToolingReport,
+  uncoveredDomains,
 } from '@/sync/check'
 import type { ScanEntry } from '@/sync/engine'
 import { emptyReverseReport } from '@/sync/reverse'
@@ -801,5 +802,59 @@ describe('baseBands', () => {
 
   it('should read nothing from a toolkit with no base stack', () => {
     expect([...baseBands(TOOLKIT)]).toEqual([])
+  })
+})
+
+describe('uncoveredDomains', () => {
+  it('should name a scanned domain the stamp does not cover', () => {
+    const report = buildReport([], { covers: [] })
+
+    expect(uncoveredDomains(report)).toContain('governance')
+  })
+
+  it('should name nothing the stamp already covers', () => {
+    const report = buildReport([], { covers: ['governance'] })
+
+    expect(uncoveredDomains(report)).not.toContain('governance')
+  })
+
+  it('should stay quiet about an opt-in domain the target never installed', () => {
+    const report = buildReport([], { covers: [] })
+
+    expect(uncoveredDomains(report)).not.toContain('design')
+  })
+
+  it('should name an opt-in domain the target installed and never stamped', () => {
+    const report = buildReport([], {
+      covers: [],
+      domains: [
+        {
+          domain: 'design',
+          stamped: false,
+          counts: countStates([]),
+          entries: [],
+          historyUnavailable: false,
+          upstream: [],
+        },
+      ],
+    })
+
+    expect(uncoveredDomains(report)).toContain('design')
+  })
+
+  it('should leave an unmigrated domain to the relocation rather than a sync', () => {
+    const report = buildReport([], {
+      covers: [],
+      unmigrated: [
+        {
+          domain: 'governance',
+          rootPath: 'rules',
+          installPath: join('.claude', 'rules'),
+          files: 1,
+        },
+      ],
+    })
+
+    expect(uncoveredDomains(report)).not.toContain('governance')
   })
 })

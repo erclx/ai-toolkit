@@ -1,0 +1,315 @@
+/**
+ * The design system's one source of values.
+ *
+ * `.claude/DESIGN.md` is rendered from this module rather than read by it, so
+ * the document a person opens is a view and this file is the fact. Every
+ * rendering surface reads from here in the form it can take: a CSS surface
+ * takes custom properties through `@/design/css`, and the slide renderer takes
+ * bare hex through `bareHex` below, because PowerPoint has no concept of a
+ * custom property.
+ *
+ * The two artifacts can disagree, which is what the `design` gate stage exists
+ * to catch. Nothing else compares them.
+ */
+
+/** A color role, its purpose, and the value every surface renders it at. */
+export interface ColorToken {
+  readonly role: string
+  readonly intent: string
+  readonly value: string
+  /**
+   * Roles this one is rendered on top of, named rather than spelled so a ground
+   * moving carries every reading measured against it. Empty on a ground itself
+   * and on a role with no hex value to measure.
+   */
+  readonly grounds?: readonly string[]
+  /**
+   * No rendering surface exercises this value yet, so it is a declaration the
+   * system has not tested rather than one it has. Rendered as `? verify`.
+   */
+  readonly verify?: boolean
+}
+
+export interface TypeToken {
+  readonly role: string
+  readonly family: string
+  readonly weight: string
+  readonly size: string
+  readonly lineHeight: string
+  readonly verify?: readonly ('family' | 'weight' | 'size' | 'lineHeight')[]
+}
+
+export interface SpaceToken {
+  readonly step: string
+  readonly multiplier: string
+  readonly value: string
+}
+
+export interface BorderToken {
+  readonly role: string
+  readonly radius: string
+  readonly width: string
+  readonly when: string
+  readonly verify?: readonly ('radius' | 'width')[]
+}
+
+export interface DesignTokens {
+  readonly personality: string
+  readonly color: readonly ColorToken[]
+  readonly colorNote: string
+  readonly typography: readonly TypeToken[]
+  readonly typographyNote: string
+  readonly spacing: readonly SpaceToken[]
+  readonly spacingNote: string
+  readonly borders: readonly BorderToken[]
+  readonly bordersNote: string
+  readonly motion: string
+  readonly iconography: string
+  readonly preamble: string
+}
+
+/** The one monospace stack every surface that renders text declares. */
+const MONO = 'Noto Sans Mono, DejaVu Sans Mono, monospace'
+
+const DARK_GROUNDS = ['background', 'surface'] as const
+const LIGHT_GROUNDS = ['light-background', 'light-surface'] as const
+
+export const TOKENS: DesignTokens = {
+  preamble: [
+    'This document is rendered from `src/design/tokens.ts` by `canon design regen`, and the `design` stage of `bun run check` fails when the two disagree. Edit the module, never this file.',
+    '',
+    'The values below are the system rather than a reading of one. Until 2026-09-01 this record transcribed two surfaces and agreed with nothing else, which is what made a change to it reach nobody. The slide theme, the token preview, and a teach workspace stylesheet now read the module this file is rendered from, so a value changed there changes what all three render.',
+    '',
+    'Two surfaces still carry their own copies. The rendered hero at `assets/hero.html` is written by `scripts/core/regen-hero.sh` against a committed capture, and the terminal framing in `scripts/lib/ui.sh` and `src/ui.ts` writes ANSI rather than hex. The dark half below is the palette the hero carries, so the two agree today by value and not yet by construction.',
+  ].join('\n'),
+
+  personality: [
+    'Warm neutrals carry the frame under a single rust accent, rendered in the same monospace the terminal uses. The subject picks the register rather than taste: a toolkit whose primary surface is a shell has no proportional voice available, so the rendered surfaces match the terminal instead of the reverse. One accent carries every count, link, and primary action. Promoting a second and third into structural roles is what reads as a generated interface, so the palette stays at one.',
+  ].join('\n'),
+
+  colorNote: [
+    'Every role clears WCAG AA at 4.5:1 against each ground it declares, asserted in `src/design/contrast.test.ts`. Two corrections landed with this record becoming the source. The light `muted` step moved from `#7A736A`, which read 4.38 and 4.09 against the two light grounds, and the dark `accent` moved off the `#C8602E` the slide theme carried, which read 4.36 and 3.99 against the two dark ones. Both now sit on the values below.',
+    '',
+    'Success, warning, and error hold ANSI codes because that is what `scripts/lib/ui.sh` writes, and no rendered surface implements an equivalent. Giving them a hex value would invent a mapping no file has, so they carry no contrast reading either.',
+  ].join('\n'),
+
+  color: [
+    {
+      role: 'background',
+      intent: 'page canvas',
+      value: '#191512',
+    },
+    {
+      role: 'surface',
+      intent: 'cards, panels, raised blocks',
+      value: '#211c19',
+    },
+    {
+      role: 'border',
+      intent: 'every rule and panel edge',
+      value: '#2f2823',
+    },
+    {
+      role: 'text',
+      intent: 'headings, counts, emphasized runs',
+      value: '#f4efe9',
+      grounds: DARK_GROUNDS,
+    },
+    {
+      role: 'text-body',
+      intent: 'default body copy',
+      value: '#c9c0b7',
+      grounds: DARK_GROUNDS,
+    },
+    {
+      role: 'text-secondary',
+      intent: 'labels, captions, supporting copy',
+      value: '#a79d94',
+      grounds: DARK_GROUNDS,
+    },
+    {
+      role: 'muted',
+      intent: 'the faintest step, trailing notes',
+      value: '#948a81',
+      grounds: DARK_GROUNDS,
+    },
+    {
+      role: 'accent',
+      intent: 'install command, mark, primary action',
+      value: '#e0724b',
+      grounds: DARK_GROUNDS,
+    },
+    { role: 'success', intent: 'terminal confirmations', value: 'ANSI 32' },
+    { role: 'warning', intent: 'terminal cautions', value: 'ANSI 33' },
+    { role: 'error', intent: 'terminal failures', value: 'ANSI 31' },
+    {
+      role: 'light-background',
+      intent: 'page canvas on a light ground',
+      value: '#faf7f2',
+    },
+    {
+      role: 'light-surface',
+      intent: 'cards and panels on a light ground',
+      value: '#f4efe6',
+    },
+    {
+      role: 'light-text',
+      intent: 'primary text on a light ground',
+      value: '#1a1815',
+      grounds: LIGHT_GROUNDS,
+    },
+    {
+      role: 'light-muted',
+      intent: 'secondary text on a light ground',
+      value: '#726b62',
+      grounds: LIGHT_GROUNDS,
+    },
+    {
+      role: 'light-accent',
+      intent: 'links and primary action on light',
+      value: '#a4471c',
+      grounds: LIGHT_GROUNDS,
+    },
+    {
+      role: 'light-border',
+      intent: 'rules and panel edges on light',
+      value: '#e4dcd0',
+      verify: true,
+    },
+  ],
+
+  typographyNote: [
+    'One family covers every role. The size scale runs from 11.5 to 34 pixels across ten values, and five of them map onto a role. The other five are adjustments inside a single component and get no role here, since a scale with five invented steps reads as a system the surfaces do not implement. They are 11.5, 12.5, 13, 14, and 15 pixels.',
+    '',
+    'A tagged cell is one no rendering surface exercises yet, which is a declaration the system has not tested rather than one it has.',
+    '',
+    'Two rules set tracking and no others touch it. The label role carries `0.05em`, and the display role tightens to `-0.01em`.',
+  ].join('\n'),
+
+  typography: [
+    {
+      role: 'display',
+      family: MONO,
+      weight: '700',
+      size: '34px',
+      lineHeight: '1.3',
+    },
+    {
+      role: 'heading',
+      family: MONO,
+      weight: '700',
+      size: '19px',
+      lineHeight: '1.3',
+      verify: ['lineHeight'],
+    },
+    {
+      role: 'body',
+      family: MONO,
+      weight: '400',
+      size: '16px',
+      lineHeight: '1.65',
+      verify: ['weight'],
+    },
+    {
+      role: 'label',
+      family: MONO,
+      weight: '400',
+      size: '12px',
+      lineHeight: '1.45',
+      verify: ['weight', 'lineHeight'],
+    },
+    {
+      role: 'code',
+      family: MONO,
+      weight: '700',
+      size: '14.5px',
+      lineHeight: '1.3',
+      verify: ['lineHeight'],
+    },
+  ],
+
+  spacingNote: [
+    'The base is six pixels, which is the largest unit dividing the values that recur: 6, 12, 18, 24, and 30. One-off paddings at 9, 10, 11, 13, 14, 16, 22, 26, 34, and 40 pixels sit off the scale entirely and get no step.',
+    '',
+    'The outer window padding is a single declaration reading `44px 52px 38px`, and none of its three values divides by six. They carry no multiplier for that reason, and one declaration setting all three is the only thing grouping them, so they are a frame register rather than a scale.',
+  ].join('\n'),
+
+  spacing: [
+    { step: 'xs', multiplier: '1', value: '6px' },
+    { step: 'sm', multiplier: '2', value: '12px' },
+    { step: 'md', multiplier: '3', value: '18px' },
+    { step: 'lg', multiplier: '4', value: '24px' },
+    { step: 'xl', multiplier: '5', value: '30px' },
+    { step: 'frame-top', multiplier: 'none', value: '44px' },
+    { step: 'frame-inline', multiplier: 'none', value: '52px' },
+    { step: 'frame-bottom', multiplier: 'none', value: '38px' },
+  ],
+
+  bordersNote: [
+    'Every border is one pixel solid at the `border` role, and that value appears in no text role. Three radii appear, and the two blocks carrying the largest and smallest have no border at all, so radius and width are independent here rather than paired. Nothing renders a pill, so both of its cells stay tagged.',
+  ].join('\n'),
+
+  borders: [
+    {
+      role: 'frame',
+      radius: '12px',
+      width: 'none',
+      when: 'the outer window, radius only',
+    },
+    {
+      role: 'panel',
+      radius: '10px',
+      width: '1px',
+      when: 'cards and columns',
+    },
+    {
+      role: 'action',
+      radius: '7px',
+      width: 'none',
+      when: 'the install command block',
+    },
+    {
+      role: 'rule',
+      radius: 'none',
+      width: '1px',
+      when: 'horizontal dividers between bands',
+    },
+    {
+      role: 'pill',
+      radius: '999px',
+      width: 'none',
+      when: 'tags and status chips, none built',
+      verify: ['radius', 'width'],
+    },
+    {
+      role: 'marker',
+      radius: '999px',
+      width: 'none',
+      when: 'the status dot, sized at 6px',
+    },
+  ],
+
+  motion:
+    'Motion is not used. No transition, animation, or keyframe declaration appears on any rendered surface, and the capture pipeline screenshots a static frame.',
+
+  iconography:
+    'No icon library is installed. The surfaces draw literal glyph characters, `✦` for the hero mark and `│ ├ ✓ ! ✗ + - ◆ ◇ ❯` for the terminal framing, and a custom icon has no place to load from.',
+}
+
+/** A role's value, or `undefined` where the record declares no such role. */
+export function colorValue(role: string): string | undefined {
+  return TOKENS.color.find((token) => token.role === role)?.value
+}
+
+/**
+ * The adapter the slide renderer takes. `PptxGenJS` receives color as
+ * `{ color: theme.background }` and wants six hex digits with no leading `#`,
+ * so the shared thing is the value and this is the per-consumer form.
+ *
+ * The hex is raised to upper case because that is the spelling
+ * `src/slides/styles.ts` has always written, and the only one a diff of a
+ * rendered deck reads cleanly against.
+ */
+export function bareHex(value: string): string {
+  return value.replace(/^#/, '').toUpperCase()
+}

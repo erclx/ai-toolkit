@@ -210,6 +210,34 @@ export const STAGES: readonly Stage[] = [
     success: 'Tooling paths clean',
   },
   {
+    // `.claude/DESIGN.md` and the base stylesheet are both written from
+    // `src/design/tokens.ts` and neither is edited by hand. Two artifacts from
+    // one source is the cost of the token move, and a render step that has to
+    // run is only safe while something fails when it did not, which is this.
+    id: 'design',
+    label: 'Design',
+    checks: [
+      {
+        kind: 'cli',
+        argv: ['design', 'regen'],
+        failure: 'Design regen failed',
+      },
+      {
+        kind: 'drift',
+        pathspec: '.claude/DESIGN.md',
+        failure:
+          'The design record drifted from the token source. Run bun run check and commit .claude/DESIGN.md.',
+      },
+      {
+        kind: 'drift',
+        pathspec: 'src/design/base.css',
+        failure:
+          'The base stylesheet drifted from the token source. Run bun run check and commit src/design/base.css.',
+      },
+    ],
+    success: 'Design source clean',
+  },
+  {
     // The claude manifest is the only route a target's ignore set travels, and
     // it is hand-maintained beside this repository's own `.gitignore` with
     // nothing comparing the two. A drift between them reaches every target on

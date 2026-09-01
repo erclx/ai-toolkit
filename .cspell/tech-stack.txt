@@ -141,6 +141,7 @@ versinfo
 viewports
 vite
 vitest
+wcag
 webvtt
 withgoogle
 wslpath
