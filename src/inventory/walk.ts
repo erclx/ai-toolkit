@@ -1,6 +1,10 @@
 import { chromium } from 'playwright-core'
 import type { Browser } from 'playwright-core'
-import { isBrowserMissing } from '@/browser/engine'
+import {
+  enterKeyboardModality,
+  isBrowserMissing,
+  isServerUnreachable,
+} from '@/browser/engine'
 import { routeUrl } from '@/inventory/config'
 import type { Reading } from '@/inventory/group'
 import type { Subject } from '@/inventory/subjects'
@@ -61,19 +65,6 @@ function failed(reason: WalkRefusal, error: unknown): WalkResult {
   }
 }
 
-/**
- * Separates a server nobody started from a page that failed for its own
- * reasons. The first is the precondition this command cannot create, and
- * reporting it as an empty listing would say the site gives no answers when
- * nothing was ever asked.
- */
-function isServerUnreachable(error: unknown): boolean {
-  const text = error instanceof Error ? error.message : String(error)
-  return /ERR_CONNECTION_REFUSED|ERR_NAME_NOT_RESOLVED|ERR_CONNECTION_RESET|ERR_EMPTY_RESPONSE/i.test(
-    text,
-  )
-}
-
 export async function walk(options: WalkOptions): Promise<WalkResult> {
   const started = Date.now()
 
@@ -98,10 +89,7 @@ export async function walk(options: WalkOptions): Promise<WalkResult> {
         waitUntil: 'domcontentloaded',
       })
 
-      // Puts the page in keyboard modality before anything is focused, because
-      // a `:focus-visible` ring is the treatment a pointer never reveals and
-      // programmatic focus alone does not match it.
-      await page.keyboard.press('Tab')
+      await enterKeyboardModality(page)
 
       const rows = await page.evaluate(options.subject.read, options.query)
       for (const row of rows) readings.push({ route, ...row })
