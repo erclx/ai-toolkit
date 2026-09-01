@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { join, relative, resolve } from 'node:path'
+import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 import { regenOne } from '@/indexes/regen'
 import { isUnder } from '@/paths'
 import { recordDir, recordDirs } from '@/record-root'
@@ -43,7 +43,6 @@ export const ARCHIVE_REFUSALS = [
   'ambiguous',
   'no-outcomes',
   'open-outcomes',
-  'plan-unswept',
   'bad-input',
 ] as const
 
@@ -53,6 +52,12 @@ export type TaskSelector =
   | { readonly kind: 'stem'; readonly stem: string }
   | { readonly kind: 'pull-request'; readonly number: number }
 
+/** A plan carried into the archive alongside the task that was its last citation. */
+export interface PlanMove {
+  readonly from: string
+  readonly to: string
+}
+
 export interface ArchiveSuccess {
   readonly ok: true
   readonly stem: string
@@ -60,6 +65,8 @@ export interface ArchiveSuccess {
   readonly to: string
   readonly priorityRowRemoved: boolean
   readonly indexRegenerated: boolean
+  /** Undefined when the task cited no live plan, or when another task still holds it. */
+  readonly plan: PlanMove | undefined
 }
 
 export interface ArchiveRefused {
@@ -143,13 +150,39 @@ export function readPullRequest(text: string): number | undefined {
 }
 
 /**
+ * The `Plan:` line in either form, the link's target captured ahead of the bare
+ * path. Padding is spaces and tabs rather than `\s`, which spans a newline, so
+ * the match ends at the line and the retarget below cannot swallow the blank
+ * line that follows it.
+ */
+const PLAN_PATTERN = /^Plan:[ \t]*(?:\[[^\]]*\]\(([^)]+)\)|(\S+))[ \t]*$/m
+
+/**
  * Reads the `Plan:` target out of a markdown link, falling back to the older
  * bare-path form. The path is returned as written, relative to the board.
  */
 export function readPlanTarget(text: string): string | undefined {
-  const match = /^Plan:\s*(?:\[[^\]]*\]\(([^)]+)\)|(\S+))\s*$/m.exec(text)
+  const match = PLAN_PATTERN.exec(text)
   if (!match) return undefined
   return match[1] ?? match[2]
+}
+
+/**
+ * Points the task's `Plan:` line at the plan's new home, as a markdown link
+ * whose text and target stay in step. The line is matched with the pattern the
+ * read above uses, so the archive rewrites exactly the line it parsed and never
+ * a second `Plan:` a task displays inside a fenced sample.
+ *
+ * The replacement is built by a function rather than passed as a string,
+ * because `$&` and its siblings are substitution sequences inside a replacement
+ * string. A plan filename carrying one would write a path nobody typed, and
+ * `.canon/plans/` is gitignored, so nothing recovers the pointer it replaced.
+ */
+export function retargetPlanLine(text: string, target: string): string {
+  const name = basename(target)
+  const label = name.endsWith('.md') ? name.slice(0, -'.md'.length) : name
+
+  return text.replace(PLAN_PATTERN, () => `Plan: [${label}](${target})`)
 }
 
 /**
@@ -476,28 +509,23 @@ export async function archiveTask(
     )
   }
 
-  const planTarget = readPlanTarget(text)
-  const livePlan = planTarget && resolveLivePlan(planTarget, dir, root)
+  const plan = await planToArchive(dir, root, stem, text)
+  const destination = archiveDir(root)
+  const to = join(destination, `${stem}.md`)
 
-  // A live plan is unswept only when nothing else on the board holds it. A plan
-  // several tasks share stays live by design, so refusing on the folder alone
-  // parked every one of those tasks behind a sweep that was right to decline.
-  if (livePlan) {
-    const shared = await otherTasksCitingPlan(dir, root, livePlan, stem)
-
-    if (shared.length === 0) {
-      return refuse(
-        'plan-unswept',
-        `${stem} is the last task pointing at a live plan. Run /claude-docs to sweep it first, then archive.`,
-        [planTarget],
-      )
-    }
+  // The plan moves first so the line written below describes a file already at
+  // its new path. Writing the retarget first and failing the move would leave a
+  // pointer at a folder holding nothing, and `.canon/plans/` is gitignored, so
+  // no history recovers the target it named.
+  if (plan) {
+    await mkdir(dirname(plan.to), { recursive: true })
+    await rename(plan.from, plan.to)
   }
 
-  const destination = archiveDir(root)
   await mkdir(destination, { recursive: true })
-  const to = join(destination, `${stem}.md`)
   await rename(from, to)
+  if (plan)
+    await writeFile(to, retargetPlanLine(text, linkTo(destination, plan.to)))
 
   const priorityRowRemoved = await clearPriorityRow(dir, stem)
   const regen = await regenOne(dir, { dryRun: false })
@@ -509,7 +537,50 @@ export async function archiveTask(
     to,
     priorityRowRemoved,
     indexRegenerated: regen.action === 'written',
+    plan,
   }
+}
+
+/**
+ * The plan this task carries into the archive with it, or nothing. The merge is
+ * what settles a plan, and the hook reaches this with nobody watching, so the
+ * move sits inside the archive rather than in a second call that could leave
+ * the task archived and the plan live.
+ *
+ * A plan another live task still cites stays where it is. Moving it on the
+ * first task to close strands every other pointer at a path that has gone, and
+ * the sibling has no history behind it to repair the line from.
+ *
+ * A target resolving to no file yields nothing too. A pointer somebody typed
+ * wrong is not a plan to move, and refusing the whole archive over it would
+ * park the board behind a repair the merge cannot make.
+ */
+async function planToArchive(
+  dir: string,
+  root: string,
+  stem: string,
+  text: string,
+): Promise<PlanMove | undefined> {
+  const target = readPlanTarget(text)
+  const live = target && resolveLivePlan(target, dir, root)
+  if (!live || !existsSync(live)) return undefined
+
+  const shared = await otherTasksCitingPlan(dir, root, live, stem)
+  if (shared.length > 0) return undefined
+
+  return {
+    from: live,
+    to: join(recordDir(root, PLANS, ARCHIVE), basename(live)),
+  }
+}
+
+/**
+ * The archived plan as the archived task cites it. Both halves land a folder
+ * deeper than the live pair, so the link is measured between the two
+ * destinations rather than written as the `../plans/` the live task carried.
+ */
+function linkTo(taskDir: string, plan: string): string {
+  return relative(taskDir, plan).split(sep).join('/')
 }
 
 async function clearPriorityRow(dir: string, stem: string): Promise<boolean> {

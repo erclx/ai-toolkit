@@ -11,6 +11,7 @@ import {
   readPlanTarget,
   readPullRequest,
   removePriorityRow,
+  retargetPlanLine,
   tasksDir,
 } from '@/tasks/archive'
 
@@ -63,6 +64,18 @@ function taskBody({
   )
 
   return `${lines.join('\n')}\n`
+}
+
+async function seedPlan(name = 'feature-trigger.md'): Promise<string> {
+  const dir = join(ROOT, '.canon', 'plans')
+  mkdirSync(dir, { recursive: true })
+  const path = join(dir, name)
+  await writeFile(path, '# Feature: the plan a task cites\n')
+  return path
+}
+
+function archivedPlan(name = 'feature-trigger.md'): string {
+  return join(ROOT, '.canon', 'plans', 'archive', name)
 }
 
 async function seedTask(fixture: TaskFixture = {}): Promise<string> {
@@ -168,6 +181,38 @@ describe('readPlanTarget', () => {
   })
 })
 
+describe('retargetPlanLine', () => {
+  it('should rewrite the link text and the target together', () => {
+    const text = 'Plan: [feature-x](../plans/feature-x.md)\n'
+
+    expect(retargetPlanLine(text, '../../plans/archive/feature-x.md')).toBe(
+      'Plan: [feature-x](../../plans/archive/feature-x.md)\n',
+    )
+  })
+
+  it('should rewrite the older bare path form as a link', () => {
+    const text = 'Plan: ../plans/feature-x.md\n'
+
+    expect(retargetPlanLine(text, '../../plans/archive/feature-x.md')).toBe(
+      'Plan: [feature-x](../../plans/archive/feature-x.md)\n',
+    )
+  })
+
+  it('should write a target carrying a substitution sequence literally', () => {
+    const text = 'Plan: [feature-x](../plans/feature-x.md)\n'
+
+    expect(retargetPlanLine(text, "../../plans/archive/f$&$'-x.md")).toContain(
+      "(../../plans/archive/f$&$'-x.md)",
+    )
+  })
+
+  it('should leave text carrying no plan line untouched', () => {
+    expect(retargetPlanLine('Issue: #12\n', '../plans/x.md')).toBe(
+      'Issue: #12\n',
+    )
+  })
+})
+
 describe('removePriorityRow', () => {
   it('should drop the row linking to the archived task', () => {
     const text = [
@@ -263,40 +308,62 @@ describe('archiveTask', () => {
     ).toMatchObject({ ok: false, reason: 'no-board' })
   })
 
-  it('should refuse the last task pointing at a live plan', async () => {
+  it('should carry the live plan of the last task citing it', async () => {
+    const plan = await seedPlan()
     const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
-      ok: false,
-      reason: 'plan-unswept',
+      ok: true,
+      plan: { from: plan, to: archivedPlan() },
     })
+    expect(existsSync(plan)).toBe(false)
+    expect(existsSync(archivedPlan())).toBe(true)
   })
 
-  it('should archive a task whose live plan another task still cites', async () => {
+  it('should point the archived task at the archived plan', async () => {
+    await seedPlan()
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+
+    await archiveTask(ROOT, { kind: 'stem', stem })
+
+    expect(
+      await readFile(join(archiveDir(ROOT), `${stem}.md`), 'utf8'),
+    ).toContain(
+      'Plan: [feature-trigger](../../plans/archive/feature-trigger.md)\n\n## Outcomes',
+    )
+  })
+
+  it('should leave a live plan another task still cites', async () => {
+    const plan = await seedPlan()
     const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
     await seedTask({
       stem: 'v28.2-sibling',
       plan: '../plans/feature-trigger.md',
     })
 
-    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
-      ok: true,
-    })
+    const result = await archiveTask(ROOT, { kind: 'stem', stem })
+
+    expect(result).toMatchObject({ ok: true })
+    expect(result.ok && result.plan).toBeUndefined()
+    expect(existsSync(plan)).toBe(true)
   })
 
   it('should count two spellings of one live plan as a single citation', async () => {
+    const plan = await seedPlan()
     const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
     await seedTask({
       stem: 'v28.2-sibling',
       plan: '.claude/plans/feature-trigger.md',
     })
 
-    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
-      ok: true,
-    })
+    const result = await archiveTask(ROOT, { kind: 'stem', stem })
+
+    expect(result).toMatchObject({ ok: true })
+    expect(existsSync(plan)).toBe(true)
   })
 
-  it('should refuse once the last sibling sharing a live plan has archived', async () => {
+  it('should carry the plan once the last sibling sharing it has archived', async () => {
+    const plan = await seedPlan()
     const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
     await seedTask({
       stem: 'v28.2-sibling',
@@ -304,9 +371,19 @@ describe('archiveTask', () => {
     })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
-      ok: false,
-      reason: 'plan-unswept',
+      ok: true,
+      plan: { from: plan, to: archivedPlan() },
     })
+  })
+
+  it('should archive a task whose plan target names no file', async () => {
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+
+    const result = await archiveTask(ROOT, { kind: 'stem', stem })
+
+    expect(result).toMatchObject({ ok: true })
+    expect(result.ok && result.plan).toBeUndefined()
+    expect(existsSync(archivedPlan())).toBe(false)
   })
 
   it('should accept a task pointing at an archived plan', async () => {
@@ -327,13 +404,15 @@ describe('archiveTask', () => {
     })
   })
 
-  it('should refuse a live plan written from the project root', async () => {
-    const stem = await seedTask({ plan: '.claude/plans/feature-trigger.md' })
+  it('should carry a live plan written from the project root', async () => {
+    const plan = await seedPlan()
+    const stem = await seedTask({ plan: '.canon/plans/feature-trigger.md' })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
-      ok: false,
-      reason: 'plan-unswept',
+      ok: true,
+      plan: { from: plan, to: archivedPlan() },
     })
+    expect(existsSync(plan)).toBe(false)
   })
 
   it('should resolve a task by the pull request it names', async () => {

@@ -81,7 +81,9 @@ export function register(program: Command): void {
 
   tasks
     .command('archive')
-    .description('Move a shipped task out of the board and clear its ordering')
+    .description(
+      'Move a shipped task and its plan out of the board and clear its ordering',
+    )
     .argument('[task]', 'Task filename stem, as in v28.1-trigger-escalation')
     .helpOption('-h, --help', 'Show this help message')
     .option(
@@ -93,6 +95,10 @@ export function register(program: Command): void {
     .addHelpText(
       'after',
       [
+        '',
+        'The task carries its plan with it when no other live task cites that',
+        'plan, and the archived task keeps a working Plan: pointer at the new',
+        'path. A plan several tasks share stays where it is.',
         '',
         'Exit codes:',
         '  0  the task was archived',
@@ -812,6 +818,11 @@ function report(
   logStep('Archived')
   logRemove(relative(root, outcome.from))
   logAdd(relative(root, outcome.to))
+  if (outcome.plan) {
+    logRemove(relative(root, outcome.plan.from))
+    logAdd(relative(root, outcome.plan.to))
+    logInfo('retargeted the Plan: line')
+  }
   if (outcome.priorityRowRemoved) logInfo('cleared the ordering row')
   if (outcome.indexRegenerated) logInfo('regenerated index.md')
   outro()
@@ -839,5 +850,11 @@ function recordFor(
     to: relative(root, outcome.to),
     priorityRowRemoved: outcome.priorityRowRemoved,
     indexRegenerated: outcome.indexRegenerated,
+    plan: outcome.plan
+      ? {
+          from: relative(root, outcome.plan.from),
+          to: relative(root, outcome.plan.to),
+        }
+      : null,
   }
 }
