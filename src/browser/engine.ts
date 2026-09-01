@@ -1,13 +1,15 @@
 /**
  * What every browser-driving command needs to know before it can report a
- * failure honestly: how the binary is installed, and how each of the two ways
- * it can be absent reads when it is thrown.
+ * failure honestly: how the binary is installed, how each of the two ways it
+ * can be absent reads when it is thrown, and the one press that decides whether
+ * a focus reading means anything.
  *
- * The two are different states with different remedies. A package that never
- * resolved means the target installed the CLI without the engine, and a binary
- * that was never downloaded means the engine is present and its browser is not.
- * Both were spelled inside `src/demo/` when `demo` was the only command driving
- * a browser, and a second command is what makes them shared rather than local.
+ * The two absences are different states with different remedies. A package that
+ * never resolved means the target installed the CLI without the engine, and a
+ * binary that was never downloaded means the engine is present and its browser
+ * is not. Both were spelled inside `src/demo/` when `demo` was the only command
+ * driving a browser, and a second command is what makes them shared rather than
+ * local.
  */
 
 /** Fetches the browser revision the pinned engine expects. */
@@ -37,4 +39,45 @@ export function isEngineMissing(error: unknown): boolean {
     'code' in error &&
     error.code === 'ERR_MODULE_NOT_FOUND'
   )
+}
+
+/**
+ * Separates a server nobody started from a page that failed for its own
+ * reasons. The first is a precondition no browser command can create for
+ * itself, and reporting it as an empty reading says the site gives no answers
+ * when nothing was ever asked.
+ *
+ * It moved here alongside the modality press, when `@/driver/drive` became the
+ * second module needing it.
+ */
+export function isServerUnreachable(error: unknown): boolean {
+  const text = error instanceof Error ? error.message : String(error)
+  return /ERR_CONNECTION_REFUSED|ERR_NAME_NOT_RESOLVED|ERR_CONNECTION_RESET|ERR_EMPTY_RESPONSE/i.test(
+    text,
+  )
+}
+
+/**
+ * The narrowest shape the press below needs, declared here rather than imported
+ * as `Page`, so this module keeps its type surface free of the engine and every
+ * command reading a refusal string still loads without resolving it.
+ */
+export interface KeyboardPage {
+  readonly keyboard: { press(key: string): Promise<void> }
+}
+
+/**
+ * Puts the page in keyboard modality, which is the precondition for reading a
+ * `:focus-visible` rule at all. A scripted `.focus()` on its own leaves the
+ * browser in pointer modality, where that rule does not match, so a reader
+ * calling it alone reports every correctly styled element as unstyled.
+ *
+ * It moved here when `@/driver/probes/focus` became the second call site,
+ * matching how the launch-failure split moved out of `src/demo/` once
+ * `canon inventory` became the second command driving a browser. One press
+ * covers the page rather than the element that happens to hold focus, so it
+ * survives the blur every reader takes next.
+ */
+export async function enterKeyboardModality(page: KeyboardPage): Promise<void> {
+  await page.keyboard.press('Tab')
 }

@@ -138,6 +138,7 @@ valign
 venv
 vercel
 versinfo
+viewports
 vite
 vitest
 webvtt

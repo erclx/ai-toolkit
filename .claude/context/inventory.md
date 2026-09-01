@@ -30,7 +30,9 @@ Only two of the three focus rules in `410-a11y.md` are measurable this way. The 
 
 ## Gotchas
 
-A `:focus-visible` ring is the treatment a pointer never reveals, so the walk presses Tab once per route to put the page in keyboard modality before anything is focused programmatically. That press leaves one element focused, and reading that element's rest state while it holds focus reports no difference and hides whatever ring it draws. The reader blurs the active element before its loop and blurs each element after its turn, which is what keeps the first element in the tab order from reading as untreated.
+A `:focus-visible` ring is the treatment a pointer never reveals, so the walk presses Tab once per route to put the page in keyboard modality before anything is focused programmatically. The press is `enterKeyboardModality` in `src/browser/engine.ts` rather than a line here, since `src/driver/probes/focus.ts` became the second call site for it. That press leaves one element focused, and reading that element's rest state while it holds focus reports no difference and hides whatever ring it draws. The reader blurs the active element before its loop and blurs each element after its turn, which is what keeps the first element in the tab order from reading as untreated.
+
+The modality only decides the reading once the page has been touched. A scripted `.focus()` on a page that has taken no pointer interaction matches `:focus-visible` on its own, so a walk arriving at a fresh route would read correctly without the press. It stops matching the moment a click sets pointer modality, which is why the press is unconditional rather than scoped to the routes that need it.
 
 A subject reader is serialized to source and evaluated inside the page, so every helper it needs is declared in its own body. A reference to anything at module scope survives typechecking and throws once the page calls it.
 

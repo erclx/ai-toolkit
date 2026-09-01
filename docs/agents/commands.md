@@ -70,6 +70,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon audits list`           | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                                             |
 | `canon gate run`              | Run every stage that guards a branch here, scoping shell, types, and tests to the changed set (`--all`, `--no-write`, `--nested`, `--json`)                           |
 | `canon inventory [subject]`   | Walk every route a project declares and group its elements by the property each computes, as a listing rather than a gate (`--json`)                                  |
+| `canon drive <url> <run>`     | Walk a page through named interactions and measure each state it reaches, reporting findings rather than gating (`--json`)                                            |
 | `canon capture [source]`      | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                                                 |
 | `canon serve [dir]`           | Serve a directory on the loopback interface and print the link that opens it, running until interrupted (`--port`, `--entry`, `--json`)                               |
 | `canon upgrade`               | Reinstall the CLI globally with the package manager the install path names (`--json`)                                                                                 |
@@ -93,6 +94,8 @@ routes = ["/", "/pricing", "/docs"]
 [subjects.focus]
 query = "button, a[href], input, select, textarea, [tabindex]"
 ```
+
+`canon drive` is the fourth and ships for the same reason the two before it do. What separates it from all three is the axis rather than the destination: `capture` and `inventory` each answer about a page as it loads, and every defect that exists only after a menu opens or the page scrolls is invisible to both. It takes a JSON run file naming the viewport, the probes, and the interaction sequence, since a route catalog is state a project holds and an interaction sequence is a script written for one question. Viewport heights are never defaulted, because the heights a defect hides at belong to the layout rather than to this command. It reports findings and never gates, since every probe it ships carries a class of false finding a throwaway version already produced. See `driver.md`.
 
 ## Domain commands
 

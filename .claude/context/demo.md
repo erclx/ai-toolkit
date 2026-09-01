@@ -19,7 +19,7 @@ The whole feature came out of `.claude/groundwork/38-demo-recorder/`, which meas
 - `src/demo/cursors.ts`: the bundled vector artwork for the three pointer states
 - `src/demo/theme.ts`: reads a cursor theme folder for `--cursor`
 - `src/demo/drive.ts`: every browser reference the feature adds
-- `src/browser/engine.ts`: the install command and the two ways the engine can be absent, shared with `canon inventory` since it became the second command needing them
+- `src/browser/engine.ts`: the install command, the two ways the engine can be absent, the unreachable-server test, and the keyboard-modality press, shared with `canon inventory` and `canon drive` as each became the next command needing them
 - `src/demo/container.ts`: converts the webm the driver wrote into mp4, as a post-step the compiler and the driver never see
 - `src/commands/demo.ts`: wiring only, with the driver behind a dynamic import
 
