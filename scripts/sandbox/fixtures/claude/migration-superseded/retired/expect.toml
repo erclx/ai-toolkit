@@ -20,7 +20,7 @@
 max_turns = 30
 
 # The proposal, pinned on the standard each entry resolved to rather than on the
-# destination folder. Naming `.claude/tasks/` proves only that the run echoed
+# destination folder. Naming `.canon/tasks/` proves only that the run echoed
 # `replacedBy` off the report, which it gets for free. Naming the standard is
 # what separates a shape the run read from one it invented, and the two entries
 # are pinned separately because a run reaching only the first passes one and
@@ -46,7 +46,7 @@ paths = [".claude/TASKS.md", ".claude/DIAGRAMS.md", ".claude/HOOKS.md"]
 # no standard declares `appliesTo` over it, so a run that proposed a shape for it
 # rather than declining had to invent one, and inventing one is the failure this
 # entry catches whether or not the reply admitted to it.
-absent = [".claude/tasks", ".claude/diagrams", ".claude/hooks"]
+absent = [".canon/tasks", ".canon/diagrams", ".claude/hooks"]
 
 # Prose the checker cannot assert, each with the reason it stays here.
 manual = [

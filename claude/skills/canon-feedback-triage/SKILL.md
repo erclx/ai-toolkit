@@ -7,7 +7,7 @@ description: Triage open GitHub issues labeled `feedback` in the toolkit repo. L
 
 Consume the feedback queue that `canon feedback --github` fills. Turn an open `feedback` issue into a scoped fix or a plan, then link the issue so merge closes it.
 
-Run from the toolkit repo root. This skill reads GitHub issues, not local `.claude/review/` files. Those are ephemeral session scratch. The durable, cross-project queue is GitHub.
+Run from the toolkit repo root. This skill reads GitHub issues, not local `.canon/review/` files. Those are ephemeral session scratch. The durable, cross-project queue is GitHub.
 
 ## Guards
 

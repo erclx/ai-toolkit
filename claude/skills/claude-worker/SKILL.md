@@ -22,13 +22,13 @@ running and re-invoking it would restart the build.
 
 ## Where the session stands
 
-- Resolve `.claude/plans/`, `.claude/tasks/`, `.claude/review/`, and `.claude/memory/` at the main worktree root, never against the linked worktree this session builds in. Those folders are gitignored, so `git worktree add` never creates them and the copy beside the build is absent rather than empty.
+- Resolve `.canon/plans/`, `.canon/tasks/`, `.canon/review/`, and `.canon/memory/` at the main worktree root, never against the linked worktree this session builds in. Those folders are gitignored, so `git worktree add` never creates them and the copy beside the build is absent rather than empty.
 - Report a plan that fails to resolve as unreadable from here, naming the main-root path. Reporting the task as having no plan is true where this session stands and wrong about the world, and a reader with no second tree to check cannot separate the two.
 - Build the plan the launch named. Do not write a second one when the path fails to resolve, since a row that cites a plan already has one and drafting another produces two plans for one row.
 
 ## The board is read-only
 
-- Never write `.claude/tasks/priority.md` or `.claude/tasks/backlog.md`. The controlling session is their only writer apart from `canon tasks archive`, and both are gitignored, so an overwrite drops a row with no history to recover it from.
+- Never write `.canon/tasks/priority.md` or `.canon/tasks/backlog.md`. The controlling session is their only writer apart from `canon tasks archive`, and both are gitignored, so an overwrite drops a row with no history to recover it from.
 - Report a row this build turns up rather than adding it. Picking a free label means reading every task file and every archive entry, which this session has not done, so a label it invents collides with one already taken.
 - Write the task file this build closes and the plan it ran under. The ban covers the shared board rather than the artifacts of the row in hand.
 

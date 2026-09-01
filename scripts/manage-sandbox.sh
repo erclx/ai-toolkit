@@ -163,7 +163,7 @@ init_empty_sandbox() {
   mkdir -p "$SANDBOX"
 
   cat <<EOF >"$SANDBOX/.gitignore"
-.claude/.tmp/
+.canon/tmp/
 node_modules
 EOF
   (

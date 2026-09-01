@@ -36,15 +36,15 @@ max_turns = 30
 # the machine's `git init` inherits. A single spelling would pass vacuously on
 # every machine deriving another.
 absent = [
-  ".claude/plans/feature-streak-view.md",
-  ".claude/tasks/session-*.md",
+  ".canon/plans/feature-streak-view.md",
+  ".canon/tasks/session-*.md",
 ]
 
 # Two of the scenario's five expectations reach a load-bearing token. Each pin is
 # a positive, since a negative substring passes on every reply that phrases the
 # thing differently.
 #
-# The plan path proves the run opened `.claude/plans/` rather than reporting the
+# The plan path proves the run opened `.canon/plans/` rather than reporting the
 # task board alone, and `claude-autoship` is the route that path earns. Both read
 # the same staged file, so the pair separates a run that read the board against
 # the plans folder from one that reported the single queued task and stopped.
@@ -72,7 +72,7 @@ absent = [
 # singleness the scenario expects or the route it names, both of which the manual
 # entries below carry.
 reply = [
-  ".claude/plans/feature-log-entry.md",
+  ".canon/plans/feature-log-entry.md",
   "claude-autoship",
   "Next:",
 ]

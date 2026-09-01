@@ -96,7 +96,7 @@ escape_roots() {
 # naming a context entry being edited in the session that launched them.
 # Narrowing to these four leaves the report readable without discarding any
 # destination the failure reaches.
-ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
+ESCAPE_SCRATCH_DIRS=(.canon/plans .canon/review .canon/memory .canon/tasks)
 
 # The scope stated for an arm author rather than left to infer from the name
 # above. `escape_roots` times two, `ESCAPE_SCRATCH_DIRS` times four: this watch
@@ -162,7 +162,7 @@ record_run() {
   local writes="$4"
 
   local runs_dir record stamp
-  runs_dir="$PROJECT_ROOT/.claude/.tmp/sandbox-runs"
+  runs_dir="$PROJECT_ROOT/.canon/tmp/sandbox-runs"
   stamp="$(date +%Y%m%dT%H%M%S)"
   record="$runs_dir/$(printf '%s' "${target}${scenario:+-$scenario}" | tr ':' '-')-$stamp.json"
 

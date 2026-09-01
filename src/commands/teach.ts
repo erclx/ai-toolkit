@@ -76,7 +76,7 @@ interface GlossaryCommandOptions {
 export function register(program: Command): void {
   const teach = program
     .command('teach')
-    .description('Manage learning workspaces in .claude/teach/')
+    .description('Manage learning workspaces in .canon/teach/')
     .helpOption('-h, --help', 'Show this help message')
 
   teach

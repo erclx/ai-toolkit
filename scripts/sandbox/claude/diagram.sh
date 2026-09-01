@@ -89,7 +89,7 @@ EOF
   # Two entries already drawn and still accurate. Only the deploy signal below
   # moves, so a conforming pass rewrites deployment.md and nothing else. These
   # are the siblings the checksum baseline protects.
-  cat <<'EOF' >.claude/diagrams/components.md
+  cat <<'EOF' >.canon/diagrams/components.md
 ---
 title: Components
 description: Layered structure inside the boundary, drawn from ARCHITECTURE.md
@@ -119,7 +119,7 @@ flowchart TB
 The browser holds the agent loop, so the server stays a plain tool host. Open `web/src/agent/loop.ts` for the loop and `api/src/retrieval/hybrid.py` for the retriever.
 EOF
 
-  cat <<'EOF' >.claude/diagrams/data-pipeline.md
+  cat <<'EOF' >.canon/diagrams/data-pipeline.md
 ---
 title: Data pipeline
 description: How a query reaches ranked policy documents, drawn from the retrieval modules
@@ -167,7 +167,7 @@ EOF
   # Baseline for the untouched assertion. The scenario's core claim is that a
   # deploy refresh leaves siblings byte-identical, which needs a recorded
   # before-state to be checkable rather than eyeballed.
-  sha256sum .claude/diagrams/components.md .claude/diagrams/data-pipeline.md \
+  sha256sum .canon/diagrams/components.md .canon/diagrams/data-pipeline.md \
     >fixtures/siblings.sha256
 
   cat <<'EOF' >fixtures/known-bad.mmd
@@ -205,18 +205,18 @@ EOF
   git add . && git commit -m "feat(sandbox): seed two-folder app with two drawn diagram entries" --no-verify -q
 
   log_step "Scenario ready: refresh one diagram entry without disturbing its siblings"
-  log_info "Context: web/ + api/ + SQLite, two entries already drawn under .claude/diagrams/"
+  log_info "Context: web/ + api/ + SQLite, two entries already drawn under .canon/diagrams/"
   log_info "Signals the skill should pick up:"
   log_info "  docker-compose.yml gained a worker service → deployment is the stale kind"
   log_info "  .claude/REQUIREMENTS.md names reviewers, an LLM provider, a compliance export → system context has no entry yet"
   log_info "  components.md and data-pipeline.md still match ARCHITECTURE.md → neither has a reason to change"
   log_info "Action: /canon:claude-diagram refresh the deployment diagram"
-  log_info "Expect: .claude/diagrams/deployment.md written, with title, description, and category frontmatter"
+  log_info "Expect: .canon/diagrams/deployment.md written, with title, description, and category frontmatter"
   log_info "Expect: components.md and data-pipeline.md byte-identical afterward"
   log_info "  Assert it: sha256sum -c fixtures/siblings.sha256"
-  log_info "Expect: .claude/diagrams/index.md regenerated, entries grouped under category headings"
+  log_info "Expect: .canon/diagrams/index.md regenerated, entries grouped under category headings"
   log_info "Expect: chat output names the untouched entries rather than reporting them as written"
-  log_info "Expect: PNG render under .claude/.tmp/diagrams/ for deployment alone, not for the siblings"
+  log_info "Expect: PNG render under .canon/tmp/diagrams/ for deployment alone, not for the siblings"
   log_info "Second pass: /canon:claude-diagram draw the system context"
   log_info "  Expect: system-context.md drawn from REQUIREMENTS.md, showing actors outside the boundary"
   log_info "  Expect: siblings.sha256 still verifies"

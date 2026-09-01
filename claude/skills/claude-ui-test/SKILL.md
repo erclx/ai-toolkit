@@ -59,19 +59,19 @@ If all changes are automatable, skip the manual checklist:
 
 Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-When a manual checklist is produced, write it directly to `.claude/review/ui-checklist-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
+When a manual checklist is produced, write it directly to `.canon/review/ui-checklist-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 
 From a linked worktree the file-editing tools refuse that path, so the checklist goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
 Skip the file write when all changes are covered by e2e tests and no checklist was produced.
 
-The `.claude/review/` directory is gitignored. Do not stage or commit the file.
+The `.canon/review/` directory is gitignored. Do not stage or commit the file.
 
 ## Output order
 
 1. Write and run e2e tests (report pass/fail)
 2. If a manual checklist was produced, write it to file, then output only the file path in chat:
-   `📝 Wrote .claude/review/ui-checklist-<slug>.md`
+   `📝 Wrote .canon/review/ui-checklist-<slug>.md`
 3. If no checklist was needed: `✅ All changes covered by e2e tests. No manual verification needed.`
 
 Do not repeat the full checklist in chat.

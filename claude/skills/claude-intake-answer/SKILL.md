@@ -86,5 +86,5 @@ Close the run with the path so the reader can open what changed:
 ```plaintext
 ✅ <N> answered across <N> cluster(s) in <slug>
 <M> item(s) left unread
-.claude/intake/<slug>/
+.canon/intake/<slug>/
 ```

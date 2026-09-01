@@ -19,7 +19,7 @@ seed_reviewable_pr() {
 
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
-  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n.claude/.tmp/\n' >.gitignore
+  printf 'node_modules\n.canon/plans/\n.canon/review/\n.canon/memory/\n.canon/tmp/\n' >.gitignore
 
   cat <<'EOF' >package.json
 {
@@ -92,7 +92,7 @@ seed_reviewer_request_pr() {
 
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
-  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n.claude/.tmp/\n' >.gitignore
+  printf 'node_modules\n.canon/plans/\n.canon/review/\n.canon/memory/\n.canon/tmp/\n' >.gitignore
 
   cat <<'EOF' >package.json
 {
@@ -179,7 +179,7 @@ stage_setup() {
     log_info "Action:  /claude-pr-review"
     log_info "Expect:  reviews the PR diff against docs, posts findings to the PR via gh pr review --comment"
     log_info "         opens the comment with the ## Review heading"
-    log_info "         writes the body to .claude/.tmp/pr-review/body-<number>-<short-sha>.md"
+    log_info "         writes the body to .canon/tmp/pr-review/body-<number>-<short-sha>.md"
     log_info "         flags the missing title validation, does NOT merge"
     ;;
 
@@ -315,7 +315,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
     log_info "Expect:  reads ## For the reviewer bounded to its own bullets, answers it from the diff"
     log_info "         posts a **For the reviewer** block carrying the answer"
     log_info "         posts under ## Review closed, since the bullet is answered and nothing else is owed"
-    log_info "         writes the body to .claude/.tmp/pr-review/body-<number>-<short-sha>.md, does NOT merge"
+    log_info "         writes the body to .canon/tmp/pr-review/body-<number>-<short-sha>.md, does NOT merge"
     ;;
 
   "late-finding")

@@ -1,7 +1,7 @@
 ---
-description: Route .claude/intake/ edits to the intake standard for the item format, the answer contract, and ordinal naming
+description: Route .canon/intake/ edits to the intake standard for the item format, the answer contract, and ordinal naming
 paths:
-  - '.claude/intake/**'
+  - '.canon/intake/**'
 ---
 
 # Intake standards

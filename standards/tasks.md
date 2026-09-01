@@ -1,11 +1,11 @@
 ---
 title: Tasks reference
-description: Folder layout, filename convention, readiness groups, and content rules for .claude/tasks/
+description: Folder layout, filename convention, readiness groups, and content rules for .canon/tasks/
 ---
 
 # Tasks reference
 
-Applies to `.claude/tasks/`. Tracks what is being built and why, at the level of features and outcomes. One file per task.
+Applies to `.canon/tasks/`. Tracks what is being built and why, at the level of features and outcomes. One file per task.
 
 Update when a task starts, completes, or changes scope. When to open a task at all is project policy, not a shape rule, and lives in `CLAUDE.md`.
 
@@ -13,7 +13,7 @@ The folder is gitignored. Board state changes when work ships rather than when a
 
 ## Scope
 
-Governs the task board under `.claude/tasks/`: folder layout, filenames, frontmatter, file format, origin lines, execution ordering, the backlog beside it, and archiving.
+Governs the task board under `.canon/tasks/`: folder layout, filenames, frontmatter, file format, origin lines, execution ordering, the backlog beside it, and archiving.
 
 Does not govern:
 
@@ -26,7 +26,7 @@ Does not govern:
 ## Layout
 
 ```plaintext
-.claude/tasks/
+.canon/tasks/
 ├── index.md              ← generated, never hand-edited
 ├── priority.md           ← hand-maintained execution order
 ├── backlog.md            ← unordered, what is not being scheduled
@@ -205,13 +205,13 @@ A task with no origin is either lost context or work nobody decided to do. The i
 
 An intake folder answers that direction at folder scope rather than item scope, since one dump dispositions many items and most close without ever becoming a task. What names a folder is every item answered and no task citing it, on the board or in the archive. That is a dump nobody acted on. Counting the archive beside the board is what separates it from one already promoted and shipped, and a check reading the board alone calls every finished folder abandoned.
 
-`Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/`, `../groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
+`Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.canon/tasks/`, which makes it `../plans/`, `../groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
 
 Phase-label format and where labels may appear are governed by `standards/versioning.md`.
 
 `Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans/archive/feature-<slug>.md`, and at `../../plans/archive/feature-<slug>.md` once the task itself is archived a folder deeper. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it.
 
-A project that archived plans before the folder nested under `.claude/plans/` holds closed tasks pointing at `../plans-archive/`, or at `../.tmp/plans-archive/` from before the durable records left the scratch tree. Each form resolves against the files it names, so leave those pointers where they are. A named route now moves the folder and retargets its pointers together, but no automation runs it, so an unmigrated project keeps holding the old spelling until someone does, and a task retargeted without its plan moving leads nowhere.
+A project that archived plans before the folder nested under `.canon/plans/` holds closed tasks pointing at `../plans-archive/`, or at `../.tmp/plans-archive/` from before the durable records left the scratch tree. Each form resolves against the files it names, so leave those pointers where they are. A named route now moves the folder and retargets its pointers together, but no automation runs it, so an unmigrated project keeps holding the old spelling until someone does, and a task retargeted without its plan moving leads nowhere.
 
 One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
@@ -241,11 +241,11 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `canon tasks archive` owns that move, and what it does and what it refuses on are at `docs/agents/tasks.md`.
+Never delete a task file. A shipped task moves to `.canon/tasks/archive/` under its own name, and the live index regenerates without it. `canon tasks archive` owns that move, and what it does and what it refuses on are at `docs/agents/tasks.md`.
 
-The archive nests inside `.claude/tasks/` rather than sitting beside it as a flat `.claude/task-archive/`. Nesting is what lets a reader tell the two shapes apart on sight: the flat sibling is what a binary predating this convention still writes, so meeting one names an older checkout rather than a second archive to reconcile against this one.
+The archive nests inside `.canon/tasks/` rather than sitting beside it as a flat `.claude/task-archive/`. Nesting is what lets a reader tell the two shapes apart on sight: the flat sibling is what a binary predating this convention still writes, so meeting one names an older checkout rather than a second archive to reconcile against this one.
 
-One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/plans/archive/`, sitting inside the folder it archives the same way, and it inherits the board's own ignore entry rather than needing one of its own. The cost is that an archived task does not appear in diffs, which is the cost the live board already carries.
+One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.canon/plans/archive/`, sitting inside the folder it archives the same way, and it inherits the board's own ignore entry rather than needing one of its own. The cost is that an archived task does not appear in diffs, which is the cost the live board already carries.
 
 Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation, so the sweep runs before the archive rather than after it. The sweep finds its work by scanning the live folder, and a task archived first is beyond its reach for good, leaving the plan with no live task citing it and an archived task pointing at a path nothing will retarget.
 

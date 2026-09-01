@@ -69,7 +69,7 @@ If Mode is Independent, append this line to the preview:
 
 After outputting the preview, execute the final commands immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
-Before running them, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against every title and body. Each body stages under `.claude/.tmp/` and leaves through `gh`, so the hook sees neither and this scan is the only gate. Each resulting branch reaches the `pull_request` check the git-pr surface carries once its own pull request opens, but not before, so this scan is what catches a leak ahead of that.
+Before running them, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against every title and body. Each body stages under `.canon/tmp/` and leaves through `gh`, so the hook sees neither and this scan is the only gate. Each resulting branch reaches the `pull_request` check the git-pr surface carries once its own pull request opens, but not before, so this scan is what catches a leak ahead of that.
 
 ### Final commands
 
@@ -80,25 +80,25 @@ For independent mode, base every branch on `main`:
 git branch -m <current_branch> <new_name>
 
 # Create, cherry-pick, push, and open PR for each secondary branch
-mkdir -p .claude/.tmp/pr-split
+mkdir -p .canon/tmp/pr-split
 git switch -c <branch> main && git cherry-pick <sha> <sha> \
   && git push -u origin <branch> \
-  && (cat <<'BODY' > .claude/.tmp/pr-split/<branch>.md
+  && (cat <<'BODY' > .canon/tmp/pr-split/<branch>.md
 <body following pr.md template, written from the cherry-picked commits>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch>.md \
-  && rm .claude/.tmp/pr-split/<branch>.md
+) && gh pr create --title "<title>" --body-file .canon/tmp/pr-split/<branch>.md \
+  && rm .canon/tmp/pr-split/<branch>.md
 
 # Return to primary branch, push, and open its PR
 git checkout <new_name> && git push -u origin <new_name> \
-  && (cat <<'BODY' > .claude/.tmp/pr-split/<new_name>.md
+  && (cat <<'BODY' > .canon/tmp/pr-split/<new_name>.md
 <body following pr.md template, written from the primary's commits>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<new_name>.md \
-  && rm .claude/.tmp/pr-split/<new_name>.md
+) && gh pr create --title "<title>" --body-file .canon/tmp/pr-split/<new_name>.md \
+  && rm .canon/tmp/pr-split/<new_name>.md
 
 # Clean up the body-file dir if all PRs succeeded (no-op when non-empty)
-rmdir .claude/.tmp/pr-split 2>/dev/null || true
+rmdir .canon/tmp/pr-split 2>/dev/null || true
 ```
 
 For stacked mode, base each branch on the previous and cherry-pick only that group's commits:
@@ -107,36 +107,36 @@ For stacked mode, base each branch on the previous and cherry-pick only that gro
 # Rename current branch to reflect primary concern
 git branch -m <current_branch> <new_name>
 
-mkdir -p .claude/.tmp/pr-split
+mkdir -p .canon/tmp/pr-split
 
 # Group 1: based on main
 git switch -c <branch-1> main && git cherry-pick <g1-sha> <g1-sha> \
   && git push -u origin <branch-1> \
-  && (cat <<'BODY' > .claude/.tmp/pr-split/<branch-1>.md
+  && (cat <<'BODY' > .canon/tmp/pr-split/<branch-1>.md
 <body following pr.md template, written from the cherry-picked commits>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch-1>.md \
-  && rm .claude/.tmp/pr-split/<branch-1>.md
+) && gh pr create --title "<title>" --body-file .canon/tmp/pr-split/<branch-1>.md \
+  && rm .canon/tmp/pr-split/<branch-1>.md
 
 # Group 2: based on <branch-1>, this group's commits only
 git checkout -b <branch-2> && git cherry-pick <g2-sha> <g2-sha> \
   && git push -u origin <branch-2> \
-  && (cat <<'BODY' > .claude/.tmp/pr-split/<branch-2>.md
+  && (cat <<'BODY' > .canon/tmp/pr-split/<branch-2>.md
 <body following pr.md template, written from the cherry-picked commits>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch-2>.md \
-  && rm .claude/.tmp/pr-split/<branch-2>.md
+) && gh pr create --title "<title>" --body-file .canon/tmp/pr-split/<branch-2>.md \
+  && rm .canon/tmp/pr-split/<branch-2>.md
 
 # Return to primary branch, push, and open its PR
 git checkout <new_name> && git push -u origin <new_name> \
-  && (cat <<'BODY' > .claude/.tmp/pr-split/<new_name>.md
+  && (cat <<'BODY' > .canon/tmp/pr-split/<new_name>.md
 <body following pr.md template, written from the primary's commits>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<new_name>.md \
-  && rm .claude/.tmp/pr-split/<new_name>.md
+) && gh pr create --title "<title>" --body-file .canon/tmp/pr-split/<new_name>.md \
+  && rm .canon/tmp/pr-split/<new_name>.md
 
 # Clean up the body-file dir if all PRs succeeded (no-op when non-empty)
-rmdir .claude/.tmp/pr-split 2>/dev/null || true
+rmdir .canon/tmp/pr-split 2>/dev/null || true
 ```
 
 ## After execution

@@ -1,6 +1,6 @@
 ---
 name: canon-screencast
-description: Drafts a screencast script with pre-seeded beats, defaults, and decisions to `.claude/.tmp/screencast/<slug>.md`. Reads project context, asks four discovery questions with proposed defaults, then writes a shippable draft. Use when asked to "draft a screencast", "write a recording script", "plan a demo video", or "scaffold a screencast for X". Do NOT re-invoke to refine an existing draft. Re-running overwrites. Edit the draft file directly.
+description: Drafts a screencast script with pre-seeded beats, defaults, and decisions to `.canon/tmp/screencast/<slug>.md`. Reads project context, asks four discovery questions with proposed defaults, then writes a shippable draft. Use when asked to "draft a screencast", "write a recording script", "plan a demo video", or "scaffold a screencast for X". Do NOT re-invoke to refine an existing draft. Re-running overwrites. Edit the draft file directly.
 ---
 
 # Canon screencast
@@ -17,7 +17,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: behavior rules and project pitch
 - `.claude/REQUIREMENTS.md`: feature scope, non-goals, audience hints
-- `.claude/tasks/index.md`: current scope
+- `.canon/tasks/index.md`: current scope
 - Recent commits via `git log --oneline -20 2>/dev/null || echo "FALLBACK"`: what shipped recently is usually the recording subject.
 
 ## Step 2: discovery with proposed defaults
@@ -41,7 +41,7 @@ Build a 2-to-4-word kebab-case slug from the topic and discovery answers. Exampl
 
 ## Step 4: write the draft
 
-Create `.claude/.tmp/screencast/<slug>.md` at the main worktree root. Create the directory if it does not exist. The file is gitignored.
+Create `.canon/tmp/screencast/<slug>.md` at the main worktree root. Create the directory if it does not exist. The file is gitignored.
 
 From a linked worktree the file-editing tools refuse that path, so the draft goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
@@ -154,12 +154,12 @@ Pre-seeded with the common picks. Strike or rewrite as needed.
 Print the file path on its own line and a one-line summary. Do not paraphrase the path into prose.
 
 ```markdown
-📝 Wrote .claude/.tmp/screencast/<slug>.md
+📝 Wrote .canon/tmp/screencast/<slug>.md
 
 Draft has 5 beats and pre-seeded defaults. Edit the beats and the resolved decisions.
 
 To record it rather than shoot it by hand:
-canon demo compile .claude/.tmp/screencast/<slug>.md
+canon demo compile .canon/tmp/screencast/<slug>.md
 ```
 
 Name the command and stop there. Do not compile the draft, do not run it, and do not generate captions. The operator edits the beats first, and the compiler reports which selectors and URLs they still owe it.

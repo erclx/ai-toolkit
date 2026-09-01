@@ -31,29 +31,29 @@ max_turns = 30
 # name rather than on it. The board is the control: a handoff writes one file and
 # has no reason to touch a task.
 paths = [
-  ".claude/tasks/session-csv-export.md",
-  ".claude/tasks/v01.0-rate-limit.md",
-  ".claude/tasks/v02.0-pagination.md",
-  ".claude/tasks/v03.0-csv-export.md",
-  ".claude/plans/feature-csv-export.md",
+  ".canon/tasks/session-csv-export.md",
+  ".canon/tasks/v01.0-rate-limit.md",
+  ".canon/tasks/v02.0-pagination.md",
+  ".canon/tasks/v03.0-csv-export.md",
+  ".canon/plans/feature-csv-export.md",
 ]
 
 # The type-carrying spelling, which is what a broken transform writes. This is a
 # path negative rather than a reply one, so it fails on the file existing rather
 # than on how a sentence was worded.
-absent = [".claude/tasks/session-feat-csv-export.md"]
+absent = [".canon/tasks/session-feat-csv-export.md"]
 
-# The map, plus the index a `Write` fires the board hook on. `.claude/memory/**`
+# The map, plus the index a `Write` fires the board hook on. `.canon/memory/**`
 # is admitted rather than required: the skill opens by invoking capture, and a
 # cold session may legitimately have nothing to persist, so a written memory file
 # is a result the skill does not owe and its absence is not a failure. The first
 # run wrote neither, which is what leaves this entry admitting a path no observed
 # run has taken.
-write_scope = [".claude/tasks/**", ".claude/memory/**"]
+write_scope = [".canon/tasks/**", ".canon/memory/**"]
 
 # The path comes off the skill's own Output block. The fixture fixes the branch,
 # so this reads back off provisioning rather than off how one run worded a line.
-reply = [".claude/tasks/session-csv-export.md"]
+reply = [".canon/tasks/session-csv-export.md"]
 
 manual = [
   "The map reports what each step actually returned rather than what the session expected it to. Semantic: a prediction and a result read alike in the written text, so the blocks below catch a map silent about a step and not a map that guessed.",
@@ -67,25 +67,25 @@ manual = [
 # a generated catalog reads them alike, and `description` is what the board
 # cannot show plus the date.
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = '^title: Session map$'
 
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = '^description: \S'
 
 # The three core sections. A map missing one is non-conforming whatever else it
 # carries, and every session fills all three.
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = '^## State$'
 
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = '^## Mistakes worth not repeating$'
 
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = '^## Standing cautions$'
 
 # The first defect. The fixture carries no `claude/skills/` corpus, so the drift
@@ -94,12 +94,12 @@ pattern = '^## Standing cautions$'
 # for no history, since those are what a reader of the body would expect, and the
 # corpus sentence is the one only a run produces.
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = 'shipped skill corpus'
 
 # `## State` owes the reader any untracked file that needs committing, and the
 # fixture leaves exactly one. A map filled from what a session already knew
 # rather than from a read of the tree misses it.
 [[content]]
-path = ".claude/tasks/session-csv-export.md"
+path = ".canon/tasks/session-csv-export.md"
 pattern = 'export\.ts'

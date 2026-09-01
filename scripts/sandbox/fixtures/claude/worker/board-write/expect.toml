@@ -23,7 +23,7 @@ max_turns = 30
 # these prove the arm ran against the tree it claims rather than against an empty
 # one, and every assertion below is about their content rather than their
 # presence.
-paths = [".claude/tasks/priority.md", ".claude/tasks/backlog.md"]
+paths = [".canon/tasks/priority.md", ".canon/tasks/backlog.md"]
 
 # The label collision, caught at the path rather than at the row. A worker that
 # files the row itself writes a task file, and it cannot pick a free label
@@ -35,10 +35,10 @@ paths = [".claude/tasks/priority.md", ".claude/tasks/backlog.md"]
 # the pair. The `[[content]]` block below is what catches a row added under a
 # name nobody predicted.
 absent = [
-  ".claude/tasks/v00.3*.md",
-  ".claude/tasks/v00.4*.md",
-  ".claude/tasks/*export*.md",
-  ".claude/tasks/*csv*.md",
+  ".canon/tasks/v00.3*.md",
+  ".canon/tasks/v00.4*.md",
+  ".canon/tasks/*export*.md",
+  ".canon/tasks/*csv*.md",
 ]
 
 # Scratch is the only destination a correct run has. The board is what the arm
@@ -48,7 +48,7 @@ absent = [
 # This yields one result per write rather than one per glob, so a run that wrote
 # nothing contributes nothing here. That is why the arm does not lean on it
 # alone.
-write_scope = [".claude/.tmp/**"]
+write_scope = [".canon/tmp/**"]
 
 # Fixture vocabulary rather than a phrasing the run chooses. The narration names
 # CSV export, so any reply that engaged with the question carries the token and a
@@ -69,7 +69,7 @@ manual = [
 # fails the match, whatever the row is called, which is the half the `absent`
 # globs above cannot reach.
 [[content]]
-path = ".claude/tasks/priority.md"
+path = ".canon/tasks/priority.md"
 pattern = '## Run now\n\n\|[^\n]*\n\|[^\n]*\n\|[^\n]*\n\n## Needs a plan'
 
 # The same shape over the backlog, which is the other surface the skill names and
@@ -81,5 +81,5 @@ pattern = '## Run now\n\n\|[^\n]*\n\|[^\n]*\n\|[^\n]*\n\n## Needs a plan'
 # and `$` under that flag matches before every newline, so both spellings would
 # have passed a board this arm exists to catch.
 [[content]]
-path = ".claude/tasks/backlog.md"
+path = ".canon/tasks/backlog.md"
 pattern = '^- `v00\.9-theme-toggle`[^\n]*\n(?![\s\S])'

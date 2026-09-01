@@ -24,14 +24,14 @@ max_turns = 30
 # it. The `claude/review`, `claude/memory-review`, and `claude/ui-test`
 # declarations carried the same spelling and were corrected from this rule rather
 # than from a run of their own.
-paths = [".claude/review/seed-audit-seed-drift.md"]
+paths = [".canon/review/seed-audit-seed-drift.md"]
 
 # Propose writes the proposal and nothing else. Step 5 applies edits to the
 # seed files one at a time behind a permission dialog, which a headless propose
 # pass never reaches, so a run that touched those files applied without approval.
 # The 2026-08-03 run wrote exactly the one file this glob admits, so the scope is
 # measured rather than projected.
-write_scope = [".claude/review/**"]
+write_scope = [".canon/review/**"]
 
 manual = [
   "The truncated `CLAUDE.md` sections are proposed as Add rather than as Update. Semantic: which verdict a missing section earns is the skill's judgment and both spellings put the section name in the same file",
@@ -46,18 +46,18 @@ manual = [
 # The slug a second time, inside the file rather than in its name, so a proposal
 # written to the right path from the wrong branch still goes red.
 [[content]]
-path = ".claude/review/seed-audit-seed-drift.md"
+path = ".canon/review/seed-audit-seed-drift.md"
 pattern = '^# Seed audit: seed-drift'
 
 # The scope table is what reports a file the pass read and left alone, so a
 # proposal carrying items without it describes a subset while reading as whole.
 [[content]]
-path = ".claude/review/seed-audit-seed-drift.md"
+path = ".canon/review/seed-audit-seed-drift.md"
 pattern = '^## Scope'
 
 # One numbered pending item. This is the assertion separating a proposal that
 # found drift from a well-formed file that found none, which is the failure a
 # path check alone reports green.
 [[content]]
-path = ".claude/review/seed-audit-seed-drift.md"
+path = ".canon/review/seed-audit-seed-drift.md"
 pattern = '^## 1\. 📝 '

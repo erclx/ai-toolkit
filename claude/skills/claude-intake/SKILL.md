@@ -1,6 +1,6 @@
 ---
 name: claude-intake
-description: Files a raw brain dump into a numbered intake folder under `.claude/intake/<nn>-<slug>/`, one item per finding carrying a measured problem, a proposed fix, and a verdict. Use when asked to "file this dump", "triage my notes", "work through this list", "sort out this brain dump", or "run an intake pass". Do NOT use for one question that has to be measured before anyone can plan it. That is `claude-groundwork`.
+description: Files a raw brain dump into a numbered intake folder under `.canon/intake/<nn>-<slug>/`, one item per finding carrying a measured problem, a proposed fix, and a verdict. Use when asked to "file this dump", "triage my notes", "work through this list", "sort out this brain dump", or "run an intake pass". Do NOT use for one question that has to be measured before anyone can plan it. That is `claude-groundwork`.
 ---
 
 # Claude intake
@@ -29,7 +29,7 @@ Using the wrong one fails in two shapes. Intake on a question that needs measuri
 
 ## Write scope
 
-- Write only inside `.claude/intake/<nn>-<slug>/`. A plan file, a task file, a source change, a standard, and a rule all live outside that folder, so this one rule forbids every one of them.
+- Write only inside `.canon/intake/<nn>-<slug>/`. A plan file, a task file, a source change, a standard, and a rule all live outside that folder, so this one rule forbids every one of them.
 - There is no exception. Promoting an item onto the board runs through `claude-tasks` after the operator has answered, which is a separate invocation.
 - Reading is unrestricted inside the project. Measuring is the work.
 - Treat the folder as gitignored and unbacked. No check reaches its contents, so every rule stated here holds only while a session reads it.
@@ -38,11 +38,11 @@ Nothing outside this body carries the write-scope floor, and no path-scoped rule
 
 ## Step 1: detect open or resume
 
-List `.claude/intake/` from the project root and match the topic against the slug half of each `<nn>-<slug>` folder already there before deriving a slug. A second pass over the same subject rarely phrases the topic the way the folder was named, so a fresh slug would open a duplicate beside a live folder.
+List `.canon/intake/` from the project root and match the topic against the slug half of each `<nn>-<slug>` folder already there before deriving a slug. A second pass over the same subject rarely phrases the topic the way the folder was named, so a fresh slug would open a duplicate beside a live folder.
 
 Never match against `.claude/` itself. That directory holds every other workflow surface, so a topic matched there lands on a folder that was never an intake.
 
-With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `toolkit-overview` over `august-triage`. Also list `.claude/groundwork/` and take `<nn>` as the highest ordinal present across both listings, incremented, per `${CLAUDE_SKILL_DIR}/../../standards/intake.md`. An absent folder opens, and a present one resumes by appending items and revising verdicts the tree has moved under.
+With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `toolkit-overview` over `august-triage`. Also list `.canon/groundwork/` and take `<nn>` as the highest ordinal present across both listings, incremented, per `${CLAUDE_SKILL_DIR}/../../standards/intake.md`. An absent folder opens, and a present one resumes by appending items and revising verdicts the tree has moved under.
 
 ## Step 2: orient
 
@@ -51,7 +51,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
-- `.claude/tasks/index.md`: what is already tracked. Open a task file whose entry looks related to an item.
+- `.canon/tasks/index.md`: what is already tracked. Open a task file whose entry looks related to an item.
 
 Then read only what a live item needs. Do not read entire directories speculatively. Where a folder carries an `index.md`, read it first and load only the files it points at.
 
@@ -90,12 +90,12 @@ Emit the full relative path from the project root for every file written, and na
 A file the pass only read gets no line, which is what keeps the block short.
 
 ```plaintext
-📂 Opened .claude/intake/<nn>-<slug>/
+📂 Opened .canon/intake/<nn>-<slug>/
 
 **Filed:**
 
-- `.claude/intake/<nn>-<slug>/05-coverage.md` gains items 6 to 8 under a new `## What the merge gate covers`
-- `.claude/intake/<nn>-<slug>/00-overview.md` cluster rows and verdict counts updated
+- `.canon/intake/<nn>-<slug>/05-coverage.md` gains items 6 to 8 under a new `## What the merge gate covers`
+- `.canon/intake/<nn>-<slug>/00-overview.md` cluster rows and verdict counts updated
 
 **Routing:** <N> plan-ready, <N> groundwork candidates, <N> already settled
 

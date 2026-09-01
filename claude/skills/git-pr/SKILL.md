@@ -111,8 +111,8 @@ Detect an open pull request on the current head and branch: edit it in place whe
 Labels apply after that branch converges, against a pull request that already exists. `gh pr create --label` refuses a label the remote does not carry and opens no pull request at all, so a mistyped row costs the run rather than the label. One command after the fact also covers the create and the edit path together.
 
 ```bash
-mkdir -p .claude/.tmp/pr
-cat <<'BODY' > .claude/.tmp/pr/body.md
+mkdir -p .canon/tmp/pr
+cat <<'BODY' > .canon/tmp/pr/body.md
 <body content following pr.md template exactly>
 BODY
 pr_labels="<comma-separated labels, empty when the map resolves to nothing>"
@@ -120,16 +120,16 @@ git push -u origin HEAD || exit 1
 base_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name) || exit 1
 pr_number=$(gh pr list --head "$(git branch --show-current)" --base "$base_branch" --state open --json number --jq '.[0].number // empty')
 if [ -n "$pr_number" ]; then
-  pr_url=$(gh pr edit "$pr_number" --title "<title>" --body-file .claude/.tmp/pr/body.md) || exit 1
+  pr_url=$(gh pr edit "$pr_number" --title "<title>" --body-file .canon/tmp/pr/body.md) || exit 1
 else
-  pr_url=$(gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md) || exit 1
+  pr_url=$(gh pr create --title "<title>" --body-file .canon/tmp/pr/body.md) || exit 1
   pr_number=${pr_url##*/}
 fi
 if [ -n "$pr_labels" ]; then
   gh pr edit "$pr_number" --add-label "$pr_labels" >/dev/null ||
     printf 'Label apply failed. Create a missing label with: gh label create <name>\n' >&2
 fi
-rm -rf .claude/.tmp/pr
+rm -rf .canon/tmp/pr
 printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 ```
 
@@ -137,7 +137,7 @@ printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 
 Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. A head branch that carried an earlier pull request now has two, and a second `gh pr view` would pick between them by a precedence rule nothing here states. Reading what created or edited the pull request needs no such rule.
 
-The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.claude/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
+The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.canon/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
 
 ```bash
 canon tasks pull-request <number> --plan feature-<slug> --json

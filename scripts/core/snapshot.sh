@@ -10,7 +10,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
 
-OUTPUT_FILE=".claude/.tmp/project/PROJECT-SNAPSHOT.md"
+OUTPUT_FILE=".canon/tmp/project/PROJECT-SNAPSHOT.md"
 
 check_dependencies() {
   command -v find >/dev/null 2>&1 || log_error "find not installed"

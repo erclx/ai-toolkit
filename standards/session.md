@@ -5,13 +5,13 @@ description: Filename and location, the sections a handoff carries, the write an
 
 # Session map reference
 
-Applies to `.claude/tasks/session-<slug>.md`. A session writes one before a compaction, because a compaction keeps conclusions and drops the reasoning that produced them. It is rewritten whenever the session that owns it learns something the next session would otherwise re-derive, and it is optional: a project whose sessions never approach a compaction carries none.
+Applies to `.canon/tasks/session-<slug>.md`. A session writes one before a compaction, because a compaction keeps conclusions and drops the reasoning that produced them. It is rewritten whenever the session that owns it learns something the next session would otherwise re-derive, and it is optional: a project whose sessions never approach a compaction carries none.
 
 Any session writes one. The role a session holds decides which sections it adds on top of the core, never whether it may write at all.
 
 ## Scope
 
-Governs the pre-compaction handoff at `.claude/tasks/session-<slug>.md`: its filename, its sections, what a writer puts in each, and how a reader picks one up.
+Governs the pre-compaction handoff at `.canon/tasks/session-<slug>.md`: its filename, its sections, what a writer puts in each, and how a reader picks one up.
 
 Does not govern:
 

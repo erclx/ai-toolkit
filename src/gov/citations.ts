@@ -357,7 +357,7 @@ function globMatches(root: string, glob: string): boolean {
 /**
  * Which of `paths` git ignores, or nothing when git could not answer.
  *
- * Session scratch is the class this reaches. `.claude/tasks/index.md` is real
+ * Session scratch is the class this reaches. `.canon/tasks/index.md` is real
  * in a live project, absent from a fresh clone and from every linked worktree,
  * and a rule naming it is right either way. Resolving against the filesystem
  * alone would make the verdict depend on which tree the check ran in.

@@ -192,12 +192,12 @@ stage_setup() {
   "open")
     seed_project
 
-    mkdir -p .claude/teach
+    mkdir -p .canon/teach
 
     git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
 
     log_step "Scenario ready: teach opens the first workspace"
-    log_info "Context: .claude/teach/ exists and holds no workspace"
+    log_info "Context: .canon/teach/ exists and holds no workspace"
     log_info "  The invocation carries the starting point, because the skill"
     log_info "  settles it by asking and a headless run has nobody to answer."
     log_info "  A prompt without it leaves the session waiting and writing nothing,"
@@ -207,20 +207,20 @@ stage_setup() {
     log_info "         anchors but have never written a capture group"
     log_info "Expect:  declared in fixtures/claude/teach/open/expect.toml"
     log_info "         Check it with: canon sandbox check claude:teach open"
-    log_info "         A folder at .claude/teach/01-regex/ carrying MISSION.md"
+    log_info "         A folder at .canon/teach/01-regex/ carrying MISSION.md"
     log_info "         with a date and a success list, RESOURCES.md, and"
-    log_info "         GLOSSARY.md. Nothing written outside .claude/teach/."
+    log_info "         GLOSSARY.md. Nothing written outside .canon/teach/."
     log_info "         The session asks what the learner already knows."
     ;;
   "resume")
     seed_project
-    seed_workspace ".claude/teach/01-regex"
-    seed_stylesheet ".claude/teach/01-regex"
+    seed_workspace ".canon/teach/01-regex"
+    seed_stylesheet ".canon/teach/01-regex"
 
     git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
 
     log_step "Scenario ready: teach resumes a live workspace"
-    log_info "Context: .claude/teach/01-regex/ holds a mission, resources, a glossary,"
+    log_info "Context: .canon/teach/01-regex/ holds a mission, resources, a glossary,"
     log_info "  one reference page, one lesson, and one learning record"
     log_info "  That record names two wrong answers: a lazy quantifier read as two"
     log_info "  tokens, and a capture group believed to hold every repetition"
@@ -244,8 +244,8 @@ stage_setup() {
     ;;
   "promote")
     seed_project
-    seed_workspace ".claude/teach/01-regex"
-    seed_stylesheet ".claude/teach/01-regex"
+    seed_workspace ".canon/teach/01-regex"
+    seed_stylesheet ".canon/teach/01-regex"
     seed_wiki
 
     git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
@@ -256,7 +256,7 @@ stage_setup() {
     git checkout -b feat/promote-regex -q
 
     log_step "Scenario ready: teach proposes where a durable page belongs"
-    log_info "Context: .claude/teach/01-regex/ holds one reference page, one lesson,"
+    log_info "Context: .canon/teach/01-regex/ holds one reference page, one lesson,"
     log_info "  and a glossary. The project carries .claude/wiki/ with a tools and a"
     log_info "  concepts folder, so the routing test has somewhere to land a page"
     log_info "  whose subject belongs to someone outside the project"
@@ -267,7 +267,7 @@ stage_setup() {
     log_info "         for the reference page, I approve it in advance."
     log_info "Expect:  declared in fixtures/claude/teach/promote/expect.toml"
     log_info "         Check it with: canon sandbox check claude:teach promote"
-    log_info "         A handoff at .claude/.tmp/teach-promotion/promote-regex.md"
+    log_info "         A handoff at .canon/tmp/teach-promotion/promote-regex.md"
     log_info "         carrying one heading"
     log_info "         naming a path under .claude/wiki/ and the source page under it."
     log_info "         Nothing written into .claude/wiki/ itself, and the lesson"
@@ -275,12 +275,12 @@ stage_setup() {
     ;;
   "lesson")
     seed_project
-    seed_workspace ".claude/teach/01-regex"
+    seed_workspace ".canon/teach/01-regex"
 
     git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
 
     log_step "Scenario ready: teach writes the rendered layer"
-    log_info "Context: .claude/teach/01-regex/ holds the same workspace the resume arm"
+    log_info "Context: .canon/teach/01-regex/ holds the same workspace the resume arm"
     log_info "  seeds, with one difference: assets/ is empty, so the shared stylesheet"
     log_info "  is absent and the next lesson is the one that has to write it"
     log_info "  The seeded lesson sits at 0001, so a correct derivation lands on 0002"

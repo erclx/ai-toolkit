@@ -18,11 +18,11 @@ stage_setup() {
   log_info "submodule-root: the same tree run from the superproject root, skill proceeds"
   select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset" "submodule" "submodule-root"
 
-  mkdir -p .claude/plans
+  mkdir -p .canon/plans
 
   case "$SELECTED_OPTION" in
   "matched-plan")
-    cat <<'EOF' >.claude/plans/feature-foo.md
+    cat <<'EOF' >.canon/plans/feature-foo.md
 # Feature: foo
 
 Stub plan seeded for the matched-plan tier. Exercises name derivation when the current branch has a same-name plan file.
@@ -33,19 +33,19 @@ EOF
 
     log_step "Scenario ready: matched-plan tier (Step 2, tier 1)"
     log_info "Branch: foo"
-    log_info "Plan:   .claude/plans/feature-foo.md"
+    log_info "Plan:   .canon/plans/feature-foo.md"
     log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  skill derives foo from tier 1, no prompt"
     log_info "         worktree at .claude/worktrees/foo/, branch feat/foo post-rename"
     ;;
   "multi-plan")
-    cat <<'EOF' >.claude/plans/feature-alpha.md
+    cat <<'EOF' >.canon/plans/feature-alpha.md
 # Feature: alpha
 
 Stub plan A. Seeded for the multi-plan tier.
 EOF
 
-    cat <<'EOF' >.claude/plans/feature-bravo.md
+    cat <<'EOF' >.canon/plans/feature-bravo.md
 # Feature: bravo
 
 Stub plan B. Seeded for the multi-plan tier.
@@ -71,7 +71,7 @@ EOF
     log_info "         worktree at .claude/worktrees/bar/, branch feat/bar post-rename"
     ;;
   "typed-branch")
-    cat <<'EOF' >.claude/plans/feature-baz.md
+    cat <<'EOF' >.canon/plans/feature-baz.md
 # Feature: baz
 
 Stub plan seeded for the collision arm. The branch executing it already exists under its conventional name.
@@ -82,14 +82,14 @@ EOF
 
     log_step "Scenario ready: target collision (Step 2)"
     log_info "Branch: feat/baz"
-    log_info "Plan:   .claude/plans/feature-baz.md"
+    log_info "Plan:   .canon/plans/feature-baz.md"
     log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  slug transform drops the type, so tier 1 derives baz"
     log_info "         target feat/baz already exists, so Step 2 stops"
     log_info "         no worktree is created and the existing branch is left alone"
     ;;
   "no-deps")
-    cat <<'EOF' >.claude/plans/feature-qux.md
+    cat <<'EOF' >.canon/plans/feature-qux.md
 # Feature: qux
 
 Stub plan seeded for the dependency report. The project declares a manifest and has never installed against it.
@@ -108,7 +108,7 @@ EOF
 
     log_step "Scenario ready: dependency report (Step 6)"
     log_info "Branch: qux"
-    log_info "Plan:   .claude/plans/feature-qux.md"
+    log_info "Plan:   .canon/plans/feature-qux.md"
     log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  entry proceeds, then Step 6 reports two lines"
     log_info "         package.json present and node_modules missing, so it names bun install"
@@ -116,7 +116,7 @@ EOF
     log_info "         nothing is installed, since the step reports rather than runs"
     ;;
   "port-offset")
-    cat <<'EOF' >.claude/plans/feature-corge.md
+    cat <<'EOF' >.canon/plans/feature-corge.md
 # Feature: corge
 
 Stub plan seeded for the port report. The project carries the web layer's port helper, so Step 6 reads a number out of it rather than naming the stack default.
@@ -144,12 +144,12 @@ EOF
 
     log_step "Scenario ready: port report (Step 6)"
     log_info "Branch: corge"
-    log_info "Plan:   .claude/plans/feature-corge.md"
+    log_info "Plan:   .canon/plans/feature-corge.md"
     log_info "Action:  /canon:claude-worktree"
     log_info "Expect:  declared in fixtures/claude/worktree/port-offset/expect.toml"
     ;;
   "submodule" | "submodule-root")
-    cat <<'EOF' >.claude/plans/feature-grault.md
+    cat <<'EOF' >.canon/plans/feature-grault.md
 # Feature: grault
 
 Stub plan seeded for the submodule guard. It sits at the superproject root, which is the copy a session inside the submodule cannot reach.
@@ -184,7 +184,7 @@ EOF
     if [ "$SELECTED_OPTION" = "submodule" ]; then
       log_step "Scenario ready: submodule guard (Guards)"
       log_info "Branch: grault"
-      log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
+      log_info "Plan:   .canon/plans/feature-grault.md at the superproject root"
       log_info "Action:  cd vendor, then /canon:claude-worktree"
       log_info "Expect:  both rev-parse reads return one path, so the linked-worktree guard passes"
       log_info "         the superproject read resolves, so the skill stops and names this root"
@@ -193,7 +193,7 @@ EOF
     else
       log_step "Scenario ready: submodule control (Guards)"
       log_info "Branch: grault"
-      log_info "Plan:   .claude/plans/feature-grault.md at the superproject root"
+      log_info "Plan:   .canon/plans/feature-grault.md at the superproject root"
       log_info "Action:  /canon:claude-worktree from this root"
       log_info "Expect:  the superproject read is empty here, so the guard stays silent"
       log_info "         entry derives grault from the plan and creates the worktree"

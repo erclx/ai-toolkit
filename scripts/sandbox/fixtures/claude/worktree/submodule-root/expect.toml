@@ -15,7 +15,7 @@
 max_turns = 30
 
 paths = [
-  ".claude/worktrees/grault/.claude/plans/feature-grault.md",
+  ".claude/worktrees/grault/.canon/plans/feature-grault.md",
   "vendor/lib.js",
 ]
 

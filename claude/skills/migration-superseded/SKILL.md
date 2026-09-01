@@ -35,7 +35,7 @@ No listing substitutes for the field. The pairing runs against the seed folder n
 
 Run `canon standards list --json` and match each entry's `replacedBy` against the `appliesTo` array the catalog declares. Resolve from the catalog rather than from the folder stem, so a seed folder the toolkit adds later resolves without an edit here.
 
-Compare on the folder rather than on the exact string. An `appliesTo` value matches when it equals `replacedBy` or begins with `replacedBy` followed by a slash. The report spells the folder `.claude/tasks` and the catalog spells it `.claude/tasks/`, and `memory` declares a filename pattern beneath its folder rather than the folder itself, so string equality matches nothing the catalog actually carries and sends every entry to a decline below.
+Compare on the folder rather than on the exact string. An `appliesTo` value matches when it equals `replacedBy` or begins with `replacedBy` followed by a slash. The report spells the folder `.canon/tasks` and the catalog spells it `.canon/tasks/`, and `memory` declares a filename pattern beneath its folder rather than the folder itself, so string equality matches nothing the catalog actually carries and sends every entry to a decline below.
 
 ### Read the standard through the verb
 
@@ -88,12 +88,12 @@ Print one block per superseded entry, then the shared reminder. Omit empty group
 ```markdown
 ## Split
 
-`.claude/TASKS.md` → `.claude/tasks/`, shaped by `canon standards tasks`
+`.claude/TASKS.md` → `.canon/tasks/`, shaped by `canon standards tasks`
 
 ## Proposed files
 
-- `.claude/tasks/vXX.Y-<slug>.md` ← the "<heading>" section
-- `.claude/tasks/vXX.Y-<slug>.md` ← the "<heading>" section
+- `.canon/tasks/vXX.Y-<slug>.md` ← the "<heading>" section
+- `.canon/tasks/vXX.Y-<slug>.md` ← the "<heading>" section
 
 Each carries `title` and `description` frontmatter, an `## Outcomes` heading, and a `## Findings` heading.
 

@@ -12,7 +12,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Commit reference](commit.md): Commit message format and type conventions
 - [Context entry reference](context.md): Shape and content rules for .claude/context/<domain>.md entries
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
-- [Diagram reference](diagrams.md): Shape and content rules for .claude/diagrams/<kind>.md files
+- [Diagram reference](diagrams.md): Shape and content rules for .canon/diagrams/<kind>.md files
 - [Glossary reference](glossary.md): Frontmatter, entry shape, ordering, and the rules deciding which terms a glossary carries
 - [Groundwork reference](groundwork.md): Folder layout, ordinal naming, reserved numbering, frontmatter and dating, required file contents, and conventions for a measurement track
 - [Intake reference](intake.md): Folder layout, ordinal naming, reserved index number, frontmatter and dating, the item template, the answer contract, and retrieval
@@ -30,7 +30,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Slug reference](slug.md): Transform from a git branch name to a slug, and the three responses to an empty result
 - [Snippet reference](snippets.md): Snippet reference and authoring conventions
 - [Standard reference](standard.md): Shape and content rules for authoring a standard
-- [Tasks reference](tasks.md): Folder layout, filename convention, readiness groups, and content rules for .claude/tasks/
+- [Tasks reference](tasks.md): Folder layout, filename convention, readiness groups, and content rules for .canon/tasks/
 - [Teach reference](teach.md): Workspace layout, ordinal naming, frontmatter, and the mission and learning-record formats for a learning workspace
 - [Versioning reference](versioning.md): Phase label vs semver discipline across tasks, PRs, reviews, issues, commits, and tags
 - [Wireframe reference](wireframes.md): Shape and content rules for .claude/wireframes/<surface>.md files

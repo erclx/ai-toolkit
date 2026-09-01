@@ -1,6 +1,6 @@
 ---
 name: claude-markdown-propose
-description: Reviews a named markdown surface against a named concern, drafts a per-file proposal under `.claude/proposals/<slug>/` carrying a diff and a reason for each change, and stops without editing a source file. Takes the concern and the surface as inputs, such as a claim stated stronger than the record, a fact gone stale, two files disagreeing, or a passage duplicated without derivation. A later invocation applies what the operator answered. Use when asked to "propose a change to CLAUDE.md", "draft a rewrite of this standard", "propose fixes to this doc", "draft alternatives for this passage", or "apply the answered proposals". Do NOT use to report without drafting a replacement (`claude-standards-audit` or `canon markdown audit`), to review a diff already made (`claude-review`), or to file a raw brain dump as findings (`claude-intake`).
+description: Reviews a named markdown surface against a named concern, drafts a per-file proposal under `.canon/proposals/<slug>/` carrying a diff and a reason for each change, and stops without editing a source file. Takes the concern and the surface as inputs, such as a claim stated stronger than the record, a fact gone stale, two files disagreeing, or a passage duplicated without derivation. A later invocation applies what the operator answered. Use when asked to "propose a change to CLAUDE.md", "draft a rewrite of this standard", "propose fixes to this doc", "draft alternatives for this passage", or "apply the answered proposals". Do NOT use to report without drafting a replacement (`claude-standards-audit` or `canon markdown audit`), to review a diff already made (`claude-review`), or to file a raw brain dump as findings (`claude-intake`).
 ---
 
 # Claude markdown propose
@@ -20,16 +20,16 @@ The value is the gate. A rewrite delivered in chat gets applied from memory acro
 
 Two phases share this body, picked by whether a proposal folder already exists for the request's slug.
 
-Derive `<slug>` from the concern and the surface, kebab-case, naming the subject rather than the activity. List `.claude/proposals/` at the main worktree root and match the topic against the folders already there before deriving a fresh one, the same way `claude-intake` matches its own folder. Never match against `.claude/` itself.
+Derive `<slug>` from the concern and the surface, kebab-case, naming the subject rather than the activity. List `.canon/proposals/` at the main worktree root and match the topic against the folders already there before deriving a fresh one, the same way `claude-intake` matches its own folder. Never match against `.claude/` itself.
 
 - No matching folder, or the operator names a concern and a surface: **Propose**.
 - A matching folder exists and the operator says apply, ship, or commit the answers: **Apply**.
 
-All `.claude/proposals/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+All `.canon/proposals/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
 ## Write scope
 
-Write only inside `.claude/proposals/<slug>/`. A source file, a standard, a rule, and a plan all live outside that folder, so this one rule forbids every one of them during the Propose phase. The Apply phase is the one exception, and only for a change carrying a `You:` answer.
+Write only inside `.canon/proposals/<slug>/`. A source file, a standard, a rule, and a plan all live outside that folder, so this one rule forbids every one of them during the Propose phase. The Apply phase is the one exception, and only for a change carrying a `You:` answer.
 
 ## Concerns
 
@@ -66,7 +66,7 @@ A matched string means different things in different registers. A word describin
 
 ### 4. Write the proposals
 
-One file per source file under `.claude/proposals/<slug>/`, per `${CLAUDE_SKILL_DIR}/references/format.md`.
+One file per source file under `.canon/proposals/<slug>/`, per `${CLAUDE_SKILL_DIR}/references/format.md`.
 
 Draft the replacement text. A proposal reporting a problem without a replacement hands the work back rather than doing it.
 
@@ -97,20 +97,20 @@ Report the counts once the pass stops: files committed, changes applied, changes
 Chat output is the report. This skill persists only the proposal folder itself.
 
 ```plaintext
-📂 Opened .claude/proposals/<slug>/
+📂 Opened .canon/proposals/<slug>/
 
 **Screened:** <N> files, <N> changes proposed, <N> carrying three variants
 
 **Highest value:** <the single strongest change, one line>
 
-Next: answer the `You:` slots in the files under .claude/proposals/<slug>/,
+Next: answer the `You:` slots in the files under .canon/proposals/<slug>/,
 then re-invoke this skill to apply what you answered.
 ```
 
 Use `📂 Resumed` in place of `📂 Opened` on a resume pass. The Apply phase reports instead:
 
 ```plaintext
-✅ Applied .claude/proposals/<slug>/
+✅ Applied .canon/proposals/<slug>/
 
 **Committed:** <N> files, <N> changes
 

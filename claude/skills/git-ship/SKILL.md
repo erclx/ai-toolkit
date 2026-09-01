@@ -23,7 +23,7 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 
 ## Sequence
 
-1. Invoke `canon:claude-memory-capture` to route what this session learned to the context entries that own it and write the residue to `.claude/memory/`
+1. Invoke `canon:claude-memory-capture` to route what this session learned to the context entries that own it and write the residue to `.canon/memory/`
 2. Invoke `canon:claude-docs` to sync internal planning docs against session decisions, folding in the routed facts
 3. Invoke `canon:docs-sync` to sync public docs against changes since main
 4. Run `git add -A` to stage any files the sync skills wrote
@@ -46,8 +46,8 @@ Output up to four lines:
 ```plaintext
 ✅ Shipped
 <N facts routed to context entries>
-<N memories captured in .claude/memory/>
-<Memory proposal at .claude/review/memory/memory-review-<slug>.md>
+<N memories captured in .canon/memory/>
+<Memory proposal at .canon/review/memory/memory-review-<slug>.md>
 ```
 
 Omit the second line if nothing routed. Omit the third and fourth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal.

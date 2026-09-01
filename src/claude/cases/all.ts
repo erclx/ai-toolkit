@@ -12,7 +12,7 @@ import { SETUP_CASES } from '@/claude/cases/setup'
  * Bootstrapped from each skill's own quoted trigger phrases and then
  * rephrased and supplemented rather than shipped verbatim, since a positive
  * lifted unchanged from a trigger passes by construction and never tests a
- * person's own words. See `.claude/groundwork/42-ai-blueprint/08-spikes.md`
+ * person's own words. See `.canon/groundwork/42-ai-blueprint/08-spikes.md`
  * for the extraction arm this corpus replaces as the shipped measure.
  */
 export const SKILL_CASES: readonly SkillCase[] = [

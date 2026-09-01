@@ -32,10 +32,10 @@ EOF
   mkdir -p src
   echo 'export const PORT = 8080;' >src/server.js
 
-  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n' >.gitignore
+  printf 'node_modules\n.canon/plans/\n.canon/review/\n.canon/memory/\n' >.gitignore
 
-  mkdir -p .claude/memory
-  cat <<'EOF' >.claude/memory/feedback-port-from-env.md
+  mkdir -p .canon/memory
+  cat <<'EOF' >.canon/memory/feedback-port-from-env.md
 ---
 title: Read PORT from the environment
 description: Resolve the listen port from env with a fallback, not a hardcoded constant
@@ -48,7 +48,7 @@ The server reads its listen port from `process.env.PORT` with a fallback, never 
 
 **How to apply:** When touching server startup, resolve the port from the environment and keep the literal only as a fallback.
 EOF
-  cat <<'EOF' >.claude/memory/index.md
+  cat <<'EOF' >.canon/memory/index.md
 ---
 title: Memory
 subtitle: Session facts with no owning surface, grouped by kind.
@@ -87,7 +87,7 @@ EOF
     log_info "Action:  /git:ship"
     log_info "Expect:  the verify gate finds no command named and says so rather than stopping,"
     log_info "         then README updated, changes committed, branch renamed, PR opened, changelog appended"
-    log_info "         then captures session memory and runs Propose; receipt at .claude/review/memory/memory-review-<slug>.md, Apply not run"
+    log_info "         then captures session memory and runs Propose; receipt at .canon/review/memory/memory-review-<slug>.md, Apply not run"
     ;;
   "without-changelog")
     log_step "Scenario ready: without changelog"
@@ -95,7 +95,7 @@ EOF
     log_info "Action:  /git:ship"
     log_info "Expect:  the verify gate finds no command named and says so rather than stopping,"
     log_info "         then README updated, changes committed, branch renamed, PR opened, changelog step skipped"
-    log_info "         then captures session memory and runs Propose; receipt at .claude/review/memory/memory-review-<slug>.md, Apply not run"
+    log_info "         then captures session memory and runs Propose; receipt at .canon/review/memory/memory-review-<slug>.md, Apply not run"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

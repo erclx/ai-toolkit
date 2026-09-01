@@ -93,7 +93,7 @@ EOF
   log_info "  'These two directories under targets/ are the whole population for this"
   log_info "   wave. Read nothing outside this sandbox and dispatch no worker.'"
   log_info "  'Decide which clone a worker would branch from, then write the decision"
-  log_info "   to .claude/.tmp/rollout/dispatch.md as exactly two lines:'"
+  log_info "   to .canon/tmp/rollout/dispatch.md as exactly two lines:'"
   log_info "  'Dispatch into: <path>'"
   log_info "  'Refused: <path>, because <reason>'"
   log_info ""

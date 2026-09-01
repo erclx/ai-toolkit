@@ -22,7 +22,7 @@ stage_setup() {
   # Wipe anchor content to start clean
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
-  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n' >.gitignore
+  printf 'node_modules\n.canon/plans/\n.canon/review/\n.canon/memory/\n' >.gitignore
 
   case "$SELECTED_OPTION" in
   "happy-path")
@@ -60,9 +60,9 @@ EOF
 
     git push origin --delete feat/add-farewell -q 2>/dev/null || true
 
-    mkdir -p .claude/plans .claude/review
+    mkdir -p .canon/plans .canon/review
 
-    cat <<'EOF' >.claude/plans/feature-add-farewell.md
+    cat <<'EOF' >.canon/plans/feature-add-farewell.md
 # Feature: add farewell utility
 
 Add a `farewell` function to `src/index.ts` that returns a goodbye message, and export it alongside `greet`.
@@ -80,8 +80,8 @@ None identified.
 None identified.
 EOF
 
-    mkdir -p .claude/memory
-    cat <<'EOF' >.claude/memory/feedback-export-from-index.md
+    mkdir -p .canon/memory
+    cat <<'EOF' >.canon/memory/feedback-export-from-index.md
 ---
 title: Export utilities from src/index.ts
 description: Public helpers re-export from the package entry point
@@ -94,7 +94,7 @@ Every public helper in `src/` re-exports from `src/index.ts` so callers import f
 
 **How to apply:** When adding a public function under `src/`, add its `export` to `src/index.ts` in the same change.
 EOF
-    cat <<'EOF' >.claude/memory/index.md
+    cat <<'EOF' >.canon/memory/index.md
 ---
 title: Memory
 subtitle: Session facts with no owning surface, grouped by kind.
@@ -159,9 +159,9 @@ EOF
 
     git push origin --delete feat/expand-intro -q 2>/dev/null || true
 
-    mkdir -p .claude/plans .claude/review
+    mkdir -p .canon/plans .canon/review
 
-    cat <<'EOF' >.claude/plans/feature-expand-intro.md
+    cat <<'EOF' >.canon/plans/feature-expand-intro.md
 # Feature: expand intro doc
 
 Replace the placeholder intro with two short paragraphs covering scope and structure.
@@ -240,9 +240,9 @@ EOF
 
     git push origin --delete feat/tighten-deploy-check -q 2>/dev/null || true
 
-    mkdir -p .claude/plans .claude/review
+    mkdir -p .canon/plans .canon/review
 
-    cat <<'EOF' >.claude/plans/feature-tighten-deploy-check.md
+    cat <<'EOF' >.canon/plans/feature-tighten-deploy-check.md
 # Feature: tighten the deploy-check skill
 
 Give `deploy-check` a stop condition when no tag resolves, so the skill reports the miss rather than reading an empty value as a pass.

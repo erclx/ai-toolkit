@@ -18,7 +18,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
-- `.claude/tasks/index.md`: current scope and status, then any task file the feature relates to
+- `.canon/tasks/index.md`: current scope and status, then any task file the feature relates to
 
 Also read these when the feature touches code or UI. Skip them for prose, docs, catalog, or config-only changes:
 
@@ -81,7 +81,7 @@ Omit empty sections. Do not print `None identified.` in chat.
 
 ### Full mode
 
-Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.claude/plans/feature-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist.
+Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.canon/plans/feature-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist.
 
 From a linked worktree the file-editing tools refuse that path, so the plan goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
@@ -89,12 +89,12 @@ The file follows the template in `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. 
 
 Run `canon records validate plans` after writing the file when the CLI is on PATH. It reports a section, a filename, or an answer slot that does not hold, and it writes nothing.
 
-Run `canon markdown audit .claude/plans/feature-<slug>.md` beside it, naming the file. `.claude/plans/` is gitignored and the audit's default path set is what git lists, so no other gate ever opens a plan, and six ban hits landed across four plans written without this call. Rewrite the sentence carrying a hit rather than swapping the token for a near-synonym.
+Run `canon markdown audit .canon/plans/feature-<slug>.md` beside it, naming the file. `.canon/plans/` is gitignored and the audit's default path set is what git lists, so no other gate ever opens a plan, and six ban hits landed across four plans written without this call. Rewrite the sentence carrying a hit rather than swapping the token for a near-synonym.
 
 Then output in chat:
 
 ```markdown
-📝 Wrote .claude/plans/feature-<slug>.md
+📝 Wrote .canon/plans/feature-<slug>.md
 
 **Questions:**
 
@@ -104,7 +104,7 @@ Then output in chat:
 Next: /claude-worktree
 ```
 
-Show only the path line and the `Next:` line when there are no questions. The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
+Show only the path line and the `Next:` line when there are no questions. The `.canon/plans/` directory is gitignored. Do not stage or commit the file.
 
 Do not proceed to implementation until the user explicitly says to continue.
 
@@ -114,4 +114,4 @@ After the plan is written, the user may re-ping with follow-up questions or push
 
 - State each pick as one-line pick plus one-line reason. Do not use section headers, context blocks, or multi-section breakdowns in chat. Those belong in the plan file.
 - Put numbered decisions to resolve at the bottom of the response, not interleaved with findings.
-- When a finding needs more than two lines to explain, update `.claude/plans/feature-<slug>.md` in place with the detail and point the user at the file instead.
+- When a finding needs more than two lines to explain, update `.canon/plans/feature-<slug>.md` in place with the detail and point the user at the file instead.

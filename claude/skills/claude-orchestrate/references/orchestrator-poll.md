@@ -54,7 +54,7 @@ Every classification line names a pull request and a state. A line starting `pol
 
 The script exits non-zero and classifies nothing when the open pull request list itself fails to load. That case would otherwise report every tracked pull request as merged, so the baseline is left untouched and the run says so.
 
-The baseline lives at `.claude/.tmp/pr-poll/baseline.txt` under the main worktree root and is per-machine. A first run against a board already in flight reports each open pull request once before it settles.
+The baseline lives at `.canon/tmp/pr-poll/baseline.txt` under the main worktree root and is per-machine. A first run against a board already in flight reports each open pull request once before it settles.
 
 The five review headings the script matches are written by `claude-pr-review` and `claude-address-review`, and the whole set is stated once in the first. A project that posts its reviews under different headings edits the jq filters in the script to match, or every pull request reads as never reviewed.
 

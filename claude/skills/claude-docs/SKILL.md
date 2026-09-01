@@ -51,7 +51,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 
 Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
 
-- `.claude/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. The scratch sweep reads every file in the folder for its plans sweep and states that where it gives the instruction.
+- `.canon/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. The scratch sweep reads every file in the folder for its plans sweep and states that where it gives the instruction.
 
 ## Step 2: identify what changed
 
@@ -64,7 +64,7 @@ Review the session for decisions that diverged from the original plan:
 - Design or UX decisions that differ from DESIGN.md or any `.claude/wireframes/<surface>.md`
 - Tasks blocked or newly identified
 
-Then resolve the diff baseline and match it against the board. From `.claude/tasks/index.md` at the main worktree root, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped.
+Then resolve the diff baseline and match it against the board. From `.canon/tasks/index.md` at the main worktree root, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped.
 
 Path matching only chooses which files to open. Behavior decides each outcome. For each unchecked outcome, decide whether the diff shipped the behavior that outcome names.
 
@@ -93,12 +93,12 @@ This changes which steps the skill reaches. It does not widen what any of them r
 
 For each doc with relevant changes, apply updates following these rules. Read a standard this skill names, here or in a later step, from `${CLAUDE_SKILL_DIR}/../../standards/` when the project does not have it.
 
-**`.claude/tasks/`**
+**`.canon/tasks/`**
 
 - Mark completed outcomes `[x]` in the task's own file through `canon tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. Do not move or archive the file.
 - Write a newly identified task as its own file, following `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` for the filename and frontmatter.
 - Do not touch task files this session did not change.
-- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it.
+- Never hand-edit `.canon/tasks/index.md`. A hook regenerates it.
 
 The verb resolves the board at the main worktree root in-process, which is the route because this is an edit inside an existing file and the file-editing tools refuse that path from a linked worktree.
 
@@ -148,7 +148,7 @@ Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip
 
 Two sources feed this step, the same split Step 2 runs on. The diff carries what the repository changed. The routed facts carry what the session learned, which a diff cannot show.
 
-**Routed facts.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root. `claude-memory-capture` writes it, one H2 per target entry naming the path, with the fact underneath. Fold each fact into the entry its heading names, then delete the handoff file so a later run does not fold it twice.
+**Routed facts.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`, falling back to `latest` on an empty result, and read `.canon/tmp/memory-routing/<slug>.md` at the main worktree root. `claude-memory-capture` writes it, one H2 per target entry naming the path, with the fact underneath. Fold each fact into the entry its heading names, then delete the handoff file so a later run does not fold it twice.
 
 This half is not diff-scoped and must not be. A gotcha a session hit while working is exactly the fact the diff never shows, and scoping it to changed files would drop the entries worth keeping. The handoff is a named input rather than a scan, so the reach stays bounded to what capture decided.
 
@@ -181,13 +181,13 @@ Write each updated entry immediately. Output one line per file:
 
 Add a line naming the handoff when one was consumed:
 
-`🧹 Folded: .claude/.tmp/memory-routing/<slug>.md`
+`🧹 Folded: .canon/tmp/memory-routing/<slug>.md`
 
 The base lint-staged config runs `canon indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
 ## Step 8: fold promoted pages
 
-Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root. `claude-teach` writes it, one H2 per destination naming the path, with a source line under the heading and the page body in a fenced block below that. Read the body out of the fence rather than off the heading level, since a reference page carries headings of its own and only the fence separates them from the next destination. Skip this step silently when the file is absent, which is every run where nothing was promoted.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`, falling back to `latest` on an empty result, and read `.canon/tmp/teach-promotion/<slug>.md` at the main worktree root. `claude-teach` writes it, one H2 per destination naming the path, with a source line under the heading and the page body in a fenced block below that. Read the body out of the fence rather than off the heading level, since a reference page carries headings of its own and only the fence separates them from the next destination. Skip this step silently when the file is absent, which is every run where nothing was promoted.
 
 Each block is a page an operator already confirmed a destination for, so this step lands it rather than judging it again. Write to the destination the heading names, at `pwd` rather than at the main root, since every destination here is a tracked file that commits with the branch:
 
@@ -202,7 +202,7 @@ Output one line per page landed:
 
 Add a line naming the handoff when one was consumed:
 
-`🧹 Folded: .claude/.tmp/teach-promotion/<slug>.md`
+`🧹 Folded: .canon/tmp/teach-promotion/<slug>.md`
 
 Report a block left unfolded rather than dropping it:
 
@@ -216,44 +216,44 @@ Every move and delete below is a shell operation, so send each as a plain single
 
 ### Plans
 
-Scan every file in `.claude/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target.
+Scan every file in `.canon/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target.
 
-The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file.
+The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.canon/tasks/` before routing on it, which lands `../plans/x.md` and `.canon/plans/x.md` on the same file.
 
 The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `${CLAUDE_SKILL_DIR}/../../standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
 
 Board-wide scope is the one place this sweep reaches past Step 3's rule against touching task files the session did not change. A board carrying a task that closed while an earlier run missed its archive is the defect this exists to clear, and skipping those tasks would preserve it. Reaching them is safe because the archive moves the plan and points the task at the new path, so a task from unrelated work ends up with a working pointer rather than a broken one.
 
-Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone.
+Before moving anything, count the other citations. Scan every `.canon/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone.
 
-A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/plans/archive/`, and the count then reads a citation that does not exist and archives nothing.
+A board carrying one task written `../plans/x.md` and another written `.canon/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.canon/plans/archive/`, and the count then reads a citation that does not exist and archives nothing.
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
-`canon tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `canon` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.claude/plans/archive/`.
+`canon tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `canon` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.canon/plans/archive/`.
 
 Nothing in the exit code reports that. Branch on the record's `ok` and `reason` fields and never on the exit, which is the rule every task verb already carries: an operator's shell profile may wrap `canon` in a function that runs the binary and then another command, taking its status from the second, and one measured here masks every non-zero exit rather than only an absent verb. The binary itself exits 1 for an unknown subcommand and 1 for an ordinary refusal alike. Switching this body to the verb needs a release that carries it and a read of the record rather than the exit, which together retire the duplication.
 
-A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.claude/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
+A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.canon/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
 
-- Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/plans/archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
-- Target resolves inside `.claude/plans/` and at least one other task file cites it: leave the plan where it is and retarget nothing. Report the shared citation.
-- Target resolves inside `.claude/plans/archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
-- Any other resolved target outside `.claude/plans/`: warn and skip.
+- Target resolves inside `.canon/plans/`, the file exists, and no other task file cites it: create `.canon/plans/archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
+- Target resolves inside `.canon/plans/` and at least one other task file cites it: leave the plan where it is and retarget nothing. Report the shared citation.
+- Target resolves inside `.canon/plans/archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
+- Any other resolved target outside `.canon/plans/`: warn and skip.
 
 Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans/archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
 
 ### Reviews
 
-Leave the current branch's review receipt where it is. `claude-autoship` Step 6 keeps minor findings in `.claude/review/branch/review-<slug>.md` and its closing block hands the reader that path, so deleting it here removes the file the chain that invoked this skill is still citing. Seven runs recorded that collision across two days before a sandbox fixture asserted the receipt and could pass only on a run the chain stopped early.
+Leave the current branch's review receipt where it is. `claude-autoship` Step 6 keeps minor findings in `.canon/review/branch/review-<slug>.md` and its closing block hands the reader that path, so deleting it here removes the file the chain that invoked this skill is still citing. Seven runs recorded that collision across two days before a sandbox fixture asserted the receipt and could pass only on a run the chain stopped early.
 
 The body that writes a receipt owns its lifetime. This skill sweeps on behalf of whatever called it and has no way to read whether a file is still in use, where the chain that wrote this one cites it in its own output and knows. What reaps it is the branch sweep below, one branch later, once the branch it names is gone.
 
-Sweep the branch reports this session never opened. List `.claude/review/branch/review-*.md`, run the slug transform in `${CLAUDE_SKILL_DIR}/../../standards/slug.md` over every name `git branch --format='%(refname:short)'` prints, and delete a report whose slug matches none of them. Take the names from that format rather than from `git branch --list`, which marks the current branch with `* ` and a branch checked out in another worktree with `+ `, so a transform reading the marked lines as written turns a live branch into a slug nothing matches and sweeps a report a sibling worktree is still working from. A branch report is read once, by the session addressing it, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so a report outliving its branch is holding nothing. Skipping this leaves them accumulating for the life of the checkout, since a slug is unique per feature and no later branch ever looks for one.
+Sweep the branch reports this session never opened. List `.canon/review/branch/review-*.md`, run the slug transform in `${CLAUDE_SKILL_DIR}/../../standards/slug.md` over every name `git branch --format='%(refname:short)'` prints, and delete a report whose slug matches none of them. Take the names from that format rather than from `git branch --list`, which marks the current branch with `* ` and a branch checked out in another worktree with `+ `, so a transform reading the marked lines as written turns a live branch into a slug nothing matches and sweeps a report a sibling worktree is still working from. A branch report is read once, by the session addressing it, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so a report outliving its branch is holding nothing. Skipping this leaves them accumulating for the life of the checkout, since a slug is unique per feature and no later branch ever looks for one.
 
 What that removes is a local-only review on a branch deleted before it opened a pull request. `claude-review` says so where a reader meets the report, and the sweep runs anyway rather than keeping every report against the one case, since nothing else ever clears them.
 
-Memory receipts sweep board-wide, like both halves of this step above them. Scan every `.claude/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
+Memory receipts sweep board-wide, like both halves of this step above them. Scan every `.canon/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
 
 For each receipt, count the H2 items still marked 📝 pending:
 
@@ -262,11 +262,11 @@ For each receipt, count the H2 items still marked 📝 pending:
 
 That standard owns what a fold writes and which entry types take one. `claude-memory-review` collects a receipt on the same rule, so neither body restates it.
 
-Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables). Those sit at `.claude/review/` itself rather than under a producer folder, so the two globs above never reach them.
+Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables). Those sit at `.canon/review/` itself rather than under a producer folder, so the two globs above never reach them.
 
 Output one line per file swept:
 
-- `📦 Archived: <path>` for a plan moved into `.claude/plans/archive/`
+- `📦 Archived: <path>` for a plan moved into `.canon/plans/archive/`
 - `⏭ Kept: <path>, still cited by <task-file>` for a plan another live task shares
 - `🧹 Deleted: <path>, branch gone` for a branch report whose branch no longer exists
 - `🧹 Deleted: <path>, folded <n> skips` for a swept memory receipt

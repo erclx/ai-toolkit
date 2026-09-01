@@ -29,44 +29,44 @@ max_turns = 30
 # gate too, since every other fixture task ends the run all `[x]` and would be
 # archived either way.
 paths = [
-  ".claude/plans/archive/feature-pagination.md",
-  ".claude/plans/archive/feature-rate-limit.md",
-  ".claude/plans/feature-search.md",
+  ".canon/plans/archive/feature-pagination.md",
+  ".canon/plans/archive/feature-rate-limit.md",
+  ".canon/plans/feature-search.md",
 ]
 
 absent = [
-  ".claude/plans/feature-pagination.md",
-  ".claude/plans/feature-rate-limit.md",
-  ".claude/plans/archive/feature-search.md",
+  ".canon/plans/feature-pagination.md",
+  ".canon/plans/feature-rate-limit.md",
+  ".canon/plans/archive/feature-search.md",
 ]
 
 write_scope = [".claude/**"]
 
 [[content]]
-path = ".claude/tasks/v02.0-pagination.md"
+path = ".canon/tasks/v02.0-pagination.md"
 pattern = '^- \[x\] Outcome: a list request accepts a page size and an offset'
 
 [[content]]
-path = ".claude/tasks/v02.0-pagination.md"
+path = ".canon/tasks/v02.0-pagination.md"
 pattern = '^Plan: \[feature-pagination\]\(\.\./plans/archive/feature-pagination\.md\)'
 
 # The retarget matters more here than on the closing task. This task was already
 # `[x]` before the run, so a sweep that moved the plan without rewriting the line
 # would leave the only pointer to it aimed at a path that no longer resolves, and
-# `.claude/plans/` is gitignored so nothing recovers it.
+# `.canon/plans/` is gitignored so nothing recovers it.
 [[content]]
-path = ".claude/tasks/v01.0-rate-limit.md"
+path = ".canon/tasks/v01.0-rate-limit.md"
 pattern = '^Plan: \[feature-rate-limit\]\(\.\./plans/archive/feature-rate-limit\.md\)'
 
 # The control's pointer stays put. Asserting the plan's location alone would pass
 # on a run that retargeted the line anyway, leaving the task aimed at an archive
 # path holding no file.
 [[content]]
-path = ".claude/tasks/v03.0-search.md"
+path = ".canon/tasks/v03.0-search.md"
 pattern = '^Plan: \[feature-search\]\(\.\./plans/feature-search\.md\)'
 
 # Its outcomes stay open. HEAD ships no search, so a run marking either one has
 # matched on the board rather than on the diff.
 [[content]]
-path = ".claude/tasks/v03.0-search.md"
+path = ".canon/tasks/v03.0-search.md"
 pattern = '^- \[ \] Outcome: a query matches against task titles'

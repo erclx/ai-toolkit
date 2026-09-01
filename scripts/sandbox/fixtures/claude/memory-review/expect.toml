@@ -18,7 +18,7 @@ absent = [".claude/standards/skill.md", "standards/skill.md"]
 # transform in `standards/skill.md` applied to branch `chore/memory-sweep`, and
 # that transform appears in no skill body, so a proposal at this exact path is
 # what proves the plugin fallback resolved.
-paths = [".claude/review/memory/memory-review-memory-sweep.md"]
+paths = [".canon/review/memory/memory-review-memory-sweep.md"]
 
 # Propose writes the proposal and nothing else. The apply pass, which edits
 # `CLAUDE.md` and the skill body and moves entries into the archive, needs a
@@ -27,7 +27,7 @@ paths = [".claude/review/memory/memory-review-memory-sweep.md"]
 # Those targets are ordinary project files and land inside the snapshot, and the
 # proposal itself now does too, so the scope has a write to check on a correct
 # run rather than only on a wrong one.
-write_scope = [".claude/review/**"]
+write_scope = [".canon/review/**"]
 
 # No max_turns. One clean run cost 23 turns on 2026-08-02 against the default cap
 # of 30. A single observation sets a ceiling too tight to trust, so the arm waits
@@ -46,22 +46,22 @@ manual = [
 # name, so a proposal written to the right path from the wrong branch still goes
 # red.
 [[content]]
-path = ".claude/review/memory/memory-review-memory-sweep.md"
+path = ".canon/review/memory/memory-review-memory-sweep.md"
 pattern = '^# Memory review: memory-sweep'
 
 # The slot each item needs for the pass the proposal exists to open. An item
 # written without one strands the decision round.
 [[content]]
-path = ".claude/review/memory/memory-review-memory-sweep.md"
+path = ".canon/review/memory/memory-review-memory-sweep.md"
 pattern = '^Decision:'
 
 # Both reach the proposal as items, the first stating nothing actionable and the
 # second already absorbed into the seeded `CLAUDE.md`. A pass that dropped either
 # reviewed a subset while reporting the whole.
 [[content]]
-path = ".claude/review/memory/memory-review-memory-sweep.md"
+path = ".canon/review/memory/memory-review-memory-sweep.md"
 pattern = 'feedback-be-careful\.md'
 
 [[content]]
-path = ".claude/review/memory/memory-review-memory-sweep.md"
+path = ".canon/review/memory/memory-review-memory-sweep.md"
 pattern = 'feedback-memory-location\.md'

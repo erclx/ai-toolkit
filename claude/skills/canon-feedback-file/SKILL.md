@@ -1,6 +1,6 @@
 ---
 name: canon-feedback-file
-description: Format a paste-back report about something broken, missing, or off in canon and write it directly to the toolkit's `.claude/review/feedback/` folder via `canon feedback`. Use when asked to "send this to the toolkit", "report this to canon", "file toolkit feedback", or "give the toolkit feedback about X". Do NOT use for general complaints about other tooling, IDE issues, or in-project bugs that do not implicate canon surfaces.
+description: Format a paste-back report about something broken, missing, or off in canon and write it directly to the toolkit's `.canon/review/feedback/` folder via `canon feedback`. Use when asked to "send this to the toolkit", "report this to canon", "file toolkit feedback", or "give the toolkit feedback about X". Do NOT use for general complaints about other tooling, IDE issues, or in-project bugs that do not implicate canon surfaces.
 ---
 
 # Canon feedback file
@@ -48,7 +48,7 @@ Detect whether `canon` is on PATH:
 command -v canon >/dev/null 2>&1
 ```
 
-If present, pipe the block to `canon feedback`. The CLI writes to its own repo's `.claude/review/feedback/feedback-<slug>-<ts>.md` and prints the absolute path on stdout:
+If present, pipe the block to `canon feedback`. The CLI writes to its own repo's `.canon/review/feedback/feedback-<slug>-<ts>.md` and prints the absolute path on stdout:
 
 ```bash
 cat <<'EOF' | canon feedback
@@ -77,4 +77,4 @@ If `canon` is not on PATH, fall back: print the block in chat and tell the user 
 ## Notes
 
 - `canon feedback` resolves the toolkit root from the running `canon` binary's source location. If multiple toolkit clones exist on the machine, the first `canon` on PATH wins.
-- The destination `.claude/review/` is gitignored in the toolkit repo. Feedback lives as session scratch for the next toolkit-side triage, not as a durable archive.
+- The destination `.canon/review/` is gitignored in the toolkit repo. Feedback lives as session scratch for the next toolkit-side triage, not as a durable archive.

@@ -105,7 +105,7 @@ RULE
   log_step "Governance sandbox"
   log_info "install/ : clean target, no rules present"
   log_info "sync/    : stale .claude/rules/ present"
-  log_info "build/   : full .claude/rules/ present, generates .claude/.tmp/gov/rules.md"
+  log_info "build/   : full .claude/rules/ present, generates .canon/tmp/gov/rules.md"
   log_info "list     : read-only catalog dump, no target needed"
   log_info "regen/   : toolkit-shaped root, orphan and drifted rule present"
   log_info "test-order/ : own history, one pair per verdict on feat/parser"

@@ -75,7 +75,7 @@ absent = [
 # this scope for a different reason is widening it from there rather than from the
 # split above.
 write_scope = [
-  ".claude/.tmp/rollout/**",
+  ".canon/tmp/rollout/**",
   "targets/*/.git/FETCH_HEAD",
   "targets/*/.git/objects/**",
   "targets/*/.git/logs/refs/remotes/**",
@@ -114,7 +114,7 @@ manual = [
 # passes for it, since picking wrong and branching nothing leaves the same tree
 # as picking right and branching nothing.
 [[content]]
-path = ".claude/.tmp/rollout/dispatch.md"
+path = ".canon/tmp/rollout/dispatch.md"
 pattern = '^Dispatch into: targets/kestrel-b'
 
 # The refusal, pinned separately from the pick. A run naming the current clone
@@ -122,5 +122,5 @@ pattern = '^Dispatch into: targets/kestrel-b'
 # wave reporting only where it dispatched leaves a clone nobody knows was
 # skipped.
 [[content]]
-path = ".claude/.tmp/rollout/dispatch.md"
+path = ".canon/tmp/rollout/dispatch.md"
 pattern = '^Refused: targets/kestrel-a'

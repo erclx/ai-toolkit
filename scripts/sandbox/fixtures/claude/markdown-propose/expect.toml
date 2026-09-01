@@ -13,13 +13,13 @@ max_turns = 45
 # The slug is pinned by the invocation rather than left to the run, per the same
 # rule the claude:intake arm carries.
 paths = [
-  ".claude/proposals/inflated-claims/01-CLAUDE.md",
-  ".claude/proposals/inflated-claims/02-overview.md",
+  ".canon/proposals/inflated-claims/01-CLAUDE.md",
+  ".canon/proposals/inflated-claims/02-overview.md",
 ]
 
-write_scope = [".claude/proposals/**"]
+write_scope = [".canon/proposals/**"]
 
-reply = [".claude/proposals/inflated-claims/"]
+reply = [".canon/proposals/inflated-claims/"]
 
 manual = [
   "The tagline change (no source anywhere in the tree) carries three labelled variants under 02-overview.md, and the framework-claim changes in both files carry one each. Semantic: which change gets Open: is a judgment about invention against correction, beyond what the presence patterns below can pin.",
@@ -31,43 +31,43 @@ manual = [
 # empty answer slot. No Open: and no variants, since the replacement already
 # exists in the tree.
 [[content]]
-path = ".claude/proposals/inflated-claims/01-CLAUDE.md"
+path = ".canon/proposals/inflated-claims/01-CLAUDE.md"
 pattern = '^```diff$'
 
 [[content]]
-path = ".claude/proposals/inflated-claims/01-CLAUDE.md"
+path = ".canon/proposals/inflated-claims/01-CLAUDE.md"
 pattern = '^- \*\*Why:\*\* '
 
 [[content]]
-path = ".claude/proposals/inflated-claims/01-CLAUDE.md"
+path = ".canon/proposals/inflated-claims/01-CLAUDE.md"
 pattern = '^- \*\*You:\*\*$'
 
 # 02-overview.md carries the second corrected change and the drafted one, so it
 # is where the variant machinery has to show up.
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^```diff$'
 
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^- \*\*Why:\*\* '
 
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^- \*\*You:\*\*$'
 
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^- \*\*Open:\*\*'
 
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^#### A'
 
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^#### B'
 
 [[content]]
-path = ".claude/proposals/inflated-claims/02-overview.md"
+path = ".canon/proposals/inflated-claims/02-overview.md"
 pattern = '^#### C'

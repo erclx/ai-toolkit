@@ -5,13 +5,13 @@ description: Filename and slug, required sections, the suggested-and-answer cont
 
 # Plan reference
 
-Applies to a feature plan at `.claude/plans/feature-<slug>.md`. One file holds one concern, written before implementation starts and read by whatever executes it, so it has to carry the scope without the conversation that produced it.
+Applies to a feature plan at `.canon/plans/feature-<slug>.md`. One file holds one concern, written before implementation starts and read by whatever executes it, so it has to carry the scope without the conversation that produced it.
 
 The folder is gitignored and unbacked. Nothing recovers a deleted plan, which is why the archive step below is a move rather than a cleanup.
 
 ## Scope
 
-Governs a feature plan under `.claude/plans/feature-<slug>.md`: the filename, the required sections, what each holds, the suggested-and-answer contract, and the lifecycle from the live folder to the archive.
+Governs a feature plan under `.canon/plans/feature-<slug>.md`: the filename, the required sections, what each holds, the suggested-and-answer contract, and the lifecycle from the live folder to the archive.
 
 Does not govern:
 
@@ -124,7 +124,7 @@ This contract inverts the one an intake folder keeps, where an empty slot means 
 - Write the plan before implementation starts, and treat it as the scope of the run that executes it.
 - Keep every plan at one root. A plan copied into each parallel working tree forks, and the copies answer the same question differently.
 - Amend the plan in place when a decision changes mid-flight. Do not append a second passage narrating the change, which leaves a reader to work out which of two answers is current. An execution-time deviation from a suggestion is one such amendment, and the contract above fixes which line takes it.
-- Move the plan to `.claude/plans/archive/` when the work it describes ships. Never delete it, because the plan is where the rejected alternative is written down and nothing else records it. The archive nests inside `.claude/plans/` rather than sitting beside it as `.claude/plans-archive/`, so an older layout is a flat sibling by that name and a current one is not.
+- Move the plan to `.canon/plans/archive/` when the work it describes ships. Never delete it, because the plan is where the rejected alternative is written down and nothing else records it. The archive nests inside `.canon/plans/` rather than sitting beside it as `.claude/plans-archive/`, so an older layout is a flat sibling by that name and a current one is not.
 - Write the plan in the same session that opens the task it serves. The session executing it later inherits reasoning it would otherwise re-derive.
 
 ## Anti-patterns

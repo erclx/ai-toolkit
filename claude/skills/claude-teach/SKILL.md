@@ -118,7 +118,7 @@ Follow `${CLAUDE_SKILL_DIR}/references/lesson-craft.md` for what makes a lesson 
 A lesson is a page carrying a stylesheet and a script, and an editor preview opens it with neither, so a path alone delivers unstyled markup that reads as the lesson. Serve the teach root and give the learner a link they can click:
 
 ```bash
-canon serve .claude/teach --entry <nn>-<topic>/index.html --json
+canon serve .canon/teach --entry <nn>-<topic>/index.html --json
 ```
 
 Start it in the background so the session keeps going, and read `url` off the record rather than composing one. The verb walks past a port already in use, so the port it took is exactly the half a guessed URL gets wrong. Report the refusal and its `reason` when `ok` is false, and report it rather than proceeding silently when the verb does not resolve at all, which is an installed CLI predating it.
@@ -149,12 +149,12 @@ Still owed:    <what the destination expects that the page does not carry yet>
 
 Then stop and let the operator strike, redirect, or confirm each block.
 
-Write nothing to a destination here. One skill owns the durable writes, and two skills editing one file at one step is the failure that rule exists against. Record each confirmed block in `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root instead, appending when the file exists, with one H2 per destination naming its path, the source page beneath it, and the page body fenced:
+Write nothing to a destination here. One skill owns the durable writes, and two skills editing one file at one step is the failure that rule exists against. Record each confirmed block in `.canon/tmp/teach-promotion/<slug>.md` at the main worktree root instead, appending when the file exists, with one H2 per destination naming its path, the source page beneath it, and the page body fenced:
 
 ````markdown
 ## <destination path>
 
-Source: .claude/teach/<nn>-<topic>/reference/<slug>.md
+Source: .canon/teach/<nn>-<topic>/reference/<slug>.md
 
 ```markdown
 <the page body as it should land, with the source line the destination expects>
@@ -172,10 +172,10 @@ An append is a whole-file operation, so send it as a plain single `Bash` command
 ## Output
 
 ```plaintext
-✅ <opened|resumed> .claude/teach/<nn>-<topic>/
-Lesson:    .claude/teach/<nn>-<topic>/lessons/<nnnn>-<slug>.html
-Reference: .claude/teach/<nn>-<topic>/reference/<slug>.md
-Record:    .claude/teach/<nn>-<topic>/learning-records/<nnnn>-<slug>.md
+✅ <opened|resumed> .canon/teach/<nn>-<topic>/
+Lesson:    .canon/teach/<nn>-<topic>/lessons/<nnnn>-<slug>.html
+Reference: .canon/teach/<nn>-<topic>/reference/<slug>.md
+Record:    .canon/teach/<nn>-<topic>/learning-records/<nnnn>-<slug>.md
 Progress:  <n> of <m> success lines met
 Open:      [<the url the serve verb reported>](<the same url>)
 ```
@@ -189,8 +189,8 @@ Emit every path from the project root, in the form the project's instruction fil
 A promotion pass reports its own shape instead, one line per page the operator confirmed and one naming the handoff:
 
 ```plaintext
-➡️ Promoting: .claude/teach/<nn>-<topic>/reference/<slug>.md → <destination path>
-→ Confirmed pages wait at .claude/.tmp/teach-promotion/<slug>.md. Run /claude-docs from a branch to fold them in.
+➡️ Promoting: .canon/teach/<nn>-<topic>/reference/<slug>.md → <destination path>
+→ Confirmed pages wait at .canon/tmp/teach-promotion/<slug>.md. Run /claude-docs from a branch to fold them in.
 ```
 
 A pass where the operator confirmed nothing writes no handoff file and reports that alone.

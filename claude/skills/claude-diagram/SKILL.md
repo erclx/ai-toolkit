@@ -1,6 +1,6 @@
 ---
 name: claude-diagram
-description: Writes per-kind Mermaid diagram entries into `.claude/diagrams/`, covering system context, components, request flow, data pipeline, and deployment. Reads `.claude/ARCHITECTURE.md` and `REQUIREMENTS.md` when present, falls back to a code-structure scan. Use when asked to "draw the architecture", "diagram the system", "show the components", "give me a flow chart", "refresh the deploy diagram", or "visualize the project". Do NOT use for design tokens (use `claude-design-extract`) or UI audits (use `claude-ux-audit`).
+description: Writes per-kind Mermaid diagram entries into `.canon/diagrams/`, covering system context, components, request flow, data pipeline, and deployment. Reads `.claude/ARCHITECTURE.md` and `REQUIREMENTS.md` when present, falls back to a code-structure scan. Use when asked to "draw the architecture", "diagram the system", "show the components", "give me a flow chart", "refresh the deploy diagram", or "visualize the project". Do NOT use for design tokens (use `claude-design-extract`) or UI audits (use `claude-ux-audit`).
 ---
 
 # Claude diagram
@@ -15,7 +15,7 @@ Write one entry per diagram kind. Never rewrite the folder wholesale. A pass tha
 
 Read these from the project root in parallel, skipping any that do not exist:
 
-- `.claude/diagrams/index.md` and every `.claude/diagrams/*.md`: which entries exist and what they already say
+- `.canon/diagrams/index.md` and every `.canon/diagrams/*.md`: which entries exist and what they already say
 - `.claude/REQUIREMENTS.md`: users, external dependencies, tech stack, MVP feature list
 - `.claude/ARCHITECTURE.md`: layered components, key technical decisions
 - `CLAUDE.md`: project type, conventions
@@ -28,7 +28,7 @@ Follow `${CLAUDE_SKILL_DIR}/../../standards/diagrams.md` for frontmatter, entry 
 
 ### Migrating a pre-split flat file
 
-When `.claude/diagrams/` holds no entry and `.claude/DIAGRAMS.md` exists, this pass converts it. An entry is any `*.md` in the folder other than `index.md`. The seed ships `index.md` alone, so a folder holding only the catalog is an empty set and still converts.
+When `.canon/diagrams/` holds no entry and `.claude/DIAGRAMS.md` exists, this pass converts it. An entry is any `*.md` in the folder other than `index.md`. The seed ships `index.md` alone, so a folder holding only the catalog is an empty set and still converts.
 
 Split each H2 section into the entry whose kind it matches, carry its mermaid body and explanation prose across unchanged, and add the frontmatter the standard requires. Leave `.claude/DIAGRAMS.md` on disk so the split can be compared against its source, and say in Step 7 that deleting it is the user's call.
 
@@ -50,7 +50,7 @@ Stay inside `flowchart` and `sequenceDiagram`. C4, state, ER, and class diagrams
 
 ## Step 3: write the entries
 
-One file per kind at `.claude/diagrams/<kind>.md`. Write only the files Step 2 selected.
+One file per kind at `.canon/diagrams/<kind>.md`. Write only the files Step 2 selected.
 
 ````markdown
 ---
@@ -92,11 +92,11 @@ Nothing enforces the ban inside the diagram. The standards-audit hook toggles on
 canon indexes regen
 ```
 
-Run it after the last entry is written. It rebuilds `.claude/diagrams/index.md` from sibling frontmatter and groups entries under their `category`. Never hand-edit that file.
+Run it after the last entry is written. It rebuilds `.canon/diagrams/index.md` from sibling frontmatter and groups entries under their `category`. Never hand-edit that file.
 
-When `canon` is not on PATH, say so in Step 7 and name `.claude/diagrams/index.md` as stale rather than writing it by hand.
+When `canon` is not on PATH, say so in Step 7 and name `.canon/diagrams/index.md` as stale rather than writing it by hand.
 
-Scaffold `.claude/diagrams/index.md` with `title` and `subtitle` frontmatter before the first regen when the folder is new and the seed did not provide one. The subtitle routes a first-time reader to the system context entry, since the catalog sorts categories alphabetically rather than in narrative order.
+Scaffold `.canon/diagrams/index.md` with `title` and `subtitle` frontmatter before the first regen when the folder is new and the seed did not provide one. The subtitle routes a first-time reader to the system context entry, since the catalog sorts categories alphabetically rather than in narrative order.
 
 ## Step 5: render what this pass changed
 
@@ -113,12 +113,12 @@ Rendering to verify layout. The first run downloads the Mermaid CLI and takes ab
 Write each diagram's mermaid body to its own scratch file, then render it:
 
 ```bash
-mkdir -p .claude/.tmp/diagrams && bunx -y @mermaid-js/mermaid-cli -i .claude/.tmp/diagrams/<kind>.mmd -o .claude/.tmp/diagrams/<kind>.png
+mkdir -p .canon/tmp/diagrams && bunx -y @mermaid-js/mermaid-cli -i .canon/tmp/diagrams/<kind>.mmd -o .canon/tmp/diagrams/<kind>.png
 ```
 
 Render to PNG. An SVG export reads back as markup with no recoverable spatial meaning, so it cannot be verified. Use `bunx` when bun is available. Fall back to `npx -y @mermaid-js/mermaid-cli ...` otherwise.
 
-Renders are verification artifacts, not deliverables. They stay in `.claude/.tmp/diagrams/` and are never committed.
+Renders are verification artifacts, not deliverables. They stay in `.canon/tmp/diagrams/` and are never committed.
 
 When the render fails for any reason (no browser engine, no network, no package manager), continue to Step 7 and name the skipped check in the chat output. A missing renderer degrades the loop, it does not fail it.
 
@@ -147,8 +147,8 @@ A migration pass stamps on the same rule. Conversion writes entries, Step 5 rend
 ## Step 7: chat output
 
 ```plaintext
-📝 Wrote N entries to .claude/diagrams/
-   .claude/diagrams/<kind>.md
+📝 Wrote N entries to .canon/diagrams/
+   .canon/diagrams/<kind>.md
    <one line per entry written>
 
 Left untouched: <kind, kind> <omitted when the folder was empty>
@@ -167,11 +167,11 @@ After a migration pass, add: `Converted .claude/DIAGRAMS.md into N entries. The 
 If the user asks to export the diagrams (`export to svg`, `give me images`, `render to png`), run:
 
 ```bash
-mkdir -p .claude/review/diagrams && bunx -y @mermaid-js/mermaid-cli -i .claude/diagrams/<kind>.md -o .claude/review/diagrams/<kind>.png
+mkdir -p .canon/review/diagrams && bunx -y @mermaid-js/mermaid-cli -i .canon/diagrams/<kind>.md -o .canon/review/diagrams/<kind>.png
 ```
 
 Export PNG by default. Swap the extension for `.svg` only when the user asks for vector, and never for the Step 5 verification path. The CLI writes one file per `mermaid` block, suffixing when an entry holds more than one. Export every entry when the user names no kind. Output line:
 
 ```plaintext
-📝 Wrote N files to .claude/review/diagrams/
+📝 Wrote N files to .canon/review/diagrams/
 ```

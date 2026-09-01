@@ -23,26 +23,26 @@ max_turns = 30
 # deleted the file rather than dropping one row would otherwise report a content
 # miss with nothing naming the cause.
 paths = [
-  ".claude/tasks/archive/v01.0-rate-limit.md",
-  ".claude/tasks/v02.0-pagination.md",
-  ".claude/tasks/priority.md",
+  ".canon/tasks/archive/v01.0-rate-limit.md",
+  ".canon/tasks/v02.0-pagination.md",
+  ".canon/tasks/priority.md",
 ]
 
 # The source is gone and the control never moved. The second entry is what
 # catches a run that archived the board rather than the task it was given.
 absent = [
-  ".claude/tasks/v01.0-rate-limit.md",
-  ".claude/tasks/archive/v02.0-pagination.md",
+  ".canon/tasks/v01.0-rate-limit.md",
+  ".canon/tasks/archive/v02.0-pagination.md",
 ]
 
 # One entry rather than two. The archive sits inside the board, so the board's
 # own glob already reaches the destination the move writes to.
-write_scope = [".claude/tasks/**"]
+write_scope = [".canon/tasks/**"]
 
 # The skill reports the paths the command returned, in full from the project
 # root. The archive destination is the token worth pinning, since a reply naming
 # only the stem reads the same whether the file moved or not.
-reply = [".claude/tasks/archive/v01.0-rate-limit.md"]
+reply = [".canon/tasks/archive/v01.0-rate-limit.md"]
 
 manual = [
   "The run reached the archive through `canon tasks archive` rather than moving the file by hand. Semantic: both leave the same tree, so no assertion over the tree separates them.",
@@ -55,18 +55,18 @@ manual = [
 # it. The fixture puts the archived task's row first, so a run that left it in
 # place pushes the control's row down and the match fails.
 [[content]]
-path = ".claude/tasks/priority.md"
+path = ".canon/tasks/priority.md"
 pattern = '^\| ---- \| ------- \| ---- \|\n\| \[v02\.0 pagination\]\(v02\.0-pagination\.md\)'
 
 # The move carried the file rather than creating an empty one at the
 # destination. `paths` alone passes on a touched file.
 [[content]]
-path = ".claude/tasks/archive/v01.0-rate-limit.md"
+path = ".canon/tasks/archive/v01.0-rate-limit.md"
 pattern = '^- \[x\] Outcome: a client over the request budget is rejected'
 
 # The control's outcomes stay open. A run that marked them to get the control
 # past the open-outcome gate would leave both tasks archivable, and every other
 # assertion here would still hold.
 [[content]]
-path = ".claude/tasks/v02.0-pagination.md"
+path = ".canon/tasks/v02.0-pagination.md"
 pattern = '^- \[ \] Outcome: a list request accepts a page size and an offset'

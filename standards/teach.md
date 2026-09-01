@@ -5,13 +5,13 @@ description: Workspace layout, ordinal naming, frontmatter, and the mission and 
 
 # Teach reference
 
-Applies to a learning workspace at `.claude/teach/<nn>-<topic>/`. One workspace holds one subject studied across sessions, and it carries both halves of what studying produces: the durable reference material a reader consults later, and the disposable lessons a learner works through once.
+Applies to a learning workspace at `.canon/teach/<nn>-<topic>/`. One workspace holds one subject studied across sessions, and it carries both halves of what studying produces: the durable reference material a reader consults later, and the disposable lessons a learner works through once.
 
 The folder is gitignored. Its markdown half is written in a format the authoring gates read, so a page promoted out of it later needs no conversion.
 
 ## Scope
 
-Governs a learning workspace under `.claude/teach/<nn>-<topic>/`: folder layout, ordinal naming, frontmatter, and the mission and learning-record formats.
+Governs a learning workspace under `.canon/teach/<nn>-<topic>/`: folder layout, ordinal naming, frontmatter, and the mission and learning-record formats.
 
 Does not govern:
 

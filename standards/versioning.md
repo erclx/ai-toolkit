@@ -40,7 +40,7 @@ External release identity used in git tags and release notes. Independent of pha
 
 | Surface                   | Phase labels | Semver tags                         |
 | ------------------------- | ------------ | ----------------------------------- |
-| `.claude/tasks/`          | yes          | no                                  |
+| `.canon/tasks/`           | yes          | no                                  |
 | Chat with the operator    | yes          | no                                  |
 | PR titles                 | no           | only when the PR cuts a release     |
 | PR bodies                 | no           | only when the PR cuts a release     |
