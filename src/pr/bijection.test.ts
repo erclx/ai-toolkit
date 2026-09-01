@@ -84,7 +84,58 @@ describe('compareKeyChanges', () => {
     expect(result.kind === 'measured' && result.unmet).toEqual([])
     expect(result.kind === 'measured' && result.unnamed).toEqual([
       '.claude/context/governance/index.md',
+    ])
+    expect(result.kind === 'measured' && result.incidental).toEqual([
       'src/gov/citations.test.ts',
+    ])
+  })
+
+  it('should credit every changed file a single bullet names (#1329)', () => {
+    const result = read(
+      keyChanges(
+        '- Update `.claude/context/cli/packaging.md` with what the check proves, `.claude/context/development/gates.md` with the working-tree read, and `.claude/context/ci.md` to reverse its stated decision.',
+      ),
+      [
+        '.claude/context/ci.md',
+        '.claude/context/cli/packaging.md',
+        '.claude/context/development/gates.md',
+      ],
+    )
+
+    expect(result.kind === 'measured' && result.unnamed).toEqual([])
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+  })
+
+  it('should never accuse over a path past its bullet first comma (#1276)', () => {
+    const result = read(
+      keyChanges(
+        '- Add `canon pr key-changes` in `src/commands/pr.ts`, following the exit ladder `src/commands/labels.ts` already carries.',
+      ),
+      ['src/commands/pr.ts'],
+    )
+
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+    expect(result.kind === 'measured' && result.unresolved).toMatchObject([
+      { path: 'src/commands/labels.ts', anchored: true, leading: false },
+    ])
+  })
+
+  it('should hold a test, a fixture, and a lockfile apart from unnamed (#1331)', () => {
+    const result = read(keyChanges('- Add `src/cli.ts`.'), [
+      'bun.lock',
+      'docs/agents/index.md',
+      'scripts/sandbox/fixtures/claude/autoship/expect.toml',
+      'src/cli.ts',
+      'src/pr/paths.test.ts',
+    ])
+
+    expect(result.kind === 'measured' && result.unnamed).toEqual([
+      'docs/agents/index.md',
+    ])
+    expect(result.kind === 'measured' && result.incidental).toEqual([
+      'bun.lock',
+      'scripts/sandbox/fixtures/claude/autoship/expect.toml',
+      'src/pr/paths.test.ts',
     ])
   })
 

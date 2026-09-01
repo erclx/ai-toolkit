@@ -24,17 +24,35 @@ export interface BijectionReport {
    */
   readonly unmet: readonly PathClaim[]
   /**
-   * Claims whose first segment names no entry in the tree, so the comparison
-   * could not judge them either way. Reported so a run says what it declined
-   * rather than counting a partial spelling as met.
+   * Claims no changed file answers that the comparison could not judge either
+   * way, reported so a run says what it declined rather than counting them met.
+   *
+   * Two causes land here. A claim whose first segment names no entry in the
+   * tree is a path written partially, and one past its bullet's first comma is
+   * a path the reader cannot separate from a file cited for context. Both are
+   * evidence strong enough to credit a changed file and too weak to accuse one,
+   * so neither reaches `unmet`, and the cause is on the claim rather than in a
+   * bucket of its own: a reader acts on both the same way, by opening the
+   * bullet on `preview`.
    */
   readonly unresolved: readonly PathClaim[]
   /**
-   * Changed files no claim reaches. Reported without a severity, since the
-   * class covers a real omission and equally a lockfile, a generated asset, or
-   * a regenerated index that legitimately earns no bullet.
+   * Changed files no claim reaches that a reader might have wanted a bullet
+   * for. Reported without a severity, since a change can be too small to
+   * describe and still be correctly absent from the section.
    */
   readonly unnamed: readonly string[]
+  /**
+   * Changed files no claim reaches that owe no bullet in the first place.
+   *
+   * Held apart rather than dropped, so a run still says what it set aside.
+   * `#1331` reported seven unnamed files of which four were a test or a
+   * fixture, which is what makes the raw count unreadable: a number mixing
+   * files that owe a bullet with files that never could cannot be acted on at
+   * any value, and the reviewing skill reads `unnamed` as a question to a
+   * branch author.
+   */
+  readonly incidental: readonly string[]
 }
 
 export type Bijection =
@@ -48,6 +66,32 @@ export interface BijectionInput {
   readonly roots: ReadonlySet<string>
   readonly head?: string
   readonly title?: string
+}
+
+/**
+ * A changed file that owes no bullet, so its absence from the section is not a
+ * gap a reader would want reported.
+ *
+ * Three classes, each conventional rather than named for this repository: a
+ * test beside the subject it covers, anything under a fixture or snapshot
+ * folder, and a lockfile a package manager writes. All three change constantly
+ * as a consequence of work the section describes in its own terms, which is why
+ * a body naming them reads as noise rather than as diligence.
+ *
+ * A generated asset and a regenerated index belong in the class and are
+ * deliberately absent, because neither has a spelling that holds outside one
+ * project. Guessing at one would set aside a file that did owe a bullet, which
+ * is the direction that hides a real omission, where leaving them out only
+ * leaves the count where it already was.
+ */
+const INCIDENTAL: readonly RegExp[] = [
+  /(?:^|\/)[^/]+\.(?:test|spec)\.[A-Za-z0-9]+$/,
+  /(?:^|\/)(?:__tests__|__fixtures__|__snapshots__|fixtures|testdata)\//,
+  /(?:^|\/)(?:bun\.lockb?|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.lock|Gemfile\.lock|poetry\.lock|uv\.lock|composer\.lock|go\.sum)$/,
+]
+
+function owesNoBullet(path: string): boolean {
+  return INCIDENTAL.some((pattern) => pattern.test(path))
 }
 
 /**
@@ -80,6 +124,13 @@ function covers(claim: PathClaim, path: string): boolean {
  * correct. Merging them into one count would either grade the second or excuse
  * the first.
  *
+ * Each direction then splits again on the same question, which is whether the
+ * evidence is strong enough to raise with a person. A claim reaches `unmet`
+ * only when it is both whole and leading, and a changed file reaches `unnamed`
+ * only when a bullet was owed for it. What each split sets aside is still
+ * reported, under `unresolved` and `incidental`, so a count a reader can act on
+ * never comes at the price of a file the run stayed silent about.
+ *
  * Pure, so the whole judgment is testable against a fixture. The caller reads
  * the body, the changed set, and the tree roots and hands all three in.
  */
@@ -104,9 +155,11 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     const hits = input.changed.filter((path) => covers(claim, path))
     for (const path of hits) named.add(path)
     if (hits.length > 0) continue
-    if (claim.anchored) unmet.push(claim)
+    if (claim.anchored && claim.leading) unmet.push(claim)
     else unresolved.push(claim)
   }
+
+  const reached = input.changed.filter((path) => !named.has(path))
 
   return {
     kind: 'measured',
@@ -115,7 +168,8 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     claims: read.claims,
     unmet,
     unresolved,
-    unnamed: input.changed.filter((path) => !named.has(path)),
+    unnamed: reached.filter((path) => !owesNoBullet(path)),
+    incidental: reached.filter(owesNoBullet),
   }
 }
 

@@ -122,6 +122,7 @@ syscall
 tabindex
 tanstack
 tavily
+testdata
 testsrc
 threadpool
 titlebar
