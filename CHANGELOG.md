@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.0](https://github.com/erclx/canon/compare/v4.7.0...v4.8.0) (2026-09-01)
+
+
+### Features
+
+* **capture:** ship to targets and refuse without a selector ([#1317](https://github.com/erclx/canon/issues/1317)) ([258908f](https://github.com/erclx/canon/commit/258908f6c0a628659b00d5fd883dd722efaf4bfc))
+
 ## [4.7.0](https://github.com/erclx/canon/compare/v4.6.1...v4.7.0) (2026-09-01)
 
 
