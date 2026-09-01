@@ -5,6 +5,7 @@ import {
   archiveDir,
   isReservedStem,
   readOutcomes,
+  readPlanTarget,
   readPullRequest,
   tasksDir,
 } from '@/tasks/archive'
@@ -34,6 +35,8 @@ export type ValidateRefusal = (typeof VALIDATE_REFUSALS)[number]
 export const FINDING_KINDS = [
   'plan-unstated',
   'plan-unresolved',
+  'plan-uncited',
+  'plan-mismatched',
   'task-unresolved',
   'row-missing',
   'row-duplicated',
@@ -613,6 +616,78 @@ function checkPlans(
 }
 
 /**
+ * Compares the two places one task's plan is written down. The `## Run now` row
+ * carries a `Plan` column and the task file carries its own `Plan:` line, and
+ * the archive reads the second while an operator reads the first, so a pair
+ * that disagrees settles the wrong plan on the merge.
+ *
+ * Both sides resolve before they compare. A row writing `../plans/x.md` and a
+ * task writing `.canon/plans/x.md` name one file, and comparing the strings
+ * would report every such pair as a mismatch.
+ */
+async function checkPlanAgreement(
+  rows: readonly BoardRow[],
+  dir: string,
+  root: string,
+): Promise<Finding[]> {
+  const ready = rows.filter((row) => row.group === 'Run now' && row.plan)
+
+  const found = await Promise.all(
+    ready.map(async (row) => planDisagreement(row, dir, root)),
+  )
+
+  return found.filter((finding): finding is Finding => finding !== undefined)
+}
+
+async function planDisagreement(
+  row: BoardRow,
+  dir: string,
+  root: string,
+): Promise<Finding | undefined> {
+  const subject = row.stem ?? row.label
+  if (!row.stem || !row.plan) return undefined
+
+  const file = join(dir, `${row.stem}.md`)
+  if (!existsSync(file)) return undefined
+
+  const target = readPlanTarget(await readFile(file, 'utf8'))
+  if (!target) {
+    return {
+      kind: 'plan-uncited',
+      group: 'Run now',
+      subject,
+      message: `is rowed against ${row.plan}, and the task file carries no Plan: line, so the archive settles no plan when it ships.`,
+    }
+  }
+
+  const rowed = planPath(row.plan, dir, root)
+  const cited = planPath(target, dir, root)
+  if (rowed === cited) return undefined
+
+  return {
+    kind: 'plan-mismatched',
+    group: 'Run now',
+    subject,
+    message: `is rowed against ${row.plan} and cites ${target} in its own Plan: line. One task names one plan.`,
+  }
+}
+
+/**
+ * Where a plan pointer lands, resolved against the board and against the
+ * project root the way the archive resolves the same line. Neither base
+ * existing leaves the board-relative reading, so two pointers at one absent
+ * file still compare equal and the mismatch check reports nothing.
+ */
+function planPath(target: string, dir: string, root: string): string {
+  const path = target.split('#')[0] || target
+  const fromBoard = resolve(dir, path)
+  if (existsSync(fromBoard)) return fromBoard
+
+  const fromRoot = resolve(root, path)
+  return existsSync(fromRoot) ? fromRoot : fromBoard
+}
+
+/**
  * The half of the `## Run now` test a person cannot check by eye. Two rows a
  * worker may be handed at once must touch disjoint files, and the `Touches`
  * column is the only place either set is written down.
@@ -984,6 +1059,7 @@ export async function validateBoard(
     ...shapeFindings,
     ...checkMapping(rows, backlog, stems, dir),
     ...checkPlans(rows, dir, root),
+    ...(await checkPlanAgreement(rows, dir, root)),
     ...checkCollisions(rows),
     ...checkOrdinals(rows),
     ...parked.findings,

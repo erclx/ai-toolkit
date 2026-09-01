@@ -59,16 +59,21 @@ async function seedBoard(text: string): Promise<void> {
   await writeFile(orderingPath(ROOT), text)
 }
 
+/** Seeds a task carrying no `Plan:` line, which the agreement check reports. */
+const NO_PLAN = ''
+
 async function seedTask(
   stem: string,
   outcomes = '',
   pullRequest?: number,
+  plan: string = `../plans/feature-${stem}.md`,
 ): Promise<void> {
   mkdirSync(tasksDir(ROOT), { recursive: true })
   const origin = pullRequest ? `Pull request: #${pullRequest}\n\n` : ''
+  const cites = plan ? `Plan: [feature-${stem}](${plan})\n\n` : ''
   await writeFile(
     join(tasksDir(ROOT), `${stem}.md`),
-    `# ${stem}\n\n${origin}## Outcomes\n\n${outcomes}\n`,
+    `# ${stem}\n\n${cites}${origin}## Outcomes\n\n${outcomes}\n`,
   )
 }
 
@@ -401,6 +406,40 @@ describe('validateBoard', () => {
     expect(outcome.ok && kinds(outcome.findings)).toEqual(['plan-unstated'])
   })
 
+  it('should report a run now row whose task carries no plan line', async () => {
+    await seedTask('v1.0-first', '', undefined, NO_PLAN)
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && kinds(outcome.findings)).toEqual(['plan-uncited'])
+  })
+
+  it('should report a row and a task naming two different plans', async () => {
+    await seedTask('v1.0-first', '', undefined, '../plans/feature-other.md')
+    await seedPlan('v1.0-first')
+    await seedPlan('other')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && kinds(outcome.findings)).toEqual(['plan-mismatched'])
+  })
+
+  it('should read two spellings of one plan as agreeing', async () => {
+    await seedTask(
+      'v1.0-first',
+      '',
+      undefined,
+      '.canon/plans/feature-v1.0-first.md',
+    )
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+
+    expect(await validateBoard(ROOT)).toMatchObject({ ok: true, findings: [] })
+  })
+
   it('should report a row whose task file is gone', async () => {
     await seedPlan('v1.0-first')
     await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
@@ -628,6 +667,7 @@ describe('validateBoard', () => {
     await seedTask('v1.0-first')
     await seedTask('v2.0-second')
     await seedPlan('v1.0-first')
+    await seedPlan('v2.0-second')
     await seedBoard(
       boardBody([
         '## Run now',
@@ -635,7 +675,7 @@ describe('validateBoard', () => {
         '| Task | Plan |',
         '| ---- | ---- |',
         '| [v1.0-first](v1.0-first.md) | [p](../plans/feature-v1.0-first.md) |',
-        '| [v2.0-second](v2.0-second.md) | [p](../plans/feature-v1.0-first.md) |',
+        '| [v2.0-second](v2.0-second.md) | [p](../plans/feature-v2.0-second.md) |',
         '',
       ]),
     )
