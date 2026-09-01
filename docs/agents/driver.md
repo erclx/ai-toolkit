@@ -25,6 +25,7 @@ The run is a JSON file rather than a key in a project config, because a route ca
   "viewport": { "width": 1440, "heights": [900, 1200, 1500] },
   "probes": ["focus", "details"],
   "steps": [
+    { "name": "on load", "kind": "wait", "ms": 0 },
     { "name": "open the menu", "kind": "click", "target": "#menu summary" },
     {
       "name": "reach the diagram",
@@ -46,7 +47,11 @@ Every step names what it did, and that name is carried onto each finding it prod
 | `tab`     | `count` (optional) | Advances keyboard focus, once by default       |
 | `wait`    | `ms`               | Holds, for a state the page reaches alone      |
 
-Probes run after a step and never on arrival, so a run that wants the load state measured writes a `wait` step and names it. Each height is driven in a context of its own from a fresh navigation, rather than by resizing the page the previous height already drove, since a sweep asks the same question of each height rather than a later question of an already-driven page.
+Probes run after a step and never on arrival, so a run reaches the load state by opening with a `wait` step of its own, as the example above does. Nothing probes before the first step runs, which makes that leading step the only way to measure the page as it first painted, and naming it is what puts the load state on its own findings rather than under whatever ran next.
+
+Write one in any project that does not have `canon capture`, which is toolkit-only and renders a single state from a committed source. Where capture runs, it already answers about arrival and a leading `wait` duplicates it. Where it does not, this command is the only thing measuring the page at all, and a run without that step reports every driven state and nothing about the one a visitor sees first.
+
+Each height is driven in a context of its own from a fresh navigation, rather than by resizing the page the previous height already drove, since a sweep asks the same question of each height rather than a later question of an already-driven page.
 
 ## The probes
 

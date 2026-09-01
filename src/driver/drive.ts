@@ -32,8 +32,10 @@ import type {
  * What separates it from `canon capture` is the axis it adds. A render answers
  * about a page as it loads, and every defect that exists only after a menu
  * opens, an answer is chosen, or the page scrolls is invisible to one. Probes
- * therefore run after a step rather than on arrival: a caller who wants the
- * load state measured writes a `wait` step for it and names it.
+ * therefore run after a step rather than on arrival, and a run reaches the load
+ * state by opening with a `wait` step of its own. That matters most where
+ * capture does not run, since it is toolkit-only and this command is then the
+ * only thing measuring the page at all.
  */
 
 /** Each probe keyed by the name a caller writes in the run. */
