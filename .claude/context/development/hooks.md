@@ -111,6 +111,10 @@ The log resolves off `CLAUDE_PROJECT_DIR`, and that value is the session's own w
 
 A hook that is the only enforcer of a rule cannot discard its command's output, because the reflexive `>/dev/null 2>&1 || exit 0` makes the documented guarantee false. The task index hook suppressed a regen failure while `standards/tasks.md` promised a missing frontmatter field surfaces on the next edit, and the folder is gitignored so `bun run check` cannot reach it and no gate stage would ever have gone red. Before silencing a hook, name the stage that catches the same failure. Where none exists, capture into a variable, exit 0 on success, and emit the error lines as `additionalContext`.
 
+### The two hook trees drift with nothing comparing them
+
+`.claude/hooks/` and `tooling/claude/seeds/.claude/hooks/` hold the same five scripts maintained twice, and nothing regenerates or compares them. A branch fixing one side leaves the other running the old logic, which is how the record-root fallback reached every seeded target and none of this repository's own hooks: four of the five had a guard fixed at one root while the seed already carried both. The drift is silent because each copy is valid shell that passes every stage, so only a hand diff finds it. `standards-audit.sh` is the one pair that diverges on purpose, since the toolkit's copy runs the CLI out of the checkout where the seed reads it off PATH.
+
 ### Linting the hooks
 
 `check:shell` lints `.claude/hooks/` alongside `scripts/` and `tooling/`. It has to, because the shell stage is gated on any `.sh` change. Linting a narrower set than the gate keys on produces a stage that fires on a hook edit, inspects other directories, and reports a pass that says nothing about the file that triggered it. Keep the glob and the gate pattern in step whenever either moves.
