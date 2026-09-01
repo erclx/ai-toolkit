@@ -23,4 +23,3 @@
 - `.claude/context/`: per-domain narrative (how a domain is structured, decisions, gotchas), indexed via `.claude/context/index.md`
 - `.claude/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `.claude/wireframes/index.md`
 - `.claude/rules/`: path-scoped coding standards loaded by Claude Code on file match
-- `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
