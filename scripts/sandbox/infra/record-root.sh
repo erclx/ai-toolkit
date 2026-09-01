@@ -95,10 +95,12 @@ stage_setup() {
   log_info "refusal         : neither root carries the folder, so both are named"
   log_info "migrate         : the verb moving an unmigrated tree, then re-running clean"
   log_info "migrate-refusal : the same tree with no .canon/ ignore entry to land under"
+  log_info "record-tree     : the sweep inside the records, live against archive and trail"
   log_info "records-push    : push and pull across the moved history, and the split-root refusal"
 
   select_or_route_scenario "Which scenario?" \
-    "migrated" "unmigrated" "refusal" "migrate" "migrate-refusal" "records-push"
+    "migrated" "unmigrated" "refusal" "migrate" "migrate-refusal" "record-tree" \
+    "records-push"
 
   case "$SELECTED_OPTION" in
   "migrated")
@@ -187,6 +189,45 @@ stage_setup() {
     log_info "Expect: the records still under .claude/, untouched by a refused run"
     find . -not -path './.git/*' | sort
     ;;
+  "record-tree")
+    seed_records .canon tmp
+    mkdir -p .canon/groundwork/01-closed-trail
+
+    # One citation of each class the scope has to separate: a live pointer, an
+    # archived one, one inside a closed trail, one in scratch, and one a marker
+    # protects. Every seeding line spells the old root on purpose and is
+    # protected for it, so the tracked sweep leaves this fixture building the
+    # state the arm is about rather than turning it into an instance of the
+    # defect.
+    # canon-keep-record-root
+    printf 'Origin: .claude/groundwork/01-closed-trail/notes.md\n' >>.canon/tasks/v1.1-staged-row.md
+    # canon-keep-record-root
+    printf 'Superseded by .claude/plans/feature-old.md\n' >.canon/plans/archive/feature-shipped-row.md
+    # canon-keep-record-root
+    printf 'Measured in .claude/memory/entry.md\n' >.canon/groundwork/01-closed-trail/notes.md
+    # canon-keep-record-root
+    printf 'Scratch names .claude/tasks/priority.md\n' >.canon/tmp/note.txt
+    printf '<!-- canon-keep-record-root -->\nThe defect landed in .claude/tasks/ back then.\n' >.canon/memory/dated.md
+
+    log_step "Running: canon migrate record-tree --root ."
+    run_cli migrate record-tree --root . --json
+    log_info "Expect: exit 2, 1 file to change and 1 citation, named with its line text"
+    log_info "Expect: groundwork, tmp, and plans/archive each a count rather than a path list"
+    log_info "Expect: 1 citation marked to keep the old root, which is the dated memory entry"
+    log_step "Running: canon migrate record-tree --root . --write"
+    run_cli migrate record-tree --root . --write --json
+    log_step "Running: canon migrate record-tree --root ."
+    run_cli migrate record-tree --root . --json
+    log_info "Expect: exit 0 and 0 citations, which is the idempotence check"
+    log_step "Reading the five seeded citations back"
+    cat .canon/tasks/v1.1-staged-row.md
+    cat .canon/plans/archive/feature-shipped-row.md
+    cat .canon/groundwork/01-closed-trail/notes.md
+    cat .canon/tmp/note.txt
+    cat .canon/memory/dated.md
+    log_info "Expect: only the task line at the new root, the other four unchanged"
+    ;;
+
   "records-push")
     seed_records .claude .tmp
     printf '.canon/\n' >.gitignore
