@@ -129,31 +129,31 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `canon gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the table marks each.
 
-| Stage                     | Command                                                  | What it asserts                                                                             |
-| ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                                |
-| Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                         |
-| Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/rules` matches source                                                              |
-| Hero                      | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and both stamp digests match the pair beside them |
-| Tooling paths             | `scripts/core/regen-tooling-paths.sh`                    | the shipped overwrite contract names what the stacks hold                                   |
-| Ignore parity             | `scripts/core/check-ignore-parity.sh`                    | the ignore set a target receives matches this repository's own                              |
-| Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                    |
-| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                         |
-| Seed independence         | `scripts/core/check-seed-independence.sh`                | no seed prose names the toolkit CLI                                                         |
-| Unreferenced rules        | `bun src/cli.ts gov list --json`                         | reports rules no stack reaches, and fails on none of them                                   |
-| Context citations         | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                           |
-| Rule citations            | `bun src/cli.ts gov citations`                           | every path a rule cites and every internal frontmatter glob resolves                        |
-| Markdown bans             | `bun src/cli.ts markdown audit --json`                   | no markdown carries a banned character, word, or spelling                                   |
-| Seed standards            | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds                                   |
-| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                               |
-| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`         | a standard new to the branch carries a `## Success criterion` section                       |
-| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `src/gate/measures.ts` pins               |
-| Audit set                 | `bun src/cli.ts audits run --json`                       | reports the judgment half of every audit and its growth, and fails on none of it            |
-| Plugin manifests          | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed                                        |
-| Spelling                  | `bun run check:spell`                                    | cspell passes against dictionaries                                                          |
-| Shell                     | `bun run check:shell`                                    | shellcheck passes at warning level                                                          |
-| Types                     | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                        |
-| Tests                     | `bun run test`                                           | the vitest suite passes                                                                     |
+| Stage                     | Command                                                  | What it asserts                                                                          |
+| ------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                             |
+| Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                      |
+| Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/rules` matches source                                                           |
+| Hero                      | `scripts/core/regen-hero.sh`                             | every `assets/*.html` carries current counts and tokens, and each stamp matches its pair |
+| Tooling paths             | `scripts/core/regen-tooling-paths.sh`                    | the shipped overwrite contract names what the stacks hold                                |
+| Ignore parity             | `scripts/core/check-ignore-parity.sh`                    | the ignore set a target receives matches this repository's own                           |
+| Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                 |
+| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                      |
+| Seed independence         | `scripts/core/check-seed-independence.sh`                | no seed prose names the toolkit CLI                                                      |
+| Unreferenced rules        | `bun src/cli.ts gov list --json`                         | reports rules no stack reaches, and fails on none of them                                |
+| Context citations         | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                        |
+| Rule citations            | `bun src/cli.ts gov citations`                           | every path a rule cites and every internal frontmatter glob resolves                     |
+| Markdown bans             | `bun src/cli.ts markdown audit --json`                   | no markdown carries a banned character, word, or spelling                                |
+| Seed standards            | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds                                |
+| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                            |
+| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`         | a standard new to the branch carries a `## Success criterion` section                    |
+| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `src/gate/measures.ts` pins            |
+| Audit set                 | `bun src/cli.ts audits run --json`                       | reports the judgment half of every audit and its growth, and fails on none of it         |
+| Plugin manifests          | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed                                     |
+| Spelling                  | `bun run check:spell`                                    | cspell passes against dictionaries                                                       |
+| Shell                     | `bun run check:shell`                                    | shellcheck passes at warning level                                                       |
+| Types                     | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                     |
+| Tests                     | `bun run test`                                           | the vitest suite passes                                                                  |
 
 Two rows report rather than gate on their own reading, Unreferenced rules and Audit set, because every finding either carries is a judgment and a push failing on one teaches a contributor to route around the stage. Both still print what they found.
 
