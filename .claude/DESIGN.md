@@ -6,7 +6,9 @@ This document is rendered from `src/design/tokens.ts` by `canon design regen`, a
 
 The values below are the system rather than a reading of one. Until 2026-09-01 this record transcribed two surfaces and agreed with nothing else, which is what made a change to it reach nobody. The slide theme, the token preview, and a teach workspace stylesheet now read the module this file is rendered from, so a value changed there changes what all three render.
 
-Two surfaces still carry their own copies. The rendered hero at `assets/hero.html` is written by `scripts/core/regen-hero.sh` against a committed capture, and the terminal framing in `scripts/lib/ui.sh` and `src/ui.ts` writes ANSI rather than hex. The dark half below is the palette the hero carries, so the two agree today by value and not yet by construction.
+The two rendered captures read it as well. `scripts/core/regen-hero.sh` fills `assets/hero.html.tmpl` and `assets/install.html.tmpl` with what `canon design css --no-components` emits, so both frames now carry the custom properties rather than their own copies of the hex, and a value moved here moves what the next capture renders.
+
+The terminal framing is the one surface left holding its own values, and that is a decision rather than a gap. `scripts/lib/ui.sh` and `src/ui.ts` each spell six escape constants, and `.claude/ARCHITECTURE.md` records one color source per language with a check behind each, so generating a third spelling from here would break the rule those two checks enforce. What the record is still incomplete about is the other half of those six: `WHITE` and `GREY` name no role below, so the terminal palette is described here in part rather than in whole.
 
 ## Personality
 
@@ -16,27 +18,30 @@ Warm neutrals carry the frame under a single rust accent, rendered in the same m
 
 Every role clears WCAG AA at 4.5:1 against each ground it declares, asserted in `src/design/contrast.test.ts`. Two corrections landed with this record becoming the source. The light `muted` step moved from `#7A736A`, which read 4.38 and 4.09 against the two light grounds, and the dark `accent` moved off the `#C8602E` the slide theme carried, which read 4.36 and 3.99 against the two dark ones. Both now sit on the values below.
 
-Success, warning, and error hold ANSI codes because that is what `scripts/lib/ui.sh` writes, and no rendered surface implements an equivalent. Giving them a hex value would invent a mapping no file has, so they carry no contrast reading either.
+Warning and error hold ANSI codes because that is what `scripts/lib/ui.sh` writes and no rendered surface implements an equivalent. Giving either a hex value would invent a mapping no file has, so they carry no contrast reading either.
 
-| Role             | Intent                                | Value            |
-| ---------------- | ------------------------------------- | ---------------- |
-| background       | page canvas                           | #191512          |
-| surface          | cards, panels, raised blocks          | #211c19          |
-| border           | every rule and panel edge             | #2f2823          |
-| text             | headings, counts, emphasized runs     | #f4efe9          |
-| text-body        | default body copy                     | #c9c0b7          |
-| text-secondary   | labels, captions, supporting copy     | #a79d94          |
-| muted            | the faintest step, trailing notes     | #948a81          |
-| accent           | install command, mark, primary action | #e0724b          |
-| success          | terminal confirmations                | ANSI 32          |
-| warning          | terminal cautions                     | ANSI 33          |
-| error            | terminal failures                     | ANSI 31          |
-| light-background | page canvas on a light ground         | #faf7f2          |
-| light-surface    | cards and panels on a light ground    | #f4efe6          |
-| light-text       | primary text on a light ground        | #1a1815          |
-| light-muted      | secondary text on a light ground      | #726b62          |
-| light-accent     | links and primary action on light     | #a4471c          |
-| light-border     | rules and panel edges on light        | #e4dcd0 ? verify |
+Success is the one of the three that does have a rendered equivalent, which is why it carries a hex. `assets/install.html` marks every confirmed step with it, and the shell writes `ANSI 32` for the same role, so the two are one role in two registers rather than one value in two spellings. The hex is what the rendered surface picked and no reading claims the terminal renders that value. It declares `background` alone as its ground, since that is the only role it is drawn on, where every other dark text role is drawn on both.
+
+| Role             | Intent                                         | Value            |
+| ---------------- | ---------------------------------------------- | ---------------- |
+| background       | page canvas                                    | #191512          |
+| surface          | cards, panels, raised blocks                   | #211c19          |
+| chrome           | the window titlebar, one step above the canvas | #241e1a          |
+| border           | every rule and panel edge                      | #2f2823          |
+| text             | headings, counts, emphasized runs              | #f4efe9          |
+| text-body        | default body copy                              | #c9c0b7          |
+| text-secondary   | labels, captions, supporting copy              | #a79d94          |
+| muted            | the faintest step, trailing notes              | #948a81          |
+| accent           | install command, mark, primary action          | #e0724b          |
+| success          | confirmations, rendered and in the terminal    | #61c454          |
+| warning          | terminal cautions                              | ANSI 33          |
+| error            | terminal failures                              | ANSI 31          |
+| light-background | page canvas on a light ground                  | #faf7f2          |
+| light-surface    | cards and panels on a light ground             | #f4efe6          |
+| light-text       | primary text on a light ground                 | #1a1815          |
+| light-muted      | secondary text on a light ground               | #726b62          |
+| light-accent     | links and primary action on light              | #a4471c          |
+| light-border     | rules and panel edges on light                 | #e4dcd0 ? verify |
 
 ## Typography
 
