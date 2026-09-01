@@ -36,12 +36,16 @@ alias cls='cl --model sonnet'
 alias clp='claude --plugin-dir \$TOOLKIT/claude'
 alias clpc='clp -c'
 alias clps='clp --model sonnet'
+alias clpa='clp agents'
+alias clpac='clpa --cwd .'
 $MARKER_CLOSE
 EOF
 }
 
 install_aliases() {
   log_step "Installing Claude Code shell aliases"
+  log_info "This step manages a marked alias block in $ZSHRC, the only file outside the repo this script writes."
+  log_info "Delete the block and its two marker comments to remove the aliases. Re-running never adds a second copy."
 
   if [ -f "$ZSHRC" ] && grep -qF "$MARKER_OPEN" "$ZSHRC"; then
     log_info "Aliases already present in $ZSHRC, skipping"

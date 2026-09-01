@@ -5,7 +5,7 @@ description: How a local session loads the plugin from this repository and from 
 
 # Plugin discovery
 
-Inside the toolkit repository, Claude Code auto-discovers the plugin from `claude/.claude-plugin/plugin.json`. No flag needed.
+Inside the toolkit repository, Claude Code auto-discovers the plugin from `claude/.claude-plugin/plugin.json`. No flag needed on a fresh launch. Discovery does not fire on a resume, which restores whatever registration the session started with and recomputes nothing, so `claude --resume` needs `--plugin-dir` passed again wherever the session depends on the plugin.
 
 In other repositories, pass `--plugin-dir` explicitly:
 
