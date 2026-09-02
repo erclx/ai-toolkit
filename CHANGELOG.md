@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.22.0](https://github.com/erclx/canon/compare/v4.21.0...v4.22.0) (2026-09-02)
+
+
+### Features
+
+* **docs:** group the workflow pages and widen the topic readers ([#1369](https://github.com/erclx/canon/issues/1369)) ([b91033f](https://github.com/erclx/canon/commit/b91033f5e8a4f4bdf51e59d9f9a3feec38746efc))
+
 ## [4.21.0](https://github.com/erclx/canon/compare/v4.20.1...v4.21.0) (2026-09-02)
 
 
