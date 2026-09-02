@@ -165,21 +165,6 @@ export const unreferencedRules: Measure = async (ctx) => {
 }
 
 /**
- * A second run of the records move should rewrite nothing, and the count is
- * only knowable once the folders themselves have landed.
- *
- * `moves` empty means every record folder already sits at `.canon/`, so any
- * citation the sweep would still rewrite is one the move left stale, which is
- * the defect this stage exists to catch. Where `moves` is nonempty the tree has
- * not migrated at all and a nonzero rewrite count is the verb describing its
- * own first pass, so the reading is reported and never failed on.
- *
- * Exit `0` is a tree with nothing to do and exit `2` is a plan drawn without
- * `--write`, so both read a tree and both carry a record. Every other exit is a
- * refusal that planned nothing, which is unmeasured for the reason the markdown
- * stage treats its own refusal exit so.
- */
-/**
  * The files the sweep would rewrite, each with its own count, taken from the
  * `paths` array the record carries beside the total.
  *
@@ -200,6 +185,21 @@ function citedPaths(record: { paths?: unknown } | undefined): string[] {
   })
 }
 
+/**
+ * A second run of the records move should rewrite nothing, and the count is
+ * only knowable once the folders themselves have landed.
+ *
+ * `moves` empty means every record folder already sits at `.canon/`, so any
+ * citation the sweep would still rewrite is one the move left stale, which is
+ * the defect this stage exists to catch. Where `moves` is nonempty the tree has
+ * not migrated at all and a nonzero rewrite count is the verb describing its
+ * own first pass, so the reading is reported and never failed on.
+ *
+ * Exit `0` is a tree with nothing to do and exit `2` is a plan drawn without
+ * `--write`, so both read a tree and both carry a record. Every other exit is a
+ * refusal that planned nothing, which is unmeasured for the reason the markdown
+ * stage treats its own refusal exit so.
+ */
 export const recordIdempotence: Measure = async (ctx) => {
   const run = await ctx.cli(['migrate', 'records', '--json'])
 
