@@ -101,6 +101,13 @@ export const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
  * line missing its checkbox still parses. `record.ts` positions outcomes off
  * the narrower pattern and stays that way, so a cut line with no checkbox
  * stays invisible to `canon tasks outcome` by design rather than by oversight.
+ *
+ * Unlike `OUTCOME_PATTERN`, this reaches a struck bullet under any heading,
+ * not only `## Outcomes`, since a checkbox is what confined the narrower
+ * pattern there and a cut line may carry none. No struck bullet sits outside
+ * `## Outcomes` across the live board or the archive as of this change, so
+ * the wider reach is not live, and a heading test is one to add if that stops
+ * holding.
  */
 const BULLET_PATTERN = /^- (?:\[([ xX])\] ?)?(.*)$/
 

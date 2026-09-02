@@ -313,7 +313,3 @@ Archiving a plan at ship time leaves `.canon/tasks/priority.md` pointing at a pa
 ### A task argument resolves an ambiguous plan the worktree entry cannot
 
 `claude-worktree` Step 2 asks the user when more than one `feature-*.md` plan exists and the current branch matches none of them. A `claude-autoship <task-file>` invocation carries information that step does not: the plan's own Constraints section already cites the task file it was written for. Matching the autoship argument against each candidate plan's citation resolves the ambiguity without asking, which is what a worktree entry made in isolation from that argument cannot do.
-
-### A chained dispatch depends on the operator's paste staying two messages
-
-A slash command expands as a user invocation only at position zero of a prompt. A controller handing an operator two chained blocks to paste as separate messages, such as `/canon:claude-worktree <name>` followed by `/canon:claude-autoship <plan>`, risks both landing in one paste, and everything after the first command's name is then read as that command's own arguments rather than as a second invocation, so the chained command never fires. The receiving session sees the second command's text folded into the first one's `ARGUMENTS` as embedded text carried by that command rather than as an instruction to execute, and a skill named inside it that carries `disable-model-invocation` refuses being triggered this way regardless, which caught the case rather than silently replicating the workflow.
