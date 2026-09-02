@@ -51,7 +51,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon migrate record-tree`   | Repoint the old-root citations inside the records themselves, scoped to the live folders and reporting every line without `--write` (`--root`, `--json`)              |
 | `canon sessions list`         | Resolve live sessions to the worktree and branch each holds, filtered by `--branch` (`--json`)                                                                        |
 | `canon worktrees list`        | Report which worktrees are reclaimable, keyed on the pull request having merged, with every refusal and the removal route named (`--json`)                            |
-| `canon worktrees reclaim`     | Remove every reclaimable worktree and the branch behind it, reporting without acting under `--dry-run`                                                                |
+| `canon worktrees reclaim`     | Remove every reclaimable worktree and the branch behind it, reporting without acting under `--dry-run` (`--json`)                                                     |
 | `canon comments scan`         | Measure comment density by language and comment kind, with a trend recomputed from git                                                                                |
 | `canon context audit`         | Report required sections, length, cited paths, reference form, catalog tables, provenance, superseded-decision narration, and index drift                             |
 | `canon markdown audit`        | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                                                |

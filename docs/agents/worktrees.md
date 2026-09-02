@@ -1,6 +1,6 @@
 ---
 title: Worktrees
-description: Reporting which worktrees are reclaimable, removing the ones that are, why the reading keys on the pull request rather than on git ancestry, the refusals it names, and the two removal shapes
+description: Reporting which worktrees are reclaimable, removing the ones that are, the record a hook reads back, why the reading keys on the pull request rather than on git ancestry, the refusals it names, and the two removal shapes
 ---
 
 # Worktrees
@@ -31,17 +31,31 @@ An exit code says nothing about a call made from a session, since a shell profil
 ```bash
 canon worktrees reclaim --dry-run
 canon worktrees reclaim
+canon worktrees reclaim --json
 ```
 
 | Option      | Behavior                                    |
 | ----------- | ------------------------------------------- |
 | `--dry-run` | Report what would be removed without acting |
+| `--json`    | Add a machine-readable record on stdout     |
 
 Removal sits on the default path rather than behind an apply flag. Report-only is what the `list` verb already did, and what it produced was a hand cleanup: eight directories deleted outside git in one afternoon, each leaving the registration and the branch that `git worktree remove` would have taken with it. A flag a reader has to remember is one nobody passes the first time, and the first time is when the directories are still there.
 
 Each entry unlocks, removes, then deletes its branch, and the sequence is the same whether the directory still stands or is already gone. A run carrying a directory that is gone sweeps stale registrations once between the removals and the branch deletes, since a branch git still reads as held by a worktree cannot be deleted. That sweep is the one step reaching past the reclaimable set, because git takes no path to scope it: it clears the bookkeeping for every directory already gone, refused entries included, and deletes no branch and no directory of its own.
 
 Exit codes: `0` every reclaimable worktree was removed or there were none, `1` refused or a removal failed. A reading that could not reach the merge state refuses every entry rather than falling back to a default, since that state is the one input deciding whether a branch is safe to delete.
+
+### The record
+
+`--json` writes `{reason, detail, dryRun, reclaimable, removed, failed, pruned, outcomes}` on stdout. `reason` is null unless the whole reading refused, `reclaimable` counts what the verdicts named, `removed` and `failed` split the outcomes, and `pruned` says whether the stale-registration sweep ran. A dry run and a reading that found nothing both report `removed` as 0 and differ on `reclaimable`, which separates a quiet repository from a run asked not to act.
+
+Field order is part of the contract. A shell reads this record with a pattern rather than a parser, so `reason` sits ahead of the free-text `detail`, and the scalar counts sit ahead of `outcomes`, whose per-entry `failedAt` and boolean `removed` match neither digit pattern. Read the record's fields rather than the exit when a skill or a hook consumes this, for the reason the `list` section above gives.
+
+## What calls it
+
+`.husky/post-merge` runs `canon worktrees reclaim --json` on every merge, between the records push and the upgrade block, so a merged branch's worktree goes without a person remembering. `CANON_SKIP_RECLAIM=1` turns that step off.
+
+The hook's call carries no `--root` and no `cd`, unlike the two steps above it. Git runs a hook from the top level of the worktree the pull happened in, and the verb reads its own working directory to refuse that worktree as `current-worktree`, so a root argument would turn the running worktree into an ordinary candidate and let a pull inside a linked worktree delete the ground under itself.
 
 ## What makes a worktree reclaimable
 
