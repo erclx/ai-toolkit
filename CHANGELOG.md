@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.20.0](https://github.com/erclx/canon/compare/v4.19.2...v4.20.0) (2026-09-02)
+
+
+### Features
+
+* **hooks:** reclaim a merged branch's worktree from post-merge ([#1365](https://github.com/erclx/canon/issues/1365)) ([ddc3f6a](https://github.com/erclx/canon/commit/ddc3f6aadd662729edc57d32578c7cfff5cbb35e))
+* **standards:** add a docs-scoped reference and close its boundaries ([#1364](https://github.com/erclx/canon/issues/1364)) ([c8a52a6](https://github.com/erclx/canon/commit/c8a52a672cfbd60c21fd9f7591ea51482a9888b2))
+
 ## [4.19.2](https://github.com/erclx/canon/compare/v4.19.1...v4.19.2) (2026-09-02)
 
 
