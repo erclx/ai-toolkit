@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.20.1](https://github.com/erclx/canon/compare/v4.20.0...v4.20.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **scratch:** ignore the guard hook's fallback scratch path ([#1368](https://github.com/erclx/canon/issues/1368)) ([68e705a](https://github.com/erclx/canon/commit/68e705abaac9e0faca737394d271a94cd9469636))
+
 ## [4.20.0](https://github.com/erclx/canon/compare/v4.19.2...v4.20.0) (2026-09-02)
 
 
