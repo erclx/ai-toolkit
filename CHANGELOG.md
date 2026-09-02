@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.19.1](https://github.com/erclx/canon/compare/v4.19.0...v4.19.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **autoship:** mark the guard-derived slug as provisional ([#1359](https://github.com/erclx/canon/issues/1359)) ([105b4b7](https://github.com/erclx/canon/commit/105b4b7e7729af644676af49fd6361088a30a097))
+* **git:** resolve a named base ref to its merge base with HEAD ([#1360](https://github.com/erclx/canon/issues/1360)) ([dcb3dbb](https://github.com/erclx/canon/commit/dcb3dbb799510869dd07ba1d6dfbca487911ab6e))
+
 ## [4.19.0](https://github.com/erclx/canon/compare/v4.18.0...v4.19.0) (2026-09-02)
 
 
