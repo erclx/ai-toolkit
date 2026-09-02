@@ -51,7 +51,9 @@ Shipping a dependency beside its consumer connects them only when the consumer's
 
 ## Destinations
 
-Twenty-seven standards, all at the flat root now that `bundled/` is retired. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and the `Withdrawn` section holds the destinations re-decided rather than built. Every carrier the census named has now either landed or been reversed, so no row is waiting on one.
+Twenty-seven standards carry a row below, all at the flat root now that `bundled/` is retired. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and the `Withdrawn` section holds the destinations re-decided rather than built. Every carrier the census named has now either landed or been reversed, so no row is waiting on one.
+
+The corpus stands at 29, so two standards authored after the census carry no row. `mermaid.md` reaches a session through `502-mermaid.md`, which globs a fence rather than a document type. `docs.md` reaches one through nothing, since no rule globs `docs/` and the root file states in as many words that none is scoped there, which leaves the only consumer-facing standard reached by a session that goes looking for it.
 
 ### To the CLI
 
