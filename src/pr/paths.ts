@@ -94,8 +94,8 @@ function isNotRepositoryPath(span: string): boolean {
 }
 
 /**
- * Whether the span's last segment is a dotted-decimal tail, such as an
- * address or a version string.
+ * Whether the span's last segment is a bare dotted-decimal number, such as
+ * an address (`127.0.0.1`) or an unprefixed version number (`1.2.3`).
  *
  * This is the one exclusion `resolveSpan` still applies to a non-directory
  * span. A bare dotted number reaching the comparison is the shape that put
