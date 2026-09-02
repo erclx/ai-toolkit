@@ -41,7 +41,7 @@ Run `canon init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and 
 
 ### Bootstrap a new project
 
-See [target projects](target-projects.md) for the scaffold decision, core domains and skips, and the full lifecycle across scaffold, add-a-domain-later, and upstream sync.
+See [target projects](../target-projects.md) for the scaffold decision, core domains and skips, and the full lifecycle across scaffold, add-a-domain-later, and upstream sync.
 
 ### New feature
 
@@ -104,7 +104,7 @@ An execution that picks other than the suggestion rewrites the `- Suggested:` li
 
 `canon records push` carries these folders off the disk they live on, and `canon records pull` brings them back. Nine of them are backed: `diagrams`, `groundwork`, `intake`, `memory`, `plans`, `proposals`, `review`, `tasks`, and `teach`, each carrying whatever it has archived inside it. The history lives in a second git directory at `.canon/.records.git` with `.canon/` as its work tree, so every path a task file cites stays where it is.
 
-A person points it at a private repository once and both verbs refuse until they have, and `push` refuses when that origin is also a remote of the project, since the payload is the memory pen and the groundwork trails. `.husky/post-merge` runs the push after its archive loop, on every merge rather than only on one that closed a task. See [records](agents/records.md) for the refusal table.
+A person points it at a private repository once and both verbs refuse until they have, and `push` refuses when that origin is also a remote of the project, since the payload is the memory pen and the groundwork trails. `.husky/post-merge` runs the push after its archive loop, on every merge rather than only on one that closed a task. See [records](../agents/records.md) for the refusal table.
 
 `canon records size` reports what each of these folders holds, heaviest first, along with `.canon/tmp`. Each row carries the file count, the bytes, how many files were written in the last 7 and 30 days, and the dates of the least and most recently written one. Nothing fails on a number, because a record folder has no correct size. What the verb replaces is a reading somebody had to remember to take: the memory pen went from 44 entries to 236 between two counts made by hand a fortnight apart, and nothing reported the rate in between.
 
@@ -151,7 +151,7 @@ Markdown under one states what an agent does, so a branch touching it reaches re
 
 An empty changed-file list stops the chain rather than counting as prose-only. The filename test passes vacuously on an empty set, which routed a branch past review instead of through it.
 
-`canon autoship classify` answers that decision now, and the chain branches on the record it returns rather than on a session applying the list above. Three runs read past the list while it was prose, the last of them a driven arm that staged a file the list names and shipped a draft pull request with no review. The verb takes the names the chain already computed, so no second diff baseline resolves, and it names the file and the test that decided. [Review classification](agents/review-classification.md) carries the record shape and the exit codes.
+`canon autoship classify` answers that decision now, and the chain branches on the record it returns rather than on a session applying the list above. Three runs read past the list while it was prose, the last of them a driven arm that staged a file the list names and shipped a draft pull request with no review. The verb takes the names the chain already computed, so no second diff baseline resolves, and it names the file and the test that decided. [Review classification](../agents/review-classification.md) carries the record shape and the exit codes.
 
 The list stays written in the skill body as the fallback for a target whose installed CLI predates the verb, since the two ship at different speeds. That fallback is never a skip: failing open is the defect the verb closes, so an absent subcommand routes to review rather than past it.
 
@@ -187,7 +187,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 
 ## Skills
 
-Groups run in the order a project meets them, so a reader at a known point scans to that group and reads across. The set reconciles the scenarios above with the lifecycle [target projects](target-projects.md) describes, rather than inventing a third vocabulary beside those two, so a group name matches neither source exactly and every moment either one names has a group. Each row says when to reach for the skill. What it does is the skill's own description.
+Groups run in the order a project meets them, so a reader at a known point scans to that group and reads across. The set reconciles the scenarios above with the lifecycle [target projects](../target-projects.md) describes, rather than inventing a third vocabulary beside those two, so a group name matches neither source exactly and every moment either one names has a group. Each row says when to reach for the skill. What it does is the skill's own description.
 
 This section is the corpus the coverage claim is measured against: every name `canon claude skills list --names` reports takes exactly one row here. A skill serving two moments sits at the earlier one, and mentions elsewhere in this file are prose rather than routing.
 

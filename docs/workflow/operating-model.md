@@ -99,7 +99,7 @@ becomes the commit message and the record on the trunk once the branch is gone.
 `canon pr key-changes` compares the paths the body's Key Changes claims against
 its own changed-file list, and a claim the diff does not carry is a finding on
 the body rather than on a file. See
-[Key Changes bijection](agents/key-changes.md).
+[Key Changes bijection](../agents/key-changes.md).
 
 ## The review channel
 
@@ -113,7 +113,7 @@ which trails the branch ref by up to a minute after a push and says nothing
 about the trail. `canon pr head` resolves the tip the review pass scopes its
 delta against, and `canon pr checks` reports the runs belonging to that tip, so a
 follow-up push cannot be read as green off the predecessor's completed run. See
-[Head-sensitive pull request reads](agents/pr-reads.md).
+[Head-sensitive pull request reads](../agents/pr-reads.md).
 
 What the session channel carries is the handback instruction and the worker's
 reply to it, which is a notification layer over a record that stays on the PR. A
