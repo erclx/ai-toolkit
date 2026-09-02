@@ -114,5 +114,5 @@ The Stitch integration (`canon design sync`, `generate`, `edit`, `variants`, `li
 ## Related
 
 - `docs/agents/commands.md`: CLI flags and invocation contract for `canon design`
-- `docs/visual-design-workflow.md`: tier framework for prose-only, visual companion, and graphical source of truth
+- `docs/workflow/visual-design-workflow.md`: tier framework for prose-only, visual companion, and graphical source of truth
 - `wiki/tools/stitch.md`: Stitch MCP details for the downstream generation surface

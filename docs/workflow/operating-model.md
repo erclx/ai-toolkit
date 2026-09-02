@@ -12,7 +12,7 @@ cross-feature call and reviews. Planning runs there or in a session of its own.
 Cold worker sessions build. The human launches workers and merges.
 
 This page covers the roles and the loop. For the worktree mechanism (isolation, merge
-order, port collisions), see [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md).
+order, port collisions), see [Claude Code and git worktrees](../../wiki/claude/claude-worktrees.md).
 
 ## Three roles
 
@@ -99,7 +99,7 @@ becomes the commit message and the record on the trunk once the branch is gone.
 `canon pr key-changes` compares the paths the body's Key Changes claims against
 its own changed-file list, and a claim the diff does not carry is a finding on
 the body rather than on a file. See
-[Key Changes bijection](agents/key-changes.md).
+[Key Changes bijection](../agents/key-changes.md).
 
 ## The review channel
 
@@ -113,7 +113,7 @@ which trails the branch ref by up to a minute after a push and says nothing
 about the trail. `canon pr head` resolves the tip the review pass scopes its
 delta against, and `canon pr checks` reports the runs belonging to that tip, so a
 follow-up push cannot be read as green off the predecessor's completed run. See
-[Head-sensitive pull request reads](agents/pr-reads.md).
+[Head-sensitive pull request reads](../agents/pr-reads.md).
 
 What the session channel carries is the handback instruction and the worker's
 reply to it, which is a notification layer over a record that stays on the PR. A
@@ -248,11 +248,11 @@ A dev server, an end-to-end run, and a screenshot run alongside each other on a
 web stack, since every worktree derives its own port. Singleton resources (one
 local model server, one GPU) still serialize, as does any port a stack fixes by
 hand. See
-[Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for merge order and the
+[Claude Code and git worktrees](../../wiki/claude/claude-worktrees.md) for merge order and the
 port-collision detail.
 
 ## Related
 
-- [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for the isolation and fan-out mechanics
-- [Claude Code subagents](../wiki/claude/claude-subagents.md) for in-session parallelism without worktrees
+- [Claude Code and git worktrees](../../wiki/claude/claude-worktrees.md) for the isolation and fan-out mechanics
+- [Claude Code subagents](../../wiki/claude/claude-subagents.md) for in-session parallelism without worktrees
 - `.claude/context/claude-plugin/skill-strategy.md` for how the skills in the loop are categorized

@@ -10,7 +10,7 @@ Bun runs the CLI and every script. The shell scripts need `zsh` or bash 4 or new
 
 `bun run bootstrap` writes one file outside the repository. It appends a block of Claude Code shell aliases to `~/.zshrc`, wrapped in `# >>> canon aliases >>>` and `# <<< canon aliases <<<` markers.
 
-The markers are how a re-run recognizes its own block and skips, so the script never appends a second copy, and deleting the block between them removes the aliases. Skip that step by running `bun install` and `bun link` yourself instead. The [zshrc aliases](docs/zshrc-aliases.md) doc lists what the block defines.
+The markers are how a re-run recognizes its own block and skips, so the script never appends a second copy, and deleting the block between them removes the aliases. Skip that step by running `bun install` and `bun link` yourself instead. The [zshrc aliases](docs/workflow/zshrc-aliases.md) doc lists what the block defines.
 
 ## Verifying a change
 

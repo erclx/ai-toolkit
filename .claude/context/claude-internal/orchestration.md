@@ -5,7 +5,7 @@ description: The task and plan artifacts coordinating multi-session work, the bo
 
 # Orchestration
 
-`docs/operating-model.md` owns the three roles and the loop they run, reachable in a target as `canon docs operating-model`. What this entry adds is the pair of artifacts the toolkit ships to make the handoff mechanical.
+`docs/workflow/operating-model.md` owns the three roles and the loop they run, reachable in a target as `canon docs operating-model`. What this entry adds is the pair of artifacts the toolkit ships to make the handoff mechanical.
 
 | Artifact                         | Author                 | Holds                                                                                     | Lifecycle                                              |
 | -------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -222,7 +222,7 @@ What the finding lacked was which side contributed the containing path, so an ov
 
 The `orchestrator-<slug>` prefix outlives the count it was introduced for. Only a self-dispatch writes it, so a session listing separates a dispatched worker from an operator's own launch, and that reading is still taken. What no longer follows from it is a number.
 
-Seven surfaces state this policy rather than the six a grep on the phrase reports. `docs/operating-model.md` carries it twice, once in loop step 2 and once in its own `## Parallelism` section, and the second spelling names a number without using the word, so a sweep keyed on the phrase leaves it stating a retired rule.
+Seven surfaces state this policy rather than the six a grep on the phrase reports. `docs/workflow/operating-model.md` carries it twice, once in loop step 2 and once in its own `## Parallelism` section, and the second spelling names a number without using the word, so a sweep keyed on the phrase leaves it stating a retired rule.
 
 ## The planning dispatch
 

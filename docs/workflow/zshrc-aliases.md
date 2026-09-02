@@ -38,6 +38,8 @@ The block sits after any `PATH` mutations and the `claude` CLI install. Zsh expa
 
 To opt out, delete the block between the two markers. Bootstrap re-adds it on the next run, so skip that step by running `bun install` and `bun link` yourself instead.
 
+The block itself works unchanged in bash, and what differs is the file it goes in and who writes it. Paste it into `~/.bashrc` by hand, since `bun run bootstrap` appends to `~/.zshrc` alone and a run from a bash shell installs nothing that shell reads. Bash re-checks the first word of an alias expansion the way zsh does, so the `cl` and `clp` chains below still inherit their base, and the `bun install` and `bun link` step above is the opt-out either shell takes.
+
 ## What each one does
 
 `cl`, `clw`, and `cls` carry no explicit plugin dir and start a fresh session. Use them inside the toolkit repository, where Claude Code auto-discovers the plugin from `claude/.claude-plugin/plugin.json`. Loading `--plugin-dir` on top of auto-discovery registers every skill twice and produces duplicate entries in the slash command list.
@@ -66,7 +68,7 @@ Use `clp` in any other repository where you want the toolkit skills available. W
 
 Use `cls` or `clps` to save Opus usage on routine sessions. Switch mid-session with `/model` to avoid restarting.
 
-Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for fan-out rules.
+Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](../../wiki/claude/claude-worktrees.md) for fan-out rules.
 
 Use `clc` to resume the last session without a picker. Use `clr` when you have several sessions and need to pick by name or recency. Reach for `clpc` over `clc` wherever the resumed session needs the plugin, inside the toolkit repository as well as outside it, since neither resume re-runs discovery.
 
