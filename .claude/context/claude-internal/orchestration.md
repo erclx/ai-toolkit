@@ -315,3 +315,9 @@ Archiving a plan at ship time leaves `.canon/tasks/priority.md` pointing at a pa
 ### A task argument resolves an ambiguous plan the worktree entry cannot
 
 `claude-worktree` Step 2 asks the user when more than one `feature-*.md` plan exists and the current branch matches none of them. A `claude-autoship <task-file>` invocation carries information that step does not: the plan's own Constraints section already cites the task file it was written for. Matching the autoship argument against each candidate plan's citation resolves the ambiguity without asking, which is what a worktree entry made in isolation from that argument cannot do.
+
+### A peer's merge claim needs the commits, not the net diff
+
+A pull request's net file diff can read as untouched for a file a peer session correctly described as changed, when an earlier commit in the same PR added content and a later commit removed it before merge. A peer session told a worker mid-build that `#1398` had routed four lines into a context entry and then cut them on review. The worker's first check read the merged file list, found the entry absent from it, and read the claim as false.
+
+Reading the PR's individual commits instead found exactly the described add-then-cut, one adding four lines and a later one removing the same four. Verify a peer's claim about what a merge did against its commits, not the net diff, whenever the claim names an add-then-remove, since the net diff a session reaches for first is blind to exactly that shape.

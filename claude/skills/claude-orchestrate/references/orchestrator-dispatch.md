@@ -73,7 +73,8 @@ Name `<model>` on the launch, and pick it against the task rather than copying w
 ## Dispatch
 
 ```bash
-claude --bg --model <model> -n "worker-<project>-<slug>" "Run /canon:claude-worktree <type>/<slug>, then /canon:claude-autoship <plan>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the pull request opens, carrying the number, the branch, the head sha, the CI state, and every point you departed from the plan on, and message it again if you stop on a question."
+claude --bg --model <model> -n "worker-<project>-<slug>" "/canon:claude-autoship <plan>
+Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id through canon sessions list --json, which carries sessionId per row, at the moment you send, and never resolve an addressee by name prefix. Message it when the pull request opens, carrying the number, the branch, the head sha, the CI state, and every point you departed from the plan on, and message it again if you stop on a question."
 ```
 
 `--bg, --background` starts the session as a background agent and returns immediately, `-n, --name` sets the display name that tells a self-dispatched worker from an operator's own launch in `canon sessions list`, and `--model` overrides the inheritance the section above measured. Pass `-n` on every dispatch rather than letting the client derive one. A launch that omits it leaves the session named for a fragment of its own identifier, which is both its address on the send channel and the whole of what the operator sees for it in agent view.
@@ -90,47 +91,76 @@ Where the installed CLI answers `--self` with an unknown option, that flag is ne
 
 The worker resolves that id back to a name through `canon sessions list --json`, which carries `sessionId` per row, rather than through the agent listing, which prints a name and a short ref and no id at all. A worker reaching for the listing first therefore finds no lookup and can conclude there is none. That failure is silent in both directions: the session has nothing useful to do with the message it owes and goes idle holding it, and nothing on this side reports the quiet, so the loss surfaces as a missing worktree or a pull request that never opens rather than as anything watching for it.
 
-The worktree call comes first and carries the branch as its argument, which is tier 0 of `claude-worktree` Step 2 and the only tier a caller can reach. `claude-autoship` Step 0 then finds the session already in a linked worktree and continues, which is a path it already documents. The autoship call carries `<plan>`, the same file this runbook already read to derive the branch, so its Step 1 takes it as the caller-supplied plan rather than re-deriving one from the slug the worker's branch happens to carry.
+The template carries no worktree call. `claude-autoship` Step 0 invokes `canon:claude-worker` and then `canon:claude-worktree` itself, and neither carries the flag, so both are reachable through the `Skill` tool regardless of where a call to them would sit in a prompt. The autoship call carries `<plan>`, the same file this runbook already read to derive the branch, so its Step 1 takes it as the caller-supplied plan rather than re-deriving one from the slug the worker's branch happens to carry.
 
-Naming the branch in prose instead was tried and closes nothing, because no tier of that ladder reads the prompt. A worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there. Four workers took the right branch that way, by inference rather than by contract, which is the same judgment both live disagreements came from.
+Dropping the argument does not hand `claude-worktree` a formal one in its place. A worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there, so the ladder alone still closes nothing.
 
-### The prompt expands its leading slash command and nothing after it
+What closes it is the same inference four workers already took before this template existed: the session already holds `<plan>` and derives `claude-worktree`'s name from it directly, rather than waiting on a tier to supply one. That is a judgment rather than a contract, and it is the same judgment both live disagreements came from, so read it as the residual risk this template still carries rather than as solved.
 
-The client expands the first slash command in a launch prompt as a user
-invocation, which is the route `disable-model-invocation: true` permits. Every
-later command in the same prompt reaches the session as prose, leaving the model
-to invoke it through the `Skill` tool, and that route answers a flagged skill
-inconsistently. `claude-autoship` has carried the flag since `erclx/canon#365` and seven
-other shipped skills carry it too.
+### Expansion needs position zero and a clean delimiter, not leading order alone
 
-The block above therefore leads with the call that does not need the user route
-and leaves the one that does to the tool. Four sessions made the same tool call
-against the same plugin cache on 2026-08-31. Two were answered with the body and
-shipped, and two were refused with `Skill canon:claude-autoship cannot be used
-with Skill tool due to disable-model-invocation`. Prefixing separated nothing,
-since three of the four carried the namespace and those three landed on both
-answers, so nothing a dispatcher writes predicts which answer a launch gets.
+The client expands a slash command at position zero of a launch prompt as a
+user invocation, which is the route `disable-model-invocation: true` permits
+and gates. Everything that reaches the session as prose instead falls to the
+model, which invokes it through the `Skill` tool, and that route answers a
+flagged skill inconsistently. `claude-autoship` has carried the flag since
+`erclx/canon#365` and seven other shipped skills carry it too.
+
+Three launches on 2026-08-31 and 2026-09-02 bound what makes a command take
+that route. Observation A is the first refused worker, launched as `Run
+/canon:claude-worktree ..., then /canon:claude-autoship ...`, which expanded
+nothing. Observation B is a re-dispatch launched as `/canon:claude-autoship
+<plan>` with a space before the path, which expanded and shipped
+`erclx/canon#1382`.
+
+Observation C is a planning dispatch launched as `/canon:claude-planner, then
+/canon:claude-feature <task>` with a comma glued to the command name at
+position zero, which expanded nothing and reached both bodies through the
+`Skill` tool instead. A rules out leading order alone, C rules out position
+zero on its own, and the only visible difference between B and C is the
+delimiter after the command token: a space in B, a comma in C.
+
+Read that delimiter reading as a candidate with a falsifier rather than as
+settled. The cheapest test is one dispatch leading with a bare command whose
+name is followed directly by a period, and the next real dispatch can carry it
+at no extra cost. Until it fails, the operational rule is the conjunction the
+three observations support: put the flagged command at position zero, followed
+by a space and its argument, with nothing before it.
+
+Four sessions made the same tool call against the same plugin cache on
+2026-08-31. Two were answered with the body and shipped, and two were refused
+with `Skill canon:claude-autoship cannot be used with Skill tool due to
+disable-model-invocation`. Prefixing separated nothing, since three of the
+four carried the namespace and those three landed on both answers, so nothing
+a dispatcher writes predicts which answer a launch through the tool gets.
 
 Read that as a route a dispatch may not depend on rather than one that usually
-works. The refusal closes the fallback in the same message, telling the session
-not to replicate the workflow by other means, so a refused worker has no route
-left and stops with a clean worktree. Both failed dispatches produced nothing
-rather than a degraded run, which is the correct outcome and not a thing to
-soften.
+works. The refusal closes the fallback in the same message, telling the
+session not to replicate the workflow by other means, so a refused worker has
+no route left and stops with a clean worktree. Both failed dispatches produced
+nothing rather than a degraded run, which is the correct outcome and not a
+thing to soften.
 
 Recovery belongs to whoever writes the next prompt, since a blocked session
-cannot replay its own launch. The refusal is sticky inside a session rather than
-something a retry clears, measured when one refused worker repeated the identical
-prefixed call and got the byte-identical error back. So re-dispatch onto the same
-branch with the autoship call leading the prompt, which puts the one command the
-first launch left as prose in the position the client expands.
+cannot replay its own launch. The refusal is sticky inside a session rather
+than something a retry clears, measured when one refused worker repeated the
+identical prefixed call and got the byte-identical error back. Re-dispatch
+onto the same branch with the build template above, which already leads with
+the one command that needs the expansion route.
 
-A launch that leads with `/canon:claude-autoship <plan>` and names no worktree
-call is the candidate for closing this on the first dispatch, since that chain's
-Step 0 enters the worktree itself and `claude-worktree` carries no flag to
-refuse the tool route. Nobody has run it. Treat it as untested rather than as the
-shape to switch to, because a launch expansion cannot be read from inside the
-session it launched.
+The review shape and the planning shape below depend on no expansion at all.
+None of `claude-worker`, `claude-address-review`, `claude-planner`, or
+`claude-feature` carries the flag, so both correctly keep their leading word
+regardless of the delimiter or the position it sits at.
+
+The same collapse reaches a human relay rather than a `claude --bg` string. A
+controller that hands an operator two chained blocks to paste as separate
+messages risks both landing as one, where everything after the first
+command's name is read as that command's own argument and the second command
+never fires, measured four times out of four on 2026-09-02.
+`.claude/context/claude-plugin/skill-lifecycle.md` carries the mechanism. The
+fix is what the template above already takes: one message, one command, at
+position zero.
 
 ### What the brief may carry
 
@@ -169,7 +199,7 @@ directly with `Bash`, `Read`, and `Edit` instead of retrying the tool, which
 is the route two workers already took today on two different branches.
 
 ```bash
-claude --bg --model <model> -n "worker-<project>-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /canon:claude-worker, then /canon:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
+claude --bg --model <model> -n "worker-<project>-<slug>" "Enter the worktree for <branch> at .claude/worktrees/<slug>/, creating it from that branch if the folder is gone. Run /canon:claude-worker, then /canon:claude-address-review. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id through canon sessions list --json, which carries sessionId per row, at the moment you send, and never resolve an addressee by name prefix. Message it when the address pass finishes, carrying what was addressed and the PR's CI state, and message it again if you stop on a question."
 ```
 
 `<dispatcher-id>`, `<model>`, and `<project>` resolve the same way the build
@@ -200,7 +230,7 @@ gitignored file at the main worktree root, so this shape names the row's task
 file rather than a branch and opens with the role instead of a worktree call.
 
 ```bash
-claude --bg --model <model> -n "planner-<project>-<slug>" "Run /canon:claude-planner, then /canon:claude-feature <task>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id at the moment you send, and never resolve an addressee by name prefix. Message it when the plan lands, carrying the path and what the task file got wrong, and message it again if you stop on a question."
+claude --bg --model <model> -n "planner-<project>-<slug>" "Run /canon:claude-planner, then /canon:claude-feature <task>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id through canon sessions list --json, which carries sessionId per row, at the moment you send, and never resolve an addressee by name prefix. Message it when the plan lands, carrying the path and what the task file got wrong, and message it again if you stop on a question."
 ```
 
 `<task>` is the row's task file path and `<slug>` the slug its plan will take,
