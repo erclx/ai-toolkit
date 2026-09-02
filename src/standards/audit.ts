@@ -5,11 +5,25 @@ import { gitEnv } from '@/git-env'
 import { resolveBaseRef } from '@/git-files'
 import { INDEX_FILE, standardsSourceDir } from '@/standards/read'
 
-/** Returned when a standard new to this branch carries no `## Success criterion` section, the gating check. */
+/** Returned when a standard new to this branch states no success criterion under either heading `CRITERION_HEADING` accepts, the gating check. */
 export const EXIT_MISSING_CRITERION = 2
 
-/** Matched at any casing, level-2 only, per the heading `standards/standard.md` itself uses. */
-const CRITERION_HEADING = /^##\s+success criterion\s*$/im
+/**
+ * Matched at any casing, level-2 only, in either heading the corpus writes a
+ * criterion under.
+ *
+ * `standards/standard.md` states the rule under `## Success criterion` and
+ * templates the section itself as `## What a working <document type> looks
+ * like`, and the template wins where the two disagree, which that file says in
+ * as many words. Reading the rule group's own heading as the one to match is
+ * what the first spelling here did, and no standard in the corpus carries a
+ * criterion under it: 12 of 28 use the templated form and `standard.md` alone
+ * carries the literal words, over its rules about criteria rather than over its
+ * own. Nothing caught that, because the gate reads a standard new since the
+ * merge base and none had arrived since it shipped.
+ */
+const CRITERION_HEADING =
+  /^##\s+(?:success criterion|what a working .+ looks like)\s*$/im
 
 /**
  * The reasons an audit produces no reading. `no-corpus` is the ordinary state

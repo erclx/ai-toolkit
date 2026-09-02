@@ -53,6 +53,10 @@ Running outside the repo is the load-bearing part: a fixture under the repo load
 
 Gating the standards already short the section would fail every push until someone closed them all, which is the sweep `standards/standard.md` forbids. Only an arrival missing the section fails.
 
+That narrowing is also what hid the gate matching a heading the corpus does not write a criterion under. `CRITERION_HEADING` in `src/standards/audit.ts` accepted `## Success criterion` alone, which `standards/standard.md` spells over its rules about criteria while templating the section itself as `## What a working <document type> looks like`, and the template wins where the two disagree because that file says so. Twelve standards write their criterion under the templated form and none writes one under the literal words, so the gate would have refused every conforming arrival. No standard had arrived since the gate shipped, so the first one to meet it was `standards/mermaid.md`, refused for following the template. The regex now accepts both headings.
+
+What the fix did not reach is the wording around it. Six strings in `src/commands/standards.ts`, one in `src/gate/measures.ts`, and `docs/agents/standards-audit.md` still describe the check as a `## Success criterion` gate, which now names one accepted heading out of two. They were left alone because `src/gate/measures.ts` was contested by two other tracks at the time, and half of a string sweep is the same drift with a collision attached.
+
 ## The sibling section a new rule falsifies
 
 Adding a section to a standard can make a claim in a sibling section of that same file false. `publish.md` scoped its phase-label rule by destination and closed on the words `takes the character checks alone`, which was accurate while phase labels were the only destination-scoped rule and stopped being accurate the moment a second one landed beside it. A reader arriving at the older section first concludes the file has nothing further to say about text entering the repository, which is the reading the new section depends on being wrong.

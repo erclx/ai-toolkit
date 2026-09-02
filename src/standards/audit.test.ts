@@ -25,6 +25,22 @@ Governs nothing real.
 - Answers a question a reviewer can check.
 `
 
+const WITH_TEMPLATE_CRITERION = `---
+title: Fixture reference
+description: A fixture standard
+---
+
+# Fixture reference
+
+## Scope
+
+Governs nothing real.
+
+## What a working fixture looks like
+
+- Answers a question a reviewer can check.
+`
+
 const WITHOUT_CRITERION = `---
 title: Fixture reference
 description: A fixture standard
@@ -110,6 +126,18 @@ describe('auditStandards', () => {
 
     it('should pass an arriving standard that carries the section', async () => {
       write(root, 'standards/new.md', WITH_CRITERION)
+
+      const report = await auditStandards(root)
+
+      expect(report.kind === 'measured' && report.arrivals).toEqual(['new.md'])
+      expect(
+        report.kind === 'measured' && report.arrivalsWithoutCriterion,
+      ).toEqual([])
+      expect(auditExitCode(report)).toBe(0)
+    })
+
+    it('should pass an arriving standard whose criterion carries the template heading', async () => {
+      write(root, 'standards/new.md', WITH_TEMPLATE_CRITERION)
 
       const report = await auditStandards(root)
 
