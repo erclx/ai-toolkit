@@ -94,7 +94,6 @@ describe('resolveBaseRef', () => {
 
   it('should refuse a ref that resolves but shares no history with HEAD', async () => {
     git('checkout', '-q', '--orphan', 'unrelated')
-    git('rm', '-r', '-q', '--cached', '.')
     commit('chore: unrelated root', { 'OTHER.md': 'other' })
     git('checkout', '-q', 'main')
 

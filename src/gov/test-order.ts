@@ -335,11 +335,14 @@ export function readTestOrder(
 }
 
 /**
- * The far side of the range. A ref the caller named has to resolve, since
- * falling back to the trunk there would measure a range nobody asked for. With
- * no ref named, the merge base against the trunk scopes the run to the branch,
- * and a repository carrying no trunk falls back to the root commit rather than
- * refusing.
+ * The far side of the range. A ref the caller named resolves through the merge
+ * base against `head`, matching the no-ref branch below rather than taking the
+ * ref as the comparison point, so a trunk that has moved under the branch does
+ * not pull other people's merged commits into the range. A ref producing no
+ * merge base has to refuse, since falling back to the trunk there would measure
+ * a range nobody asked for. With no ref named, the merge base against the trunk
+ * scopes the run to the branch, and a repository carrying no trunk falls back
+ * to the root commit rather than refusing.
  */
 function resolveBase(
   root: string,
@@ -347,15 +350,15 @@ function resolveBase(
   head: string,
 ): string | { kind: 'unreadable'; reason: TestOrderRefusal; message: string } {
   if (ref !== undefined) {
-    const resolved = revParse(root, ref)
-    if (resolved === undefined) {
+    const merged = git(root, ['merge-base', head, ref])
+    if (merged === undefined || merged === '') {
       return {
         kind: 'unreadable',
         reason: 'bad-base',
-        message: `Ref ${ref} resolves to no commit in ${root}. Pass a commit this tree carries.`,
+        message: `Ref ${ref} shares no history with HEAD in ${root}. Pass a ref this branch was taken from.`,
       }
     }
-    return resolved
+    return merged
   }
 
   for (const trunk of TRUNK_REFS) {

@@ -18,24 +18,28 @@ async function git(
 }
 
 /**
- * The far side of a branch range: the ref a caller named, or the merge base
- * against the first trunk this repository carries.
+ * The far side of a branch range: the merge base against the ref a caller
+ * named, or against the first trunk this repository carries.
  *
- * A named ref that resolves to nothing refuses rather than falling back, since
- * measuring the trunk range instead would answer a question nobody asked.
+ * A named ref names the far side rather than the comparison point, so it
+ * resolves through the merge base exactly as the trunk below does. Reading it
+ * literally is what let a trunk moving under an open branch report every path
+ * merged in between as one the branch had written. A caller naming an ancestor
+ * still gets that commit back, since the merge base of `HEAD` and an ancestor
+ * is the ancestor.
+ *
+ * A named ref that produces no merge base refuses rather than falling back,
+ * since measuring the trunk range instead would answer a question nobody
+ * asked. That covers a ref resolving to nothing and a ref sharing no history
+ * with `HEAD` alike, which no caller can separate.
  */
 export async function resolveBaseRef(
   root: string,
   ref?: string,
 ): Promise<string | undefined> {
   if (ref !== undefined) {
-    const resolved = await git(root, [
-      'rev-parse',
-      '--verify',
-      '--quiet',
-      `${ref}^{commit}`,
-    ])
-    return resolved === undefined || resolved === '' ? undefined : resolved
+    const merged = await git(root, ['merge-base', 'HEAD', ref])
+    return merged === undefined || merged === '' ? undefined : merged
   }
 
   for (const trunk of TRUNK_REFS) {
