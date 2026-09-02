@@ -21,6 +21,10 @@
 # returning non-zero aborts the hook and prints a husky failure. Keep every
 # test inside an `if` condition, which errexit exempts.
 #
+# The hook also removes the worktree and branch behind a pull request the merge
+# retired, so a shipped directory goes without a person remembering.
+# CANON_SKIP_RECLAIM=1 turns that step off.
+#
 # The hook also reinstalls the global `canon` binary once it drifts behind
 # what is published, so PATH runs the same contract this repository ships.
 # CANON_SKIP_UPGRADE=1 turns that step off.
@@ -100,6 +104,58 @@ else
   if [ "$reason" != "no-repository" ]; then
     printf '\n🗄️  Records not backed up: %s\n' "${reason:-unknown}"
     printf 'Run canon records push when the remote is reachable.\n\n'
+  fi
+fi
+
+# Removes the worktree and the branch behind a merged pull request, so a shipped
+# branch's directory goes without a person remembering. Reporting is what the
+# tree already did through `canon worktrees list`, and it is what produced the
+# wall of stale worktrees this step was filed against.
+#
+# The verb removes only what clears all three of its conditions: a merged pull
+# request, a clean working tree, and no live session holding the directory. A
+# worktree a live session still holds is refused rather than removed, so an
+# idle worker keeps its own directory until someone retires the session.
+#
+# CANON_SKIP_RECLAIM=1 skips this block, which is the one route to stop it
+# short of editing the hook, which then drifts from the committed copy.
+#
+# The call carries no `--root` and no `cd`, unlike the two steps above it, and
+# that is load-bearing rather than an oversight. Git runs a hook from the top
+# level of the worktree the pull happened in, and the verb reads its own
+# working directory to refuse the worktree it is standing in. Passing a root
+# turns the running worktree into an ordinary candidate and lets a pull inside
+# a linked worktree delete the ground under itself. The steps above pass
+# `--root "$root"` for the opposite reason, because the board and the records
+# live at the main root and the working directory would read the wrong tree.
+#
+# Sits before the upgrade block rather than after it, since that block
+# reinstalls the binary this hook is running under and every step after it
+# would run against a package that moved. `post-rewrite` delegates here on its
+# `rebase` argument, so a machine set to `pull.rebase=true` gets the removals
+# from that path instead.
+if [ -z "$CANON_SKIP_RECLAIM" ]; then
+  if reclaim=$(canon worktrees reclaim --json 2>/dev/null); then
+    removed=$(printf '%s' "$reclaim" | sed -n 's/.*"removed":\([0-9][0-9]*\).*/\1/p')
+    if [ -n "$removed" ] && [ "$removed" != "0" ]; then
+      printf '\n🧹 Reclaimed %s worktree(s) whose pull request merged.\n\n' "$removed"
+    fi
+  else
+    # An unreadable reading refuses every verdict rather than some of them, so
+    # the removals silently never happen and one line is what says so. `gh`
+    # absent or unauthenticated is the ordinary shape of it. No record at all
+    # is an older global binary carrying no `--json` flag, which stays quiet
+    # the way every such gap here does until a release lands.
+    reason=$(printf '%s' "$reclaim" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
+    failed=$(printf '%s' "$reclaim" | sed -n 's/.*"failed":\([0-9][0-9]*\).*/\1/p')
+
+    if [ -n "$reason" ]; then
+      printf '\n🧹 Worktrees not reclaimed: %s\n' "$reason"
+      printf 'Run canon worktrees list to read the state by hand.\n\n'
+    elif [ -n "$failed" ] && [ "$failed" != "0" ]; then
+      printf '\n🧹 %s worktree(s) could not be removed.\n' "$failed"
+      printf 'Run canon worktrees reclaim to read which step failed.\n\n'
+    fi
   fi
 fi
 
