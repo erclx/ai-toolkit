@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.22.1](https://github.com/erclx/canon/compare/v4.22.0...v4.22.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **claude:** read the whole branch in the review selection ([#1374](https://github.com/erclx/canon/issues/1374)) ([4192bda](https://github.com/erclx/canon/commit/4192bdae6d99c56be94879732b0ab2c050dccd05))
+
 ## [4.22.0](https://github.com/erclx/canon/compare/v4.21.0...v4.22.0) (2026-09-02)
 
 
