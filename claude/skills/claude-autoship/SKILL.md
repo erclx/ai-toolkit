@@ -165,7 +165,7 @@ gh pr ready --undo <number>
 gh pr view <number> --json isDraft
 ```
 
-Name the number `git-ship`'s pull request step returned on both calls rather than leaving either to resolve by branch, since each matches a head ref and ignores state, so a reused branch name reaches a merged namesake. The read is where that costs the most, answering with the wrong record's flag, and the write above it errors rather than mutating one.
+Name the number `git-ship`'s pull request step returned on both calls rather than leaving either to resolve by branch. `docs/agents/pr-reads.md` carries the general case: the object is not the authority, so resolve once and reuse the result.
 
 Report what the read returned rather than what the command printed, since the exit says the call ran and says nothing about the state. A `true` reports a draft. A `false` reports the pull request as opened ready and unsupervised, and the chain stops there. Never re-issue the undo on a disagreeing read, which fights whoever readied it instead of guarding anything.
 
