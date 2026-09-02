@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.25.0](https://github.com/erclx/canon/compare/v4.24.1...v4.25.0) (2026-09-02)
+
+
+### Features
+
+* **assets:** render two showcase frames from the live catalogs ([#1389](https://github.com/erclx/canon/issues/1389)) ([376b2d9](https://github.com/erclx/canon/commit/376b2d9ba7458ccb38a349e0ceb523424067f278))
+* **skills:** add draft-and-pick and declare the pull request boundary ([#1383](https://github.com/erclx/canon/issues/1383)) ([453112b](https://github.com/erclx/canon/commit/453112b471223bd1eddbb26cab73a0b7990e5a3e))
+* **tasks:** make the board position claim comparative and check it ([#1384](https://github.com/erclx/canon/issues/1384)) ([fc078b1](https://github.com/erclx/canon/commit/fc078b18cb1698c59c7378d0f8c77b3e857fa3c9))
+
 ## [4.24.1](https://github.com/erclx/canon/compare/v4.24.0...v4.24.1) (2026-09-02)
 
 
