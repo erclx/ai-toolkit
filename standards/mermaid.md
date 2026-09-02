@@ -49,7 +49,7 @@ A diagram failing these is non-conforming even when it satisfies every shape rul
 
 ## Labels
 
-- Apply the punctuation bans to node and subgraph labels. A label is not prose, so a check scoped to prose does not reach it, and reading the labels before shipping is the only gate they have.
+- Apply the punctuation bans in `markdown.md` to node and subgraph labels. A label is not prose, so a check scoped to prose does not reach it, and reading the labels before shipping is the only gate they have.
 - Treat the prose around a fence and the text inside it as two surfaces. The paragraphs are prose and follow `markdown.md` and the `write-human` skill. The fenced block is not, which is why a check scoped to prose is the wrong thing to rely on for what sits inside it.
 
 ## Accessibility
