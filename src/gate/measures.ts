@@ -165,6 +165,94 @@ export const unreferencedRules: Measure = async (ctx) => {
 }
 
 /**
+ * The files the sweep would rewrite, each with its own count, taken from the
+ * `paths` array the record carries beside the total.
+ *
+ * Every field is tested rather than trusted. The record reaches here as parsed
+ * JSON rather than as a type the compiler checked, so a shape that moved
+ * upstream drops the entries it can no longer read and leaves the count that
+ * was read from a field of its own standing.
+ */
+function citedPaths(record: { paths?: unknown } | undefined): string[] {
+  if (!Array.isArray(record?.paths)) return []
+
+  return record.paths.flatMap((entry) => {
+    const cited = entry as { path?: unknown; rewritten?: unknown }
+    if (typeof cited.path !== 'string') return []
+    return typeof cited.rewritten === 'number'
+      ? [`${cited.path} (${cited.rewritten})`]
+      : [cited.path]
+  })
+}
+
+/**
+ * A second run of the records move should rewrite nothing, and the count is
+ * only knowable once the folders themselves have landed.
+ *
+ * `moves` empty means every record folder already sits at `.canon/`, so any
+ * citation the sweep would still rewrite is one the move left stale, which is
+ * the defect this stage exists to catch. Where `moves` is nonempty the tree has
+ * not migrated at all and a nonzero rewrite count is the verb describing its
+ * own first pass, so the reading is reported and never failed on.
+ *
+ * Exit `0` is a tree with nothing to do and exit `2` is a plan drawn without
+ * `--write`, so both read a tree and both carry a record. Every other exit is a
+ * refusal that planned nothing, which is unmeasured for the reason the markdown
+ * stage treats its own refusal exit so.
+ */
+export const recordIdempotence: Measure = async (ctx) => {
+  const run = await ctx.cli(['migrate', 'records', '--json'])
+
+  if (run.exitCode !== 0 && run.exitCode !== 2) {
+    return {
+      emissions: [],
+      unmeasured: `The records sweep refused (exit ${run.exitCode}) and planned nothing.`,
+    }
+  }
+
+  const record = parseJson(run.stdout) as
+    | { moves?: unknown; rewritten?: unknown; paths?: unknown }
+    | undefined
+  const moves = record?.moves
+  const rewritten = record?.rewritten
+
+  if (!Array.isArray(moves) || typeof rewritten !== 'number') {
+    return {
+      emissions: [],
+      unmeasured:
+        'The records sweep carried no plan, so the stage read no count. Run bun src/cli.ts migrate records --json.',
+    }
+  }
+
+  if (moves.length > 0) {
+    return {
+      emissions: [
+        info(
+          `${moves.length} record folder(s) still at the old root, with ${rewritten} citation(s) that move with them`,
+        ),
+      ],
+    }
+  }
+
+  if (rewritten > 0) {
+    return {
+      // The payload already names every file, so listing them here is what
+      // separates a count a reader has to go and reproduce from a remedy they
+      // can act on. A malformed `paths` costs the list and not the finding,
+      // since the count above it was read from a field of its own.
+      emissions: citedPaths(record).map((path) => warn(path)),
+      failure: `The records are at .canon/ and ${rewritten} citation(s) still name the old root, so a second run of canon migrate records would rewrite them. Repoint each one, or mark it canon-keep-record-root where the sentence has to keep the old spelling.`,
+    }
+  }
+
+  return {
+    emissions: [
+      info('Records at .canon/, and a re-run of the move rewrites nothing'),
+    ],
+  }
+}
+
+/**
  * A banned character, word, or spelling is a fact rather than a threshold, so
  * it fails the push while bullet, paragraph, and depth weight stay advisory.
  *
