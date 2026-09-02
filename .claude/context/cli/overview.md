@@ -32,7 +32,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/deps/` owns the dependency advisory read, which shells the runtime's own command rather than carrying an index and is the only audit engine here that reaches a network
 - `src/labels/` owns the pull request label map, splitting the TOML read from the matcher so a caller holding a changed set can resolve coverage without touching git. Reasoned about in `.claude/context/cli/audits.md`
 - `src/git-files.ts` owns `listRepositoryFiles()`, the tracked-plus-untracked listing the citation check, the markdown corpus, and the secret scan all take their file set from
-- `src/git-files.ts` also owns `resolveBaseRef()` and `listChangedFiles()`, the branch-range pair the label audit reads. The changed set diffs the base against the working tree rather than against `HEAD`, so a surface added before the branch commits is still in scope
+- `src/git-files.ts` also owns `resolveBaseRef()` and `listChangedFiles()`, the branch-range pair the label audit reads. The changed set diffs the base against the working tree rather than against `HEAD`, so a surface added before the branch commits is still in scope. A ref the caller names resolves through its merge base with `HEAD` rather than being taken literally, which is the fact whose absence let this resolver and the private one in `src/gov/test-order.ts` each disagree with their own no-ref halves and report a moved trunk's merges as the branch's own work
 - `src/capture/` owns the capture render, one of the four browser modules under `src/` and the last of them to start shipping
 
 ## Gotchas

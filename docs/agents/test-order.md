@@ -13,11 +13,11 @@ canon gov test-order --base origin/main --json
 canon gov test-order --root ../my-app
 ```
 
-| Option          | Behavior                                                          |
-| --------------- | ----------------------------------------------------------------- |
-| `--base <ref>`  | Far side of the range, defaulting to the merge base against trunk |
-| `--root <path>` | Repository to read, defaulting to the current directory           |
-| `--json`        | Add a machine-readable record on stdout, keeping the frame        |
+| Option          | Behavior                                                   |
+| --------------- | ---------------------------------------------------------- |
+| `--base <ref>`  | Ref the range runs back to, defaulting to the trunk        |
+| `--root <path>` | Repository to read, defaulting to the current directory    |
+| `--json`        | Add a machine-readable record on stdout, keeping the frame |
 
 Under `--json` the record holds stdout alone and the frame still renders on stderr, refusals included, which is the split `output-shape.md` fixes for every mode. A consumer reading stdout sees pure data, and an operator reading the terminal sees why a run refused rather than a command that appeared to do nothing.
 
@@ -26,6 +26,8 @@ Under `--json` the record holds stdout alone and the frame still renders on stde
 The default range is the branch against the trunk, resolved as the merge base against `origin/main` and then local `main`. A repository carrying neither falls back to the root commit, so a fresh checkout still answers rather than refusing.
 
 Reading all history on every run measures work nobody is reviewing and buries the finding that matters under the ones already merged. `--base` widens or narrows it when a reader wants a different window.
+
+A ref passed there is resolved the same way, through its merge base with `HEAD`, so it names the far side of the range and not the commit the range starts from. `--base origin/main` therefore reports the same window whether the trunk has moved since the branch left or not. Naming a commit the branch already carries still measures from that commit, since the merge base of `HEAD` and an ancestor is the ancestor, and a ref sharing no history with `HEAD` refuses as `bad-base`.
 
 Only history is read. A file sitting in the working tree and in no commit is invisible here, which is the point: the verification run sees a tree at one moment, and the ordering exists nowhere but history.
 
