@@ -1,12 +1,6 @@
 import { $ } from 'bun'
+import { baseCandidates, isMergeBase } from '@/git-base'
 import { gitEnv } from '@/git-env'
-
-/**
- * Preferred first, matching `src/gov/test-order.ts` and `src/tasks/trunk.ts`. A
- * local `main` trailing the remote pulls other people's merged commits into the
- * range, so a check reading it decides against files the branch never touched.
- */
-const TRUNK_REFS = ['origin/main', 'main'] as const
 
 /** Runs git under `root` with the resolution variables a hook exports stripped. */
 async function git(
@@ -37,14 +31,9 @@ export async function resolveBaseRef(
   root: string,
   ref?: string,
 ): Promise<string | undefined> {
-  if (ref !== undefined) {
-    const merged = await git(root, ['merge-base', 'HEAD', ref])
-    return merged === undefined || merged === '' ? undefined : merged
-  }
-
-  for (const trunk of TRUNK_REFS) {
-    const merged = await git(root, ['merge-base', 'HEAD', trunk])
-    if (merged !== undefined && merged !== '') return merged
+  for (const candidate of baseCandidates(ref)) {
+    const merged = await git(root, ['merge-base', 'HEAD', candidate])
+    if (isMergeBase(merged)) return merged
   }
 
   return undefined
