@@ -50,6 +50,7 @@ dogfooded
 dogfoods
 dontAsk
 e2e
+enoent
 erclx
 esac
 esbenp
@@ -160,6 +161,7 @@ unrequested
 unreviewed
 unrouted
 unsourced
+unspelled
 untabled
 unwired
 updatability

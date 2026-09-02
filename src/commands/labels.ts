@@ -4,6 +4,7 @@ import type { Command } from 'commander'
 import { type LabelAuditRefusal, auditLabels } from '@/labels/audit'
 import { MAP_REL } from '@/labels/map'
 import { scanPhaseLabels } from '@/labels/phase'
+import { scanTitleSpelling } from '@/labels/spelling'
 import { intro, logInfo, logStep, logWarn, outro, plural } from '@/ui'
 
 interface AuditOptions {
@@ -90,7 +91,7 @@ export function register(program: Command): void {
   labels
     .command('scan')
     .description(
-      'Fail a pull request whose title or body carries a phase label, a board identifier, or a session link',
+      'Fail a pull request whose title or body carries a phase label, a board identifier, a session link, or a title with an unspelled word',
     )
     .helpOption('-h, --help', 'Show this help message')
     .option(
@@ -124,10 +125,18 @@ export function register(program: Command): void {
         'session and for no other reader, which no clone repairs, so it is read',
         'on a release pull request too, where the board identifier is not.',
         '',
+        "It also spell-checks the title alone against this repository's own",
+        'cspell config, since release-please copies the title into',
+        'CHANGELOG.md and nothing else spell-checks it first. The check shells',
+        "this repository's own resolved cspell binary and reports nothing when",
+        'a target project carries none, rather than reaching the network or',
+        'forcing a new dependency.',
+        '',
         'Exit codes:',
-        '  0  no phase label, no board identifier, and no session link found',
+        '  0  none of the four found',
         '  1  refused, with the reason on stderr or in the JSON record',
-        '  2  the title or body carries one of the three',
+        '  2  the title or body carries a phase label, a board identifier, a',
+        '     session link, or a title word no dictionary holds',
         '',
         'Examples:',
         '  canon labels scan --event "$GITHUB_EVENT_PATH"',
@@ -339,6 +348,7 @@ async function runScan(opts: ScanOptions): Promise<number> {
   }
 
   const result = scanPhaseLabels(resolved)
+  const spelling = await scanTitleSpelling(resolved.title, process.cwd())
 
   logStep('Pull request')
   logInfo(
@@ -379,6 +389,27 @@ async function runScan(opts: ScanOptions): Promise<number> {
     for (const link of result.sessionLinks) logWarn(link)
   }
 
+  const unspelledWords =
+    spelling.kind === 'checked' ? spelling.unknownWords : []
+
+  logStep(
+    spelling.kind === 'unavailable'
+      ? 'Spelling unavailable'
+      : unspelledWords.length === 0
+        ? 'Clean'
+        : 'Unspelled word found',
+  )
+  if (spelling.kind === 'unavailable') {
+    logInfo('no cspell binary resolved here, so the title was not checked')
+  } else if (unspelledWords.length === 0) {
+    logInfo('no word in the title is absent from every dictionary')
+  } else {
+    logWarn(
+      `${plural(unspelledWords.length, 'word')} in the title absent from every dictionary. Fix the spelling, or add jargon and project-specific terms to .cspell/project-terms.txt and dependency vocabulary to .cspell/tech-stack.txt.`,
+    )
+    for (const word of unspelledWords) logWarn(word)
+  }
+
   outro()
 
   if (emitJson) {
@@ -389,13 +420,15 @@ async function runScan(opts: ScanOptions): Promise<number> {
         semverTags: result.semverTags,
         boardReferences: result.boardReferences,
         sessionLinks: result.sessionLinks,
+        unspelledWords,
       })}\n`,
     )
   }
 
   return result.phaseLabels.length === 0 &&
     result.boardReferences.length === 0 &&
-    result.sessionLinks.length === 0
+    result.sessionLinks.length === 0 &&
+    unspelledWords.length === 0
     ? 0
     : 2
 }
