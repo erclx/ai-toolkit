@@ -42,7 +42,8 @@ is_internal_topic() {
 # sorted so a domain split into a folder lands in its alphabetical place rather
 # than after every file. A folder declares its category on its own index, since
 # the allowlist is what separates a target-facing doc from a workflow one and a
-# split domain is not exempt from it.
+# split domain is not exempt from it. A sub-area file declares its own, which is
+# what keeps a page's listing membership unchanged by the folder it moves into.
 collect_docs() {
   local file name description category
   {
@@ -64,12 +65,30 @@ collect_docs() {
       description=$(read_frontmatter_field "$file" "subtitle")
       printf '%s\t%s\t%s\t%s\n' "$name" "$description" "$category" "docs/$name/index.md"
     done < <(find "$DOCS_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md")
+
+    # A sub-area file is named and described like a sibling file, and reaches a
+    # caller by that bare name, so the depth it sits at is not the listing's
+    # business. Only a folder carrying an index is walked, matching resolveTopic
+    while IFS= read -r file; do
+      name=$(basename "$file" .md)
+      [ "$name" = "index" ] && continue
+      [ -f "$(dirname "$file")/index.md" ] || continue
+      category=$(read_frontmatter_field "$file" "category")
+      is_target_facing "$category" || continue
+      description=$(read_frontmatter_field "$file" "description")
+      printf '%s\t%s\t%s\t%s\n' "$name" "$description" "$category" "docs/$(basename "$(dirname "$file")")/$name.md"
+    done < <(find "$DOCS_DIR" -mindepth 2 -maxdepth 2 -type f -name "*.md")
   } | sort
 }
 
 # Emits `name<TAB>description<TAB>target` per context entry, sorted so a domain
 # split into a folder lands in its alphabetical place rather than after every
-# file. Matches listTopics in src/docs/read.ts, which sorts both together.
+# file, the way listTopics in src/docs/read.ts sorts both together.
+#
+# It stops at the folder where listTopics goes on to name each sub-area file.
+# This is the downstream catalog and that one answers what a caller could have
+# typed, so a reachable name absent here is the same divergence the internal
+# topics already carry, and docs/agents/docs.md states it.
 collect_context() {
   local file name description
   {
