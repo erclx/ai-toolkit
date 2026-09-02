@@ -48,6 +48,16 @@ What this skill adds on top of the standard:
 - Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one.
 - When three or more questions remain, keep chat output to the file pointer plus a short summary. Inline chat is fine when two or fewer remain.
 
+## Pull request boundaries
+
+A plan sequencing its work into batches declares where one pull request ends, here rather than at ship time. A dependency chain cannot be split once it is built, so the choice exists only while the batches are still a plan.
+
+- One batch is one pull request. Carry one entry per batch naming what it targets, so a plan opening five says five before the first line is written.
+- A dependent batch stacks rather than merging into its neighbor. The batches are built in order and depend on each other in that order, which is what a stack expresses, so the dependency argues for stacking and never for collapsing two batches into one review.
+- Mark each batch dependent or independent by comparing the file sets rather than the descriptions. A batch sharing no file with another is independent and earns its own branch even where both arrived in one request. One run measured at 68 files carried three such batches into a single review because nothing drew the boundary.
+- Sequence a sweep last. A batch deliberately rewriting files earlier batches touched is coherent as the final one and forces every batch behind it into one review anywhere else.
+- Keep each batch's commits contiguous once the work starts. A later fix to an earlier batch belongs on that batch's own commits, since a batch interrupted by another cannot be lifted onto its own branch afterward.
+
 ## Step 4: output
 
 Decide the mode based on what Step 3 produced:
