@@ -3,8 +3,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { BASELINE_REL } from '@/audits/baseline'
-import type { MeasureContext } from '@/gate/measures'
-import { AUDITS_BASELINE, captureStamps } from '@/gate/measures'
+import type { CommandResult, MeasureContext } from '@/gate/measures'
+import {
+  AUDITS_BASELINE,
+  captureStamps,
+  recordIdempotence,
+} from '@/gate/measures'
 
 describe('AUDITS_BASELINE', () => {
   it('should agree with the path audits/baseline.ts writes', () => {
@@ -128,6 +132,102 @@ describe('captureStamps', () => {
     const report = await captureStamps(context())
 
     expect(report).toEqual({ emissions: [] })
+  })
+})
+
+describe('recordIdempotence', () => {
+  const refuse = () => {
+    throw new Error('recordIdempotence reads the CLI and nothing else')
+  }
+
+  const context = (result: Partial<CommandResult>): MeasureContext => ({
+    root: '/nowhere',
+    ci: false,
+    run: refuse,
+    cli: async () => ({
+      exitCode: 0,
+      stdout: '',
+      stderr: '',
+      all: '',
+      ...result,
+    }),
+  })
+
+  /**
+   * What the verb writes on a tree it could read. Exit `2` is a plan drawn and
+   * left unwritten, which is every reading but the one with nothing to do.
+   */
+  const planned = (
+    moves: readonly unknown[],
+    rewritten: number,
+    paths: readonly unknown[] = [],
+  ): Partial<CommandResult> => ({
+    exitCode: moves.length === 0 && rewritten === 0 ? 0 : 2,
+    stdout: `${JSON.stringify({ moves, rewritten, paths })}\n`,
+  })
+
+  const cited = [
+    { path: '.claude/context/development/scratch.md', rewritten: 1 },
+    { path: '.claude/context/sandbox/authoring.md', rewritten: 1 },
+  ]
+
+  it('passes where the records have moved and a re-run would rewrite nothing', async () => {
+    const report = await recordIdempotence(context(planned([], 0)))
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toBeUndefined()
+    expect(report.emissions[0]?.text).toContain('rewrites nothing')
+  })
+
+  it('fails where the records have moved and a citation still names the old root', async () => {
+    const report = await recordIdempotence(context(planned([], 2)))
+
+    expect(report.failure).toContain('2 citation(s) still name the old root')
+    expect(report.failure).toContain('canon-keep-record-root')
+  })
+
+  it('names each file the sweep would rewrite, so the count is actionable', async () => {
+    const report = await recordIdempotence(context(planned([], 2, cited)))
+
+    expect(report.emissions.map((emission) => emission.text)).toEqual([
+      '.claude/context/development/scratch.md (1)',
+      '.claude/context/sandbox/authoring.md (1)',
+    ])
+  })
+
+  it('keeps the finding where the payload names no path to list', async () => {
+    const report = await recordIdempotence(
+      context({ exitCode: 2, stdout: '{"moves":[],"rewritten":2}\n' }),
+    )
+
+    expect(report.failure).toContain('2 citation(s)')
+    expect(report.emissions).toEqual([])
+  })
+
+  it('reports without failing where the folders have yet to move', async () => {
+    const move = { from: '.claude/memory', to: '.canon/memory' }
+
+    const report = await recordIdempotence(context(planned([move], 14)))
+
+    expect(report.failure).toBeUndefined()
+    expect(report.emissions[0]?.text).toContain('1 record folder(s)')
+    expect(report.emissions[0]?.text).toContain('14 citation(s)')
+  })
+
+  it('reads a refusal exit as unmeasured rather than as a pass', async () => {
+    const report = await recordIdempotence(context({ exitCode: 1 }))
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toContain('exit 1')
+  })
+
+  it('reads a payload carrying no plan as unmeasured', async () => {
+    const report = await recordIdempotence(
+      context({ exitCode: 2, stdout: 'not a record\n' }),
+    )
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toContain('carried no plan')
   })
 })
 

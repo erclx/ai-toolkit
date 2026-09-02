@@ -4,6 +4,7 @@ import {
   markdownBans,
   type Measure,
   pluginManifests,
+  recordIdempotence,
   sandboxCoverage,
   seedStandards,
   standardCriteria,
@@ -336,6 +337,17 @@ export const STAGES: readonly Stage[] = [
       },
     ],
     success: 'Rule citations resolve',
+  },
+  {
+    // A citation naming the old record root resolves to nothing once the
+    // folders have moved, and the sweep that would repoint it only runs when a
+    // person calls it. Reading its plan back is what turns a silent stale
+    // citation into a stopped push, and it sits with the two citation stages
+    // above rather than at the end of the file because it answers their
+    // question about a root rather than a path.
+    id: 'record-idempotence',
+    label: 'Record idempotence',
+    checks: [{ kind: 'measure', measure: recordIdempotence }],
   },
   {
     id: 'markdown-bans',
