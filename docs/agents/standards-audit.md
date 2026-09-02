@@ -1,11 +1,13 @@
 ---
 title: Standard success criteria
-description: Reading the corpus against the Success criterion gate, why the check scopes to arrival rather than the whole corpus, and the exit codes it sets
+description: Reading the corpus against the success-criterion gate, the two headings it accepts, why the check scopes to arrival rather than the whole corpus, and the exit codes it sets
 ---
 
 # Standard success criteria
 
-`canon standards audit` reads the corpus at `standards/` and reports which files carry a `## Success criterion` section against which do not, per `standards/standard.md`. It fails only on a standard new to the current branch, never on one already short the section.
+`canon standards audit` reads the corpus at `standards/` and reports which files state a success criterion against which do not, per `standards/standard.md`. It fails only on a standard new to the current branch, never on one already short the section.
+
+Two headings count, at any casing. `## Success criterion` is the wording that standard states the rule under, and `## What a working <document type> looks like` is the wording its template prescribes for the section itself. Most of the corpus writes the templated form, so accepting the rule's wording alone would refuse a conforming standard.
 
 ```bash
 canon standards audit
@@ -25,11 +27,11 @@ canon standards audit --arrivals-only
 
 ## Exit codes and refusals
 
-| Code | Meaning                                                         |
-| ---- | --------------------------------------------------------------- |
-| `0`  | every arriving standard carries the section                     |
-| `1`  | refused, with `reason` naming the cause                         |
-| `2`  | a standard new to this branch carries no `## Success criterion` |
+| Code | Meaning                                                                |
+| ---- | ---------------------------------------------------------------------- |
+| `0`  | every arriving standard carries the section                            |
+| `1`  | refused, with `reason` naming the cause                                |
+| `2`  | a standard new to this branch states no criterion under either heading |
 
 A project authoring no standards refuses with `no-corpus`, the ordinary state of most targets, the same absence `canon claude skills audit` reads as its own `no-corpus`.
 

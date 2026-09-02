@@ -19,6 +19,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Issue reference](issue.md): GitHub issue title, labels, and body conventions
 - [Markdown reference](markdown.md): Headings, paragraph and list structure, code spans, the date form, punctuation, emphasis, file references, banned words, and frontmatter wording
 - [Memory reference](memory.md): Filename and type prefix, frontmatter, the body shape per type, links between entries, and the lifecycle from write to retire
+- [Mermaid reference](mermaid.md): Direction and layout, node and edge budgets, accessibility fields, label punctuation, and render verification for a Mermaid diagram
 - [Plan reference](plan.md): Filename and slug, required sections, the suggested-and-answer contract, and the lifecycle from the live folder to the archive
 - [Pull request reference](pr.md): Pull request title and body conventions
 - [Publish reference](publish.md): Scan an author runs against finished text, the cross-reference form each destination takes, and the response to an unreadable source

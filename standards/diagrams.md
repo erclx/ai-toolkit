@@ -11,10 +11,11 @@ A diagram entry answers one question about the system with one or more Mermaid d
 
 ## Scope
 
-Governs per-kind diagram entries under `.canon/diagrams/`: which question each answers, the Mermaid source, the accessibility fields, and the explanation prose beneath. It states the voice for that prose, which is the yield the `write-human` skill grants a surface whose own standard sets one.
+Governs per-kind diagram entries under `.canon/diagrams/`: which question each answers, which kinds exist and what each is drawn from, the frontmatter, and the explanation prose beneath the fence. It states the voice for that prose, which is the yield the `write-human` skill grants a surface whose own standard sets one.
 
 Does not govern:
 
+- How the drawing inside the fence is laid out, budgeted, made accessible, and verified against its render: `mermaid.md`
 - Rhythm and sentence construction in explanation prose: the `write-human` skill, whose rules the yield does not lift beyond voice
 - Language, word choice, punctuation, and formatting in explanation prose and node labels: `markdown.md`, which the yield does not reach
 - The mechanism behind any component a diagram draws: `context.md`
@@ -63,28 +64,9 @@ The kinds drift at rates spanning roughly an order of magnitude, which is why th
 
 A second entry for one kind takes a suffixed name (`request-flow-admin.md`) and repeats the kind's `category` verbatim, which is what the grouping field is for. One entry per kind is the ordinary case, so most catalogs show one entry under each heading.
 
-## Layout
-
-- Declare `flowchart TB` by default. Mermaid ignores a subgraph's direction whenever that subgraph links outward, and an architecture diagram links across its subgraphs as the normal case, so top-bottom is a declaration rather than a guarantee.
-- Restructure a diagram that renders diagonal or left-to-right. Repeating the direction keyword does not fix it.
-- Render a context, component, or pipeline diagram taller than wide. A `sequenceDiagram` is wide by construction and is exempt.
-- Do not let independent nodes render in a row. A row of siblings reads as a sequential chain and asserts a pipeline the system does not have.
-- Do not converge many edges on one node from one side. A crossing bundle is unreadable whatever it encodes.
-- Keep node labels short. Three or four words max. Detail goes in the paragraph below the diagram.
-- Use `<br/>` for a second short line on a node when the label is two ideas, never for a sentence.
-- Subgraphs are for grouping unrelated lanes such as offline versus online or browser versus server. Do not subgraph a single linear flow.
-
 ## Budgets
 
-- Hold a diagram to roughly 5 to 10 nodes. Split it past 15.
-- Watch edge count harder than node count. It binds first, and a diagram whose edges outnumber its nodes is already too dense to read.
-- Treat a diagram that cannot be described in one sentence as two diagrams.
 - Keep an entry to one diagram by default. A second fence in the same file needs its own H2 naming what it adds, and a third is a sign the entry covers two kinds.
-- Warn rather than refuse on a budget, and name the split that would fix it. These numbers come from published Mermaid practice rather than from a measurement in this repository, so a hard refusal on them will be wrong sometimes and unarguable when it is.
-
-## Accessibility
-
-- Give every diagram `accTitle` and `accDescr`. `accTitle` names what the diagram answers. `accDescr` states the structure in one sentence for a reader who cannot see the render.
 
 ## Explanation
 
@@ -95,13 +77,6 @@ A second entry for one kind takes a suffixed name (`request-flow-admin.md`) and 
 - The audience is mixed, so vocabulary runs as a gradient across the set. `System context` assumes no knowledge of the repository. `Deployment` may assume the reader has read the others.
 
 This section states the voice for the surface, which is what claims the yield the `write-human` skill grants to a surface whose own standard sets it. Explanation prose is pedagogical here and the default developer-facing voice does not apply. The yield covers voice alone. The rhythm and density rules that skill carries stay in force, as do the language bans, punctuation, and formatting in `markdown.md`, which grants no yield at all.
-
-## Verification
-
-- Judge a diagram from its rendered image, not from its source. Direction, sibling rows, and edge bundles are visible only in the output.
-- Render to PNG. An SVG export reads back as markup with no recoverable spatial meaning.
-- Apply four tests as a reviewer, the same ones the author applied: direction held, no sibling row reading as a chain, no crossing edge bundle, taller than wide outside a sequence diagram.
-- State which verification was skipped when no renderer is available. A diagram written without a render is still shippable, and one reported as verified without a render is not.
 
 ## What moves to .claude/context/
 
@@ -120,12 +95,12 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 - A diagram showing a defunct host or library is worse than no diagram. Audit the affected entry in the same PR.
 - `System context` has no named source signal beyond `.claude/REQUIREMENTS.md`, so nothing tells a session it went stale. Re-read it when the boundary or the set of external dependencies moves.
 - Nothing watches the folder for you. The entries are redrawn on demand rather than swept on every ship, so `verified` carries the whole signal: an entry whose date sits far behind the branch is due a read, and no pass is going to name which one.
-- The explanation paragraphs around a Mermaid block are prose and follow `markdown.md` and the `write-human` skill. The fenced block itself is not, which is why a check scoped to prose is the wrong thing to rely on for what sits inside it.
-- The punctuation bans still apply to node and subgraph labels, and nothing checks them there. An em dash in a label passes every gate the repository has, so read the labels before shipping the entry.
 
 ## Template
 
 The filename and the `category` value both come from Entry kinds and are fixed per kind. A stub nobody has drawn yet carries `TODO: never verified` in place of the SHA and date. The node names and labels inside the fence are placeholders, written bare because Mermaid reads an angle bracket as markup.
+
+What goes inside the fence, and how the render is checked once it is drawn, is `mermaid.md`. This template fixes the frame around it.
 
 ````markdown
 ---
