@@ -35,6 +35,12 @@ Porting the block also corrected the test for an unusable baseline. `claude-docs
 
 `claude-docs` never pays for it, because it unions the committed, working, and untracked sets and the committed half going empty costs it nothing. Any skill reading the committed half alone needs the wider test, which is that the base equals HEAD whichever ref resolved it. Correcting the wording in `claude-docs` itself is a follow-up rather than part of the port, since nothing there reads it wrongly today.
 
+## What the review selection rule drops past the baseline
+
+A usable baseline is not enough for `claude-review`, whose Step 2 takes the staged set when it is non-empty and `git diff <base> HEAD` otherwise. Nothing in that pair reaches the working tree, so a branch carrying at least one commit with nothing staged reads as perfectly usable, skips the `git diff HEAD` substitution the unusable arm would have supplied, and reviews only what is committed.
+
+The ship chain produces that shape whenever a plan asks for the test committed ahead of the correction it covers, which the planning rules ask for generally and `canon gov test-order` measures. The test commit moves HEAD off the base and the implementation is still uncommitted when `claude-autoship` Step 5 invokes the review, so the pass reads the tests and never sees the code they cover. The classifier one step earlier already diffs the base against the working tree, so the two steps in one chain disagree about what the branch is.
+
 ## The narrower test autoship carries
 
 `claude-autoship` was held back from that port on purpose and became the fifth skill to take the baseline. Its classifier decides whether a review runs at all, so widening what it sees turns a branch that looked prose-only into a mixed one and changes behavior rather than only correctness. It shipped with the bug filed against that classifier instead of inside a five-file diff, since a stale baseline is one of the ways the file list comes back empty and the vacuous test is what then waves it through.
