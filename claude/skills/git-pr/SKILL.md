@@ -145,7 +145,7 @@ canon tasks pull-request <number> --plan feature-<slug> --json
 
 The slug is a guess at which plan this branch carries rather than a fact about the task, which is why the verb re-checks it against the board and refuses instead of writing on a near miss. A branch whose slug names no plan file falls to the silent skip below, the same as one whose plan no task cites.
 
-The verb resolves the board at the main worktree root in-process, adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already carries, and corrects the number in place when the line exists. This is the route because the write is an edit inside an existing file, which the file-editing tools refuse from a linked worktree and which no shell stream editor may make. See Worktrees in `CLAUDE.md`.
+The verb resolves the board at the main worktree root in-process, adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already carries, and corrects the number in place when the line exists. This is the route because the write is an edit inside an existing file, which the file-editing tools refuse from a linked worktree and which no shell stream editor may make. That root is the one `claude-worktree` resolves on entry.
 
 Skip this silently when the record is `ok: false` and `reason` is `no-board`, `no-match`, or `ambiguous`. Those are the three cases a guessed write would compound: no board, no task naming the plan, or more than one. One task, one pull request, and a wrong match archives the wrong task unattended once the branch merges. Report any other refusal rather than swallowing it.
 

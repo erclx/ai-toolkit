@@ -23,7 +23,7 @@ Run in parallel:
 - `git branch --show-current 2>/dev/null || echo ""`
 - `git config --get core.bare 2>/dev/null || echo false`
 
-Plans always live at the main root, never inside a linked worktree. See Worktrees in `CLAUDE.md`.
+Plans always live at the main root, never inside a linked worktree.
 
 `EnterWorktree` writes `core.bare = true` into the shared config, and nothing restores it, so the repository can already be broken before this session arrives. Repair it before entering when the value is `true` and `<main-root>/.git` is a directory:
 

@@ -13,7 +13,7 @@ The filename and its type prefix, the frontmatter, the body shape each type carr
 
 ## Guards
 
-- All `.canon/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- All `.canon/memory/` reads and writes resolve at the main worktree root, not the current worktree. Resolve that root the way `claude-worktree` does.
 - From a linked worktree the file-editing tools refuse every path below, so each write in this skill goes out through `Bash` as a plain single command. A memory entry holds one fact and this session has read it, so an update rewrites the whole file with a heredoc rather than editing a line inside it.
 - If `.canon/memory/` does not exist at the main worktree root, create it, along with an `index.md` carrying `title` and `subtitle` frontmatter. `canon claude init` seeds both, and a project predating that seed has neither. Regeneration errors without the index, so the first write into a bare folder would report a frontmatter failure against a file that is fine.
 - If the session produced no user corrections, confirmations, or context disclosures worth persisting, stop: `✅ Nothing worth capturing.`

@@ -21,7 +21,7 @@ If the user re-pings the skill with no new phrase and a receipt exists, default 
 
 ## Guards
 
-- All `.canon/memory/` reads, edits, and archive moves resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- All `.canon/memory/` reads, edits, and archive moves resolve at the main worktree root, not the current worktree. Resolve that root the way `claude-worktree` does.
 - If no `.canon/memory/` directory exists at the main worktree root, stop: `❌ No .canon/memory/ directory found.`
 - If `.canon/memory/` contains no `*.md` entries other than `index.md`, stop: `✅ No memory entries to review.`
 - Cleanup is exempt from the two stops above. It works on receipts in `.canon/review/`, and a drained pen is the normal state once Apply has run, so a pen-shaped stop would strand the receipt it exists to delete.

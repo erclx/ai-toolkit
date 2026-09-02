@@ -36,7 +36,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: project type, conventions, and commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: technical design decisions
-- `.canon/tasks/priority.md`: where this feature sits on the board and what each neighboring row waits on. Resolve this one at the main worktree root per Worktrees in `CLAUDE.md`, since the board is gitignored and a linked worktree holds no copy of it
+- `.canon/tasks/priority.md`: where this feature sits on the board and what each neighboring row waits on. Resolve this one at the main worktree root the way `claude-worktree` does, since the board is gitignored and a linked worktree holds no copy of it
 - `.canon/plans/feature-<slug>.md` for the branch, when present: the intent the PR should satisfy
 
 Coding standards from `.claude/rules/` are auto-loaded by Claude Code.
