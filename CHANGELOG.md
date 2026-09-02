@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.28.0](https://github.com/erclx/canon/compare/v4.27.1...v4.28.0) (2026-09-02)
+
+
+### Features
+
+* **orchestrate:** state the human-launch line in the dispatch fallback ([#1408](https://github.com/erclx/canon/issues/1408)) ([2ad7803](https://github.com/erclx/canon/commit/2ad78031573701db6572efdbf339e345bba20382))
+
 ## [4.27.1](https://github.com/erclx/canon/compare/v4.27.0...v4.27.1) (2026-09-02)
 
 
