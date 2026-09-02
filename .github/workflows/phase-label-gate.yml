@@ -5,12 +5,17 @@ on:
     types: [opened, edited, reopened, synchronize]
     branches:
       - main
+  # pull_request_review carries no branches filter GitHub Actions reads, so the
+  # base ref is checked in the job's own `if:` below instead.
+  pull_request_review:
+    types: [submitted, edited]
   workflow_dispatch:
 
 jobs:
   phase-label-gate:
     name: 🏷️ Phase Label Gate
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.base.ref == 'main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,5 +28,5 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      - name: Scan the pull request for a phase label, a board identifier, or a session link
+      - name: Scan the pull request or review for a phase label, a board identifier, or a session link
         run: bun src/cli.ts labels scan --event "$GITHUB_EVENT_PATH"
