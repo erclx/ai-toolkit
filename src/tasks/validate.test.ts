@@ -90,6 +90,24 @@ async function seedArchivedTask(stem: string): Promise<void> {
   await writeFile(join(archive, `${stem}.md`), `# ${stem}\n`)
 }
 
+function needsPlanTable(rows: readonly string[]): string {
+  return [
+    '## Needs a plan',
+    '',
+    '| Task | Waiting on |',
+    '| ---- | ---------- |',
+    ...rows,
+    '',
+  ].join('\n')
+}
+
+/** A board holding one `## Needs a plan` row, for reading a single cell back. */
+function needsPlanBoard(cell: string): string {
+  return boardBody([
+    needsPlanTable([`| [v3.0-third](v3.0-third.md) | ${cell} |`]),
+  ])
+}
+
 function parkedTable(rows: readonly string[]): string {
   return [
     '## Up next',
@@ -300,6 +318,52 @@ describe('readBoard', () => {
     ])
 
     expect(readBoard(text).rows[0]?.ordinal).toBeUndefined()
+  })
+
+  it('should read a cell naming the sibling row it is ranked against as ranked', () => {
+    const text = needsPlanBoard(
+      'a plan, and it trails `v75.9` because a dead link degrades a page where a wrong default breaks a command',
+    )
+
+    expect(readBoard(text).rows[0]?.ranked).toBe(true)
+  })
+
+  it('should read a cell naming the class of rows it opens or closes as ranked', () => {
+    const text = needsPlanBoard(
+      'a plan, and it closes the capability group because the escape hatch serves one deck author',
+    )
+
+    expect(readBoard(text).rows[0]?.ranked).toBe(true)
+  })
+
+  it('should not read a cell stating only why the task matters as ranked', () => {
+    const text = needsPlanBoard(
+      'a plan, and it closes a gap the reference gate leaves open',
+    )
+
+    expect(readBoard(text).rows[0]?.ranked).toBe(false)
+  })
+
+  it('should not pair a position verb in one clause with an object in another', () => {
+    const text = needsPlanBoard(
+      'a plan, and it closes a long-standing gap, because the row above ships a wrong instruction',
+    )
+
+    expect(readBoard(text).rows[0]?.ranked).toBe(false)
+  })
+
+  it('should keep a phase label whole rather than splitting it at its own period', () => {
+    const text = needsPlanBoard('a plan, and it sits under `v80.4`')
+
+    expect(readBoard(text).rows[0]?.ranked).toBe(true)
+  })
+
+  it('should leave ranked false where the group fixes no waiting on column', () => {
+    const text = boardBody([
+      readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+    ])
+
+    expect(readBoard(text).rows[0]?.ranked).toBe(false)
   })
 })
 
@@ -1068,6 +1132,51 @@ describe('validateBoard', () => {
     expect(await validateBoard(ROOT)).toMatchObject({ findings: [] })
   })
 
+  it('should report one finding per needs a plan row whose cell ranks it against nothing', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v9.0-a')
+    await seedTask('v9.1-b')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first' }]),
+        needsPlanTable([
+          '| [v9.0-a](v9.0-a.md) | a plan, and it closes a gap the reference gate leaves open |',
+          '| [v9.1-b](v9.1-b.md) | a plan, because a leaked link reaches one pull request |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      {
+        kind: 'row-unranked',
+        group: 'Needs a plan',
+        subject: 'v9.0-a',
+        message:
+          'names no row or class it is ranked against, so its position 1 of 2 in Needs a plan records only when it was filed.',
+      },
+      { kind: 'row-unranked', subject: 'v9.1-b' },
+    ])
+  })
+
+  it('should leave a needs a plan row carrying an ordinal out of the unranked finding', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v9.0-a')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first' }]),
+        needsPlanTable([
+          '| [v9.0-a](v9.0-a.md) | a plan settling what the sweep covers. First here |',
+        ]),
+      ]),
+    )
+
+    expect(await validateBoard(ROOT)).toMatchObject({ findings: [] })
+  })
+
   it('should report a needs a plan row stating no file set as untested', async () => {
     await seedTask('v1.0-first')
     await seedTask('v3.0-third')
@@ -1079,7 +1188,7 @@ describe('validateBoard', () => {
         '',
         '| Task | Waiting on |',
         '| ---- | ---------- |',
-        '| [v3.0-third](v3.0-third.md) | a plan settling what the sweep covers |',
+        '| [v3.0-third](v3.0-third.md) | a plan settling what the sweep covers, and it opens the group |',
         '',
       ]),
     )
