@@ -94,6 +94,7 @@ The session also records nothing of what it learns. Both other callers of memory
 - Merge. Recommend merge or changes and leave the gate to the human.
 - Spawn a worker with the Agent tool, since an in-process subagent shares this session's context and cannot be steered or reached independently. A dispatched `claude --bg` process is not this: it is a separate session with its own worktree and its own PR, gated by the collision check and the file-set disjointness test.
 - Hand a worker anything but a plan, because scope lives there
+- Size or explain a row while filing it, which is naming a count of the defect's extent or the mechanism behind it, since this seat measures a defect from where it stands and the planner is the reader who commits to that scope. A blocker re-test, a collision check, and a file set decide whether a row can start rather than how big it is, and they stay.
 - Run a second orchestrator against the same board
 - Promote a task to fill the queue when nothing qualifies. A thin queue is a real answer.
 - Promote a parked row on how long it has waited, since age is not a measurement of the blocker
