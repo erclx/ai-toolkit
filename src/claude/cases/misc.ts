@@ -8,6 +8,11 @@ export const MISC_CASES: readonly SkillCase[] = [
     expect: 'decision-escalate',
   },
   {
+    prompt:
+      'Show me a few different treatments for this callout so I can pick one by looking.',
+    expect: 'draft-and-pick',
+  },
+  {
     prompt: 'Fire up the dev server the way this project documents it.',
     expect: 'project-commands',
   },
