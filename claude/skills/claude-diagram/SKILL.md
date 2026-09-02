@@ -24,7 +24,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 
 Do not recurse speculatively.
 
-Follow `${CLAUDE_SKILL_DIR}/../../standards/diagrams.md` for frontmatter, entry kinds, layout, budgets, accessibility, verification, and explanation rules.
+Follow `${CLAUDE_SKILL_DIR}/../../standards/diagrams.md` for frontmatter, entry kinds, and explanation rules. Follow `${CLAUDE_SKILL_DIR}/../../standards/mermaid.md` for what goes inside the fence: layout, budgets, accessibility, labels, and verification.
 
 ### Migrating a pre-split flat file
 
@@ -124,7 +124,7 @@ When the render fails for any reason (no browser engine, no network, no package 
 
 ## Step 6: read the renders back
 
-Read each PNG and judge the picture against what the entry means to say. Apply the verification properties in the standard.
+Read each PNG and judge the picture against what the entry means to say. Apply the verification properties in `${CLAUDE_SKILL_DIR}/../../standards/mermaid.md`.
 
 Fix the source and re-render. Stop after two correction passes on an entry.
 

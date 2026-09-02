@@ -27,7 +27,8 @@ Each rule below duplicated bullets the cited standard already states. The rule-a
 - `governance/rules/claude/550-design.md` → `canon standards design`: cut the token-as-intent, no-CSS, table-format, and omission bullets.
 - `governance/rules/claude/555-tasks.md` → `canon standards tasks`: cut the origin-line, outcome-sizing, heading, no-implementation-detail, and archiving bullets, each restated close to verbatim.
 - `governance/rules/claude/559-memory.md` → `canon standards memory`: cut the routing and pen bullets.
-- `governance/rules/claude/560-diagrams.md` → `canon standards diagrams`: cut the refresh-only-changed-entries bullet and kept the `DIAGRAMS.md` migration bullets, which the standard does not state.
+- `governance/rules/claude/560-diagrams.md` → `canon standards diagrams`: cut the refresh-only-changed-entries bullet and kept the `DIAGRAMS.md` migration bullets, which the standard does not state. It also routes at `502-mermaid` rather than citing `mermaid.md` itself, since that rule's own glob already reaches an entry under `.canon/diagrams/`.
+- `governance/rules/claude/502-mermaid.md` → `canon standards mermaid`: carries no cut bullet, opening instead on the condition its glob cannot express, since a path match cannot read whether the file holds a fence.
 - `governance/rules/claude/562-session.md` → `canon standards session`: cut the own-file, worktree-root, compaction-only, and citation bullets, and kept the routing bullet pointing at `555-tasks.md`, which the standard does not carry.
 - `governance/rules/claude/570-skill.md` → `canon standards skill`: cut the `REQUIREMENT.md` gap-line bullet and kept the `create-skill` question bullet and the after-editing bullets, none of which the standard states.
 - `governance/rules/claude/580-readme.md` → `canon standards readme`: cut the audience-and-voice bullets, each restated close to verbatim.

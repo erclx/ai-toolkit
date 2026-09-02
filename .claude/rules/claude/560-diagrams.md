@@ -1,5 +1,5 @@
 ---
-description: Route .canon/diagrams edits to the diagrams standard for Mermaid conventions
+description: Route .canon/diagrams edits to the diagrams standard for entry kinds, frontmatter, and explanation prose
 paths:
   - '.canon/diagrams/**'
   - '.claude/DIAGRAMS.md'
@@ -9,7 +9,8 @@ paths:
 
 ## Authority
 
-- Follow the diagrams standard for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source. Read it with `canon standards diagrams`.
+- Follow the diagrams standard for which question an entry answers, the entry kinds and their source signals, the frontmatter, and the explanation prose beneath the fence. It is the single source. Read it with `canon standards diagrams`.
+- Layout, budgets, accessibility, labels, and render verification inside the fence are a separate topic. `502-mermaid` routes them to `mermaid.md`.
 - A diagram entry carries structure and flow, not implementation. Read the standard before adding or revising a kind.
 
 ## Scope
