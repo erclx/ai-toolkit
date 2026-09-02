@@ -349,15 +349,21 @@ async function listFilesByPage(
 /**
  * Reads the body off disk and the changed set from git, which is the shape a
  * fixture and a body still being drafted both need.
+ *
+ * `cwd` and `root` diverge when a caller passes `--root` to read a pull
+ * request against a worktree other than the one they are standing in. The
+ * body path is resolved against `cwd`, since it is correct from where the
+ * caller stands regardless of which tree `--root` names.
  */
 async function readFromFile(
   root: string,
+  cwd: string,
   path: string,
   base: string | undefined,
 ): Promise<SourceRead> {
   let body: string
   try {
-    body = await readFile(resolve(root, path), 'utf8')
+    body = await readFile(resolve(cwd, path), 'utf8')
   } catch {
     return { kind: 'refused', reason: 'unreadable-body' }
   }
@@ -403,7 +409,7 @@ async function runKeyChanges(
   const source =
     opts.body === undefined
       ? await readFromApi(root, number)
-      : await readFromFile(root, opts.body, opts.base)
+      : await readFromFile(root, process.cwd(), opts.body, opts.base)
 
   if (source.kind === 'refused') return refuse(source.reason, emitJson, root)
 
