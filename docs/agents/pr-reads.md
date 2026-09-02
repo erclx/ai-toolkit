@@ -38,6 +38,8 @@ Keying the query on a sha is necessary and not sufficient. The endpoint answered
 
 Both empty cases report `pending` instead: a tip carrying no run yet, and a listing whose rows all belong to some other commit. The record separates them, since `matched` counts the runs belonging to the tip and `foreign` counts the rest, and a caller that wants to tell "not started" from "still going" reads those two numbers rather than the state alone.
 
+`matched` counts runs and not distinct checks, which is where it parts company with the list `gh pr checks` prints. A workflow that fires twice on one commit lands two runs under one name, so a pull request whose body was edited after the push reads 3 against that command's 2. Measured on this repository at `bae5194c` on 2026-09-02, where the phase-label workflow ran on the push and again on the edit. Read a `matched` above the check count as that, rather than as the verb disagreeing with the command.
+
 A listing carrying even one foreign run reports `pending` whatever the matching half says. A set that describes another commit says nothing about this one, so answering off the rows that happen to match would put a verdict on a set already known to be incomplete.
 
 A count above the rows returned reports `pending` for the same reason. The query asks for 100 rows against the endpoint's default of 30, and a commit carrying more than that comes back short, so the verb reports the tip as unread rather than collapsing the page it happens to hold. `reported` against `matched` and `foreign` is where a reader sees which of the three shapes produced the answer.
