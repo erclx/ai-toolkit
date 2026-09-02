@@ -90,6 +90,9 @@ the case this read answers nothing for.
 - Refuse an instruction the tree contradicts, and carry the evidence with it. Name the commands read and the consequences of complying, rather than reporting reluctance.
 - Halt on a plan question written as needing the operator's call. The plan standard defines that as a stop for an executing session, so the dispatch that sent it unattended is the defect and the halt is not.
 - Halting is cheap and guessing is not. Four measured halts each cost the dispatcher one reply, and the correction that mattered most reached the right place because a worker argued back rather than complying.
+- Read a file named as held, whether by a plan's Constraints block or by a controller's message sent mid-build, at the hunk against the branch or pull request holding it before conceding it.
+- Report that reading to the controller as the hunks or line ranges on each side, and take its reply as the call on whether the file is kept or given up, not a decision this session makes alone.
+- A dispatcher once named three files a branch was writing. The worker diffed that branch, found its hunks at two lines against its own at three others, and reported the comparison, and the dispatcher reversed the instruction and returned every file.
 
 ## Lifetime
 
