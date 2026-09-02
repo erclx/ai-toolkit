@@ -3,22 +3,41 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-const HOOK = join(import.meta.dirname, '../.claude/hooks/scratch-guard.sh')
 const ROOT = join(import.meta.dirname, '..')
 
-// The hook accepts a scratch write it recognizes through one case arm under
-// `case "$file_path" in`, the only one exiting 0 on more than the bare
-// wildcard. Parsing it here rather than restating the two spellings is what
-// makes this a parity test rather than a second copy of the pair.
-function deriveAcceptPatterns(source: string): string[] {
+// Both trees carry the same hook and nothing else compares them, matching
+// src/hooks-guard.test.ts's TREES. A fix landing in one and not the other
+// still passes every other stage in the gate.
+const TREES = [
+  { dir: join(ROOT, '.claude/hooks'), label: '.claude/hooks' },
+  {
+    dir: join(ROOT, 'tooling/claude/seeds/.claude/hooks'),
+    label: 'tooling/claude/seeds/.claude/hooks',
+  },
+]
+
+// The hook accepts a scratch write it recognizes through case arms under
+// `case "$file_path" in`, each exiting 0 on more than the bare wildcard.
+// Collecting every such arm rather than returning on the first is what keeps
+// a second arm added later from going untested. Parsing them here rather than
+// restating the two spellings is what makes this a parity test rather than a
+// second copy of the pair.
+function deriveAcceptPatterns(source: string, hookPath: string): string[] {
+  const patterns: string[] = []
+
   for (const line of source.split('\n')) {
     const match = line.trim().match(/^(.+)\)\s*exit 0\s*;;$/)
     if (!match || match[1] === '*') continue
-    return match[1].split('|').map((pattern) => pattern.trim())
+    patterns.push(...match[1].split('|').map((pattern) => pattern.trim()))
   }
-  throw new Error(
-    `No accept-pattern case arm found in ${HOOK}. The hook's shape changed; update this test's parser.`,
-  )
+
+  if (patterns.length === 0) {
+    throw new Error(
+      `No accept-pattern case arm found in ${hookPath}. The hook's shape changed; update this test's parser.`,
+    )
+  }
+
+  return patterns
 }
 
 // `*/.claude/.tmp/*` matches any path carrying that segment, the glob wrapper
@@ -42,17 +61,24 @@ function isIgnored(path: string): boolean {
   )
 }
 
-describe('scratch-guard ignore parity', () => {
-  const patterns = deriveAcceptPatterns(readFileSync(HOOK, 'utf8'))
+for (const tree of TREES) {
+  const hookPath = join(tree.dir, 'scratch-guard.sh')
 
-  it('derives at least one accept pattern from the hook', () => {
-    expect(patterns.length).toBeGreaterThan(0)
+  describe(`scratch-guard ignore parity: ${tree.label}`, () => {
+    const patterns = deriveAcceptPatterns(
+      readFileSync(hookPath, 'utf8'),
+      hookPath,
+    )
+
+    it('derives at least one accept pattern from the hook', () => {
+      expect(patterns.length).toBeGreaterThan(0)
+    })
+
+    it.each(patterns)(
+      'git ignores a write the hook accepts under %s',
+      (pattern) => {
+        expect(isIgnored(probePath(pattern))).toBe(true)
+      },
+    )
   })
-
-  it.each(patterns)(
-    'git ignores a write the hook accepts under %s',
-    (pattern) => {
-      expect(isIgnored(probePath(pattern))).toBe(true)
-    },
-  )
-})
+}
