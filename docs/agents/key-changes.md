@@ -28,7 +28,7 @@ The positional is the pull request to read, defaulting to the one open on this b
 
 Without `--body` the body, the file list, and the head commit come back from one `gh pr view` call, because the three have to describe the same commit and reading them apart leaves a window where a push between them compares a body against another head's files.
 
-That view caps its file list at 100 rows and says nothing about having done so, which was measured against `#1250`: the pull request carries 101 files and the view reports 100. A pull request at the cap therefore takes a second read through the paginated endpoint, and a failure there refuses with `gh-truncated` rather than comparing against a set known to be short. A set silently one file short is the worst input this takes, since the missing file is exactly what a correct bullet would then be accused of inventing.
+That view caps its file list at 100 rows and says nothing about having done so, which was measured against `erclx/canon#1250`: the pull request carries 101 files and the view reports 100. A pull request at the cap therefore takes a second read through the paginated endpoint, and a failure there refuses with `gh-truncated` rather than comparing against a set known to be short. A set silently one file short is the worst input this takes, since the missing file is exactly what a correct bullet would then be accused of inventing.
 
 ## The two directions
 
@@ -105,7 +105,7 @@ The bound is that the corpus is one repository writing to one house style. A pro
 
 What it cannot see is a bullet claiming a change to a file the branch did touch for another reason, and a path written without backticks. A claim in a second coordinated clause after the comma is read and credited, and it stays out of the graded direction, since nothing here separates it from a file the same clause cites for context.
 
-One class stays open and is named rather than closed. A bullet can cite where something is defined while claiming an edit somewhere else, as `#1274` does with "Name the slug transform in `standards/slug.md` inline in the same step". The path is a definition site, the edit target is the step, and separating the two needs the sentence parsed rather than cut. A finding on such a bullet is this class rather than a stale claim, and a reader weighing an `unmet` path checks whether the bullet's real target is a locative the path does not name.
+One class stays open and is named rather than closed. A bullet can cite where something is defined while claiming an edit somewhere else, as `erclx/canon#1274` does with "Name the slug transform in `standards/slug.md` inline in the same step". The path is a definition site, the edit target is the step, and separating the two needs the sentence parsed rather than cut. A finding on such a bullet is this class rather than a stale claim, and a reader weighing an `unmet` path checks whether the bullet's real target is a locative the path does not name.
 
 ## Where it runs
 

@@ -29,4 +29,4 @@ Read these files in parallel:
 
 Every skill carries a requirement. A skill created without one is a gap someone closes in a later sweep, and the sweep has to reconstruct what the skill was for from the body it already shipped.
 
-The two-question check has a shipped precedent. Pull request `#516` dropped `git-stash` for wrapping a single git command that needed no skill body, and `release-changelog` for being low-frequency and invoked by no other skill. The first is question one, and the second is question three read back after the fact, which is why it stays a review criterion rather than something this skill can gate on.
+The two-question check has a shipped precedent. Pull request `erclx/canon#516` dropped `git-stash` for wrapping a single git command that needed no skill body, and `release-changelog` for being low-frequency and invoked by no other skill. The first is question one, and the second is question three read back after the fact, which is why it stays a review criterion rather than something this skill can gate on.

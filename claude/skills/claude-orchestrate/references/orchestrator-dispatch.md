@@ -100,7 +100,7 @@ The client expands the first slash command in a launch prompt as a user
 invocation, which is the route `disable-model-invocation: true` permits. Every
 later command in the same prompt reaches the session as prose, leaving the model
 to invoke it through the `Skill` tool, and that route answers a flagged skill
-inconsistently. `claude-autoship` has carried the flag since `#365` and seven
+inconsistently. `claude-autoship` has carried the flag since `erclx/canon#365` and seven
 other shipped skills carry it too.
 
 The block above therefore leads with the call that does not need the user route
@@ -148,7 +148,7 @@ Report the dispatch as loudly as the human-launch line it replaces: name the bra
 
 `claude-address-review` is a single pass, not a chain, so a launch naming it
 alone reaches no `claude-worker` and takes no role, which owes no message
-either. `#1251`'s replacement session was launched that way, onto the branch a
+either. `erclx/canon#1251`'s replacement session was launched that way, onto the branch a
 review had already posted findings against, and it answered by posting a
 thread reply and telling its controller nothing. Reach the role directly on
 this launch instead of wrapping a second chain around one skill that has none
