@@ -1,0 +1,70 @@
+# What a correct `/canon:draft-and-pick` run leaves behind on the seeded page. Read
+# by `canon sandbox check`. Patterns use TOML literal strings so a regex needs no
+# backslash escaping.
+#
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so an array written at the bottom parses
+# clean and silently asserts nothing.
+#
+# The machine carries no browser binary and a sandbox cannot fetch one, so the run
+# authors its candidate set and then meets the render refusal. What that leaves
+# open to assertion is the artifact and the honesty of the stop: a candidate page
+# under scratch, the seeded page and its design note untouched, and a reply naming the
+# repair rather than describing arms nobody has seen. The pick, the loop, and
+# whether the arms differ in a way worth choosing between all sit behind the
+# render and stay under `manual`.
+#
+# A global `canon` predating the release that shipped `capture` to targets refuses
+# with an unknown-command message instead, which reddens the reply pin for a reason
+# this arm is not about. Put the branch CLI ahead on PATH for the run, per
+# `.claude/context/sandbox/running.md`.
+
+paths = [".canon/tmp/*/candidates.html"]
+
+# The whole run belongs in scratch. Step 5 of the body holds the real surface
+# untouched until the pick is final, and the run never reaches a pick here, so a
+# write anywhere else is the failure this bounds. Admitting nothing else is what
+# catches a run that edited `index.html` to try a treatment in place.
+write_scope = [".canon/tmp/**"]
+
+# The repair string is spelled by the body rather than chosen by the run, which is
+# what keeps it out of `manual`. The candidates path is left to a reader, since the
+# body fixes where the file goes and not whether the stop report names it.
+reply = ["playwright install chromium"]
+
+# Declared at the runner default rather than at an observation. The cost follows
+# how many arms the run drafts and how much markup each one takes, which is a
+# property of the decision rather than of the arm, so one run bounds nothing.
+# Correct it downward from the widest of several runs.
+#
+# Never raise it above the cap of 30: a truncated run reports one turn past the
+# cap, so a declaration above it goes green on exactly the truncation the
+# assertion exists to catch.
+max_turns = 30
+
+manual = [
+  "The arms differ in a way worth choosing between. Semantic: this is the whole judgment the skill exists to serve, and a fixture with the answer pre-supplied proves the loop ran rather than that the candidates were worth looking at.",
+  "The candidate page carries three to five arms, each labeled with its id and what it costs. Semantic: the labels are prose the run writes, so any pattern matching them either passes on one spelling and fails every other or matches so loosely it asserts nothing.",
+  "Every arm sits on one page rather than in a file per arm. Judgment: the paths entry proves a candidates page exists and says nothing about whether a run also split the arms into siblings, and a negative glob over a filename the run chooses passes on any other spelling.",
+  "The arms vary one property. Semantic: the seeded decision names a border, a ground shift, and an edge rule, and whether a run held everything else fixed is read off the markup rather than matched.",
+  "The page is self-contained, reaching for no build step, network font, or external stylesheet. Semantic: an external reference is a URL the run chooses and no pattern bounds the set of them.",
+  "The run stopped at the render rather than reporting on an arm it never saw. Judgment: the reply pin catches the repair being named and not a description offered alongside it.",
+  "The pick was never put to the operator, since it sits behind the render. Unwired: the harness captures no tool calls, so whether the structured question surface was reached is not in the envelope.",
+  "The loop, the recommendation ranked first and marked, and the deletion of the losing arms are all unreached here. Unwired: each sits behind the render refusal, so this arm covers none of them and the working render stays untested until a machine with a browser binary runs one.",
+]
+
+# The seeded page, pinned at the treatment under decision. `content` matches
+# positively, so a run that edited the callout to try an arm in place pushes or
+# rewrites these lines and fails the match.
+[[content]]
+path = "index.html"
+pattern = '\.callout \{\n        background: #f4f4f5;\n        padding: 1rem;\n      \}'
+
+[[content]]
+path = "index.html"
+pattern = '<p>Upgrading from 3\.x needs one manual step\. Read the migration note first\.</p>'
+
+# The design note states the decision and is not the run to answer in place.
+[[content]]
+path = ".claude/DESIGN.md"
+pattern = 'a border, a ground shift, and a rule down one edge are all\ndefensible'
