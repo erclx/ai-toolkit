@@ -203,6 +203,20 @@ describe('extractKeyChangePaths', () => {
     ])
   })
 
+  it('should cut the claim region at the comma outside a doubled-backtick span rather than the one inside it', () => {
+    const read = extractKeyChangePaths(
+      body(
+        '- Reading ``a, b`` then rewrite `src/pr/paths.ts`, and add `src/pr/paths.test.ts`.',
+      ),
+      ROOTS,
+    )
+
+    expect(read.kind === 'read' && read.claims).toMatchObject([
+      { path: 'src/pr/paths.ts', leading: true },
+      { path: 'src/pr/paths.test.ts', leading: false },
+    ])
+  })
+
   it('should keep a file:line span naming a third, distinct file with no bare-line companion', () => {
     expect(
       pathsOf(
