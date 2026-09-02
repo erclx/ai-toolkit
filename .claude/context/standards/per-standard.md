@@ -146,6 +146,12 @@ Quoted text is exempt, which the rule has to say rather than leave to judgment. 
 
 Nothing enforces it and nothing can. `canon markdown audit` runs over repository files, where the backticked form is the correct one, so a check there would flag the compliant references in the tree and reach none of the published text that goes wrong. The rule joins the character and phase-label bans as something an author applies at publish time, and those at least have a verb behind them for the repository half.
 
+## The publish standard's destination test governs every check under it
+
+The paragraph scoping a check by destination sits under `## When it runs` rather than inside one check's section, so a check added later inherits it instead of restating it. It started under `## Phase labels`, where the argument it makes reached one rule while covering two: a reader inside the repository holds the task board and a reader on a remote holds neither that nor any gitignored record folder. `## Board identifiers` is the second check it now governs, covering a label a code span quotes and a path under a record root, and each of the two says under its own heading that the shared paragraph scopes it.
+
+`canon labels scan` is the verb behind both, and it is destination-scoped by construction rather than by a parameter, since the workflow wires it to `pull_request` alone. The negative half is asserted rather than parameterized: a unit case runs the markdown ban sets, which are the repository-bound corpus, through the scan and expects nothing. A `destination` argument was the alternative and it moves a split the invocation site already draws into a function every caller then has to answer for.
+
 ## The glossary standard and its one stated exception
 
 `standards/glossary.md` governs a glossary wherever it sits, which is why the format left `standards/teach.md` rather than staying inside it. A workspace glossary is promotable, so the shape has to travel with the file, and a rule stated in the standard over the folder it started in reaches nothing once it lands somewhere else. `teach.md` keeps the requirement that the file exists and yields the entry shape, which is the boundary declared from both sides.

@@ -22,6 +22,8 @@ Wherever text leaves through a channel no automated check covers, the author is 
 
 Run the scan as an explicit step against the finished text. Having read the underlying rules before drafting does not cover it, because the check has to happen after the text exists.
 
+Scope every check below by destination. Text published to a remote takes all of them. Text staying in the repository takes the character bans alone, since those hold wherever the text lands, and skips whichever check depends on the reader holding something only this checkout carries. The two checks below that depend on it say so under their own headings.
+
 ## Banned characters
 
 `markdown.md` holds the character bans and the banned words alike. Read it at scan time rather than working the sets from memory, then scan the drafted text and rewrite each occurrence.
@@ -32,7 +34,17 @@ Restructure the sentence rather than substituting the character. A semicolon swa
 
 `versioning.md` holds the label rule and the table of surfaces. Read it at scan time rather than working the format from memory.
 
-Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, skips it.
+This check is one of the two the destination rule above scopes. The reader inside the repository has the task board and the reader on a remote does not.
+
+## Board identifiers
+
+A phase label is one way text names the board, and a path under a record root is the other. Both resolve for a reader holding this checkout and neither resolves for anyone else, so this check is the second one the destination rule scopes.
+
+Two shapes get past a reader scanning for a bare label. A code span quoting a label is still the label, so read a span whose whole content is one as a hit and leave a longer token inside a span alone, which is a fixture name rather than a reference. The second shape is a path under a record root, gitignored and therefore absent from every clone, so `.canon/review/feedback/` names a folder the remote's reader cannot open. Under a tracked folder there is no hit, since `.claude/rules/core/005-behavior.md` resolves everywhere.
+
+Rewrite a hit to name what the reader can reach rather than deleting it. A row's subject stated plainly replaces its label, and what a record folder holds, said in a sentence, replaces its path.
+
+`canon labels scan` runs this check and the phase-label one over a pull request title and body. It reads that pair alone, so every other channel is the author's own scan.
 
 ## Cross-reference form
 
