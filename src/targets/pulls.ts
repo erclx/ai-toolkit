@@ -87,7 +87,13 @@ interface RawPull {
   readonly statusCheckRollup?: readonly RawCheck[]
 }
 
-interface RawCheck {
+/**
+ * One check as the pull request listing spells it, in the GraphQL enum.
+ *
+ * Exported because `src/pr/checks.ts` adapts the REST check-run row onto it
+ * rather than writing a second collapse beside `rollup`.
+ */
+export interface RawCheck {
   readonly status?: string
   readonly conclusion?: string
   readonly state?: string

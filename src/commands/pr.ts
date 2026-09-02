@@ -15,6 +15,8 @@ import {
   compareKeyChanges,
   treeRoots,
 } from '@/pr/bijection'
+import { type CheckRunListing, collapseChecks } from '@/pr/checks'
+import { type HeadRefusal, resolveHead, resolveTip } from '@/pr/head'
 import { KEY_CHANGES } from '@/pr/paths'
 import { intro, logInfo, logStep, logWarn, outro, plural } from '@/ui'
 
@@ -39,6 +41,32 @@ interface KeyChangesOptions {
   readonly base?: string
   readonly root?: string
   readonly json?: boolean
+}
+
+interface ReadOptions {
+  readonly root?: string
+  readonly json?: boolean
+}
+
+/** Why a head-sensitive read produced no answer about a commit. */
+type PullRefusal = 'gh-missing' | 'gh-failed' | 'no-branch' | 'runs-unreadable'
+
+/** What a reader does about each way the two sha-keyed verbs produced nothing. */
+const PULL_REFUSALS: Record<PullRefusal | HeadRefusal, string> = {
+  'gh-missing':
+    'gh is not on the path, so no pull request could be resolved. Name the branch through a checkout that carries one.',
+  'gh-failed':
+    'gh could not answer for this branch. Name the pull request number instead.',
+  'no-branch':
+    'The pull request carries no head branch name, so no ref could be read for it.',
+  'unresolvable-ref':
+    'git could not read the remote, so the branch tip is unknown. That is a failed read rather than an absent branch, so nothing is reported about the head.',
+  'no-remote-branch':
+    'The remote carries no branch by that name. It was deleted or never pushed, so there is no tip to compare against.',
+  'no-object-head':
+    'The pull request object reported no head commit, so there is nothing to compare the tip against.',
+  'runs-unreadable':
+    'The check runs for this commit could not be read. An empty answer here would report a commit as having no check rather than as unread, so nothing is reported.',
 }
 
 /** Why the read produced no comparison, ahead of the ones the compare owns. */
@@ -138,6 +166,75 @@ export function register(program: Command): void {
     )
     .action(async (number: string | undefined, opts: KeyChangesOptions) => {
       process.exitCode = await runKeyChanges(number, opts)
+    })
+
+  pr.command('head')
+    .description(
+      "Compare a pull request's reported head against the branch tip",
+    )
+    .argument('[number]', 'Pull request to read, defaulting to this branch')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Repository to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'The pull request object lags the branch ref by up to a minute after a',
+        'push and reports nothing about the lag, so a session reading',
+        '`headRefOid` alone calls a pushed commit unpushed. This resolves the',
+        'tip from the remote with `git ls-remote` and reports which commit each',
+        'source names.',
+        '',
+        'Read the verdict off the record rather than off the exit. A stale head',
+        'exits 0, because an operator shell profile can wrap this binary in a',
+        'function whose status comes from a trailing command.',
+        '',
+        'Exit codes:',
+        '  0  the tip resolved, whether the object agreed with it or not',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'Examples:',
+        '  canon pr head',
+        '  canon pr head 1341 --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (number: string | undefined, opts: ReadOptions) => {
+      process.exitCode = await runHead(number, opts)
+    })
+
+  pr.command('checks')
+    .description('Report the check runs belonging to the branch tip')
+    .argument('[number]', 'Pull request to read, defaulting to this branch')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Repository to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        '`gh pr checks` cannot be made sha-aware at all: its field set carries no',
+        'sha, so a caller cannot learn which commit its answer describes. This',
+        'resolves the tip from the remote and reads the check runs keyed on it.',
+        '',
+        'Pending is reported for a tip carrying no run yet as well as for one',
+        'still going, since the endpoint has answered with a non-zero count and',
+        'an empty row list, and reading that as passing is the false green the',
+        'sha key alone does not close.',
+        '',
+        'Exit codes:',
+        '  0  the runs for the tip were read, whatever they say',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'Examples:',
+        '  canon pr checks',
+        '  canon pr checks 1341 --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (number: string | undefined, opts: ReadOptions) => {
+      process.exitCode = await runChecks(number, opts)
     })
 }
 
@@ -400,20 +497,287 @@ async function runKeyChanges(
   return report.unmet.length === 0 ? 0 : 2
 }
 
+/** The head branch and reported head of the pull request a caller named. */
+interface PullIdentity {
+  readonly number: number | undefined
+  readonly branch: string
+  readonly head?: string
+}
+
+type IdentityRead =
+  | { readonly kind: 'read'; readonly identity: PullIdentity }
+  | { readonly kind: 'refused'; readonly reason: PullRefusal }
+
+/**
+ * Runs one `gh` invocation and hands back its stdout, or null when it failed.
+ *
+ * See src/worktrees/reclaim.ts for why gh needs the stripped environment: it
+ * resolves its repository through the same variables git does and they beat
+ * `cwd`, so a run from inside a hook would answer for another repository.
+ */
+async function gh(
+  cwd: string,
+  args: readonly string[],
+): Promise<string | null> {
+  try {
+    const result = await execa('gh', [...args], {
+      cwd,
+      timeout: GH_TIMEOUT_MS,
+      env: gitEnv(),
+      extendEnv: false,
+    })
+    return result.stdout
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Reads the head branch and the head the pull request object reports.
+ *
+ * Both come from one call, so the branch a ref is read for and the head that
+ * ref is compared against describe the same object.
+ */
+async function readIdentity(
+  cwd: string,
+  number: string | undefined,
+): Promise<IdentityRead> {
+  if (Bun.which('gh') === null) {
+    return { kind: 'refused', reason: 'gh-missing' }
+  }
+
+  const args = ['pr', 'view']
+  if (number !== undefined) args.push(number)
+  args.push('--json', 'number,headRefName,headRefOid')
+
+  const stdout = await gh(cwd, args)
+  if (stdout === null) return { kind: 'refused', reason: 'gh-failed' }
+
+  let row: { number?: number; headRefName?: string; headRefOid?: string }
+  try {
+    row = JSON.parse(stdout)
+  } catch {
+    return { kind: 'refused', reason: 'gh-failed' }
+  }
+
+  if (row.headRefName === undefined || row.headRefName === '') {
+    return { kind: 'refused', reason: 'no-branch' }
+  }
+
+  return {
+    kind: 'read',
+    identity: {
+      number: row.number,
+      branch: row.headRefName,
+      ...(row.headRefOid !== undefined && { head: row.headRefOid }),
+    },
+  }
+}
+
+/**
+ * Reads the branch tip from the remote rather than from a tracking ref.
+ *
+ * A tracking ref is only as current as the last fetch, and the push this is
+ * meant to catch is one this process never saw.
+ */
+function refReader(root: string) {
+  return async (branch: string): Promise<string | null> => {
+    const result = await $`git -C ${root} ls-remote --heads origin ${branch}`
+      .env(gitEnv())
+      .quiet()
+      .nothrow()
+    return result.exitCode === 0 ? result.text() : null
+  }
+}
+
+async function runHead(
+  number: string | undefined,
+  opts: ReadOptions,
+): Promise<number> {
+  const root = resolve(opts.root ?? process.cwd())
+  const emitJson = opts.json ?? false
+
+  intro('canon pr head')
+
+  const read = await readIdentity(root, number)
+  if (read.kind === 'refused') {
+    return refuseWith(read.reason, PULL_REFUSALS[read.reason], emitJson, root)
+  }
+
+  const { identity } = read
+  const reading = await resolveHead(
+    identity.branch,
+    identity.head,
+    refReader(root),
+  )
+
+  if (reading.kind === 'refused') {
+    return refuseWith(
+      reading.reason,
+      PULL_REFUSALS[reading.reason],
+      emitJson,
+      root,
+    )
+  }
+
+  logStep('Scope')
+  logInfo(
+    `${identity.number === undefined ? 'the pull request on' : `#${identity.number} on`} ${reading.branch}`,
+  )
+
+  logStep(reading.state === 'fresh' ? 'Fresh' : 'Stale')
+  if (reading.state === 'fresh') {
+    logInfo(
+      `the object and the remote both name ${reading.tip.slice(0, 8)}, so a read keyed on either describes the same commit`,
+    )
+  } else {
+    logWarn(
+      `the remote carries ${reading.tip.slice(0, 8)} and the pull request object still reports ${reading.object.slice(0, 8)}. Key every head-sensitive read on the tip.`,
+    )
+  }
+
+  outro()
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        ...(identity.number !== undefined && { number: identity.number }),
+        branch: reading.branch,
+        state: reading.state,
+        tip: reading.tip,
+        object: reading.object,
+      })}\n`,
+    )
+  }
+
+  return 0
+}
+
+async function runChecks(
+  number: string | undefined,
+  opts: ReadOptions,
+): Promise<number> {
+  const root = resolve(opts.root ?? process.cwd())
+  const emitJson = opts.json ?? false
+
+  intro('canon pr checks')
+
+  const read = await readIdentity(root, number)
+  if (read.kind === 'refused') {
+    return refuseWith(read.reason, PULL_REFUSALS[read.reason], emitJson, root)
+  }
+
+  const { identity } = read
+  const resolved = await resolveTip(identity.branch, refReader(root))
+  if (resolved.kind === 'refused') {
+    return refuseWith(
+      resolved.reason,
+      PULL_REFUSALS[resolved.reason],
+      emitJson,
+      root,
+    )
+  }
+
+  // The page size is raised rather than paged through. `collapseChecks` reads
+  // a count above the rows it was handed as pending, so a commit past the
+  // ceiling reports unread rather than clean, and 100 is the endpoint's own
+  // maximum against a default of 30.
+  const listed = await gh(root, [
+    'api',
+    `repos/{owner}/{repo}/commits/${resolved.tip}/check-runs?per_page=100`,
+  ])
+  if (listed === null) {
+    return refuseWith(
+      'runs-unreadable',
+      PULL_REFUSALS['runs-unreadable'],
+      emitJson,
+      root,
+    )
+  }
+
+  let listing: CheckRunListing
+  try {
+    listing = JSON.parse(listed)
+  } catch {
+    return refuseWith(
+      'runs-unreadable',
+      PULL_REFUSALS['runs-unreadable'],
+      emitJson,
+      root,
+    )
+  }
+
+  const reading = collapseChecks(resolved.tip, listing)
+
+  logStep('Scope')
+  logInfo(
+    `${identity.branch} at ${reading.tip.slice(0, 8)}, ${plural(reading.matched, 'run')} belonging to it`,
+  )
+  // Named rather than folded into the count above, since a listing carrying a
+  // run for another commit is what makes the verdict pending on its own.
+  if (reading.foreign > 0) {
+    logWarn(
+      `${plural(reading.foreign, 'further run')} belonging to another commit, so this listing does not describe the tip alone.`,
+    )
+  }
+
+  logStep(
+    reading.state === 'passing'
+      ? 'Passing'
+      : reading.state === 'failing'
+        ? 'Failing'
+        : 'Pending',
+  )
+  if (reading.state === 'passing') {
+    logInfo('every run on the tip completed and none failed')
+  } else if (reading.state === 'failing') {
+    logWarn('a run on the tip failed, which no run still going can clear')
+  } else if (reading.matched === 0) {
+    logInfo(
+      `no run belongs to the tip yet${reading.reported > 0 ? `, against a reported count of ${reading.reported}` : ''}. That is unread rather than clean.`,
+    )
+  } else {
+    logInfo('a run on the tip has yet to conclude')
+  }
+
+  outro()
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        ...(identity.number !== undefined && { number: identity.number }),
+        branch: identity.branch,
+        ...reading,
+      })}\n`,
+    )
+  }
+
+  return 0
+}
+
 /**
  * Frames a refusal on stderr in both modes and puts the record on stdout alone,
  * so an operator reading the terminal sees the reason rather than a command
  * that appeared to do nothing.
  */
 function refuse(reason: Refusal, emitJson: boolean, root: string): number {
+  return refuseWith(reason, REFUSALS[reason], emitJson, root)
+}
+
+function refuseWith(
+  reason: string,
+  message: string,
+  emitJson: boolean,
+  root: string,
+): number {
   logStep('Refused')
-  logWarn(REFUSALS[reason])
+  logWarn(message)
   outro()
 
   if (emitJson) {
-    process.stdout.write(
-      `${JSON.stringify({ root, reason, message: REFUSALS[reason] })}\n`,
-    )
+    process.stdout.write(`${JSON.stringify({ root, reason, message })}\n`)
   }
   return 1
 }
