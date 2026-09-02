@@ -61,6 +61,7 @@ External release identity used in git tags and release notes. Independent of pha
 - PR bodies, review comments, and issue text name the change itself, never the internal stream that scheduled it. Describe the work rather than the label it was planned under.
 - A phase label in a context entry is permitted only when its substance is restated inline beside it. A bare label carrying nothing beside it is forbidden, since a reader without the board has nothing to resolve it against.
 - A phase label carries no exception for a surface this repository authors and ships to a target it does not control: a standard, a skill body, and a governance rule are all forbidden outright, substance restated or not. The line is ownership rather than reachability. A shipped file is read by a project that never edits it, so the label names a board that reader can never reach. A context entry stays permitted above because it is this project's own tracked surface, never shipped.
+- The shipped-surface rule governs a reference to a real row, never a token shown to illustrate the label's own format. A phase label naming no decision, written only to show the pattern's shape, is not a citation, which is what lets a standard defining the format still show what one looks like.
 
 ## Pre-publish check
 
