@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.30.0](https://github.com/erclx/canon/compare/v4.29.1...v4.30.0) (2026-09-02)
+
+
+### Features
+
+* **assets:** complete the three-frame showcase set ([#1416](https://github.com/erclx/canon/issues/1416)) ([91698d4](https://github.com/erclx/canon/commit/91698d41781329a886346a4cc057baaa6c12f524))
+
 ## [4.29.1](https://github.com/erclx/canon/compare/v4.29.0...v4.29.1) (2026-09-02)
 
 
