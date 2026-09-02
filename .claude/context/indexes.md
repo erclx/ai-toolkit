@@ -60,7 +60,11 @@ Concrete miss:
 
 Every `index.md` carries `title` and `subtitle` in its own frontmatter. Every sibling `*.md` carries `title` and `description`. The walker fails the folder when any sibling lacks either field.
 
-Optional `category` on a sibling groups it under an H2 heading in the rendered index. When any sibling carries `category`, the walker switches to grouped mode for the whole folder. The value is sentence case, since it is emitted as the heading verbatim.
+`category` on a sibling groups it under an H2 heading in the rendered index. When any sibling carries `category`, the walker switches to grouped mode for the whole folder. The value is sentence case, since it is emitted as the heading verbatim.
+
+The field is all-or-nothing per folder, the same shape the `title` and `description` contract carries, and calling it optional per page reads as a choice each sibling makes. `renderIndex` builds its heading set from the declared values and skips every entry failing `entry.category !== category`, so a sibling declaring none in a grouped folder lands in no heading and no ungrouped section is written for it. The page drops out of the catalog and the regen reports success.
+
+A child folder's own `index.md` `category` reaches nothing in the parent. `readCatalogs` reads `title` and `subtitle` off a child index and never its `category`, and grouped mode collects every child under the trailing `## Sub-catalogs` heading, so a child index declaring the category its pages left does not rejoin that heading.
 
 Quote a `description` opening with a backtick or a colon. YAML reserves both at the start of a scalar, so `Bun.YAML.parse` rejects the block and the folder fails per the rule above. A hand-maintained catalog never exercises the parser, so a folder converting to generation surfaces these on its first regen rather than as it grew.
 
