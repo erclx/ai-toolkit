@@ -45,13 +45,10 @@ A decision's reasoning stays correct while the numbers it cites move. The anchor
 
 ## Length
 
-Every session pays for this file before any work starts, so it carries a budget. The budget counts decisions rather than lines, because a bare line total is satisfied by merging paragraph pairs and the merged paragraphs then fail the weight checkpoint in `markdown.md`. A file over budget is carrying too many decisions, not decisions written too long.
+Every session pays for this file before any work starts, so a heavy read is a real cost. Judge weight by reading the file rather than by counting it: a file that reads heavy is carrying too many decisions, not decisions written too long.
 
-- Budget six lines per decision entry, being the H3, two paragraphs, and the blank lines separating them.
-- Budget the frame outside `## Key technical decisions` separately, covering the H1, the overview, and the risks. State the number the project takes where it records the budget, since a frame carries no fixed structure to derive one from.
-- Read the ceiling as the frame plus six lines against the decision count, rather than as the total the two multiply out to.
-- Bring an over-budget file back by merging two decisions or retiring one, never by compressing a decision's prose.
-- Yield the budget to the paragraph weight checkpoint when the two disagree. A paragraph past the checkpoint is a defect no budget licenses.
+- Bring a heavy file back by merging two decisions or retiring one, never by compressing a decision's prose.
+- Yield to the paragraph weight checkpoint in `markdown.md`. A paragraph past the checkpoint is a defect no length guideline licenses.
 
 ## Template
 
