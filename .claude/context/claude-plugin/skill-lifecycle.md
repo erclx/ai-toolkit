@@ -19,6 +19,8 @@ Two facts survive that. The refusal closes the fallback in the same message, tel
 
 The repair shape differs by which route the caller has. `#1247` dropped the flag because the caller was a chain step inside one session. `canon-rollout` kept its flag and renamed the callee instead, pointing the handback at `claude-address-review`, which carries none. Prefer the rename where an unflagged body already performs the step, since dropping a flag opens a body to description matching that its author closed on purpose.
 
+A dispatch run on 2026-09-02 tried the untested candidate above: a launch prompt leading with `/canon:claude-autoship <plan>`, carrying only a conditional fallback naming `claude-worktree` for a worktree already in place. The `Skill` tool call reached the flagged body without a refusal, and that chain's own Step 0 entered the worktree through the unflagged `claude-worktree`, so the fallback never fired. One success does not settle the mechanism, because a launch expansion cannot be read from inside the session it launched, and the flag's answer through the `Skill` tool is already measured as inconsistent rather than as a hard failure. Read this as one further data point on that inconsistency rather than as proof the leading-prompt shape closes it.
+
 A harness hook is the third route and `session-map` is the only skill reached by one. A `PreCompact` hook names it in the reason it blocks a manual compaction with, which `.claude/context/development/hooks.md` covers. What separates that route from the two above is that a skill named by a hook is named in a string nothing validates, so a rename here leaves the hook pointing at a skill that no longer answers and no stage compares the two.
 
 ## The task board split
