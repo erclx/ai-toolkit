@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.29.1](https://github.com/erclx/canon/compare/v4.29.0...v4.29.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **claude:** compose session roster with PRs for in-flight read ([#1413](https://github.com/erclx/canon/issues/1413)) ([57a3a95](https://github.com/erclx/canon/commit/57a3a9507fc7e3c0294af0a435acf4f9de8fd63b))
+* **pr:** pair backtick runs by length and narrow the citation guard ([#1414](https://github.com/erclx/canon/issues/1414)) ([3a3eb7f](https://github.com/erclx/canon/commit/3a3eb7f38371c7cd3bf020e03b0c7a4176e59f30))
+
 ## [4.29.0](https://github.com/erclx/canon/compare/v4.28.0...v4.29.0) (2026-09-02)
 
 
