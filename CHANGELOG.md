@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.26.2](https://github.com/erclx/canon/compare/v4.26.1...v4.26.2) (2026-09-02)
+
+
+### Bug Fixes
+
+* **pr:** keep the newest run per check name in collapseChecks ([#1397](https://github.com/erclx/canon/issues/1397)) ([a4bb5fa](https://github.com/erclx/canon/commit/a4bb5fadaa83205ed94030a87f057a0229f67f75))
+* **tasks:** archive tasks with cut outcomes instead of refusing ([#1398](https://github.com/erclx/canon/issues/1398)) ([60b7007](https://github.com/erclx/canon/commit/60b7007a4ccc0d4d948d89b74f10756616e03ccf))
+
 ## [4.26.1](https://github.com/erclx/canon/compare/v4.26.0...v4.26.1) (2026-09-02)
 
 
