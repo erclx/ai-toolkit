@@ -21,8 +21,10 @@ paths = [".canon/review/branch/review-user-batch.md"]
 
 # Bounds where the run may write. Live rather than declared intent now: the
 # report lands inside the tree, so the write list carries it and each entry is
-# checked against these globs.
-write_scope = [".claude/**"]
+# checked against these globs. `.canon/review/**` is where the report actually
+# lands, which is the root `paths` above already names, and a scope listing
+# `.claude/**` alone fails the one write this arm exists to produce.
+write_scope = [".claude/**", ".canon/review/**"]
 
 # No max_turns. Runs on 2026-08-02 came in at 9 and 15 turns against the default
 # cap of 30, and a ceiling set from the low end of that spread would fail
@@ -31,6 +33,7 @@ write_scope = [".claude/**"]
 manual = [
   "The off-by-one on `i <= ids.length` is ranked critical rather than minor. Semantic: severity is the skill's judgment and a substring cannot tell a correct ranking from a word that happens to appear",
   "The report names the fetch with no error handling and the mutating `mergeUser`. Semantic: both are describable in wording no pattern anticipates, and pinning one phrasing goes red on a rewrite that is just as correct. Runs on 2026-08-02 disagreed on the fetch, which is the variance the demotion covers",
+  "The logged credential in `src/api/session.ts` outranks the never-read `expires` in `src/api/cache.ts`. Semantic: the content entries below prove each half was read and say nothing about how the bug in it was ranked, which is the same demotion the two claims above take",
 ]
 
 # Every key above this line is top level. A bare key written below a
@@ -45,6 +48,22 @@ manual = [
 path = ".canon/review/branch/review-user-batch.md"
 pattern = '[0-9]+ critical, [0-9]+ should-fix, [0-9]+ minor'
 
+# One entry per half the branch carries, which is what separates a report that
+# read the whole branch from one that read the committed half and stopped. The
+# arm stages a bug in each, so a run naming only `src/api/users.ts` fails here
+# rather than passing on a summary line that looks complete.
 [[content]]
 path = ".canon/review/branch/review-user-batch.md"
 pattern = 'src/api/users.ts'
+
+[[content]]
+path = ".canon/review/branch/review-user-batch.md"
+pattern = 'src/api/orders.ts'
+
+[[content]]
+path = ".canon/review/branch/review-user-batch.md"
+pattern = 'src/api/session.ts'
+
+[[content]]
+path = ".canon/review/branch/review-user-batch.md"
+pattern = 'src/api/cache.ts'
