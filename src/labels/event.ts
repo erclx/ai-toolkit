@@ -77,15 +77,16 @@ export function resolveScanInput(opts: ScanInputOptions): ResolvedScanInput {
     const pullRequest = envelope?.pull_request
 
     if (typeof review === 'object' && review !== null) {
-      source = 'review'
       const reviewRecord = review as Record<string, unknown>
 
       if (body === undefined) {
         const rawBody = reviewRecord.body
         if (rawBody === null || rawBody === undefined) {
           body = ''
+          source = 'review'
         } else if (typeof rawBody === 'string') {
           body = rawBody
+          source = 'review'
         } else {
           return {
             kind: 'refused',

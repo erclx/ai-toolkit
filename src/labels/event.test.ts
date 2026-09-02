@@ -153,4 +153,21 @@ describe('resolveScanInput', () => {
       source: 'pull-request',
     })
   })
+
+  it('should report source pull-request, not review, when --body overrides a review payload', () => {
+    const path = eventFile({
+      review: { body: 'from the event' },
+      pull_request: { head: { ref: 'feat/x' } },
+    })
+
+    const result = resolveScanInput({ event: path, body: 'from the flag' })
+
+    expect(result).toEqual({
+      kind: 'resolved',
+      title: '',
+      body: 'from the flag',
+      headRefName: 'feat/x',
+      source: 'pull-request',
+    })
+  })
 })
