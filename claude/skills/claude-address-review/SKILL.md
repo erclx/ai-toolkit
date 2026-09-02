@@ -27,10 +27,10 @@ For inline review comments, read them via `gh api` on the PR's review comments. 
 Also read the CI check status so the fixes cover failing checks, not only review comments:
 
 ```bash
-gh pr checks <number>
+canon pr checks <number> --json
 ```
 
-Treat a failing check as a finding to resolve alongside the review comments. When no checks are configured, `gh pr checks` reports none and the flow continues on the review findings alone.
+Read the verdict off the record's `state` rather than off the exit. Treat `failing` as a finding to resolve alongside the review comments. A `pending` covers a tip whose runs have yet to conclude and a tip carrying no run at all, which the record separates on `matched`, and neither is a green to continue on. Fall back to `gh pr checks <number>` when no record comes back at all, which is a target whose CLI predates the verb.
 
 ## Step 2: address each finding
 
@@ -161,10 +161,10 @@ gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md
 
 ## Step 7: confirm resolution
 
-After the follow-up push, watch CI on the PR. Poll `gh pr checks <number>`
-until no check is pending, then read the final status. When every finding is
-addressed and all checks pass, post one closing comment so the thread has a
-clear terminal state:
+After the follow-up push, watch CI on the PR. Poll
+`canon pr checks <number> --json` until the record's `state` leaves `pending`,
+then read it. When every finding is addressed and the state is `passing`, post
+one closing comment so the thread has a clear terminal state:
 
 ```bash
 gh pr comment <number> --body "✅ All review findings addressed, CI green."

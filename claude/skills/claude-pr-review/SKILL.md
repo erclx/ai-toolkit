@@ -29,7 +29,7 @@ reader scanning the thread finds the current verdict where the last one sat.
 
 ## Step 1: resolve the PR and read context
 
-Resolve the PR: `gh pr view --json number,headRefName,headRefOid,title,body` for the current branch, or use a PR number the user names. The first seven characters of `headRefOid` are `<short-sha>`, which names the body file in Step 4.
+Resolve the PR: `gh pr view --json number,headRefName,headRefOid,title,body` for the current branch, or use a PR number the user names. Take `<headRefOid>` from `canon pr head <number> --json`, off that record's `tip`, and fall back to the `headRefOid` field above when no record comes back, which is a target whose CLI predates the verb. The first seven characters are `<short-sha>`, which names the body file in Step 4.
 
 Read these in parallel from the project root, skipping any that do not exist:
 

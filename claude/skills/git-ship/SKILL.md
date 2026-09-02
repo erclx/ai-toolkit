@@ -30,7 +30,7 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 5. Invoke `canon:git-stage` to group staged changes and commit by concern
 6. Invoke `canon:git-branch` to rename branch to match conventional format
 7. Invoke `canon:git-pr` to push branch and open pull request
-8. After the PR opens, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
+8. After the PR opens, watch CI. Poll `canon pr checks <number> --json` until the record's `state` leaves `pending`, branching on that field rather than on the exit, and fall back to `gh pr checks <number>` when no record comes back at all, which is a target whose CLI predates the verb. On `passing`, continue. On `failing`, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
 9. If step 1 wrote or updated at least one memory file, invoke `canon:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If the pen got nothing, skip this step.
 
 A caller wrapping this sequence may act between step 7 and step 8, which is the one gap the order leaves open, since the pull request exists there and nothing has read its checks yet. `claude-autoship` marks the pull request draft in it. Nothing else may go there, and a caller that needs a step anywhere else in the sequence is asking for a change to this body rather than for a place to stand.
