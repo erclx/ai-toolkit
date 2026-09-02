@@ -10,6 +10,7 @@ Read these files in parallel:
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
 - `${CLAUDE_SKILL_DIR}/../../standards/readme.md`: README structure, required sections, and content rules
+- `${CLAUDE_SKILL_DIR}/../../standards/docs.md`: the reader a page under `docs/` serves, its frontmatter, structure, and what it links out rather than carrying
 
 ## Diff baseline
 
