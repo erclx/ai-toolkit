@@ -10,7 +10,7 @@ import { type MapRefusal, readLabelMap } from '@/labels/map'
  * could not get, which is a broken invocation rather than a project that
  * declared nothing.
  *
- * A named ref that will not resolve is its own reason. Folding it into
+ * A named ref producing no merge base is its own reason. Folding it into
  * `no-base` sends the caller who already passed `--base` a message telling
  * them to pass `--base`.
  */
@@ -31,7 +31,11 @@ export type LabelAudit =
   | { readonly kind: 'refused'; readonly reason: LabelAuditRefusal }
 
 export interface LabelAuditOptions {
-  /** Far side of the range, defaulting to the merge base against the trunk. */
+  /**
+   * Ref naming the far side of the range, which resolves through its merge
+   * base with `HEAD` rather than being compared against literally. Defaults to
+   * the trunk.
+   */
   readonly base?: string
   /** A changed set the caller already holds, which skips git entirely. */
   readonly paths?: readonly string[]

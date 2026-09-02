@@ -66,7 +66,7 @@ const REFUSALS: Record<Refusal, string> = {
     'git could not list this repository, so no path could be judged whole rather than partial.',
   'no-base': 'No base resolves against the trunk. Fetch origin or pass --base.',
   'bad-base':
-    'The ref passed to --base resolves to no commit here. Pass one this tree carries.',
+    'The ref passed to --base shares no history with HEAD here, either because it resolves to no commit or because it sits on an unrelated root. Pass a ref this branch was taken from.',
   'unreadable-changes':
     'git could not list what this branch changed, so the set is unknown.',
   'no-section': `This body carries no ## ${KEY_CHANGES} section, so it claims nothing to compare.`,

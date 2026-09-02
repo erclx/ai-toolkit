@@ -61,7 +61,7 @@ What it leaves unmeasured is a prefix reaching no path, so a row left behind by 
 
 ## Matching
 
-- Take the changed set from `git diff --name-only <base> HEAD`, resolved against the same base as the diff the body is written from
+- Take the changed set from `git diff --name-only <base>...HEAD`, resolved against the same base as the diff the body is written from. The three dots hold whether `<base>` arrives already resolved to a merge base or as a bare ref name, where the two-dot form is correct only in the first case and hands the branch somebody else's merged paths in the second
 - A path earns a label when the path starts with one of that label's prefixes
 - Collect the distinct labels across the whole set, ordered as the map declares them, so two runs over one branch produce one string
 - Pass the result as a single comma-separated value. An empty result runs no labelling step.

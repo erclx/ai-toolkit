@@ -14,11 +14,13 @@ canon labels audit --base origin/main
 canon labels audit src/cli.ts docs/index.md --json
 ```
 
-| Option          | Behavior                                                          |
-| --------------- | ----------------------------------------------------------------- |
-| `--base <ref>`  | Far side of the range, defaulting to the merge base against trunk |
-| `--root <path>` | Repository to read, defaulting to the current directory           |
-| `--json`        | Add a machine-readable record on stdout, keeping the frame        |
+| Option          | Behavior                                                   |
+| --------------- | ---------------------------------------------------------- |
+| `--base <ref>`  | Ref the range runs back to, defaulting to the trunk        |
+| `--root <path>` | Repository to read, defaulting to the current directory    |
+| `--json`        | Add a machine-readable record on stdout, keeping the frame |
+
+`--base` names the far side of the range rather than the commit the diff runs against. The audit resolves the merge base between `HEAD` and the ref before reading anything, so `--base origin/main` on a branch the trunk has moved past still earns labels for the paths that branch wrote. Reading the ref literally is what once handed a long-open branch the labels for somebody else's merge, and it named those paths as uncovered surfaces on top.
 
 Positional paths replace the range entirely. A caller holding a changed set already passes it rather than paying for a second git read, and the record then omits `base` to say the range was never resolved.
 

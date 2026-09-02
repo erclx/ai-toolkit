@@ -18,11 +18,13 @@ The positional is the pull request to read, defaulting to the one open on this b
 | Option          | Behavior                                                           |
 | --------------- | ------------------------------------------------------------------ |
 | `--body <path>` | Read the body from a file, taking the changed set from git instead |
-| `--base <ref>`  | Far side of the range when `--body` supplies the body              |
+| `--base <ref>`  | Ref the range runs back to when `--body` supplies the body         |
 | `--root <path>` | Repository to read, defaulting to the cwd                          |
 | `--json`        | Add a machine-readable record on stdout, keeping the frame         |
 
 `--body` decides where both halves come from, so a number passed beside it is never read. The body comes off disk and the changed set from the local range, which is the shape a fixture and a body still being drafted both need.
+
+`--base` names the far side of that range and never the commit the comparison runs against directly. The reader resolves the merge base between `HEAD` and the ref, so `--base origin/main` measures what the branch wrote rather than what the trunk gained while the branch was open. Passing the trunk as it stands today is therefore safe on a branch of any age, and a ref sharing no history with `HEAD` refuses as `bad-base`.
 
 Without `--body` the body, the file list, and the head commit come back from one `gh pr view` call, because the three have to describe the same commit and reading them apart leaves a window where a push between them compares a body against another head's files.
 
