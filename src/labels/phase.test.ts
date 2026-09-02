@@ -6,6 +6,17 @@ const FEATURE_HEAD = 'feat/phase-label-gate'
 const RELEASE_HEAD = 'release-please--branches--main--components--canon'
 const RELEASE_TITLE = 'chore(main): release 3.46.0'
 
+/**
+ * The two session links that reached the trunk, carried verbatim.
+ *
+ * Both sit in public history already, at `ae69bfdd` and `834dbbf8`, so the
+ * fixture records the defect it was measured against rather than imitating it.
+ */
+const MERGED_SESSION_LINK =
+  'https://claude.ai/code/session_01VgM3xMwitxkp2EM3h5GPbt'
+const SECOND_SESSION_LINK =
+  'https://claude.ai/code/session_01FZZTHsjo3QSFhTJCZmdEny'
+
 describe('scanPhaseLabels', () => {
   it('should fail a feature body carrying a phase label', () => {
     const result = scanPhaseLabels({
@@ -19,6 +30,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: ['v59.7'],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -34,6 +46,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: ['v3.45.0', 'v3.46.0'],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -49,6 +62,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: ['v3.44', 'v68.5'],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -70,6 +84,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -85,6 +100,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -100,6 +116,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: ['v59.7'],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -115,6 +132,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: ['v59.7'],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -130,6 +148,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -145,6 +164,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: ['v75.1'],
+      sessionLinks: [],
     })
   })
 
@@ -160,6 +180,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: ['v53.9'],
+      sessionLinks: [],
     })
   })
 
@@ -175,6 +196,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: ['v75.1'],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -190,6 +212,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: ['.canon/review/feedback/', '.canon/tasks/priority.md'],
+      sessionLinks: [],
     })
   })
 
@@ -205,6 +228,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: ['.claude/tasks/priority.md'],
+      sessionLinks: [],
     })
   })
 
@@ -220,6 +244,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: ['.claude/worktrees/x', '.canon/review/branch/y.md'],
+      sessionLinks: [],
     })
   })
 
@@ -235,6 +260,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -257,6 +283,7 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
     })
   })
 
@@ -276,6 +303,109 @@ describe('scanPhaseLabels', () => {
       phaseLabels: [],
       semverTags: [],
       boardReferences: [],
+      sessionLinks: [],
+    })
+  })
+
+  it('should report a session link a body ends on, which is the shape both merged instances carry', () => {
+    const result = scanPhaseLabels({
+      title: 'fix: repoint every dead heading citation',
+      body: `Repoints the citations.\n\n${MERGED_SESSION_LINK}`,
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+      sessionLinks: [MERGED_SESSION_LINK],
+    })
+  })
+
+  it('should report a session link a code span holds', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: `The harness appends \`${MERGED_SESSION_LINK}\` to the body.`,
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+      sessionLinks: [MERGED_SESSION_LINK],
+    })
+  })
+
+  it('should report nothing when a fenced block holds the session link', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: [
+        'Quoting the instruction verbatim:',
+        '',
+        '```',
+        `End the body with ${MERGED_SESSION_LINK}`,
+        '```',
+      ].join('\n'),
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+      sessionLinks: [],
+    })
+  })
+
+  it('should report a session link on a release pull request, which the board-reference exemption does not reach', () => {
+    const result = scanPhaseLabels({
+      title: RELEASE_TITLE,
+      body: `## [3.46.0](https://github.com/erclx/canon/compare/v3.45.0...v3.46.0)\n\n${SECOND_SESSION_LINK}`,
+      headRefName: RELEASE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: true,
+      phaseLabels: [],
+      semverTags: ['v3.45.0', 'v3.46.0'],
+      boardReferences: [],
+      sessionLinks: [SECOND_SESSION_LINK],
+    })
+  })
+
+  it('should sort a phase label, a record path, and a session link into three fields', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: `Planned under v77.4, tracked at .canon/tasks/priority.md.\n\n${MERGED_SESSION_LINK}`,
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: ['v77.4'],
+      semverTags: [],
+      boardReferences: ['.canon/tasks/priority.md'],
+      sessionLinks: [MERGED_SESSION_LINK],
+    })
+  })
+
+  it('should leave an ordinary claude.ai link that names no session alone', () => {
+    const result = scanPhaseLabels({
+      title: 'docs: link the product page',
+      body: 'Read https://claude.ai/code and https://claude.ai/chat/abc for detail.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+      sessionLinks: [],
     })
   })
 })

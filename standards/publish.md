@@ -46,6 +46,16 @@ Rewrite a hit to name what the reader can reach rather than deleting it. A row's
 
 `canon labels scan` runs this check and the phase-label one over a pull request title and body. It reads that pair alone, so every other channel is the author's own scan.
 
+## Session links
+
+A link to one Claude Code session names the session that wrote the text rather than the change the text describes. The harness appends one to text it tells a session to publish, so it enters after the body is composed rather than while it is being written, which is what carries it past the author's own reading of what they wrote.
+
+This check depends on the reader holding the account rather than the checkout, which is narrower than the dependency the destination rule above scopes. A reader inside this checkout opens a record path and still cannot open a session, since the session resolves for the one account that started it and for nobody else. The scoping still sits at the invocation site, because `canon labels scan` reads a pull request title and body and reaches no other text.
+
+Delete a hit rather than rewriting it. The other two checks replace a hit with what the reader can reach instead, and a session has no such form, so what stands in its place is the body already written above it.
+
+Removing the link before a merge does not substitute for never writing it. One branch removed it, read the live body back clean, and the squashed commit landed carrying it anyway off an earlier snapshot, which is permanent on the trunk.
+
 ## Cross-reference form
 
 A number referring to a pull request or an issue takes the form its destination renders. Write it bare where the destination auto-links it, and in backticks where it does not. Both spellings are correct, each in one place, so a reference moved from one destination to the other is rewritten rather than copied.
