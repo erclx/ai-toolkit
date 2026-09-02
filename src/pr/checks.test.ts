@@ -20,6 +20,7 @@ describe('collapseChecks', () => {
       matched: 2,
       foreign: 0,
       reported: 2,
+      collapsed: 0,
     })
   })
 
@@ -38,6 +39,7 @@ describe('collapseChecks', () => {
       matched: 0,
       foreign: 2,
       reported: 2,
+      collapsed: 0,
     })
   })
 
@@ -56,6 +58,7 @@ describe('collapseChecks', () => {
       matched: 1,
       foreign: 1,
       reported: 2,
+      collapsed: 0,
     })
   })
 
@@ -68,6 +71,7 @@ describe('collapseChecks', () => {
       matched: 0,
       foreign: 0,
       reported: 2,
+      collapsed: 0,
     })
   })
 
@@ -80,6 +84,7 @@ describe('collapseChecks', () => {
       matched: 0,
       foreign: 0,
       reported: 0,
+      collapsed: 0,
     })
   })
 
@@ -98,6 +103,7 @@ describe('collapseChecks', () => {
       matched: 2,
       foreign: 0,
       reported: 2,
+      collapsed: 0,
     })
   })
 
@@ -115,6 +121,7 @@ describe('collapseChecks', () => {
       matched: 1,
       foreign: 0,
       reported: 31,
+      collapsed: 0,
     })
   })
 
@@ -130,6 +137,98 @@ describe('collapseChecks', () => {
       matched: 1,
       foreign: 0,
       reported: 1,
+      collapsed: 0,
+    })
+  })
+
+  it('should let the higher id decide the state when it occurs after the lower one', () => {
+    const reading = collapseChecks(TIP, {
+      total_count: 2,
+      check_runs: [
+        {
+          head_sha: TIP,
+          name: 'build',
+          id: 1,
+          status: 'completed',
+          conclusion: 'failure',
+        },
+        {
+          head_sha: TIP,
+          name: 'build',
+          id: 2,
+          status: 'completed',
+          conclusion: 'success',
+        },
+      ],
+    })
+
+    expect(reading).toEqual({
+      state: 'passing',
+      tip: TIP,
+      matched: 2,
+      foreign: 0,
+      reported: 2,
+      collapsed: 1,
+    })
+  })
+
+  it('should let the higher id decide the state when it occurs before the lower one', () => {
+    const reading = collapseChecks(TIP, {
+      total_count: 2,
+      check_runs: [
+        {
+          head_sha: TIP,
+          name: 'build',
+          id: 2,
+          status: 'completed',
+          conclusion: 'success',
+        },
+        {
+          head_sha: TIP,
+          name: 'build',
+          id: 1,
+          status: 'completed',
+          conclusion: 'failure',
+        },
+      ],
+    })
+
+    expect(reading).toEqual({
+      state: 'passing',
+      tip: TIP,
+      matched: 2,
+      foreign: 0,
+      reported: 2,
+      collapsed: 1,
+    })
+  })
+
+  it('should fall back to the later occurrence when a same-name pair carries no id', () => {
+    const reading = collapseChecks(TIP, {
+      total_count: 2,
+      check_runs: [
+        {
+          head_sha: TIP,
+          name: 'build',
+          status: 'completed',
+          conclusion: 'failure',
+        },
+        {
+          head_sha: TIP,
+          name: 'build',
+          status: 'completed',
+          conclusion: 'success',
+        },
+      ],
+    })
+
+    expect(reading).toEqual({
+      state: 'passing',
+      tip: TIP,
+      matched: 2,
+      foreign: 0,
+      reported: 2,
+      collapsed: 1,
     })
   })
 })
