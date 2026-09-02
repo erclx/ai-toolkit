@@ -1,5 +1,6 @@
 import { linesOutsideFences, maskCodeSpans } from '@/markdown/scan'
 import { RECORD_ENTRIES, RECORD_ROOTS } from '@/record-root'
+import type { RecordRoot } from '@/record-root'
 
 /**
  * The two version namespaces `standards/versioning.md` keeps apart, and why a
@@ -87,31 +88,35 @@ function escapeLiteral(text: string): string {
 const IGNORED_BEYOND_RECORDS: readonly string[] = ['worktrees']
 
 /**
- * The roots one `.gitignore` line covers whole, where a path resolves for
- * nobody on the remote regardless of which entry names it.
+ * Which reading each record root takes: `whole` for a root one `.gitignore`
+ * line covers entirely, `entries` for a root kept narrow by name.
  *
- * `.canon/` is the only member: the ignore file excludes the folder outright,
- * and git does not descend into an excluded directory, so no entry list is
- * ever wider than the root itself. `.claude/` stays off this list because it
- * is tracked, which is why it keeps the entry-list reading below instead. A
- * root added to `RECORD_ROOTS` later has to declare which reading it takes
- * here rather than silently inheriting the narrow one.
+ * `.canon/` takes `whole`: the ignore file excludes the folder outright, and
+ * git does not descend into an excluded directory, so no entry list is ever
+ * wider than the root itself. `.claude/` takes `entries` because it is
+ * tracked. A `Record` over `RecordRoot` rather than a filtered list of the
+ * roots read one way, so a root added to `RECORD_ROOTS` fails to typecheck
+ * here until this map says which reading it takes, rather than falling
+ * through a filter into the entry-list branch unnoticed.
  */
-const ROOTS_IGNORED_WHOLE: readonly string[] = ['.canon']
+const ROOT_READING: Record<RecordRoot, 'whole' | 'entries'> = {
+  '.canon': 'whole',
+  '.claude': 'entries',
+}
 
 /**
  * A path a reader on a remote cannot open.
  *
  * The two roots differ by why they are unreadable rather than by which one
- * they are. A root in `ROOTS_IGNORED_WHOLE` matches on the root alone, since
- * one ignore line covers everything beneath it and no entry list can ever be
- * narrower than that. Every other root keeps the entry-list reading: `.claude/`
- * is tracked and holds `rules`, `skills`, `hooks`, and `context`, so a rule
- * path resolves in any clone and is not a board reference, and only the
- * entries the record move relocated are unreadable there. Reading the roots
- * and the relocated entries from `src/record-root.ts` is what makes a folder
- * added there matched here without an edit, and the list above is what covers
- * the one thing that module deliberately does not carry.
+ * they are. A root reading `whole` matches on the root alone, since one
+ * ignore line covers everything beneath it and no entry list can ever be
+ * narrower than that. A root reading `entries` keeps the entry-list reading:
+ * `.claude/` is tracked and holds `rules`, `skills`, `hooks`, and `context`,
+ * so a rule path resolves in any clone and is not a board reference, and only
+ * the entries the record move relocated are unreadable there. Reading the
+ * roots and the relocated entries from `src/record-root.ts` is what makes a
+ * folder added there matched here without an edit, and the list above is what
+ * covers the one thing that module deliberately does not carry.
  *
  * The root-alone branch requires at least one tail character ahead of the
  * shared tail capture, so a root written bare, such as the ignore line naming
@@ -128,20 +133,16 @@ const ROOTS_IGNORED_WHOLE: readonly string[] = ['.canon']
  * matched.
  */
 const RECORD_PATH = new RegExp(
-  `(?<![\\w./-])(?:${[
-    ...ROOTS_IGNORED_WHOLE.map(
-      (root) => `${escapeLiteral(root)}/(?=[^\\s\`)\\]])`,
-    ),
-    ...RECORD_ROOTS.filter((root) => !ROOTS_IGNORED_WHOLE.includes(root)).map(
-      (root) =>
-        `${escapeLiteral(root)}/(?:${[
+  `(?<![\\w./-])(?:${RECORD_ROOTS.map((root) =>
+    ROOT_READING[root] === 'whole'
+      ? `${escapeLiteral(root)}/(?=[^\\s\`)\\]])`
+      : `${escapeLiteral(root)}/(?:${[
           ...RECORD_ENTRIES,
           ...IGNORED_BEYOND_RECORDS,
         ]
           .map((entry) => escapeLiteral(entry))
           .join('|')})(?![\\w-])`,
-    ),
-  ].join('|')})[^\\s\`)\\]]*`,
+  ).join('|')})[^\\s\`)\\]]*`,
   'g',
 )
 

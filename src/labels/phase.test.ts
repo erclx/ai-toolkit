@@ -248,6 +248,22 @@ describe('scanPhaseLabels', () => {
     })
   })
 
+  it('should report the scratch folder under the tracked root at its own spelling', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Scratch on that target sits at .claude/.tmp/x.md.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.claude/.tmp/x.md'],
+      sessionLinks: [],
+    })
+  })
+
   it('should leave a tracked path under the same root alone', () => {
     const result = scanPhaseLabels({
       title: 'feat: widen the scan',
