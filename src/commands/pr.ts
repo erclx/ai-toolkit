@@ -727,6 +727,11 @@ async function runChecks(
       `${plural(reading.foreign, 'further run')} belonging to another commit, so this listing does not describe the tip alone.`,
     )
   }
+  if (reading.collapsed > 0) {
+    logInfo(
+      `${plural(reading.collapsed, 'run')} folded into a newer run of the same check, so the count above includes a superseded run the state did not use.`,
+    )
+  }
 
   logStep(
     reading.state === 'passing'
