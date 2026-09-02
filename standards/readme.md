@@ -18,6 +18,7 @@ Does not govern:
 - Rhythm and sentence construction in README prose: the `write-human` skill, which yields the voice and keeps the rest
 - Spelling, banned words, punctuation, and formatting in README prose: `markdown.md`, which yields nothing
 - Product scope and goals: `requirements.md`
+- The consumer-facing reference under `docs/`, whose reader has already committed and is operating the project: `docs.md`
 
 ## Voice
 

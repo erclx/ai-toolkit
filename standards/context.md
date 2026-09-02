@@ -17,6 +17,7 @@ Does not govern:
 - Product scope, goals, and non-goals: `requirements.md`
 - Path-scoped coding rules: `rule.md`
 - Diagrams and wireframes, which answer structure and layout questions an entry hands off: `diagrams.md` and `wireframes.md`
+- The consumer-facing reference under `docs/`, whose reader is operating the project without the source open: `docs.md`
 
 ## Organizing principle
 
