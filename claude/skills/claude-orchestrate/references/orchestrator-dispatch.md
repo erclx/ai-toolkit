@@ -264,6 +264,10 @@ Hand the row to the human-launch line in step 4 instead of dispatching when any 
 
 The first of those five is the one that reaches a person rather than the board. A row held for a collision or for a serialize reason waits on the wave clearing, where a row held on its plan waits on an answer only the operator can give, so hand that one over with the question label and its stated reason attached rather than as a name and a refusal.
 
+Hand the person one command: `/canon:claude-autoship <plan>`, naming the row, the plan path, and the branch together, with no worktree call ahead of it. A leading worktree call adds nothing beyond what `claude-autoship` Step 0 already reaches for itself, by the same judgment the template above calls a residual risk rather than a settled contract. A second command also risks a client folding two commands into one message, which reads everything after the first command's name as its own argument and drops the second: that happened in four dispatches out of four before the fix became one message carrying the autoship call alone.
+
+Suggest, as one line to the operator, that they rename their own session to the row's id, so a process listing shows what the session is for without a cross-reference to the board.
+
 ## Stop the loop
 
 Wrapped in `/loop`, re-run the check against `## Run now` on each wake. Stop rather than firing again once the group is empty or every row in it reads `claimed: true`. Report that once, on the wake that finds it, and let the loop end rather than continuing to poll a board nobody is clearing. `orchestrator-poll.md` already carries this reasoning for the review trigger, and it binds a dispatcher the same way.
