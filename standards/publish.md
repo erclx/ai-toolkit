@@ -48,7 +48,7 @@ Rewrite a hit to name what the reader can reach rather than deleting it. A row's
 
 ## Session links
 
-A link to one Claude Code session names the session that wrote the text rather than the change the text describes. The harness appends one to text it tells a session to publish, so it enters after the body is composed rather than while it is being written, which is what carries it past the author's own reading of what they wrote.
+A link to one Claude Code session names the session that wrote the text rather than the change the text describes. It enters because the harness tells the composing session to end its published text with one, so the author writes it deliberately and it reads as required rather than as a slip. That is what carries it past a scan the same author runs, and it is why a rule stating the ban does not reach the case: the session is following an instruction it was given, and reads its own compliance as correct.
 
 This check depends on the reader holding the account rather than the checkout, which is narrower than the dependency the destination rule above scopes. A reader inside this checkout opens a record path and still cannot open a session, since the session resolves for the one account that started it and for nobody else. The scoping still sits at the invocation site, because `canon labels scan` reads a pull request title and body and reaches no other text.
 
