@@ -57,6 +57,12 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - Transcripts: `canon transcripts` pulls a YouTube transcript with metadata frontmatter into any repo
 - Sandbox: scenario-based scaffolds that provision an isolated project state for verifying each domain flow
 
+Governance is the one worth seeing rather than reading about, because the glob beside each rule is what decides whether it reaches a session at all.
+
+![canon gov list, showing seven stacks with the rules each carries and a sample of rules beside the path glob that loads each one](assets/showcase-governance.png)
+
+Stacks compose, so a react project inherits node and node inherits base. A rule with a glob loads only when a matching path is edited, and a rule with none loads every session. Both counts and every row above are read from the catalogs when the image is built.
+
 ## Documentation
 
 Scaffolding your first project? Start with target projects, then the AI workflow loop. Everything else answers questions that arrive later.

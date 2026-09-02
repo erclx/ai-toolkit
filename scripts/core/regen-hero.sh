@@ -226,8 +226,65 @@ for (const [label, list] of [
   }
 }
 
+// A terminal frame renders lines into a `<pre>` where the hero renders names
+// into divs, so the two cannot share a value however similar the catalog read
+// behind them looks. Padding happens before escaping, since an entity is longer
+// than the character it replaces and would push a column out of line.
+const pad = (value, width) => value + " ".repeat(Math.max(0, width - value.length))
+const frameRow = (cells) => `<span class="frame">│</span> <span class="ok">✓</span> ${cells}`
+
+// The frame sets `white-space: pre` at a fixed window width, so an overlong
+// cell is clipped by the window edge rather than wrapped. Truncating here is
+// what keeps the longest row inside the capture, and the ellipsis is what stops
+// a clipped value from reading as the whole value.
+const GLOB_WIDTH = 44
+const clip = (value, width) =>
+  value.length <= width ? value : `${value.slice(0, width - 1)}…`
+
+const plural = (count, noun) => `${count} ${noun}${count === 1 ? "" : "s"}`
+
+const govStackRows = gov.stacks
+  .map((stack) =>
+    frameRow(
+      `<span class="name">${escape(pad(stack.name, 17))}</span>` +
+        `<span class="muted">${escape(pad(plural(stack.rules.length, "rule"), 11))}</span>` +
+        `<span class="muted">${escape(stack.extends ? `extends ${stack.extends}` : "")}</span>`,
+    ),
+  )
+  .join("\n")
+
+// Sampled from the stack-reached subset for the reason the hero column is, and
+// showing each rule beside the glob that loads it rather than its description,
+// since the glob is the mechanism a reader cannot otherwise see.
+const deliveredEntries = gov.rules.filter((entry) => stacked.has(entry.name))
+const govRuleRows = sample(deliveredEntries)
+  .map((entry) => {
+    const globs = [entry.paths ?? []].flat()
+    // A rule carrying no glob is not unscoped, it loads every session, and
+    // saying so is the contrast that makes the column mean anything.
+    const scope = globs.length > 0 ? clip(globs.join(" "), GLOB_WIDTH) : "every session"
+    return frameRow(
+      `<span class="name">${escape(pad(slug(entry), 24))}</span>` +
+        `<span class="domain">${escape(pad(`[${entry.domain}]`, 12))}</span>` +
+        `<span class="muted">${escape(scope)}</span>`,
+    )
+  })
+  .join("\n")
+
+for (const [label, rows] of [
+  ["governance stack rows", govStackRows],
+  ["governance rule rows", govRuleRows],
+]) {
+  if (rows === "") {
+    console.error(`regen-hero: the ${label} rendered empty, refusing to write a blank frame`)
+    process.exit(1)
+  }
+}
+
 const values = {
   TOKENS: tokenCss,
+  GOV_STACK_ROWS: govStackRows,
+  GOV_RULE_ROWS: govRuleRows,
   SKILL_COUNT: String(skills.length),
   RULE_COUNT: String(rules.length),
   STANDARD_COUNT: String(standards.length),
