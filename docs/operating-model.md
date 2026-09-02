@@ -108,6 +108,13 @@ Findings travel on the PR. `claude-pr-review` posts them there.
 threads, and pushes a follow-up. `claude-pr-review` then runs again, reading only
 what the follow-up added.
 
+Both halves of that loop key on a commit rather than on the pull request object,
+which trails the branch ref by up to a minute after a push and says nothing
+about the trail. `canon pr head` resolves the tip the review pass scopes its
+delta against, and `canon pr checks` reports the runs belonging to that tip, so a
+follow-up push cannot be read as green off the predecessor's completed run. See
+[Head-sensitive pull request reads](agents/pr-reads.md).
+
 What the session channel carries is the handback instruction and the worker's
 reply to it, which is a notification layer over a record that stays on the PR. A
 reply that changes an outcome, such as a worker naming the plan question that

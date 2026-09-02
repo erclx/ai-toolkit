@@ -74,6 +74,8 @@ The record is gitignored scratch with no rotation, one file per run. Writing it 
 
 The warning sits on stderr among the framing, where a caller reading the tail of a passing run does not see it. Nothing prunes the folder, which makes it a scratch-lifecycle question rather than an oversight. It belongs with the other scratch catalogs whenever that track settles when a folder's contents expire.
 
+No record is written at all when the skill session itself exits non-zero, which is the run that most needs one. `run.sh` reads the session's stdout into a variable, deletes the temp file, and then takes the `session_code` branch, which logs `The session exited <n> before a verdict could be taken.` and exits without printing what it read a line earlier. So the reason sits in a variable nothing emits, and recovering it means invoking `claude -p` against the already-provisioned tree by hand, carrying the same `--plugin-dir`, `--model`, `--permission-mode`, `--allowedTools`, and `--max-turns` the script passes. Measured on 2026-09-02 against `claude:address-review`, where the harness run exited 1 and a hand re-run of the same session completed at 18 turns with no permission denial, so the exit was not a refusal of the nested spawn.
+
 ### Turn budget
 
 The default turn cap is 30. A clean `claude/docs` `drift` run takes 29 turns, and a truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, so the global default sits above observed cost.
