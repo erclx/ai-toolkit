@@ -223,6 +223,8 @@ What the arm cannot reach is the loop, the pick, and the hand-off, and that is a
 
 A second measurement came out of the same probe and reached the body rather than the arm. `canon capture` refuses a page that would rewrap against a substituted font, so a candidate page naming no font is refused on whatever the default resolves to, which was Times New Roman. Step 2 now tells a run to declare a stack the machine resolves, since a page that carries everything it needs and a page that renders are not the same requirement.
 
+The measured run reached the body a third time, through what a fixture is allowed to permit. It wrote the design note as well as the page, which the close never directed, and admitting that path left `write_scope` bounding one surface while its own comment claimed two. Dropping the path was the other repair and it calls the run's own instinct a departure, so step 6 gained the write instead: a close records the decision wherever it was stated as open. What decided it is that the losing arms are deleted by the next step, so a pick that records nothing about why leaves the next reader re-deriving it from a diff.
+
 ## Whether a skill earns its place
 
 The redundancy audit below runs outward, against community counterparts. Nothing ran inward, against the catalog's own two zero-cost tells, until this section: a folder wrapping something already reachable, and a folder nobody calls. `create-skill` now asks the first two before a folder exists, and `570-skill.md` carries the same check for whatever creates a `SKILL.md` some other way.

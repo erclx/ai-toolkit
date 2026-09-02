@@ -65,9 +65,10 @@ Put the choice to the operator through the structured question surface, per `.cl
 ## Step 6: close
 
 1. Apply the winning arm to the real surface, in one change.
-2. Delete `.canon/tmp/<slug>/` and every losing arm with it. A variant left behind is a second design nobody maintains.
-3. Report the scratch folder as still standing when that delete is refused, naming the path for the operator to remove, rather than closing on a report the tree contradicts. The pick is applied either way, so the run has done its work and the folder is what outlives it.
-4. Report the surface that changed on its own line, and name the arm that won by its id and its cost.
+2. Close out whatever document stated the decision as open, in the same change, naming the arm that won and the ones that stayed defensible. A pick that changes a surface and records nothing about why leaves the next reader to re-derive it from a diff, and the losing arms are gone by the next step. Skip this where nothing stated the decision.
+3. Delete `.canon/tmp/<slug>/` and every losing arm with it. A variant left behind is a second design nobody maintains.
+4. Report the scratch folder as still standing when that delete is refused, naming the path for the operator to remove, rather than closing on a report the tree contradicts. The pick is applied either way, so the run has done its work and the folder is what outlives it.
+5. Report every surface that changed, each on its own line, and name the arm that won by its id and its cost.
 
 ## Reading a measurement
 
