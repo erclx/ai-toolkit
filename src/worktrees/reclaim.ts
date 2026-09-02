@@ -55,7 +55,11 @@ export interface WorktreeVerdict {
   readonly refusals: readonly Refusal[]
   /** The pull request that retired the branch, so a report can name what it read. */
   readonly pullRequest: number | null
-  /** The names of the live sessions holding this worktree, which is what `claude rm` takes. */
+  /**
+   * The names of the live sessions holding this worktree. `claude rm` takes an
+   * id rather than a name, so a caller acting on this matches each name to the
+   * id `claude agents --json` carries beside it.
+   */
   readonly sessions: readonly string[]
   readonly route: RemovalRoute
   /**
