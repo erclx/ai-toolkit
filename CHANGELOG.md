@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.27.1](https://github.com/erclx/canon/compare/v4.27.0...v4.27.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **git:** state whether a git operation runs, not only which surface ([#1406](https://github.com/erclx/canon/issues/1406)) ([b4595a8](https://github.com/erclx/canon/commit/b4595a8728a56edc450f01fe7b59293ca2ccd414))
+
 ## [4.27.0](https://github.com/erclx/canon/compare/v4.26.3...v4.27.0) (2026-09-02)
 
 
