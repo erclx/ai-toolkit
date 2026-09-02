@@ -435,7 +435,7 @@ export const standardCriteria: Measure = async (ctx) => {
     emissions: [output(run.all)],
     failure:
       run.exitCode === 2
-        ? 'A standard new to this branch carries no ## Success criterion section. Run bun src/cli.ts standards audit.'
+        ? 'A standard new to this branch carries no success-criterion section. Run bun src/cli.ts standards audit.'
         : 'canon standards audit could not read which standards arrived on this branch. Run bun src/cli.ts standards audit --json to see why.',
   }
 }
