@@ -50,12 +50,14 @@ Five surfaces are Claude Code's own and the toolkit invented none of them:
 | `skills/`             | Claude Code, as the internal skills a session in this repo can load |
 | `rules/`              | Claude Code, glob-matched against the path being edited             |
 
-Two more are the harness's rather than the toolkit's, and the first is the carve-out the move left behind:
+Two more are the harness's rather than the toolkit's, and the first is a carve-out the move left behind:
 
 | Surface                | What reads it                                                                      |
 | ---------------------- | ---------------------------------------------------------------------------------- |
 | `worktrees/`           | `EnterWorktree`, which creates a worktree here and requires its target to sit here |
 | `scheduled_tasks.lock` | Claude Code, and nothing in this repository names it                               |
+
+A third is the toolkit's own and gitignored rather than committed, which keeps it out of the "committed" rule below: `.tmp/` is the scratch rule's fallback spelling, carried for a project the record move has not reached and retired once `canon migrate records` has moved the last one off it.
 
 The rest are the toolkit's own and stay because they are committed:
 
@@ -68,7 +70,7 @@ The rest are the toolkit's own and stay because they are committed:
 | `DESIGN.md`       | `canon design render`, and the design skills by name                                          |
 | `wireframes/`     | `canon context` as an audited folder, in a project that carries one. This repository does not |
 
-Everything else that used to sit here is a session record and lives under `.canon/` now, which one ignore line covers. That is what makes the census worth writing once rather than maintaining: a record folder added later needs no row here, no ignore entry, and no manifest edit, and anything added to `.claude/` is by construction committed and therefore owes a row.
+Everything else that used to sit here is a session record and lives under `.canon/` now, which one ignore line covers. That is what makes the census worth writing once rather than maintaining: a record folder added later needs no row here, no ignore entry, and no manifest edit, and anything added to `.claude/` is either a row in one of the tables above or, like `.tmp/`, a carve-out this entry names by hand.
 
 ## Gotchas
 

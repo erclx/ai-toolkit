@@ -62,9 +62,9 @@ A project installed before the diagram surface became a folder still holds `.cla
 
 ## Gitignore
 
-- `# Claude`: `.canon/`, `.claude/worktrees/`
+- `# Claude`: `.canon/`, `.claude/worktrees/`, `.claude/.tmp/` <!-- canon-keep-record-root -->
 
-The first entry covers the whole record root, so a record folder added later needs no line here and no sync. The second is the carve-out, since the harness creates a worktree under `.claude/` and requires its target to sit there.
+The first entry covers the whole record root, so a record folder added later needs no line here and no sync. The second is the carve-out the harness owns, since it creates a worktree under `.claude/` and requires its target to sit there. The third is the scratch rule's fallback spelling, carried for a project the record move has not reached and retired once none is left to reach.
 
 ## CLI
 
