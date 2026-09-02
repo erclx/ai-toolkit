@@ -19,7 +19,7 @@ Does not govern:
 ## Title
 
 - Format: `<type>: <subject>`
-- Type is `bug`, `task`, or `feedback`. Lowercase the type and the first word of the subject for `bug` and `task`, both hand-composed. A `feedback` title is derived by the CLI from the report's `### Surface` field verbatim, so it carries no casing rule.
+- Type is `bug`, `task`, or `feedback`. Lowercase the type and the first word of the subject for `bug` and `task`, both hand-composed. `feedback` is always lowercase. Its subject is derived by the CLI from the report's `### Surface` field verbatim, so the subject alone carries no casing rule.
 - Length: 72 characters maximum, no trailing period.
 
 ## Labels
