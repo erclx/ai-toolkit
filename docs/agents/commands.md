@@ -71,6 +71,8 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon labels scan`           | Fail a pull request whose title or body carries a phase label, a label a code span quotes, a gitignored record path, or a session link (`--event`, `--json`)          |
 | `canon autoship classify`     | Decide whether a changed set needs the review pass, naming the file and the test that decided it (`--json`)                                                           |
 | `canon pr key-changes`        | Compare the files a pull request body's Key Changes names against its own diff, in both directions (`--body`, `--base`, `--json`)                                     |
+| `canon pr head`               | Compare the head a pull request object reports against the branch tip the remote carries, naming both shas (`--root`, `--json`)                                       |
+| `canon pr checks`             | Report the check runs belonging to the branch tip, reading pending for a tip carrying none rather than clean (`--root`, `--json`)                                     |
 | `canon repo metadata propose` | Compare a description, homepage, and topic set computed from the README and `package.json` against what the remote carries, writing nothing (`--root`, `--json`)      |
 | `canon repo metadata apply`   | Write an explicitly supplied description, homepage, or topic set to the remote through `gh repo edit` (`--description`, `--homepage`, `--topics`, `--root`, `--json`) |
 | `canon census [path]`         | Report tracked file count, a breakdown by extension, and a line total that skips whatever reads as binary (`--json`)                                                  |
@@ -132,6 +134,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `labels`    | `audit`                                                                                                                               |
 | `migrate`   | `rename`, `records`                                                                                                                   |
 | `autoship`  | `classify`                                                                                                                            |
+| `pr`        | `key-changes`, `head`, `checks`                                                                                                       |
 | `audits`    | `run`, `list`                                                                                                                         |
 | `gate`      | `run`                                                                                                                                 |
 

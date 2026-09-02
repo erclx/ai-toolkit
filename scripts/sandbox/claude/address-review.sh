@@ -121,8 +121,9 @@ stage_setup() {
   log_info "findings  : open PR with one should-fix finding, branch still merges"
   log_info "stale     : same PR, plus a sibling merged into main the branch conflicts with"
   log_info "body-sync : same PR, the fix invalidates a claim the body itself makes"
+  log_info "stale-head: same PR, a commit pushed after it opened, so the object's head trails the tip"
 
-  select_or_route_scenario "Which scenario?" "findings" "stale" "body-sync"
+  select_or_route_scenario "Which scenario?" "findings" "stale" "body-sync" "stale-head"
 
   log_step "Configuring address-review environment ($ANCHOR_REPO)"
 
@@ -246,6 +247,43 @@ BODY
     log_info "Expect:  adds the empty-title guard, verify passes"
     log_info "         git-followup syncs the PR body so it no longer claims no validation runs"
     log_info "         pushes a follow-up commit, then posts a summary reply comment, does NOT merge"
+    ;;
+  "stale-head")
+    start_feature_branch
+    open_pull_request
+
+    object_head=$(git rev-parse HEAD)
+
+    # A second commit pushed after the pull request opened. The object keeps
+    # naming the commit it was created against for up to a minute, which is the
+    # window every head-sensitive read here has to survive.
+    cat <<'EOF' >src/tasks.ts
+export function createTask(title: string) {
+  return { id: crypto.randomUUID(), title };
+}
+
+export function handleCreate(body: { title: string }) {
+  return createTask(body.title);
+}
+
+export function handleList() {
+  return [];
+}
+EOF
+
+    git add . && git commit -m "feat(api): add list handler" --no-verify -q
+    git push --force origin HEAD -q
+
+    log_step "Scenario ready: the pull request object's head trails the branch tip"
+    log_info "Context: open PR on feat/create-endpoint with one should-fix review finding posted"
+    log_info "  a second commit was pushed after the PR opened"
+    log_info "  the object was created against $object_head and the remote now carries $(git rev-parse HEAD)"
+    log_info ""
+    log_info "Action:  /claude-address-review"
+    log_info "Expect:  reads CI with canon pr checks --json rather than gh pr checks"
+    log_info "         the record's tip is the remote's head, not the object's headRefOid"
+    log_info "         reports pending while the runs read belong to a different sha"
+    log_info "         does NOT claim CI green off a run that belongs to the earlier commit"
     ;;
   esac
 }

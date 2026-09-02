@@ -187,7 +187,25 @@ snapshot() {
       continue
     fi
 
-    head=$(jq -r '.headRefOid // empty' <<<"$payload")
+    # The tip is the authority for the head, not the pull request object. That
+    # object lags the ref by up to a minute after a push, so MOVED fired late
+    # and the merge-tree read below judged a commit the branch had already left
+    # behind. Read on the record's own field rather than on the exit, since an
+    # operator shell profile can wrap canon in a function that flattens it.
+    # The trailing assignment is load-bearing under `set -e` and `set -o
+    # pipefail` at the top of this file. Every refusal exits 1, and a refusal
+    # here is ordinary rather than exceptional, so an unguarded pipeline would
+    # end the whole poll on the first pull request whose branch was deleted.
+    head=$(canon pr head "$n" --json 2>/dev/null | jq -r '.tip // empty') || head=""
+
+    # The object's head is the fallback rather than the source. This script
+    # ships with the plugin and the verb ships with the CLI, so a target on an
+    # older binary reaches no `pr head` at all, and answering there with the
+    # lagging head is the behavior this poll already had.
+    if [ -z "$head" ]; then
+      head=$(jq -r '.headRefOid // empty' <<<"$payload")
+    fi
+
     if [ -z "$head" ]; then
       carry_forward "$n" "returned no head"
       continue

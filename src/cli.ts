@@ -88,7 +88,7 @@ function showHelp(): void {
     `${GREY}│${NC}    deps [cmd]         ${GREY}# Read the resolved dependency set for advisories (audit)${NC}`,
     `${GREY}│${NC}    labels [cmd]       ${GREY}# Read a changed set against the pull request label map (audit)${NC}`,
     `${GREY}│${NC}    autoship [cmd]     ${GREY}# Decide whether a changed set needs the review pass (classify)${NC}`,
-    `${GREY}│${NC}    pr [cmd]           ${GREY}# Read a pull request body against its own diff (key-changes)${NC}`,
+    `${GREY}│${NC}    pr [cmd]           ${GREY}# Read a pull request against its own diff and its branch tip (key-changes, head, checks)${NC}`,
     `${GREY}│${NC}    repo [cmd]         ${GREY}# This repository's own remote metadata (metadata propose, apply)${NC}`,
     `${GREY}│${NC}    census [path]      ${GREY}# Report tracked file count, extension breakdown, and line totals${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
