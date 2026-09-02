@@ -19,13 +19,14 @@ Does not govern:
 ## Title
 
 - Format: `<type>: <subject>`
-- Type is `bug` or `task`. Lowercase the type and the first word of the subject.
+- Type is `bug`, `task`, or `feedback`. Lowercase the type and the first word of the subject for `bug` and `task`, both hand-composed. `feedback` is always lowercase. Its subject is derived by the CLI from the report's `### Surface` field verbatim, so the subject alone carries no casing rule.
 - Length: 72 characters maximum, no trailing period.
 
 ## Labels
 
-- Apply `bug` for a defect and `enhancement` for a task or improvement.
-- Both are GitHub default labels. A label that does not exist makes `gh` reject the issue. Create it once with `gh label create`.
+- Apply `bug` for a defect and `enhancement` for a task or improvement. Both are GitHub default labels.
+- Apply `feedback` to a report filed through `canon feedback --github`, which sets the label unconditionally rather than a session choosing it. It is not a GitHub default. Create it once per project with `gh label create feedback`.
+- A label that does not exist makes `gh` reject the issue. Create each one once with `gh label create`.
 - One label per issue unless a second genuinely applies.
 
 ## Content
@@ -37,15 +38,34 @@ Does not govern:
 
 ## Sections
 
+### Bug and task
+
 - `## Summary`: one line naming what and why.
 - `## Details`: for a bug, what happens versus what is expected. For a task, what to build.
 - `## Context`: for a bug, repro steps or commands. For a task, the driving reason, or `none`.
 - `## Proposed` (optional): one line naming a fix or approach. Omit when open.
 
+### Feedback
+
+- One `## Toolkit feedback` wrapper holds every field as a nested `###` heading. A flat `##` field is not recognized.
+- `### From project` (optional): the reporting project's name or kind.
+- `### Surface` (required): the toolkit surface and its type, and the specific file or name when known.
+- `### Observed` (required): the observed behavior.
+- `### Expected` (optional): the expected behavior, or `unclear`.
+- `### Repro` (optional): repro details, or `none`.
+- `### Proposed fix` (required): a proposed fix, or `open` when the session settled on no direction.
+- A required field is refused when present but empty. Write the fallback literal for an optional field rather than leaving it blank.
+
 ## Formatting
+
+### Bug and task
 
 - End every bullet with a period.
 - Keep each section to one or two lines.
+
+### Feedback
+
+- A field may run to multiple paragraphs and may hold a fenced code block. The one-or-two-line rule and the trailing-period rule do not apply.
 
 ## Examples
 
