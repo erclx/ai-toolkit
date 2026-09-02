@@ -5,9 +5,9 @@ description: The stages that gate a push on a measure, covering the sandbox cove
 
 # Gating stages
 
-Six stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
+Seven stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
 
-A seventh reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the six above rather than a gotcha about a stage.
+An eighth reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the seven above rather than a gotcha about a stage.
 
 ## What sequences them
 
