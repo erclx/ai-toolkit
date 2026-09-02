@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.21.0](https://github.com/erclx/canon/compare/v4.20.1...v4.21.0) (2026-09-02)
+
+
+### Features
+
+* **pr:** key head-sensitive reads on the resolved branch tip ([#1367](https://github.com/erclx/canon/issues/1367)) ([d2f0975](https://github.com/erclx/canon/commit/d2f09753d1fe4ff1ed457408bfe34b1e93a770e1))
+
 ## [4.20.1](https://github.com/erclx/canon/compare/v4.20.0...v4.20.1) (2026-09-02)
 
 
