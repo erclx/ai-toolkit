@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.27.0](https://github.com/erclx/canon/compare/v4.26.3...v4.27.0) (2026-09-02)
+
+
+### Features
+
+* **orchestrate:** give the parked pass the backlog ([#1402](https://github.com/erclx/canon/issues/1402)) ([07820f6](https://github.com/erclx/canon/commit/07820f65f0b2bf42d8b7d2fde6d4a3dbc0637c42))
+
 ## [4.26.3](https://github.com/erclx/canon/compare/v4.26.2...v4.26.3) (2026-09-02)
 
 
