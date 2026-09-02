@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.17.0](https://github.com/erclx/canon/compare/v4.16.0...v4.17.0) (2026-09-02)
+
+
+### Features
+
+* **gate:** fail a push on a records re-run that rewrites ([#1350](https://github.com/erclx/canon/issues/1350)) ([7ef10c1](https://github.com/erclx/canon/commit/7ef10c19055f1d7f00ea7a6feb05f0876a3d7218))
+
 ## [4.16.0](https://github.com/erclx/canon/compare/v4.15.1...v4.16.0) (2026-09-02)
 
 
