@@ -55,6 +55,7 @@ esac
 esbenp
 evals
 executeautomation
+extensionless
 failable
 feedwatch
 footgun
