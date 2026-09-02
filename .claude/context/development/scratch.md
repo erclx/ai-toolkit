@@ -7,7 +7,9 @@ description: Why shared scratch lives at the main worktree root, the two write r
 
 `.canon/plans/`, `.canon/review/`, `.canon/memory/`, and `.canon/tasks/` are gitignored and live at the main worktree root. A linked worktree resolves them there rather than writing its own copy.
 
-A linked worktree has no ignored scratch path of its own since the records move. The ignore file names one `.canon/` line plus `.claude/worktrees/`, and a linked worktree carries no `.canon/` of its own, so a session taking the scratch rule's second spelling writes `<worktree>/.claude/.tmp/<slug>/` and `git check-ignore` exits 1 on it. The scratch-guard hook accepts that path, so the session is told it complied while the `git add -A` in the ship chain stages the folder. What catches it is a status read before staging, which is the same signal that caught the flat task archive below. Measured 2026-09-01 on `fix/record-tree-old-root`. <!-- canon-keep-record-root -->
+A session taking the scratch rule's second spelling used to write `<worktree>/.claude/.tmp/<slug>/` against an ignore file naming only `.canon/` and `.claude/worktrees/`, so `git check-ignore` exited 1 on it. The scratch-guard hook accepted the path and told the session it complied, while the `git add -A` in the ship chain staged the folder anyway. What caught it was a status read before staging, the same signal that caught the flat task archive below. Measured 2026-09-01 on `fix/record-tree-old-root`. <!-- canon-keep-record-root -->
+
+`.claude/.tmp/` now carries its own `.gitignore` entry and manifest array member, so the fallback spelling is covered wherever it is written, worktree or main root alike. It stays an ignore entry rather than a second scratch root: nothing changed about which path a project without `.canon/` writes to, only whether git sees it. `.claude/ARCHITECTURE.md` carries the entry as a temporary carve-out, retired once `canon migrate records` has moved every project off the fallback it covers. <!-- canon-keep-record-root -->
 
 A linked worktree reads them through one tool and writes them through another. `Edit` and `Write` refuse every main-root path with a message naming session isolation and directing the session to the worktree copy, while `Read` resolves normally and `Bash` writes without complaint, so the boundary is tool-scoped rather than filesystem-scoped. That holds across all four folders and a live task file.
 
@@ -82,6 +84,8 @@ The citation sweep behind `canon migrate records` passes over the records themse
 The two roots take different rules and the asymmetry is deliberate. `.canon/` is read whole, since `.claude/ARCHITECTURE.md` fixes the rule that every gitignored record moves there and nothing tracked ever lands there, which covers a folder `RECORD_ENTRIES` has yet to learn about. `.claude/` is mixed and has to be entry-scoped, because a bare prefix there drops 163 tracked files here and strands a target's installed `.claude/rules/core/035-tasks.md`, which is the file the sweep exists to repoint.
 
 What that leaves standing is a record holding a live pointer, which keeps the old spelling after the move. `v75.1` owns the split between a live pointer and prose dating a decision, and the predicate ships exported for that row to invert rather than restate.
+
+The marker's own comment syntax has to match the file it sits in, since the sweep only tests the raw substring on the line or the one above it. A `.gitignore` pattern takes no trailing comment, so the marker needs its own comment line directly above the pattern, while a TOML array entry can carry it trailing on the same line and a markdown sentence takes the inline `<!-- canon-keep-record-root -->` form. Forgetting it on a new `.claude/<record-entry>` citation fails the Record idempotence stage rather than drifting silently.
 
 ### What a spike leaves behind
 
