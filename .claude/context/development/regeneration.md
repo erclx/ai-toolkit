@@ -33,7 +33,19 @@ Sample content committed at its real filename gets rewritten by every repo-wide 
 
 ## Hero
 
-The Hero stage runs `scripts/core/regen-hero.sh`, which fills every `assets/*.html.tmpl` and writes the `.html` beside it, then asserts no drift over `assets/*.html`. Two inputs reach the templates: five catalogs supply the counts, so no figure on the README frame is maintained by hand, and `canon design css --no-components` supplies the palette, so neither frame carries its own copy of a hex value.
+The Hero stage runs `scripts/core/regen-hero.sh`, which fills every `assets/*.html.tmpl` and writes the `.html` beside it, then asserts no drift over `assets/*.html`. Two inputs reach the templates: five catalogs supply the counts, so no figure on a README frame is maintained by hand, and `canon design css --no-components` supplies the palette, so no frame carries its own copy of a hex value.
+
+One shared value map reaches every template, so a frame resolving only the placeholders that already exist costs a template file and nothing else. A frame needing data the map does not carry costs one row builder beside the others, and the script refuses when a builder renders empty, the same way it refuses a zeroed count.
+
+What the script can read bounds what a frame can show. It reads committed catalogs through the CLI, so a frame sourced from a gitignored folder such as `.canon/tasks/` regenerates here and fails in CI, where that folder does not exist. A frame wanting that content carries its text the way `install.html.tmpl` does, recorded from a real run in the template with its elisions named.
+
+### The folder is read flat three times
+
+`regen-hero.sh` collects templates twice, once as a shell glob and once through `readdirSync`, `resolveCaptureSources` expands a directory to the `.html` files directly inside it, and `captureBases` finds a capture set the same way. None of the three descends.
+
+So a template placed in a subfolder is skipped by regeneration, by capture, and by the drift gate at once, and nothing reports it, because each is a filter over a listing and a filter matching nothing returns an empty set. A showcase frame therefore takes a name prefix rather than a folder, and `assets/brand/` is safe only because no stage ever looks for the SVG it holds.
+
+### What the assert covers
 
 The assert covers the HTML and not the PNG beside it. A capture is a chromium render whose bytes move with the browser version, so asserting the image would fail on a machine whose browser differs rather than on a stale count. A second assert closes the gap that leaves without rendering anything: `canon capture` writes a digest of the markup it read and one of the image it wrote into a `.stamp` beside each PNG, and the stage hashes both committed files of each set and compares them. It takes its set of frames off the `.html` files in `assets/`, which is the same thing `canon capture assets` reads to decide what to render, so a frame added later is covered without a second edit and an image in the folder that no markup renders is left alone.
 
@@ -45,7 +57,9 @@ The assert compares against the index, the way the Consumed copies stage above d
 
 The frame carries no version number. `package.json` is bumped on `main` by the release tooling, and a pull request builds against the merge commit, so an embedded version drifts on every open branch the moment a release lands and the stage then fails for work that touched nothing. Counts have the same shape and are kept, because a catalog change is what the stage exists to catch and the branch that changes a catalog is the one that goes red.
 
-`assets/hero.html` is in `.prettierignore` because the stage and the formatter would otherwise both own it and serialize it differently. The Format stage runs first and rewrites the file, the Hero stage rewrites it back, and the drift assert then reports against whichever version was committed last. The pre-push hook reformats and asks for the result to be committed as `style(<scope>):`, which is exactly the path that would commit the formatter's version and deadlock the stage. One writer per generated file is the rule the entry beside it already applies to the release tooling.
+Every `assets/*.html` is in `.prettierignore`, because the stage and the formatter would otherwise both own each one and serialize it differently. The Format stage runs first and rewrites the file, the Hero stage rewrites it back, and the drift assert then reports against whichever version was committed last. The pre-push hook reformats and asks for the result to be committed as `style(<scope>):`, which is exactly the path that would commit the formatter's version and deadlock the stage. One writer per generated file is the rule the entry beside it already applies to the release tooling.
+
+That entry is a folder glob rather than a list of frames. The script writes whatever templates the folder holds, so a frame added under a named-file entry arrives with two writers and shows no sign of it until their output first disagrees. Templates keep their format gate, which the glob leaves alone because a template ends in `.tmpl`.
 
 ### An exit 2 with no message
 

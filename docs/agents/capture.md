@@ -15,7 +15,13 @@ canon capture assets --selector .window --out .canon/review/captures
 
 `--selector` is required and every example above passes it. The element a capture crops to belongs to the page, not to the command, so there is no value that could be right for an arbitrary project's markup. `.window` is what this repository's own two sources declare, and a project renders its own pages by naming whatever theirs declare.
 
-`assets/` here holds two sources, so one run over the folder rebuilds both. Neither is edited by hand. `scripts/core/regen-hero.sh` writes both from a template beside it, filling `hero.html.tmpl` from the CLI catalogs and both templates from the design source, and `bun run check` regenerates them and fails on the difference. The terminal text on `install.html` still comes from a real run, and it is the template that holds it.
+## What this repository captures
+
+`assets/` here holds four sources, so one run over the folder rebuilds every one. None is edited by hand. `scripts/core/regen-hero.sh` writes each from a template beside it, filling one shared value map into all of them, and `bun run check` regenerates them and fails on the difference.
+
+Three of the four take catalog data, so a stack gaining a rule moves the frame on the next run. The terminal text on `install.html` is the exception, coming from a real run and held in the template rather than in the generated file.
+
+The folder is read flat and never descends, by the regeneration script, by this command, and by the drift stage alike. A source in a subfolder is skipped by all three with nothing reported, so a new frame takes a name prefix rather than a folder of its own.
 
 Only the HTML is asserted for drift. The PNG is a chromium render whose bytes move with the browser version, so rebuild it with `canon capture assets --selector .window` when the check reports the HTML changed.
 
