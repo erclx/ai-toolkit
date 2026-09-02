@@ -17,7 +17,11 @@ import {
   type WorktreeVerdict,
 } from '@/worktrees/reclaim'
 import { mainWorktreeRoot } from '@/worktree'
-import { removeReclaimable, type RemovalOutcome } from '@/worktrees/remove'
+import {
+  removeReclaimable,
+  type RemovalOutcome,
+  type RemovalReport,
+} from '@/worktrees/remove'
 
 interface ListCommandOptions {
   readonly json?: boolean
@@ -25,7 +29,50 @@ interface ListCommandOptions {
 
 interface ReclaimCommandOptions {
   readonly dryRun?: boolean
+  readonly json?: boolean
 }
+
+/**
+ * What a caller reads instead of the frame.
+ *
+ * `.husky/post-merge` is the first caller that is not a person, and it branches
+ * on a parsed field rather than on the exit code, since a shell profile
+ * wrapping `canon` in a function flattens every status to zero. It reads the
+ * record with a pattern rather than a parser, so every field it branches on is
+ * a number or a fixed word, and `outcomes` sits last so a greedy pattern
+ * anchored on a scalar never reaches into it.
+ */
+export interface ReclaimRecord {
+  readonly reason: Unreadable | null
+  readonly detail: string | null
+  readonly dryRun: boolean
+  readonly reclaimable: number
+  readonly removed: number
+  readonly failed: number
+  readonly pruned: boolean
+  readonly outcomes: readonly RemovalOutcome[]
+}
+
+/** Every value the record carries, in the two shapes a run can end in. */
+export type ReclaimSource =
+  | {
+      readonly kind: 'unreadable'
+      readonly reason: Unreadable
+      readonly detail: string
+      readonly dryRun: boolean
+    }
+  | {
+      readonly kind: 'read'
+      readonly dryRun: boolean
+      readonly reclaimable: number
+      /**
+       * Null when no removal ran at all, which covers a reading that found
+       * nothing reclaimable and a dry run alike. The two differ on
+       * `reclaimable` rather than here, so a caller can tell a quiet repository
+       * from a run that was asked not to act.
+       */
+      readonly removal: RemovalReport | null
+    }
 
 const REFUSALS: Record<Refusal, string> = {
   'main-worktree': 'the main worktree, which is never reclaimable',
@@ -120,6 +167,7 @@ export function register(program: Command): void {
     )
     .helpOption('-h, --help', 'Show this help message')
     .option('--dry-run', 'Report what would be removed without removing it')
+    .option('--json', 'Add a machine-readable record on stdout')
     .addHelpText(
       'after',
       [
@@ -148,6 +196,7 @@ export function register(program: Command): void {
         'Examples:',
         '  canon worktrees reclaim --dry-run',
         '  canon worktrees reclaim',
+        '  canon worktrees reclaim --json',
         '',
       ].join('\n'),
     )
@@ -210,6 +259,47 @@ async function runList(opts: ListCommandOptions): Promise<number> {
   return 0
 }
 
+/**
+ * Builds the record from the values a run already holds.
+ *
+ * Separate from the run so the record is testable without a repository, a `gh`
+ * credential, or a directory the test would then have to remove. The counts are
+ * derived from `outcomes` rather than passed in, since two numbers a caller
+ * computes are two numbers a caller can get wrong.
+ */
+export function reclaimRecord(source: ReclaimSource): ReclaimRecord {
+  if (source.kind === 'unreadable') {
+    return {
+      reason: source.reason,
+      detail: source.detail,
+      dryRun: source.dryRun,
+      reclaimable: 0,
+      removed: 0,
+      failed: 0,
+      pruned: false,
+      outcomes: [],
+    }
+  }
+
+  const outcomes = source.removal?.outcomes ?? []
+
+  return {
+    reason: null,
+    detail: null,
+    dryRun: source.dryRun,
+    reclaimable: source.reclaimable,
+    removed: outcomes.filter((outcome) => outcome.removed).length,
+    failed: outcomes.filter((outcome) => !outcome.removed).length,
+    pruned: source.removal?.pruned ?? false,
+    outcomes,
+  }
+}
+
+function emitReclaim(opts: ReclaimCommandOptions, source: ReclaimSource): void {
+  if (opts.json !== true) return
+  process.stdout.write(`${JSON.stringify(reclaimRecord(source))}\n`)
+}
+
 async function runReclaim(opts: ReclaimCommandOptions): Promise<number> {
   const dryRun = opts.dryRun ?? false
   const cwd = process.cwd()
@@ -222,6 +312,12 @@ async function runReclaim(opts: ReclaimCommandOptions): Promise<number> {
   if (report.kind === 'unreadable') {
     reportUnreadable(report)
     outro()
+    emitReclaim(opts, {
+      kind: 'unreadable',
+      reason: report.reason,
+      detail: report.detail,
+      dryRun,
+    })
     return 1
   }
 
@@ -231,6 +327,7 @@ async function runReclaim(opts: ReclaimCommandOptions): Promise<number> {
   if (reclaimable.length === 0) {
     logInfo('None. Every worktree fails at least one condition.')
     outro()
+    emitReclaim(opts, { kind: 'read', dryRun, reclaimable: 0, removal: null })
     return 0
   }
 
@@ -241,6 +338,12 @@ async function runReclaim(opts: ReclaimCommandOptions): Promise<number> {
     logStep('Dry run')
     logWarn('Nothing was removed. Run this again without --dry-run to remove.')
     outro()
+    emitReclaim(opts, {
+      kind: 'read',
+      dryRun,
+      reclaimable: reclaimable.length,
+      removal: null,
+    })
     return 0
   }
 
@@ -265,12 +368,16 @@ async function runReclaim(opts: ReclaimCommandOptions): Promise<number> {
     logWarn(
       `${plural(failed.length, 'worktree')} could not be removed. Read the reason above and clear it by hand.`,
     )
-    outro()
-    return 1
   }
 
   outro()
-  return 0
+  emitReclaim(opts, {
+    kind: 'read',
+    dryRun,
+    reclaimable: reclaimable.length,
+    removal,
+  })
+  return failed.length > 0 ? 1 : 0
 }
 
 /** Names what happened to one entry, with the failing step where it did not close. */
