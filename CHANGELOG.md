@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.24.0](https://github.com/erclx/canon/compare/v4.23.1...v4.24.0) (2026-09-02)
+
+
+### Features
+
+* **orchestrate:** state where filing a row ends and sizing it begins ([#1381](https://github.com/erclx/canon/issues/1381)) ([d893101](https://github.com/erclx/canon/commit/d8931012db5e487c60243b215677280adda1f6c3))
+
 ## [4.23.1](https://github.com/erclx/canon/compare/v4.23.0...v4.23.1) (2026-09-02)
 
 
