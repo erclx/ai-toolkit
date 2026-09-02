@@ -14,7 +14,7 @@ Does not govern:
 - Commit subject format, which shares the title form: `commit.md`
 - Branch naming: `branch.md`
 - Whether a phase label or a semver tag may appear in a title or body: `versioning.md`
-- Whether a quoted label or a gitignored record path may appear in a title or body, which `canon labels scan` fails on: `publish.md`
+- Whether a quoted label, a gitignored record path, or a link to one Claude Code session may appear in a title or body, which `canon labels scan` fails on: `publish.md`
 - Voice, rhythm, and sentence construction in pull request prose: the `write-human` skill
 - Punctuation, formatting, and banned words in pull request prose: `markdown.md`
 
@@ -46,6 +46,7 @@ Does not govern:
 - Use checkboxes, never prose. See Testing discipline for which box gets ticked.
 - `## For the reviewer` (optional): what the reviewing session should confirm, one bullet per request
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
+- The list is closed. A body carries the sections above and nothing after the last of them, which covers a trailer a harness appends once the body is composed. `publish.md` states the rule, and `canon labels scan` fails on the one such trailer measured so far.
 
 ## Testing discipline
 

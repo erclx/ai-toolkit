@@ -34,6 +34,19 @@ export interface PhaseScanResult {
    * nor the gitignored folder a path names.
    */
   readonly boardReferences: readonly string[]
+  /**
+   * A link to one Claude Code session, which the harness appends to text it
+   * tells a session to publish.
+   *
+   * It sits beside the board references rather than inside them because the
+   * two are unresolvable for different reasons. A record path fails for a
+   * reader holding no copy of this checkout, and a session link fails for
+   * everyone outside the one account that holds the session, which no clone
+   * and no checkout repairs. The report line for a board reference names a
+   * record path and a quoted label, so a session link folded in would be
+   * reported under a sentence that does not describe it.
+   */
+  readonly sessionLinks: readonly string[]
 }
 
 const VERSION_TOKEN = /\bv\d+(?:\.\d+){1,2}\b/g
@@ -97,6 +110,26 @@ const RECORD_PATH = new RegExp(
   ).join('|')})(?![\\w-])[^\\s\`)\\]]*`,
   'g',
 )
+
+/**
+ * A link to one Claude Code session, matched on the host and the path segment
+ * rather than on the identifier alphabet.
+ *
+ * The two instances on the trunk carry a 24-character identifier after
+ * `session_`, and reading that shape into the pattern would empty this check
+ * the moment the harness changed it, with nothing left to report and no
+ * failure to notice. The host and the path segment are what the harness has to
+ * keep for the link to resolve at all. A host change still gets past this and
+ * nothing detects that.
+ *
+ * The scheme is optional because it is incidental to the two parts being
+ * matched, so a link written without it is the same unresolvable reference.
+ * The tail runs to the first whitespace or closing delimiter, which is how a
+ * record path is read, so a report names the whole link rather than the prefix
+ * that matched.
+ */
+const SESSION_LINK =
+  /(?<![\w./-])(?:https?:\/\/)?claude\.ai\/code\/session_[^\s`)\]]+/g
 
 /**
  * The head branch release-please opens every release pull request under.
@@ -180,6 +213,16 @@ function recordPaths(text: string): string[] {
   ]
 }
 
+function sessionLinks(text: string): string[] {
+  return [
+    ...new Set(
+      (text.match(SESSION_LINK) ?? []).map((link) =>
+        link.replace(TRAILING_PUNCTUATION, ''),
+      ),
+    ),
+  ]
+}
+
 /**
  * Reads a title and a body for version-shaped tokens and sorts every one
  * found into the namespace this pull request is allowed to carry.
@@ -197,11 +240,22 @@ function recordPaths(text: string): string[] {
  * body without passing the gate on its own. That its author has nothing to
  * rewrite is true as well and is the weaker half, since it would leave the
  * reference standing and unresolvable.
+ *
+ * A session link is reported on both paths, the release one included. Nothing
+ * appends one to a release body, which release-please generates with no
+ * session in the loop, so populating the field there costs nothing on every
+ * run this repository has seen. What it buys is that the coverage argument
+ * above never has to hold for this category: that argument reasons from every
+ * commit in the generated history having passed this gate, and a link the gate
+ * did not yet scan for would reach a release body under it. Reading the whole
+ * body on both paths leaves no hole if the premise ever slips.
  */
 export function scanPhaseLabels(input: PhaseScanInput): PhaseScanResult {
   const source = `${input.title}\n${input.body}`
+  const outsideFences = linesOutsideFences(source).join('\n')
   const tokens = versionTokens(readable(source))
   const cutsRelease = isReleasePullRequest(input)
+  const links = sessionLinks(outsideFences)
 
   if (cutsRelease) {
     return {
@@ -209,6 +263,7 @@ export function scanPhaseLabels(input: PhaseScanInput): PhaseScanResult {
       phaseLabels: [],
       semverTags: tokens,
       boardReferences: [],
+      sessionLinks: links,
     }
   }
 
@@ -222,9 +277,7 @@ export function scanPhaseLabels(input: PhaseScanInput): PhaseScanResult {
     cutsRelease,
     phaseLabels: tokens,
     semverTags: [],
-    boardReferences: [
-      ...quoted,
-      ...recordPaths(linesOutsideFences(source).join('\n')),
-    ],
+    boardReferences: [...quoted, ...recordPaths(outsideFences)],
+    sessionLinks: links,
   }
 }

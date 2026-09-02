@@ -90,7 +90,7 @@ export function register(program: Command): void {
   labels
     .command('scan')
     .description(
-      'Fail a pull request whose title or body carries a phase label or a board identifier',
+      'Fail a pull request whose title or body carries a phase label, a board identifier, or a session link',
     )
     .helpOption('-h, --help', 'Show this help message')
     .option(
@@ -118,10 +118,16 @@ export function register(program: Command): void {
         'copy of. A path under a tracked folder is left alone, so a rule or a',
         'skill any clone resolves is not reported.',
         '',
+        'It reports a session link as the third category, being a link to one',
+        'Claude Code session, which the harness appends to text it tells a',
+        'session to publish. That link resolves for the one account holding the',
+        'session and for no other reader, which no clone repairs, so it is read',
+        'on a release pull request too, where the board identifier is not.',
+        '',
         'Exit codes:',
-        '  0  no phase label and no board identifier found',
+        '  0  no phase label, no board identifier, and no session link found',
         '  1  refused, with the reason on stderr or in the JSON record',
-        '  2  the title or body carries a phase label or a board identifier',
+        '  2  the title or body carries one of the three',
         '',
         'Examples:',
         '  canon labels scan --event "$GITHUB_EVENT_PATH"',
@@ -363,6 +369,16 @@ async function runScan(opts: ScanOptions): Promise<number> {
     for (const reference of result.boardReferences) logWarn(reference)
   }
 
+  logStep(result.sessionLinks.length === 0 ? 'Clean' : 'Session link found')
+  if (result.sessionLinks.length === 0) {
+    logInfo('no session link in the title or body')
+  } else {
+    logWarn(
+      `${plural(result.sessionLinks.length, 'session link')} in the title or body. Delete every hit rather than rewriting it, since a session resolves for the one account that started it and for no other reader.`,
+    )
+    for (const link of result.sessionLinks) logWarn(link)
+  }
+
   outro()
 
   if (emitJson) {
@@ -372,11 +388,14 @@ async function runScan(opts: ScanOptions): Promise<number> {
         phaseLabels: result.phaseLabels,
         semverTags: result.semverTags,
         boardReferences: result.boardReferences,
+        sessionLinks: result.sessionLinks,
       })}\n`,
     )
   }
 
-  return result.phaseLabels.length === 0 && result.boardReferences.length === 0
+  return result.phaseLabels.length === 0 &&
+    result.boardReferences.length === 0 &&
+    result.sessionLinks.length === 0
     ? 0
     : 2
 }

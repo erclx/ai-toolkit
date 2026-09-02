@@ -68,7 +68,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon secrets scan`          | Report credential-shaped values in the tree the package ships, keyed on issued values rather than on words (`--json`)                                                 |
 | `canon deps audit`            | Report published advisories against the resolved dependency set, refusing rather than reporting clean when the index is unreachable (`--json`)                        |
 | `canon labels audit`          | Report the labels a changed set earns from the pull request label map and the paths no row reaches (`--json`)                                                         |
-| `canon labels scan`           | Fail a pull request whose title or body names the board, by a phase label, a label a code span quotes, or a gitignored record path (`--event`, `--json`)              |
+| `canon labels scan`           | Fail a pull request whose title or body carries a phase label, a label a code span quotes, a gitignored record path, or a session link (`--event`, `--json`)          |
 | `canon autoship classify`     | Decide whether a changed set needs the review pass, naming the file and the test that decided it (`--json`)                                                           |
 | `canon pr key-changes`        | Compare the files a pull request body's Key Changes names against its own diff, in both directions (`--body`, `--base`, `--json`)                                     |
 | `canon repo metadata propose` | Compare a description, homepage, and topic set computed from the README and `package.json` against what the remote carries, writing nothing (`--root`, `--json`)      |
