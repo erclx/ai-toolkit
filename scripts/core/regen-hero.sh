@@ -271,9 +271,43 @@ const govRuleRows = sample(deliveredEntries)
   })
   .join("\n")
 
+// A standard either governs an artifact by path or is opened by name when a
+// session decides it needs it. Rendering the first and naming the second is the
+// contrast, since nothing else in the catalog tells a reader that the corpus
+// installs into no project and is read through a verb instead.
+const standardEntries = JSON.parse(STANDARDS_JSON).standards
+const standardRows = sample(standardEntries)
+  .map((entry) => {
+    const applies = [entry.appliesTo ?? []].flat()
+    const governs =
+      applies.length > 0 ? clip(applies.join(" "), GLOB_WIDTH) : "read by name"
+    return frameRow(
+      `<span class="name">${escape(pad(entry.name, 18))}</span>` +
+        `<span class="muted">${escape(governs)}</span>`,
+    )
+  })
+  .join("\n")
+
+// A tooling stack is counted rather than listed, because what it lays down is
+// dev dependencies, run scripts, and ignore groups rather than named entries a
+// reader would recognize. The inheritance is the part worth showing, since it
+// is why a stack carrying two of its own arrives with far more than two.
+const toolingStackRows = toolingStacks
+  .map((stack) =>
+    frameRow(
+      `<span class="name">${escape(pad(stack.name, 14))}</span>` +
+        `<span class="muted">${escape(pad(plural(stack.devDeps, "dep"), 10))}</span>` +
+        `<span class="muted">${escape(pad(plural(stack.scripts, "script"), 12))}</span>` +
+        `<span class="muted">${escape(stack.extends ? `extends ${stack.extends}` : "")}</span>`,
+    ),
+  )
+  .join("\n")
+
 for (const [label, rows] of [
   ["governance stack rows", govStackRows],
   ["governance rule rows", govRuleRows],
+  ["standard rows", standardRows],
+  ["tooling stack rows", toolingStackRows],
 ]) {
   if (rows === "") {
     console.error(`regen-hero: the ${label} rendered empty, refusing to write a blank frame`)
@@ -285,6 +319,8 @@ const values = {
   TOKENS: tokenCss,
   GOV_STACK_ROWS: govStackRows,
   GOV_RULE_ROWS: govRuleRows,
+  STANDARD_ROWS: standardRows,
+  TOOLING_STACK_ROWS: toolingStackRows,
   SKILL_COUNT: String(skills.length),
   RULE_COUNT: String(rules.length),
   STANDARD_COUNT: String(standards.length),
