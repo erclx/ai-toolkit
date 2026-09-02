@@ -155,7 +155,7 @@ A finding placed into another task's `## Findings` is filing under a second name
 
 What the measurement decides is the test, rather than whether one was taken. A measurement that decides whether a row can start stays in this seat, which covers the blocker re-test in `${CLAUDE_SKILL_DIR}/references/orchestrator-parked.md`, the collision check before a dispatch, and the file set refill step 6 lists against every track in flight. One that decides how big the row is goes to the planner.
 
-Both kinds read the same tree, and only a sizing count commits a plan to a scope this seat cannot see the whole of. A row filed under `## Needs a plan` carries no `Touches` column either, so filing it unmeasured owes no file set and the disjointness machinery is untouched.
+Both kinds read the same tree, and only a sizing count commits a plan to a scope this seat cannot see the whole of. A row filed under `## Needs a plan` carries no `Touches` column either, so filing it unmeasured owes no file set and the disjointness machinery is untouched. A position claim in that group's cell is in scope as well: name the row it outranks and the class it belongs to, both of which are judgments about order, and never reach for a count of the defect's extent to justify the rank, which is the untested number this boundary keeps off the row wearing a ranking argument.
 
 ## Refilling the ready queue
 

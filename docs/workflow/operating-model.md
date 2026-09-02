@@ -65,6 +65,14 @@ goes to the task that owns the surface, or folds into the next task touching it,
 because a session that writes a change cannot review it independently afterwards
 and no later session recovers that vantage.
 
+Filing that row stops at the defect and the surface it was seen on. How far the
+defect reaches and what causes it belong to whoever plans the row, so it arrives
+carrying neither a count nor an asserted mechanism, and the seat that found it
+says as much in a plain sentence rather than supplying either. What separates the
+two is what a measurement decides: the blocker re-test, the collision check, and
+the file set compared against every track in flight all decide whether a row can
+start, and only a count of the defect's extent decides how big it is.
+
 ## The loop
 
 One feature travels this path end to end.
