@@ -66,4 +66,6 @@ One remote round trip per call, sampled here at 0.41s, 0.55s, and 0.67s on 2026-
 
 One head-sensitive read is left on the object deliberately. `canon targets pulls` reads `statusCheckRollup` for every open pull request across every target, where resolving a tip per row would cost one remote read per pull request across a dozen projects, against a surface that reports a listing rather than gating a push.
 
+The orchestrator poll spends that same read per open pull request and repeats it on a three-minute timer, which makes it the heaviest caller here rather than an exception to the paragraph above. Six open pull requests is around 120 remote reads an hour. What separates the two cases is what each reading decides rather than what it costs. The poll's head fires the review trigger, so a stale one sends a pass at a commit nobody read or withholds one that is owed. The listing decides nothing, so the same spend buys a fresher column in a report and no correctness at all.
+
 `canon pr key-changes` also stays on the object, for a different reason. It reads the body, the file list, and `headRefOid` in one call on purpose, so the three describe one commit. That is a consistency requirement rather than a freshness one, and keying its head elsewhere would break it.
