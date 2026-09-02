@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.15.1](https://github.com/erclx/canon/compare/v4.15.0...v4.15.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **skills:** repoint every dead CLAUDE.md heading citation ([#1347](https://github.com/erclx/canon/issues/1347)) ([ae69bfd](https://github.com/erclx/canon/commit/ae69bfdd7e2e07ad4e165b0cf36291f0112146e7))
+
 ## [4.15.0](https://github.com/erclx/canon/compare/v4.14.1...v4.15.0) (2026-09-02)
 
 
