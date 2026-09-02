@@ -67,6 +67,8 @@ export interface ArchiveSuccess {
   readonly indexRegenerated: boolean
   /** Undefined when the task cited no live plan, or when another task still holds it. */
   readonly plan: PlanMove | undefined
+  readonly closed: number
+  readonly cut: number
 }
 
 export interface ArchiveRefused {
@@ -81,6 +83,7 @@ export type ArchiveOutcome = ArchiveSuccess | ArchiveRefused
 export interface TaskOutcomes {
   readonly open: readonly string[]
   readonly closed: readonly string[]
+  readonly cut: readonly string[]
 }
 
 export function tasksDir(root: string): string {
@@ -92,6 +95,28 @@ export function archiveDir(root: string): string {
 }
 
 export const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
+
+/**
+ * A bullet with an optional checkbox, wider than `OUTCOME_PATTERN` so a cut
+ * line missing its checkbox still parses. `record.ts` positions outcomes off
+ * the narrower pattern and stays that way, so a cut line with no checkbox
+ * stays invisible to `canon tasks outcome` by design rather than by oversight.
+ *
+ * Unlike `OUTCOME_PATTERN`, this reaches a struck bullet under any heading,
+ * not only `## Outcomes`, since a checkbox is what confined the narrower
+ * pattern there and a cut line may carry none. No struck bullet sits outside
+ * `## Outcomes` across the live board or the archive as of this change, so
+ * the wider reach is not live, and a heading test is one to add if that stops
+ * holding.
+ */
+const BULLET_PATTERN = /^- (?:\[([ xX])\] ?)?(.*)$/
+
+/**
+ * A struck outcome body, whatever its checkbox holds. The test only checks
+ * the body's start, since the canonical form trails the struck text with why
+ * it was cut: `- ~~<outcome>~~ <why>` leaves `<why>` outside the `~~` pair.
+ */
+const STRUCK_BODY_PATTERN = /^~~.+~~/
 
 /**
  * Marks the lines sitting inside a fenced block, the fence delimiters included.
@@ -112,31 +137,49 @@ export function fenceMask(lines: readonly string[]): boolean[] {
 }
 
 /**
- * Splits a task's outcome list by checkbox state. The board format puts every
- * outcome at the top level of `## Outcomes`, so an anchored match is enough and
- * no heading tracking is needed.
+ * Splits a task's outcome list by checkbox state, cut outcomes pulled out
+ * ahead of it. The board format puts every outcome at the top level of
+ * `## Outcomes`, so an anchored match is enough and no heading tracking is
+ * needed.
+ *
+ * A struck body reads as cut whatever its checkbox holds, since a dropped box
+ * and a retained one both appear in the tree and neither is the abandoned
+ * work's fault: `- ~~a thing~~` carries no box and would otherwise vanish
+ * from both arrays, `- [ ] ~~a thing~~` would otherwise read as open, and
+ * `- [x] ~~a thing~~` would otherwise read as shipped. Testing the body
+ * before the checkbox is what catches all three under one rule.
  */
 export function readOutcomes(text: string): TaskOutcomes {
   const open: string[] = []
   const closed: string[] = []
+  const cut: string[] = []
   const lines = text.split('\n')
   const fenced = fenceMask(lines)
 
   for (const [index, line] of lines.entries()) {
     if (fenced[index]) continue
 
-    const match = OUTCOME_PATTERN.exec(line)
-    if (!match) continue
+    const bullet = BULLET_PATTERN.exec(line)
+    if (!bullet) continue
 
-    const [, box, body] = match
+    const [, box, rawBody] = bullet
+    const body = rawBody.trim()
+
+    if (STRUCK_BODY_PATTERN.test(body)) {
+      cut.push(body)
+      continue
+    }
+
+    if (box === undefined) continue
+
     if (box === ' ') {
-      open.push(body.trim())
+      open.push(body)
     } else {
-      closed.push(body.trim())
+      closed.push(body)
     }
   }
 
-  return { open, closed }
+  return { open, closed, cut }
 }
 
 /**
@@ -492,17 +535,17 @@ export async function archiveTask(
   const from = join(dir, `${stem}.md`)
   const text = await readFile(from, 'utf8')
 
-  const { open, closed } = readOutcomes(text)
+  const { open, closed, cut } = readOutcomes(text)
 
   if (open.length > 0) {
     return refuse(
       'open-outcomes',
-      `${stem} has ${open.length} open outcome(s). Close them or cut them from the task, then archive.`,
+      `${stem} has ${open.length} open outcome(s). Close them, or cut one with \`- ~~<outcome>~~ <why>\`, then archive.`,
       open,
     )
   }
 
-  if (closed.length === 0) {
+  if (closed.length === 0 && cut.length === 0) {
     return refuse(
       'no-outcomes',
       `${stem} carries no outcomes, so nothing marks it shipped.`,
@@ -538,6 +581,8 @@ export async function archiveTask(
     priorityRowRemoved,
     indexRegenerated: regen.action === 'written',
     plan,
+    closed: closed.length,
+    cut: cut.length,
   }
 }
 

@@ -255,4 +255,4 @@ Archiving a task archives its plan alongside it, when the closing task is that p
 
 One act rather than two is what makes the pair safe. The merge is the event that settles a plan, and a `post-merge` hook reaching the archive with nobody watching cannot act on a warning, so a second call after it would be a second failure point leaving the task archived and the plan live.
 
-A task with an open outcome stays on the board, and so does its plan. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file.
+A task with an open outcome stays on the board, and so does its plan. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. Cutting means striking the outcome's body: `- ~~<outcome>~~ <why>`. `archiveTask` reads a struck body as cut whatever its checkbox holds, so a task carrying only cut outcomes still archives and a mixed task carries both counts on its success record.
