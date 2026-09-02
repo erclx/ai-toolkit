@@ -1,11 +1,41 @@
 ---
 title: Orchestrator handoff runbook
-description: The two sections an orchestrating session adds over the shared session map, how capture runs from a session that never commits, and the resume invocation the file carries out
+description: Retirement act the wind-down owes the fleet it dispatched, the two sections an orchestrating session adds over the shared session map, how capture runs from a session that never commits, and the resume invocation the file carries out
 ---
 
-Write the pre-compaction handoff as orchestrator. Invoke `canon:session-map` for the generic half, which is the filename, the three core sections, the write procedure, the drift step and the ref it reads, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
+## Retire what the wave delivered
 
-Settle all three steps below before the door writes, so one write carries the core and the extension together. The door reports the map as written and knows nothing of this role, so its success line ends the generic half rather than this runbook, and a session that stops there ships a map missing both of the things this file exists to add.
+Settle this act before writing the map. A session retired afterwards is one the map already listed as running, and the map is what the next session reads the fleet off.
+
+The act reaches every session this one dispatched that no verb can decide. `canon worktrees reclaim` calls a directory reclaimable on three conditions together, being a merged pull request, a clean tree, and no live session holding it, and a running session fails the third whatever its branch did. Retiring that session is what clears the third condition, which is why the retirement runs ahead of the reclaim rather than after it.
+
+Two cases stay undecided even once the session is gone. A worker whose branch has not merged is refused on `no-merged-pull-request`, and a planner is refused as `main-worktree` and handed a null removal route, since it never enters a worktree and registers against the tree it was launched from.
+
+Name the planner as the case always in this set, and scope the act no narrower. A rule covering planners alone leaves the unmerged worker unreached while reading as complete.
+
+### Which sessions this session may retire unasked
+
+Retire what this session dispatched. Report a hand-launched session and leave the act to the operator, since the knowledge making the act safe is a delivery this session received and it received nothing from a session it never launched. The `worker-` and `planner-` name prefixes separate the two populations, per `orchestrator-dispatch.md`.
+
+### Telling a delivered session from a blocked one
+
+No status field carries the difference. `status` reads `busy` or `waiting` straight off the client record, and both describe the last turn rather than the work, so `waiting` is the ordinary answer for a session that reported and stopped, which is what a correct delivery looks like. The `statusDwellMs` beside it separates a long idle from a short one and separates nothing else.
+
+The read is the report this session is holding. Retire a session whose delivery arrived here, and leave every other one. A plan sitting at `.canon/plans/feature-<slug>.md` corroborates that report and never stands in for it, because a planner writes the file and can then stop on a follow-up question with the file already landed. Retiring a blocked session destroys the context it held and nothing on disk records what it had read, so the act runs in the keeping direction the reclaim reading already takes: retire what is recorded as delivered, and leave the rest for the operator.
+
+### The act, and the order it runs in
+
+`claude rm <name>` removes a background session and its worktree together, measured working on 2026-08-27. It belongs to the client rather than to this toolkit, so a target running another client performs whatever removal that client offers.
+
+Run `canon worktrees reclaim` after the retirements rather than before them. `held-by-session` is one of the conditions that reading refuses on, so a reclaim taken first refuses the directories the retirement is about to free and reports a board with nothing left to do.
+
+Report the retired sessions as a list, the hand-launched ones under it as a read rather than an act, and what the reclaim removed below both.
+
+## Write the map
+
+Write the pre-compaction handoff as orchestrator. Invoke `canon:session-map` for the generic half, which is the filename, the three core sections, the write procedure, the drift step and the ref it reads, and the citation rule. Everything in this section is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
+
+Settle all three steps below before the door writes, so one write carries the core and the extension together. The door reports the map as written and knows nothing of this role, so its success line ends the generic half rather than this runbook, and a session that stops there ships a map missing both of the things this section adds to it.
 
 1. Tell the door this session does not commit, which is the caveat its capture step takes and passes to `canon:claude-memory-capture`.
 2. Add `## Decisions taken under delegated authority` directly after `## State`, holding each decision and why it went that way, so nobody re-proposes it. It sits there rather than after the core because a decision is read against the state it was taken in.

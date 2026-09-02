@@ -70,6 +70,7 @@ The session also records nothing of what it learns. Both other callers of memory
 - Resolve every runbook path the handoff carries to an absolute path as it is written, since the reader holds no skill and the path variable does not expand in the turn that reads the file back
 - Distinguish this resume from the general-purpose `session-resume`, since the name an operator reaches for first reaches a skill that knows nothing about the board
 - Capture what the session learned at the handoff rather than in the merge sweep, and have the sweep report the debt dated from the last handoff, since a capture per batch of merges bills the operator a wait while nothing ships and an undated row reads the same however long the debt has run
+- Retire the sessions this wave delivered before the map is written and ahead of any reclaim run, reporting a hand-launched one rather than acting on it, since no verb decides a planner or an unmerged worker and a live session holding a worktree is what the reclaim reading refuses on
 - Carry every runbook the session cannot run from memory inside the skill, so each citation resolves for a project holding the plugin and nothing else
 - State which rule wins where the tracked-file ban collides with the root instruction on small edits, and where a correction no open task owns goes
 - State the review trigger as a recurring prompt rather than as one client's command, since the runbook ships to targets running whatever client they run
