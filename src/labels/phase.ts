@@ -1,5 +1,6 @@
 import { linesOutsideFences, maskCodeSpans } from '@/markdown/scan'
-import { RECORD_ENTRIES, RECORD_ROOTS, spell } from '@/record-root'
+import { RECORD_ENTRIES, RECORD_ROOTS } from '@/record-root'
+import type { RecordRoot } from '@/record-root'
 
 /**
  * The two version namespaces `standards/versioning.md` keeps apart, and why a
@@ -70,13 +71,15 @@ function escapeLiteral(text: string): string {
 }
 
 /**
- * What is ignored under a root beyond the entries the record move relocated.
+ * What is ignored under the tracked root beyond the entries the record move
+ * relocated.
  *
  * `RECORD_ENTRIES` answers which folders that move carried across, and this
- * check asks which paths a reader on a remote cannot open. The two questions
- * differ by exactly one entry: the worktrees folder is ignored and stays out of
- * that list deliberately, since the harness creates a worktree there and
- * requires its target to sit there, so adding it upstream would tell the
+ * check asks which paths a reader on a remote cannot open under `.claude/`,
+ * the one root still read by entry name below. The two questions differ by
+ * exactly one entry: the worktrees folder is ignored and stays out of
+ * `RECORD_ENTRIES` deliberately, since the harness creates a worktree there
+ * and requires its target to sit there, so adding it upstream would tell the
  * migration to relocate a folder the harness pins.
  *
  * It is also the entry a worker announcement names most often, which is what
@@ -85,29 +88,61 @@ function escapeLiteral(text: string): string {
 const IGNORED_BEYOND_RECORDS: readonly string[] = ['worktrees']
 
 /**
- * A path a reader on a remote cannot open, which is a root plus one of the
- * entries that root ignores rather than the root alone.
+ * Which reading each record root takes: `whole` for a root one `.gitignore`
+ * line covers entirely, `entries` for a root kept narrow by name.
  *
- * `.claude/` is tracked and holds `rules`, `skills`, `hooks`, and `context`, so
- * a rule path resolves in any clone and is not a board reference. The scratch
- * folder goes through `spell` because it is the one entry whose name differs by
- * root. Reading the roots and the relocated entries from `src/record-root.ts`
- * is what makes a folder added there matched here without an edit, and the list
- * above is what covers the one thing that module deliberately does not carry.
+ * `.canon/` takes `whole`: the ignore file excludes the folder outright, and
+ * git does not descend into an excluded directory, so no entry list is ever
+ * wider than the root itself. `.claude/` takes `entries` because it is
+ * tracked. A `Record` over `RecordRoot` rather than a filtered list of the
+ * roots read one way, so a root added to `RECORD_ROOTS` fails to typecheck
+ * here until this map says which reading it takes, rather than falling
+ * through a filter into the entry-list branch unnoticed.
+ */
+const ROOT_READING: Record<RecordRoot, 'whole' | 'entries'> = {
+  '.canon': 'whole',
+  '.claude': 'entries',
+}
+
+/**
+ * A path a reader on a remote cannot open.
  *
- * The tail runs to the first whitespace or closing delimiter, so a report names
- * the whole path an author has to remove rather than the prefix that matched.
+ * The two roots differ by why they are unreadable rather than by which one
+ * they are. A root reading `whole` matches on the root alone, since one
+ * ignore line covers everything beneath it and no entry list can ever be
+ * narrower than that. A root reading `entries` keeps the entry-list reading:
+ * `.claude/` is tracked and holds `rules`, `skills`, `hooks`, and `context`,
+ * so a rule path resolves in any clone and is not a board reference, and only
+ * the entries the record move relocated are unreadable there. Reading the
+ * roots and the relocated entries from `src/record-root.ts` is what makes a
+ * folder added there matched here without an edit, and the list above is what
+ * covers the one thing that module deliberately does not carry.
+ *
+ * The root-alone branch requires at least one tail character ahead of the
+ * shared tail capture, so a root written bare, such as the ignore line naming
+ * it as a concept, reports nothing: there is no path there for an author to
+ * remove. The entry-list branch instead bounds the entry name on the right
+ * with a lookahead, so `plans` does not also match the prefix of a longer
+ * word; that lookahead has to sit inside the entry branch rather than after
+ * the whole alternation; the character right after a bare root is an ordinary
+ * word character, and the same lookahead there would reject every root-alone
+ * match.
+ *
+ * The tail runs to the first whitespace or closing delimiter, so a report
+ * names the whole path an author has to remove rather than the prefix that
+ * matched.
  */
 const RECORD_PATH = new RegExp(
-  `(?<![\\w./-])(?:${RECORD_ROOTS.map(
-    (root) =>
-      `${escapeLiteral(root)}/(?:${[
-        ...RECORD_ENTRIES,
-        ...IGNORED_BEYOND_RECORDS,
-      ]
-        .map((entry) => escapeLiteral(spell(root, entry)))
-        .join('|')})`,
-  ).join('|')})(?![\\w-])[^\\s\`)\\]]*`,
+  `(?<![\\w./-])(?:${RECORD_ROOTS.map((root) =>
+    ROOT_READING[root] === 'whole'
+      ? `${escapeLiteral(root)}/(?=[^\\s\`)\\]])`
+      : `${escapeLiteral(root)}/(?:${[
+          ...RECORD_ENTRIES,
+          ...IGNORED_BEYOND_RECORDS,
+        ]
+          .map((entry) => escapeLiteral(entry))
+          .join('|')})(?![\\w-])`,
+  ).join('|')})[^\\s\`)\\]]*`,
   'g',
 )
 

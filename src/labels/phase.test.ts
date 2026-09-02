@@ -248,10 +248,96 @@ describe('scanPhaseLabels', () => {
     })
   })
 
+  it('should report the scratch folder under the tracked root at its own spelling', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Scratch on that target sits at .claude/.tmp/x.md.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.claude/.tmp/x.md'],
+      sessionLinks: [],
+    })
+  })
+
   it('should leave a tracked path under the same root alone', () => {
     const result = scanPhaseLabels({
       title: 'feat: widen the scan',
       body: 'The rule is .claude/rules/core/005-behavior.md, which every clone resolves.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+      sessionLinks: [],
+    })
+  })
+
+  it('should report a path under a record-root folder no entry list names', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'See .canon/notes/x.md for detail.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.canon/notes/x.md'],
+      sessionLinks: [],
+    })
+  })
+
+  it('should report the old scratch spelling written under the new root', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Scratch sits at .canon/.tmp/x.md until it is cleaned up.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.canon/.tmp/x.md'],
+      sessionLinks: [],
+    })
+  })
+
+  it('should report nothing for a bare record root with nothing after the separator, in a span and out of one', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Every record lives under .canon/ now, and the ignore line spells it `.canon/` too.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+      sessionLinks: [],
+    })
+  })
+
+  it('should report nothing when a fenced block carries the unnamed-folder, scratch-spelling, and bare-root shapes', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: [
+        'Reproducing what the report would look like:',
+        '',
+        '```',
+        'See .canon/notes/x.md and .canon/.tmp/x.md, or just .canon/ bare.',
+        '```',
+      ].join('\n'),
       headRefName: FEATURE_HEAD,
     })
 
