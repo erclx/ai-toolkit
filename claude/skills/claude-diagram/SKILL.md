@@ -138,7 +138,7 @@ Stamp every entry that passed. Set `verified` to the short SHA of `HEAD` and tod
 git rev-parse --short HEAD
 ```
 
-The result is one line, `<sha> <date>`, as in `73e9a3f8 2026-08-02`.
+The result is one line, `<sha> <date>`, as in `73e9a3f8 2026-08-02`. <!-- canon-allow-reference: illustrates the verified field's two-token format, which a qualified sha would misstate -->
 
 Stamp nothing else. An entry Step 2 left alone was never re-checked, an entry whose defect survived is known wrong, and an entry whose render was skipped was never seen. All three keep the marker they already carry, and Step 7 names the last two. The field means a render was read back and judged correct, so stamping any of these spends the only signal a reader has on a diagram nobody confirmed.
 

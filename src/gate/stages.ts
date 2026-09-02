@@ -7,9 +7,11 @@ import {
   recordIdempotence,
   sandboxCoverage,
   seedStandards,
+  shippedReferences,
   standardCriteria,
   unreferencedRules,
 } from '@/gate/measures'
+import { SHIPPED_CORPORA } from '@/shipped/references'
 
 /**
  * One thing a stage does, as an argument vector rather than a shell line.
@@ -353,6 +355,17 @@ export const STAGES: readonly Stage[] = [
     id: 'markdown-bans',
     label: 'Markdown bans',
     checks: [{ kind: 'measure', measure: markdownBans }],
+  },
+  {
+    // Scoped to the corpora it reads rather than run unconditionally, so a
+    // branch touching only `src/` or `.claude/` skips it and says so. The
+    // measure walks the whole corpus once the scope lets it run, which is what
+    // reaches a reference moved between two files rather than written.
+    id: 'shipped-references',
+    label: 'Shipped references',
+    scope: new RegExp(SHIPPED_CORPORA.map((corpus) => `^${corpus}/`).join('|')),
+    skipped: 'No shipped corpus changed, so no reference was read',
+    checks: [{ kind: 'measure', measure: shippedReferences }],
   },
   {
     id: 'seed-standards',

@@ -1,6 +1,12 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import {
+  isShippedCorpus,
+  REFERENCE_MARKER,
+  referencesIn,
+  SHIPPED_CORPORA,
+} from '@/shipped/references'
 
 export interface CommandResult {
   readonly exitCode: number
@@ -431,6 +437,98 @@ export const standardCriteria: Measure = async (ctx) => {
       run.exitCode === 2
         ? 'A standard new to this branch carries no ## Success criterion section. Run bun src/cli.ts standards audit.'
         : 'canon standards audit could not read which standards arrived on this branch. Run bun src/cli.ts standards audit --json to see why.',
+  }
+}
+
+/**
+ * Every file in the gated corpus, walked from `ctx.root` rather than from the
+ * changed set.
+ *
+ * The stage's `scope` already decides whether the run happens at all, and once
+ * it does the whole corpus is read. A walk keyed on the diff would pass a
+ * branch that moved a reference between two files without changing it, and the
+ * corpus is a few hundred text files, so reading it whole costs the stage
+ * nothing it would notice.
+ *
+ * `dot` is what reaches the seeds, which is half of what `tooling/` ships. Every
+ * seeded `.claude/` tree, `.cspell/` list, and `.husky/` hook sits behind a
+ * dotted segment, so the default scan walks `tooling/` and returns none of the
+ * files a scaffolded project actually receives.
+ */
+function shippedCorpusFiles(root: string): string[] {
+  const files: string[] = []
+
+  for (const corpus of SHIPPED_CORPORA) {
+    const dir = join(root, corpus)
+    if (!existsSync(dir)) continue
+
+    for (const relative of new Bun.Glob('**/*').scanSync({
+      cwd: dir,
+      onlyFiles: true,
+      dot: true,
+    })) {
+      const path = `${corpus}/${relative}`
+      if (isShippedCorpus(path)) files.push(path)
+    }
+  }
+
+  return files.sort()
+}
+
+/**
+ * A pull request number or a commit sha that a reader in a target cannot
+ * resolve, over the seven corpora that reach one.
+ *
+ * Every instance on the trunk was written by a branch that passed review, this
+ * row's own planning session included, so the only instrument before this stage
+ * was a person noticing. That is the argument for gating rather than reporting:
+ * `canon labels audit` already demonstrated that a finding nobody gates on goes
+ * unread until a range happens to include it, and the count here grew from six
+ * to eighteen while a report was the only instrument.
+ *
+ * It is a prose pattern rather than a resolution. Nothing here asks GitHub
+ * whether a number resolves, so a genuinely reachable citation written bare
+ * fails it. That is the intended direction, since the repair is one token and
+ * the alternative is a network read inside `bun run check`.
+ *
+ * The whole set is emitted before the failure returns. A stage halts the run on
+ * its first failing check, so a branch carrying several references would
+ * otherwise see one and repair one.
+ */
+export const shippedReferences: Measure = async (ctx) => {
+  const files = shippedCorpusFiles(ctx.root)
+
+  if (files.length === 0) {
+    return {
+      emissions: [],
+      unmeasured: `No corpus under ${SHIPPED_CORPORA.join(', ')} is present, so no shipped file was read.`,
+    }
+  }
+
+  const found = files.flatMap((file) =>
+    referencesIn(file, readFileSync(join(ctx.root, file), 'utf8')),
+  )
+
+  if (found.length === 0) {
+    return {
+      emissions: [
+        info(
+          `No unresolvable reference across ${files.length} files in ${SHIPPED_CORPORA.length} shipped corpora`,
+        ),
+      ],
+    }
+  }
+
+  return {
+    emissions: found.map((reference) =>
+      warn(
+        `${reference.file}:${reference.line} carries ${reference.text}, a ${reference.kind === 'commit' ? 'commit sha that resolves nowhere' : 'pull request number that resolves elsewhere'} for a reader in a target`,
+      ),
+    ),
+    failure:
+      found.length === 1
+        ? `One reference in the shipped corpora names this repository without saying so. Qualify it as owner/repo#123 or owner/repo@abc1234, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`
+        : `${found.length} references in the shipped corpora name this repository without saying so. Qualify each as owner/repo#123 or owner/repo@abc1234, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`,
   }
 }
 

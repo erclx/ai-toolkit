@@ -60,7 +60,11 @@ Removing the link before a merge does not substitute for never writing it. One b
 
 A number referring to a pull request or an issue takes the form its destination renders. Write it bare where the destination auto-links it, and in backticks where it does not. Both spellings are correct, each in one place, so a reference moved from one destination to the other is rewritten rather than copied.
 
-Text published to a remote is the auto-linking half: a pull request body, an issue body, a comment on either, and a commit message. Write `#123` there, and `owner/repo#123` where the reference crosses repositories, which the same auto-linking reaches. A markdown file browsed from the repository tree is the other half, where neither spelling links and the backticked one marks the number as an identifier.
+Text published to a remote is the auto-linking half: a pull request body, an issue body, a comment on either, and a commit message. Write `#123` there, and `owner/repo#123` where the reference crosses repositories, which the same auto-linking reaches. A markdown file browsed from the repository tree is the other half, where neither spelling links and the backticked one marks the number as an identifier. <!-- canon-allow-reference: the two spellings this section defines, which a qualified form would destroy -->
+
+Content that installs into another repository is the third destination, and there the qualified form is required rather than chosen. A skill body loads from a plugin cache, a docs page is read through `canon docs`, and a standard through `canon standards`, so the reader holds their own repository rather than the one the number belongs to. A bare number resolves against theirs and reaches something else, and a bare sha resolves nowhere at all.
+
+Write `owner/repo#123` and `owner/repo@abc1234` across every such surface. `canon gate run` fails a push on a bare reference there, and a line whose bare form is the point carries `canon-allow-reference: <reason>` on itself or on the line above.
 
 A commit message takes the bare form even though it is also read through the log, where nothing links. The remote is what the form is chosen for, since a reader in the log loses only a link that plain text never carried.
 

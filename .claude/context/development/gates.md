@@ -5,9 +5,9 @@ description: The stages that gate a push on a measure, covering the sandbox cove
 
 # Gating stages
 
-Seven stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
+Eight stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
 
-An eighth reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the seven above rather than a gotcha about a stage.
+A ninth reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the eight above rather than a gotcha about a stage.
 
 ## What sequences them
 
@@ -112,6 +112,22 @@ Three outcomes separate a clean walk from one that measured nothing, matching `c
 The Standard success criteria stage runs `bun src/cli.ts standards audit --arrivals-only`, which fails a push when a standard new to the branch carries no `## Success criterion` section. It is scoped to arrival rather than to the corpus, since `standards/standard.md` forbids writing the section into an existing standard outside the change that exercises it, and a gate over the corpus would fail every push until someone closed all 26 known gaps at once, which is the sweep that rule exists to prevent.
 
 `--arrivals-only` prints nothing when every arriving standard carries the section, matching the Skill requirements stage's own silent-pass shape one domain over. The bare `canon standards audit` a session runs by hand instead reports the whole corpus, so the same verb serves the gate and the reader without a second command to keep in sync.
+
+## Shipped references
+
+The Shipped references stage reads `referencesIn` from `src/shipped/references.ts` over the seven corpora a target reader reaches, which is the package's `files` field less `src` and less the two trees that field already negates. It fails a push on a bare pull request number or a bare commit sha, since a reader holding a plugin cache rather than this repository resolves the first against their own tree and reaches something else, and resolves the second nowhere at all.
+
+The corpus stops short of `src/` on the reader rather than on the shipping. A `src/` doc comment lands on a target's disk and nothing serves it to a target reader, so its every number resolves for the person actually reading it. That boundary is also what keeps the check a prose pattern instead of a parser, since `src/design/` writes sixteen values shaped `#191512` and no width or boundary rule separates an all-digit hex color from a pull request number.
+
+Both patterns exclude the repair form by construction rather than by exemption. A lookbehind rejecting a word character before `#` never matches `owner/repo#123`, and the sha pattern rejects `@` and `/` in the same position so `owner/repo@abc1234` passes the check that asked for it. The trailing boundary is what a first pass omitted, and `governance/rules/framework/250-tailwind.md` is what would have failed on it: `bg-[#316ff6]` reads as pull request 316 without it.
+
+It gates rather than reports because a report is what let the count grow. Every one of the eighteen instances repaired alongside this stage was written by a branch that passed review, this row's own planning pass included, so a person noticing was the only instrument. The stage emits every hit before returning its failure, since a stage halts the run on its first failing check and a branch carrying several would otherwise repair one.
+
+The walk passes `dot: true`, which is what reaches the seeds. `Bun.Glob` skips any path carrying a dotted segment by default, and every seeded `.claude/` tree, `.cspell/` list, and `.husky/` hook under `tooling/` sits behind one, so the default scan walks `tooling/` and returns none of the files a scaffolded project receives. The stage read 396 files with the default and 439 with the flag, and the first shape of it would have shipped claiming a corpus it never opened.
+
+It does not follow `claude/standards` and `claude/snippets`, measured at 0 of the 159 files under `claude/` arriving through either link. Nothing is lost, since both trees are corpora here in their own right, and following them would read those two twice and report every finding in them under two paths.
+
+The marker mutes a line and nothing narrower, because `isMarked` reads the line itself and the one above and stops there. Four lines carry it, each an illustration whose bare form is the rule it states: the `#123` spelling in `standards/publish.md`, the `verified` field format in `standards/diagrams.md` and in `claude-diagram`, and a copyable `canon claude skills drift` invocation in `docs/agents/skills-audit.md` whose argument has to be a literal git ref. A real citation later added to any of those four ships unreported.
 
 ## Audit set
 

@@ -8,7 +8,9 @@ import {
   AUDITS_BASELINE,
   captureStamps,
   recordIdempotence,
+  shippedReferences,
 } from '@/gate/measures'
+import { REFERENCE_MARKER } from '@/shipped/references'
 
 describe('AUDITS_BASELINE', () => {
   it('should agree with the path audits/baseline.ts writes', () => {
@@ -228,6 +230,111 @@ describe('recordIdempotence', () => {
 
     expect(report.failure).toBeUndefined()
     expect(report.unmeasured).toContain('carried no plan')
+  })
+})
+
+describe('shippedReferences', () => {
+  let root: string
+
+  const refuse = () => {
+    throw new Error('shippedReferences runs no command')
+  }
+
+  const context = (): MeasureContext => ({
+    root,
+    ci: false,
+    run: refuse,
+    cli: refuse,
+  })
+
+  const write = (path: string, content: string): void => {
+    const full = join(root, path)
+    mkdirSync(join(full, '..'), { recursive: true })
+    writeFileSync(full, content)
+  }
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'canon-shipped-references-'))
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  it('reads a corpus carrying no reference as a pass', async () => {
+    write('claude/skills/alpha/SKILL.md', 'The count reads low.\n')
+    write('docs/agents/alpha.md', 'Qualified as `erclx/canon#1299`.\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toBeUndefined()
+    expect(report.emissions[0]?.text).toContain('No unresolvable reference')
+  })
+
+  it('fails on a bare reference and names the file and line', async () => {
+    write('claude/skills/alpha/SKILL.md', 'first\nsee #1307 for the poll\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toContain('One reference')
+    expect(report.emissions).toHaveLength(1)
+    expect(report.emissions[0]?.text).toContain(
+      'claude/skills/alpha/SKILL.md:2',
+    )
+    expect(report.emissions[0]?.text).toContain('#1307')
+  })
+
+  it('emits every hit before failing, so one push repairs the whole set', async () => {
+    write('claude/skills/alpha/SKILL.md', 'on `#1299` against `5653721`\n')
+    write('docs/agents/alpha.md', 'measured at `6c273324`\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toContain('3 references')
+    expect(report.emissions).toHaveLength(3)
+  })
+
+  it('reads a tree carrying none of the corpora as unmeasured', async () => {
+    write('src/design/base.css', '--ink: #191512;\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toBeUndefined()
+    expect(report.emissions).toEqual([])
+    expect(report.unmeasured).toContain('no shipped file was read')
+  })
+
+  it('passes over a tree the files field negates', async () => {
+    write('scripts/sandbox/claude/review.sh', '# see #1307\n')
+    write('scripts/lib/worktree.sh', 'resolve the root\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toBeUndefined()
+    expect(report.emissions[0]?.text).toContain('No unresolvable reference')
+  })
+
+  it('reaches a seed behind a dotted segment, which is half of what tooling ships', async () => {
+    write('tooling/base/seeds/.claude/context/ci.md', 'landed in #1250\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.emissions).toHaveLength(1)
+    expect(report.emissions[0]?.text).toContain(
+      'tooling/base/seeds/.claude/context/ci.md:1',
+    )
+  })
+
+  it('passes over a marked illustration', async () => {
+    write(
+      'standards/publish.md',
+      `Write \`#123\` there. <!-- ${REFERENCE_MARKER}: illustrates the form this section defines -->\n`,
+    )
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toBeUndefined()
   })
 })
 

@@ -13,7 +13,7 @@ The output of that arrangement is specific rather than general. Paragraphs come 
 
 A session also has no name for the patterns no closed word set can match. Rule-of-three, synonym cycling, false ranges, inline-header lists, and adverb propping each survive a clean scan, so a passage carrying all five reports zero findings and still reads wrong. Nothing tells the session those patterns exist, and a ban list cannot be extended to reach them, because each is a shape rather than a token.
 
-Importing that catalog wholesale fails on a different measurement. External material of this kind bans abstract metaphor nouns and names `surface` among them, which this corpus uses 593 times in tracked markdown at `57ee7467`. A session handed the catalog with no stated position either rewrites established vocabulary or silently ignores the item, and neither outcome is recoverable by a later reader who cannot tell which happened.
+Importing that catalog wholesale fails on a different measurement. External material of this kind bans abstract metaphor nouns and names `surface` among them, which this corpus uses 593 times in tracked markdown at `erclx/canon@57ee7467`. A session handed the catalog with no stated position either rewrites established vocabulary or silently ignores the item, and neither outcome is recoverable by a later reader who cannot tell which happened.
 
 ## Must
 
