@@ -149,6 +149,14 @@ The tracked-file boundary collides with `CLAUDE.md`, which says to handle a smal
 
 Record a change identified while orchestrating against the task that owns it, fold one no task owns into the next task touching the same surface, and file a task only when no such task exists or is expected. Run `claude-review` when the boundary is crossed anyway, since a branch-diff pass is not independent and is the only check a self-authored change can get.
 
+Filing a row states the defect and the surface it was seen on, and stops there. The extent and the cause belong to whoever plans it, so a row names neither a count of how far the defect reaches nor the mechanism behind it. Say in a plain sentence in the task file that the count was not taken, where the row's shape invites one, rather than in a marker of any prescribed form. The board's own cell has no room for it, since `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` caps a `Waiting on` cell at two clauses.
+
+A finding placed into another task's `## Findings` is filing under a second name and takes the same rule. An unverified cause costs more than an unverified count, since a count fails loudly at the first re-measurement while a mechanism nobody opened the module to check sends real work in the wrong direction.
+
+What the measurement decides is the test, rather than whether one was taken. A measurement that decides whether a row can start stays in this seat, which covers the blocker re-test in `${CLAUDE_SKILL_DIR}/references/orchestrator-parked.md`, the collision check before a dispatch, and the file set refill step 6 lists against every track in flight. One that decides how big the row is goes to the planner.
+
+Both kinds read the same tree, and only a sizing count commits a plan to a scope this seat cannot see the whole of. A row filed under `## Needs a plan` carries no `Touches` column either, so filing it unmeasured owes no file set and the disjointness machinery is untouched. A position claim in that group's cell is in scope as well: name the row it outranks or the class it belongs to, each a judgment about order, and never reach for a count of the defect's extent to justify the rank, which is the untested number this boundary keeps off the row wearing a ranking argument.
+
 ## Refilling the ready queue
 
 Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge, whenever the ready list thins, and whenever a wave is in flight with fewer unclaimed plans than there are workers building. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.

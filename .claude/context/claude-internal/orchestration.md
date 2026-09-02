@@ -106,6 +106,16 @@ Folding the pass into the sweep was the alternative and it loses the idle-sessio
 
 The runbook carries the two ways a re-test returns a confident wrong answer rather than an error, which are reading the condition looser than the code consuming it defines the shape, and measuring it against a tree the shipped command does not run against.
 
+## The filing boundary
+
+Filing a row states the defect and the surface it was seen on and stops, leaving the extent and the cause to whoever plans the row. What forces it is that a row carrying a count reads as measured, so a planner inherits a scope nobody outside the orchestrating seat could check, and one row was widened twice inside ten minutes against counts taken from that seat. The cause half is the more expensive one. Two rows have been filed asserting mechanisms nobody had opened the module to check, both caught by cold planners, and a wrong count fails loudly at the first re-measurement where a wrong mechanism sends real work in the wrong direction.
+
+A flat ban on measuring was the alternative and it contradicts three live rules at once, since `orchestrator-parked.md` orders a tree condition re-measured, refill step 6 orders a candidate's file set listed against every track in flight, and `### Writing the board` orders that set written into the `Touches` column. What separates the two kinds is what the measurement decides rather than whether one was taken. A blocker re-test, a collision check, and a file set decide whether a row can start, and a count of a defect's extent decides how big it is, so only the second commits a plan to a scope this seat has no vantage to size.
+
+A position claim in a `## Needs a plan` cell falls inside the boundary rather than beside it. It may name the row it outranks and the class it belongs to, both of which are judgments about order, and it may not cite a count of the defect's extent to justify the rank. Leaving the two surfaces to settle it separately was the alternative, and it hands whichever lands second a cell whose ranking vocabulary reaches for the number the other one bans.
+
+The statement lives once in `claude/skills/claude-orchestrate/SKILL.md` under `## Boundaries`, with the sibling `REQUIREMENT.md` carrying it as a `Must not` and `orchestrator-parked.md` pointing at it, since that runbook's re-test would otherwise read as an instruction to size a row from this seat. The task standard gains no matching convention, because the rule is seat-scoped and a standard governing every task file would bind a groundwork or intake pass that measured properly before filing. Nothing enforces any of it, since no gate stage reads a skill body for the rule, and whether it holds is read off the next row filed.
+
 ## The review trigger
 
 `claude-orchestrate/scripts/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand, and the runbook's routing block decides what each report earns. A first pass, a re-review, and the handback dispatch all run from that block, so the operator triggers none of them. What stays fixed is where the pass runs rather than who starts it: `.canon/groundwork/23-review-automation/06-decision.md` records that it belongs in this warm session, since a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
