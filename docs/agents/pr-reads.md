@@ -18,7 +18,7 @@ canon pr checks 1341 --json
 
 `gh pr view --json headRefOid` reads a field on the pull request object. That object trails the branch ref by up to a minute after a push and carries nothing saying how far behind it is, so a session that keys a read on it is describing whichever commit GitHub last folded into the object.
 
-Two failures on 2026-09-01 came off that one field. A reviewing session posted a `should-fix` on `#1341` calling a pushed commit unpushed. A worker on `#1340` fired a green claim and retracted it on the thread. Neither session did anything wrong with the value it was handed. The value was stale and said so nowhere.
+Two failures on 2026-09-01 came off that one field. A reviewing session posted a finding calling a pushed commit unpushed. A worker fired a green claim and retracted it on its own thread minutes later. Neither session did anything wrong with the value it was handed. The value was stale and said so nowhere.
 
 The remote ref carries no such lag. `git ls-remote --heads origin <branch>` asks the remote itself rather than a tracking ref, which is only as current as the last fetch, and the push worth catching is the one this process never saw.
 
@@ -38,7 +38,7 @@ Keying the query on a sha is necessary and not sufficient. The endpoint answered
 
 Both empty cases report `pending` instead: a tip carrying no run yet, and a listing whose rows all belong to some other commit. The record separates them, since `matched` counts the runs belonging to the tip and `foreign` counts the rest, and a caller that wants to tell "not started" from "still going" reads those two numbers rather than the state alone.
 
-`matched` counts runs and not distinct checks, which is where it parts company with the list `gh pr checks` prints. A workflow that fires twice on one commit lands two runs under one name, so a pull request whose body was edited after the push reads 3 against that command's 2. Measured on this repository at `bae5194c` on 2026-09-02, where the phase-label workflow ran on the push and again on the edit. Read a `matched` above the check count as that, rather than as the verb disagreeing with the command.
+`matched` counts runs and not distinct checks, which is where it parts company with the list `gh pr checks` prints. A workflow that fires twice on one commit lands two runs under one name, so a pull request whose body was edited after the push reads 3 against that command's 2. Measured on 2026-09-02 against a commit whose phase-label workflow ran on the push and again on a later body edit. Read a `matched` above the check count as that, rather than as the verb disagreeing with the command.
 
 A listing carrying even one foreign run reports `pending` whatever the matching half says. A set that describes another commit says nothing about this one, so answering off the rows that happen to match would put a verdict on a set already known to be incomplete.
 
