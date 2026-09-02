@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.23.0](https://github.com/erclx/canon/compare/v4.22.1...v4.23.0) (2026-09-02)
+
+
+### Features
+
+* **gate:** fail a push on a reference a target reader cannot resolve ([#1377](https://github.com/erclx/canon/issues/1377)) ([bc36c42](https://github.com/erclx/canon/commit/bc36c426c8831ade1a42c44357bc7e5681cfd166))
+
 ## [4.22.1](https://github.com/erclx/canon/compare/v4.22.0...v4.22.1) (2026-09-02)
 
 
