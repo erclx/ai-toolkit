@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { type LabelAuditRefusal, auditLabels } from '@/labels/audit'
+import { resolveScanInput } from '@/labels/event'
 import { MAP_REL } from '@/labels/map'
 import { scanPhaseLabels } from '@/labels/phase'
 import { scanTitleSpelling } from '@/labels/spelling'
@@ -91,12 +91,12 @@ export function register(program: Command): void {
   labels
     .command('scan')
     .description(
-      'Fail a pull request whose title or body carries a phase label, a board identifier, a session link, or a title with an unspelled word',
+      'Fail a pull request or a posted review whose title, body, or review comment carries a phase label, a board identifier, a session link, or a title with an unspelled word',
     )
     .helpOption('-h, --help', 'Show this help message')
     .option(
       '--event <path>',
-      'GitHub pull_request event payload to read, such as $GITHUB_EVENT_PATH',
+      'GitHub pull_request or pull_request_review event payload to read, such as $GITHUB_EVENT_PATH',
     )
     .option('--title <text>', 'Title to scan, overriding the event payload')
     .option('--body <text>', 'Body to scan, overriding the event payload')
@@ -112,6 +112,11 @@ export function register(program: Command): void {
         'own fixed head branch and title, may carry semver references. Every',
         'other pull request may carry neither, so any token found there is a',
         'leaked phase label.',
+        '',
+        'A posted review is read the same way, scanning `review.body` off a',
+        '`pull_request_review` payload rather than the title and body of the',
+        'pull request itself, which is text a person can otherwise publish',
+        'by writing straight into the review box instead of the description.',
         '',
         'It reports a board identifier beside that, being text naming the task',
         'board rather than the change: a version token a code span quotes, and a',
@@ -236,97 +241,6 @@ async function runAudit(paths: string[], opts: AuditOptions): Promise<number> {
   return coverage.uncovered.length === 0 ? 0 : 2
 }
 
-/** Why `runScan` had no title and body to hand `scanPhaseLabels`. */
-type ScanInputRefusal = 'no-input' | 'unreadable-event' | 'not-a-pull-request'
-
-type ResolvedScanInput =
-  | {
-      readonly kind: 'resolved'
-      readonly title: string
-      readonly body: string
-      readonly headRefName: string
-    }
-  | {
-      readonly kind: 'refused'
-      readonly reason: ScanInputRefusal
-      readonly message: string
-    }
-
-/**
- * Reads a title, a body, and a head branch from explicit flags first and the
- * named event payload second, so a caller testing the wiring by hand never
- * needs a real GitHub event file on disk.
- */
-function resolveScanInput(opts: ScanOptions): ResolvedScanInput {
-  let title = opts.title
-  let body = opts.body
-  let headRefName = opts.head
-
-  if (opts.event !== undefined) {
-    let raw: string
-    try {
-      raw = readFileSync(opts.event, 'utf8')
-    } catch {
-      return {
-        kind: 'refused',
-        reason: 'unreadable-event',
-        message: `${opts.event} could not be read, so no payload was there to scan.`,
-      }
-    }
-
-    let payload: unknown
-    try {
-      payload = JSON.parse(raw)
-    } catch {
-      return {
-        kind: 'refused',
-        reason: 'unreadable-event',
-        message: `${opts.event} is not valid JSON, so no payload was there to scan.`,
-      }
-    }
-
-    const pullRequest =
-      typeof payload === 'object' && payload !== null
-        ? (payload as Record<string, unknown>).pull_request
-        : undefined
-
-    if (typeof pullRequest !== 'object' || pullRequest === null) {
-      return {
-        kind: 'refused',
-        reason: 'not-a-pull-request',
-        message: `${opts.event} carries no pull_request, so no title or body exists to scan.`,
-      }
-    }
-
-    const record = pullRequest as Record<string, unknown>
-    const head = record.head
-    title ??= typeof record.title === 'string' ? record.title : undefined
-    body ??= typeof record.body === 'string' ? record.body : undefined
-    headRefName ??=
-      typeof head === 'object' &&
-      head !== null &&
-      typeof (head as Record<string, unknown>).ref === 'string'
-        ? ((head as Record<string, unknown>).ref as string)
-        : undefined
-  }
-
-  if (title === undefined) {
-    return {
-      kind: 'refused',
-      reason: 'no-input',
-      message:
-        'No --event, --title, or --body given, so there is nothing to scan.',
-    }
-  }
-
-  return {
-    kind: 'resolved',
-    title,
-    body: body ?? '',
-    headRefName: headRefName ?? '',
-  }
-}
-
 async function runScan(opts: ScanOptions): Promise<number> {
   const emitJson = opts.json ?? false
 
@@ -350,11 +264,13 @@ async function runScan(opts: ScanOptions): Promise<number> {
   const result = scanPhaseLabels(resolved)
   const spelling = await scanTitleSpelling(resolved.title, process.cwd())
 
-  logStep('Pull request')
+  logStep(resolved.source === 'review' ? 'Review comment' : 'Pull request')
   logInfo(
-    result.cutsRelease
-      ? 'reads as a release-please pull request'
-      : 'reads as an ordinary pull request',
+    resolved.source === 'review'
+      ? 'reads as a posted review comment'
+      : result.cutsRelease
+        ? 'reads as a release-please pull request'
+        : 'reads as an ordinary pull request',
   )
 
   logStep(result.phaseLabels.length === 0 ? 'Clean' : 'Phase label found')
