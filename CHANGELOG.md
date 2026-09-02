@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.18.0](https://github.com/erclx/canon/compare/v4.17.0...v4.18.0) (2026-09-02)
+
+
+### Features
+
+* **standards:** split the Mermaid craft out of the diagrams standard ([#1354](https://github.com/erclx/canon/issues/1354)) ([cbe4964](https://github.com/erclx/canon/commit/cbe4964f78be688b6ec8e8da1b1f367bf8ca1c05))
+
 ## [4.17.0](https://github.com/erclx/canon/compare/v4.16.0...v4.17.0) (2026-09-02)
 
 
