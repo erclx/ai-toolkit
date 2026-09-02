@@ -29,3 +29,32 @@ describe('the shell stage scope', () => {
     expect(scope.test('src/husky/run.ts')).toBe(false)
   })
 })
+
+describe('the shipped-references stage scope', () => {
+  it('should fire on every corpus a target reader reaches', () => {
+    const scope = scopeOf('shipped-references')
+
+    expect(scope.test('claude/skills/claude-orchestrate/SKILL.md')).toBe(true)
+    expect(scope.test('docs/agents/key-changes.md')).toBe(true)
+    expect(scope.test('standards/publish.md')).toBe(true)
+    expect(scope.test('governance/rules/core/005-behavior.md')).toBe(true)
+  })
+
+  it('should not fire on a corpus whose reader already holds this repository', () => {
+    const scope = scopeOf('shipped-references')
+
+    expect(scope.test('src/gate/measures.ts')).toBe(false)
+    expect(scope.test('.claude/context/development/gates.md')).toBe(false)
+    expect(scope.test('internal/rules/claude/598-authoring-layout.md')).toBe(
+      false,
+    )
+    expect(scope.test('wiki/claude/claude-worktrees.md')).toBe(false)
+  })
+
+  it('should anchor each corpus, so a longer name sharing its prefix does not fire', () => {
+    const scope = scopeOf('shipped-references')
+
+    expect(scope.test('docs-site/index.md')).toBe(false)
+    expect(scope.test('src/docs/read.ts')).toBe(false)
+  })
+})
