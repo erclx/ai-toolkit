@@ -14,6 +14,7 @@ Does not govern:
 - Commit subject format, which shares the title form: `commit.md`
 - Branch naming: `branch.md`
 - Whether a phase label or a semver tag may appear in a title or body: `versioning.md`
+- Whether a quoted label or a gitignored record path may appear in a title or body, which `canon labels scan` fails on: `publish.md`
 - Voice, rhythm, and sentence construction in pull request prose: the `write-human` skill
 - Punctuation, formatting, and banned words in pull request prose: `markdown.md`
 

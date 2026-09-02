@@ -208,6 +208,21 @@ describe('scanPhaseLabels', () => {
     })
   })
 
+  it('should report an ignored path the record move left behind', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Worktree left at .claude/worktrees/x and receipt at .canon/review/branch/y.md.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.claude/worktrees/x', '.canon/review/branch/y.md'],
+    })
+  })
+
   it('should leave a tracked path under the same root alone', () => {
     const result = scanPhaseLabels({
       title: 'feat: widen the scan',

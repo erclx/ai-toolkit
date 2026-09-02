@@ -152,6 +152,10 @@ The paragraph scoping a check by destination sits under `## When it runs` rather
 
 `canon labels scan` is the verb behind both, and it is destination-scoped by construction rather than by a parameter, since the workflow wires it to `pull_request` alone. The negative half is asserted rather than parameterized: a unit case runs the markdown ban sets, which are the repository-bound corpus, through the scan and expects nothing. A `destination` argument was the alternative and it moves a split the invocation site already draws into a function every caller then has to answer for.
 
+Which paths the verb reads as absent from a clone is a second question from which folders the record move relocated, and the two sets differ by one entry. `src/labels/phase.ts` composes its path predicate from `RECORD_ENTRIES` and then adds the worktrees folder, which is ignored at `.gitignore` and absent from that list on purpose, since the harness pins a worktree to `.claude/` and a migration told to relocate one would break it. Adding the entry upstream to close a reporting gap was the alternative and it changes what the record move carries to fix what a scan reports. A worker announcement names a worktree path routinely, so the gap had live instances rather than theoretical ones.
+
+`standards/pr.md` names the rule from the reader's side, one line in its `Does not govern:` list routing at `publish.md`. Three consumers already reached the widened check through the exit code and the two shipped bodies that call the verb, and the fourth is the person writing the body, who would otherwise meet a red check with no rule in front of them.
+
 ## The glossary standard and its one stated exception
 
 `standards/glossary.md` governs a glossary wherever it sits, which is why the format left `standards/teach.md` rather than staying inside it. A workspace glossary is promotable, so the shape has to travel with the file, and a rule stated in the standard over the folder it started in reaches nothing once it lands somewhere else. `teach.md` keeps the requirement that the file exists and yields the entry shape, which is the boundary declared from both sides.

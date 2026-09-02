@@ -57,15 +57,30 @@ function escapeLiteral(text: string): string {
 }
 
 /**
- * A path under a record root, which is a root plus one of the entries that root
- * owns rather than the root alone.
+ * What is ignored under a root beyond the entries the record move relocated.
+ *
+ * `RECORD_ENTRIES` answers which folders that move carried across, and this
+ * check asks which paths a reader on a remote cannot open. The two questions
+ * differ by exactly one entry: the worktrees folder is ignored and stays out of
+ * that list deliberately, since the harness creates a worktree there and
+ * requires its target to sit there, so adding it upstream would tell the
+ * migration to relocate a folder the harness pins.
+ *
+ * It is also the entry a worker announcement names most often, which is what
+ * makes the gap a live class rather than a theoretical one.
+ */
+const IGNORED_BEYOND_RECORDS: readonly string[] = ['worktrees']
+
+/**
+ * A path a reader on a remote cannot open, which is a root plus one of the
+ * entries that root ignores rather than the root alone.
  *
  * `.claude/` is tracked and holds `rules`, `skills`, `hooks`, and `context`, so
- * a rule path resolves in any clone and is not a board reference. Only the
- * entries `src/record-root.ts` names are gitignored, and the scratch folder
- * goes through `spell` because it is the one entry whose name differs by root.
- * Both are read from that module rather than restated here, so a folder added
- * there is matched here without an edit.
+ * a rule path resolves in any clone and is not a board reference. The scratch
+ * folder goes through `spell` because it is the one entry whose name differs by
+ * root. Reading the roots and the relocated entries from `src/record-root.ts`
+ * is what makes a folder added there matched here without an edit, and the list
+ * above is what covers the one thing that module deliberately does not carry.
  *
  * The tail runs to the first whitespace or closing delimiter, so a report names
  * the whole path an author has to remove rather than the prefix that matched.
@@ -73,9 +88,12 @@ function escapeLiteral(text: string): string {
 const RECORD_PATH = new RegExp(
   `(?<![\\w./-])(?:${RECORD_ROOTS.map(
     (root) =>
-      `${escapeLiteral(root)}/(?:${RECORD_ENTRIES.map((entry) =>
-        escapeLiteral(spell(root, entry)),
-      ).join('|')})`,
+      `${escapeLiteral(root)}/(?:${[
+        ...RECORD_ENTRIES,
+        ...IGNORED_BEYOND_RECORDS,
+      ]
+        .map((entry) => escapeLiteral(spell(root, entry)))
+        .join('|')})`,
   ).join('|')})(?![\\w-])[^\\s\`)\\]]*`,
   'g',
 )
@@ -172,10 +190,13 @@ function recordPaths(text: string): string[] {
  * leaked phase labels, which is what `standards/versioning.md` names the
  * defect this exists to catch.
  *
- * A release pull request reports no board reference either, on the argument
- * that already empties its phase labels: release-please generates that body
- * from merged history, so its author has nothing to rewrite and a report there
- * would fail the one pull request this check exists to pass.
+ * A release pull request reports no board reference either, and the ground is
+ * coverage rather than exemption. Release-please generates that body from
+ * merged history, and every commit in that history came through a pull request
+ * this same check already scanned, so a board reference cannot reach a release
+ * body without passing the gate on its own. That its author has nothing to
+ * rewrite is true as well and is the weaker half, since it would leave the
+ * reference standing and unresolvable.
  */
 export function scanPhaseLabels(input: PhaseScanInput): PhaseScanResult {
   const source = `${input.title}\n${input.body}`
