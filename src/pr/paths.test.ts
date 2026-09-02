@@ -189,6 +189,32 @@ describe('extractKeyChangePaths', () => {
     ).toEqual([])
   })
 
+  it('should keep every span past a doubled-backtick span earlier in the bullet', () => {
+    const read = extractKeyChangePaths(
+      body(
+        '- Reading ``canon markdown audit``, then rewrite `src/pr/paths.ts` and add a case in `src/pr/paths.test.ts`.',
+      ),
+      ROOTS,
+    )
+
+    expect(read.kind === 'read' && read.claims).toMatchObject([
+      { path: 'src/pr/paths.ts', leading: false },
+      { path: 'src/pr/paths.test.ts', leading: false },
+    ])
+  })
+
+  it('should keep a file:line span naming a third, distinct file with no bare-line companion', () => {
+    expect(
+      pathsOf(
+        '- Update `src/pr/paths.ts` and `src/pr/paths.test.ts`, and reword the row at `docs/agents/key-changes.md:12`.',
+      ),
+    ).toEqual([
+      'src/pr/paths.ts',
+      'src/pr/paths.test.ts',
+      'docs/agents/key-changes.md',
+    ])
+  })
+
   it('should drop a line citation that follows the bullet own claim (#1236)', () => {
     expect(
       pathsOf(

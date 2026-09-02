@@ -53,17 +53,17 @@ The cut used to decide whether a span was read at all, and the paths past the co
 
 A span anywhere in the bullet has to survive all of these:
 
-| Rule                                              | What it keeps out                                      |
-| ------------------------------------------------- | ------------------------------------------------------ |
-| No whitespace, `<`, `>`, `$`, `*`, `\|`, `?`, `^` | A backticked command, a placeholder, a glob, a pattern |
-| No `://` and no leading `/`, `~`, `@`, `#`, `!`   | A URL, an absolute path, a module alias                |
-| Contains `/`                                      | A bare filename with no folder around it               |
-| Not a dotted-decimal segment, or ends with `/`    | A dotted number such as an address                     |
-| Not a single top-level folder                     | `src/`, which nobody claims to have rewritten whole    |
-| A `file:line` span leads its bullet               | A citation into a file the bullet is describing        |
-| The region carries no no-change marker            | A bullet recording a file it deliberately left alone   |
+| Rule                                                                                   | What it keeps out                                                                      |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| No whitespace, `<`, `>`, `$`, `*`, `\|`, `?`, `^`                                      | A backticked command, a placeholder, a glob, a pattern                                 |
+| No `://` and no leading `/`, `~`, `@`, `#`, `!`                                        | A URL, an absolute path, a module alias                                                |
+| Contains `/`                                                                           | A bare filename with no folder around it                                               |
+| Not a dotted-decimal segment, or ends with `/`                                         | A dotted number such as an address                                                     |
+| Not a single top-level folder                                                          | `src/`, which nobody claims to have rewritten whole                                    |
+| A `file:line` span leads its bullet, or the bullet carries no bare line-only companion | A citation into a file the bullet already named, such as `verify.sh:634` beside `:642` |
+| The region carries no no-change marker                                                 | A bullet recording a file it deliberately left alone                                   |
 
-The last three rows earn their place from the corpus rather than from a rule. Every body that spelled a lone top-level folder was naming where something lives, and a line citation that follows another claim in the same bullet points into the file being described rather than naming a second one. A line citation leading its bullet stays a claim, which is how a body names the exact line it rewrote.
+The last three rows earn their place from the corpus rather than from a rule. Every body that spelled a lone top-level folder was naming where something lives, and a line citation that follows another claim in the same bullet points into the file being described only when a bare line-only span sits beside it, such as `:642` following `verify.sh:634`. With no such companion the citation names a second, genuinely distinct file and stays a claim. A line citation leading its bullet stays a claim either way, which is how a body names the exact line it rewrote.
 
 The no-change marker is the one rule the region cut cannot substitute for. A body writes "Leave `x` untouched, since the decision keeps it" to record a change it declined, and the path sits ahead of the first comma, so a stricter cut would not reach it and a looser one would find more. Since `keep` and `leave` each open a real claim often enough, the marker decides it rather than the leading verb. Three words carry the set: `untouched`, `unchanged`, and `as written`. `in place` was measured and dropped, because rewriting a file in place is an ordinary claim, and `no other line` was dropped because a correct bullet writes "as one insertion that touches no other line" about a change it did make. `alone` shipped in the set too, until review found every corpus occurrence sitting past the first comma, where the cut already excludes it, so the word voided no true claim there. Restrictive use is the more common one in this repository's own prose, and a comma-free bullet exposed it: "Move the threshold read into `src/gate/stages.ts` alone" asserts an edit, and the marker voided it while the word was still in the set. Over the 40-pull-request corpus the rule still voids no true claim.
 

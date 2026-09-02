@@ -54,9 +54,6 @@ export type KeyChangeRead =
 /** The longest bullet a claim carries forward, matching the citation sweep. */
 const PREVIEW_LIMIT = 200
 
-/** A backticked span, the only carrier this corpus writes a path in. */
-const BACKTICKED = /`([^`\n]+)`/g
-
 /** A list item at any indent, in either bullet spelling or as an ordinal. */
 const BULLET = /^\s*(?:[-*+]|\d+\.)\s+(.*)$/
 
@@ -69,6 +66,15 @@ const HEADING = /^(#{1,6})\s+(.+?)\s*$/
  * rather than part of the name.
  */
 const LINE_SUFFIX = /:\d+(?:-\d+)?$/
+
+/**
+ * A span that carries a line suffix and nothing else, such as `:642` beside
+ * an earlier `verify.sh:634`. Its presence is what tells the citation guard
+ * below the bullet is describing lines inside one already-claimed file rather
+ * than naming a second file, since a genuinely distinct file never gets cited
+ * by a bare line number with nothing in front of the colon.
+ */
+const BARE_LINE = /^:\d+(?:-\d+)?$/
 
 /**
  * A character that puts the span outside a path this comparison resolves.
@@ -108,9 +114,73 @@ function isDottedNumber(span: string): boolean {
   return /^\d+(?:\.\d+)+$/.test(segment)
 }
 
+/** One code span, paired by matching backtick-run length rather than count. */
+interface BacktickSpan {
+  /** Index of the opening run's first backtick. */
+  readonly start: number
+  /** Index one past the closing run's last backtick. */
+  readonly end: number
+  /** The text between the two runs, delimiters excluded. */
+  readonly content: string
+}
+
+/**
+ * Every code span in a bullet, pairing a run of backticks only with the next
+ * run of the same length.
+ *
+ * A single-backtick regex reads a doubled delimiter, such as
+ * ``` ``git status`` ```, as two unrelated single backticks: it opens on the
+ * second backtick of the pair, closes on the first backtick of the closing
+ * pair, and leaves one backtick before and after the span unconsumed. Every
+ * scan after that treats a stray leftover backtick as an opener, which
+ * absorbs the next real span's opening delimiter as its closer and drops the
+ * path inside past it. Pairing by run length rather than by single backtick
+ * keeps a doubled delimiter closed by a doubled delimiter, so nothing after
+ * it loses its pairing.
+ *
+ * An opening run with no same-length run after it is not a delimiter, per
+ * CommonMark, so it is left as literal text and the scan resumes at the next
+ * run rather than backtracking into the unmatched one.
+ */
+function findBacktickSpans(text: string): BacktickSpan[] {
+  const runs = [...text.matchAll(/`+/g)].map((match) => ({
+    start: match.index ?? 0,
+    length: match[0].length,
+  }))
+
+  const spans: BacktickSpan[] = []
+  let i = 0
+  while (i < runs.length) {
+    const open = runs[i]
+    const closeIndex = runs.findIndex(
+      (run, index) => index > i && run.length === open.length,
+    )
+    if (closeIndex === -1) {
+      i += 1
+      continue
+    }
+    const close = runs[closeIndex]
+    spans.push({
+      start: open.start,
+      end: close.start + close.length,
+      content: text.slice(open.start + open.length, close.start),
+    })
+    i = closeIndex + 1
+  }
+
+  return spans
+}
+
 /** Blanks every backticked span so a cue search never fires inside one. */
 function maskSpans(text: string): string {
-  return text.replace(/`[^`\n]*`/g, (span) => ' '.repeat(span.length))
+  let out = text
+  for (const span of findBacktickSpans(text)) {
+    out =
+      out.slice(0, span.start) +
+      ' '.repeat(span.end - span.start) +
+      out.slice(span.end)
+  }
+  return out
 }
 
 /**
@@ -329,10 +399,20 @@ export function extractKeyChangePaths(
     if (disclaimsChange(trimmed)) continue
 
     const accusesBefore = claimRegion(trimmed).length
+    const spans = findBacktickSpans(trimmed)
+    // Whether a `file:line` span citing an already-claimed file is a second
+    // claim or a citation into the file just claimed turns on this: a bullet
+    // that also carries a bare `:642`-shaped span alongside it is describing
+    // two lines in one file, where a bullet with no such companion is naming
+    // a second, genuinely distinct file. Computed once, up front, so the
+    // guard below reads it rather than scanning again for every span.
+    const hasBareLineCompanion = spans.some((span) =>
+      BARE_LINE.test(span.content),
+    )
     let claimed = false
 
-    for (const match of trimmed.matchAll(BACKTICKED)) {
-      const span = match[1] ?? ''
+    for (const match of spans) {
+      const span = match.content
       const bare = span.replace(LINE_SUFFIX, '')
 
       // A `file:line` span following another claim in the same bullet is a
@@ -342,7 +422,7 @@ export function extractKeyChangePaths(
       // its bullet it is an ordinary claim, which is how a body names the exact
       // line it rewrote.
       const cited = bare !== span
-      if (cited && claimed) continue
+      if (cited && claimed && hasBareLineCompanion) continue
 
       const resolved = resolveSpan(bare)
       if (resolved === undefined) continue
@@ -357,7 +437,7 @@ export function extractKeyChangePaths(
         path: resolved.path,
         directory: resolved.directory,
         anchored: roots.has(resolved.path.slice(0, resolved.path.indexOf('/'))),
-        leading: (match.index ?? 0) < accusesBefore,
+        leading: match.start < accusesBefore,
         span,
         bullet: index + 1,
         preview,
