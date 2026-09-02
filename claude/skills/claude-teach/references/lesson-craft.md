@@ -35,6 +35,15 @@ Every element competes with the material for attention.
 - Do not animate anything the learner did not trigger
 - Prefer whitespace over rules and boxes to separate sections
 
+## Diagrams
+
+A diagram earns its place when a relationship, a boundary, a path, a before-and-after, is the point of the passage rather than decoration for it. Most passages do not clear that bar, and a lesson reaching for a diagram on every section is the failure the neighboring `## Restraint` section already guards against. When prose or a list already carries that point, leave it there.
+
+- Wrap it in a `<figure>` holding an inline `<svg>` and a `<figcaption>` that names what to take from the diagram rather than what it shows. Let the figure run wider than the prose column, since a diagram cramped to the reading measure loses the labels it needs.
+- Draw it by hand, as plain shapes and lines authored directly in the markup, not exported from a diagramming tool. The stylesheet already points text inside a figure's `<svg>` at the hand-drawn face used for captions, so a lesson author writes plain labels and the sketch quality comes free rather than being redrawn per lesson.
+- Color every fill and stroke with the course stylesheet's custom properties, `var(--accent)`, `var(--panel)`, `var(--rule)`, `var(--ink)`, and so on, rather than literal hex values. The diagram then re-colors itself on the same switch that re-colors the page.
+- Give the `<svg>` an accessible name: `role="img"` with `aria-label` for one short line, or `aria-labelledby` pointing at a `<title>` element inside it for a longer one.
+
 ## Quiz construction
 
 The quiz is the retrieval, so a leak in its construction turns it into a reading test.
