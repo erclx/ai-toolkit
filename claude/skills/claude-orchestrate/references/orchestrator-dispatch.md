@@ -249,8 +249,10 @@ over a plan nobody has written yet.
 
 What a planning dispatch owes instead is the reverse reading, because the plan
 it produces carries a constraint per track in flight and a row planned during a
-wave is planned against a tree that wave is changing. `claude-planner` states that read as a command over open pull
-requests, which is why the brief carries no branch list for it.
+wave is planned against a tree that wave is changing. `claude-planner` composes
+the session roster with the pull request list for that read rather than reading
+pull requests alone, which is why the brief carries no branch list for it: the
+planner takes this reading itself either way.
 
 One row per dispatch. A session reused across a batch pays the context load once
 and ages its picture of the tree while it works, which is what puts the in-flight

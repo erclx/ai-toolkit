@@ -50,7 +50,7 @@ four carried at least one, caught only because the planner ran
 ## Must
 
 - Assert what a planning session is, what it may not write, and how long the role lasts, since `claude-feature` carries the procedure and no body carries the role
-- State the in-flight read as a command over open pull requests, and say that a branch and a worktree are not evidence, since a count of either reported merged work as live
+- State the in-flight read as a command composing the session roster with open pull requests, and say that a branch and a worktree are not evidence, since a count of either reported merged work as live
 - Run that read once per task rather than once per batch, since a reused session ages its picture of the tree while it works
 - Name every read a plan needed and a launch string did not carry, the task file's findings and the source files among them, since a count quoted from a row was wrong or stale in ten places across four plans
 - Name the validate and audit calls the written plan passes through, since nothing else opens a plan and the audit caught ban hits in three of four trial plans
@@ -73,7 +73,7 @@ four carried at least one, caught only because the planner ran
 ## Guards
 
 - Task file does not resolve from where the session stands: report it unreadable and name the main-root path, rather than reporting the row as absent
-- A read of what is in flight returns nothing: report that no pull request is open rather than falling back to a branch or worktree count
+- A read of what is in flight returns nothing: report that no pull request is open and no live session holds another branch, rather than falling back to a raw branch or worktree count
 - Launch named no controlling session and an operator is present: ask which row to address rather than inferring
 - Launch named no controlling session and nobody is present: infer from the sessions holding no feature branch, never from a name prefix, and say the addressee was inferred
 
