@@ -23,5 +23,5 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      - name: Scan the pull request for a phase label
+      - name: Scan the pull request for a phase label or a board identifier
         run: bun src/cli.ts labels scan --event "$GITHUB_EVENT_PATH"
