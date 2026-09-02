@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.23.1](https://github.com/erclx/canon/compare/v4.23.0...v4.23.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **standards:** conform criterion-heading strings to the widened check ([#1380](https://github.com/erclx/canon/issues/1380)) ([f4b54cb](https://github.com/erclx/canon/commit/f4b54cb61d4316758c7d8927e66e60a4358f71df))
+
 ## [4.23.0](https://github.com/erclx/canon/compare/v4.22.1...v4.23.0) (2026-09-02)
 
 
