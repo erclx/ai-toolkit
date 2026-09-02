@@ -61,9 +61,9 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 
 Scaffolding your first project? Start with target projects, then the AI workflow loop. Everything else answers questions that arrive later.
 
-- [AI workflow](docs/ai-workflow.md): feature-development loop inside a toolkit-managed project
-- [Operating model](docs/operating-model.md): orchestrator, planner, and worker roles for building across parallel sessions
-- [Visual design workflow](docs/visual-design-workflow.md): tiered guide for design and wireframe authoring
+- [AI workflow](docs/workflow/ai-workflow.md): feature-development loop inside a toolkit-managed project
+- [Operating model](docs/workflow/operating-model.md): orchestrator, planner, and worker roles for building across parallel sessions
+- [Visual design workflow](docs/workflow/visual-design-workflow.md): tiered guide for design and wireframe authoring
 - [Target projects](docs/target-projects.md): scaffold, add a domain later, sync upstream drift
 - [Agents](docs/agents/index.md): CLI flags, exit codes, and JSON output shapes
 - [Docs index](docs/index.md): every reference doc in this repo
@@ -106,7 +106,7 @@ bun install
 bun run bootstrap
 ```
 
-The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. That also means it leaves an alias block you already have alone rather than refreshing it, so an alias added upstream needs the block deleted and the script re-run. It confirms the install by resolving `canon --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does, how to pick up a new one, and how to opt out of the block.
+The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. That also means it leaves an alias block you already have alone rather than refreshing it, so an alias added upstream needs the block deleted and the script re-run. It confirms the install by resolving `canon --help` on the last step. See [zshrc aliases](docs/workflow/zshrc-aliases.md) for what each alias does, how to pick up a new one, and how to opt out of the block.
 
 With the CLI linked, scaffold a fresh project.
 

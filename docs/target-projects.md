@@ -71,7 +71,7 @@ Scaffold installs tooling and seeds. It does not fill the planning docs or the d
 1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
 2. For a UI project, invoke `canon:claude-design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
 3. Optionally invoke `canon:claude-diagram` to draft entries under `.canon/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
-4. Start the feature loop. See [AI workflow](ai-workflow.md) for the per-feature sequence.
+4. Start the feature loop. See [AI workflow](workflow/ai-workflow.md) for the per-feature sequence.
 
 A machine without a renderer still gets the diagrams and is told which check was skipped.
 
@@ -286,6 +286,6 @@ Sync also refuses a target whose working tree is dirty, so commit or stash befor
 ## Related
 
 - [agents](agents/index.md): CLI flags, exit codes, and JSON output shapes
-- [AI workflow](ai-workflow.md): feature-development loop inside a toolkit-managed project
+- [AI workflow](workflow/ai-workflow.md): feature-development loop inside a toolkit-managed project
 - [tooling](../.claude/context/tooling.md), [governance](../.claude/context/governance/index.md), [claude plugin](../.claude/context/claude-plugin/index.md), [indexes](../.claude/context/indexes.md), [snippets](../.claude/context/snippets.md), [standards](../.claude/context/standards/index.md): per-domain mechanics
 - [sandbox](../.claude/context/sandbox/index.md): scenario catalog for verifying domain flows
