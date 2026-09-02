@@ -39,7 +39,7 @@ A backlog row carries no blocker cell, since `standards/tasks.md` fixes `backlog
 
 Clearing a row answers yes to that question. It is not a count of how long the row has waited: `## Two results that are not a re-test` below refuses age as evidence for a board row, and it refuses it here on the same ground, since a row untouched for weeks is not more clearable than one added yesterday.
 
-A row this test clears moves out of `backlog.md` and onto the bottom of `## Needs a plan`, carrying a `Waiting on` cell stating what changed. It takes no rank beyond that placement. The next refill sweep's promotion step orders it against the rest of that heading the way it orders every other row there, per step 5 under `## Refilling the ready queue` in `claude-orchestrate`.
+A row this test clears moves out of `backlog.md` and onto the bottom of `## Needs a plan`, carrying a `Waiting on` cell that states what changed and ends with the word `last`. `canon tasks validate`'s ordering check reads `last` as the ordinal bottom placement already claims, and a cell stating only what changed matches neither that check's ordinal reading nor its rank reading, which raises the finding this pass would then have written against its own row. The next refill sweep's promotion step still orders the row against the rest of that heading the way it orders every other row there, per step 5 under `## Refilling the ready queue` in `claude-orchestrate`.
 
 ## Two ways a re-test goes wrong
 
