@@ -25,6 +25,10 @@
 # retired, so a shipped directory goes without a person remembering.
 # CANON_SKIP_RECLAIM=1 turns that step off.
 #
+# That step reads merge state through `gh`, so a machine without it on PATH
+# reclaims nothing and says nothing. Install `gh` to turn it on. Every other
+# reason it can refuse for reports itself on the merge that hit it.
+#
 # The hook also reinstalls the global `canon` binary once it drifts behind
 # what is published, so PATH runs the same contract this repository ships.
 # CANON_SKIP_UPGRADE=1 turns that step off.
@@ -135,27 +139,38 @@ fi
 # `rebase` argument, so a machine set to `pull.rebase=true` gets the removals
 # from that path instead.
 if [ -z "$CANON_SKIP_RECLAIM" ]; then
-  if reclaim=$(canon worktrees reclaim --json 2>/dev/null); then
-    removed=$(printf '%s' "$reclaim" | sed -n 's/.*"removed":\([0-9][0-9]*\).*/\1/p')
-    if [ -n "$removed" ] && [ "$removed" != "0" ]; then
-      printf '\n🧹 Reclaimed %s worktree(s) whose pull request merged.\n\n' "$removed"
-    fi
-  else
-    # An unreadable reading refuses every verdict rather than some of them, so
-    # the removals silently never happen and one line is what says so. `gh`
-    # absent or unauthenticated is the ordinary shape of it. No record at all
-    # is an older global binary carrying no `--json` flag, which stays quiet
-    # the way every such gap here does until a release lands.
-    reason=$(printf '%s' "$reclaim" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
-    failed=$(printf '%s' "$reclaim" | sed -n 's/.*"failed":\([0-9][0-9]*\).*/\1/p')
+  # The exit decides nothing here and the fields decide everything. A run that
+  # removes one worktree and fails on another exits 1 while having already
+  # deleted a directory, so a report keyed on the exit prints the failure and
+  # never names the removal, which is the one act in this file nothing undoes.
+  # The verb writes the record before exiting 1 as readily as before exiting 0,
+  # so reading the fields on both paths costs nothing and loses nothing.
+  reclaim=$(canon worktrees reclaim --json 2>/dev/null) || true
 
-    if [ -n "$reason" ]; then
-      printf '\n🧹 Worktrees not reclaimed: %s\n' "$reason"
-      printf 'Run canon worktrees list to read the state by hand.\n\n'
-    elif [ -n "$failed" ] && [ "$failed" != "0" ]; then
-      printf '\n🧹 %s worktree(s) could not be removed.\n' "$failed"
-      printf 'Run canon worktrees reclaim to read which step failed.\n\n'
-    fi
+  removed=$(printf '%s' "$reclaim" | sed -n 's/.*"removed":\([0-9][0-9]*\).*/\1/p')
+  failed=$(printf '%s' "$reclaim" | sed -n 's/.*"failed":\([0-9][0-9]*\).*/\1/p')
+  reason=$(printf '%s' "$reclaim" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
+
+  if [ -n "$removed" ] && [ "$removed" != "0" ]; then
+    printf '\n🧹 Reclaimed %s worktree(s) whose pull request merged.\n\n' "$removed"
+  fi
+
+  # An unreadable reading refuses every verdict rather than some of them, so
+  # the removals silently never happen and one line is what says so. No record
+  # at all is an older global binary carrying no `--json` flag, which stays
+  # quiet the way every such gap here does until a release lands.
+  #
+  # `gh-missing` is the one reason that stays quiet with it. A machine without
+  # `gh` answers that on every merge forever, which is the shape the records
+  # push above treats `no-repository` as, and a line nobody can act on twice
+  # teaches a reader to skip the whole block. The header carries the gap
+  # instead, where a person looking for why nothing reclaims will read it.
+  if [ -n "$reason" ] && [ "$reason" != "gh-missing" ]; then
+    printf '\n🧹 Worktrees not reclaimed: %s\n' "$reason"
+    printf 'Run canon worktrees list to read the state by hand.\n\n'
+  elif [ -n "$failed" ] && [ "$failed" != "0" ]; then
+    printf '\n🧹 %s worktree(s) could not be removed.\n' "$failed"
+    printf 'Run canon worktrees reclaim to read which step failed.\n\n'
   fi
 fi
 

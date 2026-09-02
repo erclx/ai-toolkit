@@ -410,7 +410,12 @@ export const STAGES: readonly Stage[] = [
   {
     id: 'shell',
     label: 'Shell',
-    scope: /\.sh$|^package\.json$/,
+    // `.husky/` is matched by prefix rather than by extension, since every hook
+    // there carries no extension and the `.sh` half reaches none. Without
+    // it `check:shell` lints those files only on a branch that happened to
+    // touch a `.sh` file or this manifest, which is the gap that let fifty
+    // lines of shell land in a hook with no stage firing on it.
+    scope: /\.sh$|^\.husky\/|^package\.json$/,
     skipped: 'Skipped, no shell changes',
     checks: [
       {
