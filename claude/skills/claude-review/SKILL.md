@@ -7,7 +7,7 @@ description: Reviews all changes since main for bugs, edge cases, and logic flaw
 
 ## Guards
 
-- Resolve the base ref first, per Diff baseline below. If the staged set, the branch set, and the working set are all empty, stop: `✅ No changes to review.` A guard reading bare local `main` stops the skill on `main` before it ever reaches Step 2.
+- Resolve the base ref first, per Diff baseline below. If `git diff <base>` and the untracked listing are both empty, stop: `✅ No changes to review.` Those two are the sets Step 2 reads, and the range already carries the staged and the unstaged work the guard used to test on its own. A guard reading bare local `main` stops the skill on `main` before it ever reaches Step 2.
 
 ## Diff baseline
 
@@ -19,12 +19,9 @@ git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/n
 
 Prefer `origin/main` over local `main`. On `main` itself the local ref resolves to HEAD, so every committed change drops out of the set and the skill reports a clean branch rather than admitting it cannot see the work.
 
-The baseline is unusable in two cases:
+The baseline is unusable in one case: no merge base resolves against either ref. Substitute `HEAD` and lead the report with `⚠ Baseline unusable. Reviewed the uncommitted set only.`, so a clean summary is never read as a clean branch. That substitution costs the committed half, because `git diff HEAD` reaches the staged and the unstaged work and nothing behind it.
 
-- No merge base resolves against either ref.
-- The base equals HEAD, whichever ref resolved it. Nothing is committed ahead of the base to compare against. This is the ordinary shape on `main`, and on a feature branch before its first commit.
-
-An unusable baseline costs only the committed half. `git diff <base> HEAD` is empty by definition once the base equals HEAD, while the staged set and `git diff HEAD` still report work at correct scope. Review those and lead the report with `⚠ Baseline unusable. Reviewed the uncommitted set only.`, so a clean summary is never read as a clean branch.
+The base equalling HEAD is a usable baseline rather than the second case it used to be. It means nothing is committed ahead of the base, which is the ordinary shape on `main` and on a feature branch before its first commit, and `git diff <base>` degenerates there to `git diff HEAD` and reads the branch whole. Warning on it would tell a reader their review was partial when it had covered everything.
 
 ## Step 1: read context
 
@@ -41,24 +38,20 @@ Coding standards from `.claude/rules/` are auto-loaded by Claude Code. Always-on
 Resolve the base ref per Diff baseline above, then run these in parallel from the project root:
 
 ```bash
-git diff --staged
+git diff <base>
 ```
 
 ```bash
-git diff --staged --name-only
+git diff --name-only <base>
 ```
 
 ```bash
-git diff <base> HEAD
+git ls-files --others --exclude-standard
 ```
 
-```bash
-git diff <base> HEAD --name-only
-```
+Use `git diff <base>` as the diff scope. It compares the base against the working tree, so the committed, staged, and unstaged halves arrive in one range and no selection between them is made. Take the file list as the name-only output plus the untracked listing, which covers a file git has never tracked and therefore no diff can reach.
 
-If `git diff --staged` is non-empty, use it as the diff scope and use the `--staged --name-only` list as the file list. Otherwise use `git diff <base> HEAD` and its name-only list.
-
-When the baseline is unusable, substitute `git diff HEAD` and `git diff HEAD --name-only` for the branch pair. Never substitute the whole tree for a missing baseline.
+When the baseline is unusable, substitute `HEAD` for `<base>` in both diff commands. Never substitute the whole tree for a missing baseline.
 
 ## Step 3: read changed files
 
