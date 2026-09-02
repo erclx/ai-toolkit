@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.29.0](https://github.com/erclx/canon/compare/v4.28.0...v4.29.0) (2026-09-02)
+
+
+### Features
+
+* **labels:** fail a pull request title carrying an unspelled word ([#1409](https://github.com/erclx/canon/issues/1409)) ([5a54c9f](https://github.com/erclx/canon/commit/5a54c9fb90c6ceabbf75fed473bad346b5c6c1c1))
+
 ## [4.28.0](https://github.com/erclx/canon/compare/v4.27.1...v4.28.0) (2026-09-02)
 
 
