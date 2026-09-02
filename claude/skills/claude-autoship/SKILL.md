@@ -165,7 +165,7 @@ gh pr ready --undo <number>
 gh pr view <number> --json isDraft
 ```
 
-Name the number `git-ship`'s pull request step returned on both calls rather than leaving either to resolve by branch, since each matches a head ref and ignores state, so a reused branch name reaches a merged namesake. The read is where that costs the most, answering with the wrong record's flag, and the write above it errors rather than mutating one.
+Name the number `git-ship`'s pull request step returned on both calls rather than leaving either to resolve by branch. `${CLAUDE_SKILL_DIR}/../git-pr/REQUIREMENT.md` states why: a lookup that resolves by branch alone can return a closed pull request sharing that head, so the number is resolved once and reused rather than re-derived.
 
 Report what the read returned rather than what the command printed, since the exit says the call ran and says nothing about the state. A `true` reports a draft. A `false` reports the pull request as opened ready and unsupervised, and the chain stops there. Never re-issue the undo on a disagreeing read, which fights whoever readied it instead of guarding anything.
 
