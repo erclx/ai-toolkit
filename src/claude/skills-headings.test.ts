@@ -80,13 +80,13 @@ describe('headingCitationsIn', () => {
     ).toEqual([])
   })
 
-  it('should not reach across a backticked token to the file name', () => {
+  it('should catch a citation that backticks the section name', () => {
     expect(
       headingCitationsIn(
         'alpha/SKILL.md',
-        'See `claude-worktree`, which the seed writes in `CLAUDE.md`',
+        'See the `Parallel sessions` heading in `CLAUDE.md`.',
       ),
-    ).toEqual([])
+    ).toHaveLength(1)
   })
 
   it('should accept the sibling-skill form that replaced the citation', () => {
