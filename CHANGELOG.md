@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.26.0](https://github.com/erclx/canon/compare/v4.25.0...v4.26.0) (2026-09-02)
+
+
+### Features
+
+* **orchestrate:** retire a delivered session at the wind-down ([#1391](https://github.com/erclx/canon/issues/1391)) ([4cd5278](https://github.com/erclx/canon/commit/4cd52783bb2ea12fcad4fdfefcf00e1ec78c15dc))
+* **skills:** refuse a per-session link in the pr body composer ([#1393](https://github.com/erclx/canon/issues/1393)) ([abaab84](https://github.com/erclx/canon/commit/abaab84f8b6996b1968bac7329d41481360d7610))
+
 ## [4.25.0](https://github.com/erclx/canon/compare/v4.24.1...v4.25.0) (2026-09-02)
 
 
