@@ -825,6 +825,7 @@ function report(
   }
   if (outcome.priorityRowRemoved) logInfo('cleared the ordering row')
   if (outcome.indexRegenerated) logInfo('regenerated index.md')
+  if (outcome.cut > 0) logInfo(`${outcome.cut} outcome(s) cut`)
   outro()
 
   return 0
@@ -856,5 +857,7 @@ function recordFor(
           to: relative(root, outcome.plan.to),
         }
       : null,
+    closed: outcome.closed,
+    cut: outcome.cut,
   }
 }

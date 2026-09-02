@@ -122,6 +122,7 @@ describe('readOutcomes', () => {
     expect(readOutcomes(text)).toEqual({
       open: ['Outcome: pending'],
       closed: ['Outcome: shipped'],
+      cut: [],
     })
   })
 
@@ -129,6 +130,7 @@ describe('readOutcomes', () => {
     expect(readOutcomes('- A finding, not an outcome\n')).toEqual({
       open: [],
       closed: [],
+      cut: [],
     })
   })
 
@@ -145,7 +147,32 @@ describe('readOutcomes', () => {
     expect(readOutcomes(text)).toEqual({
       open: [],
       closed: ['Outcome: real'],
+      cut: [],
     })
+  })
+
+  it('should read a struck outcome with no checkbox as cut', () => {
+    expect(readOutcomes('- ~~Outcome: dropped~~ Cut 2026-09-02\n')).toEqual({
+      open: [],
+      closed: [],
+      cut: ['~~Outcome: dropped~~ Cut 2026-09-02'],
+    })
+  })
+
+  it('should read a struck outcome as cut with its checkbox open', () => {
+    expect(readOutcomes('- [ ] ~~Outcome: dropped~~\n').open).toEqual([])
+    expect(readOutcomes('- [ ] ~~Outcome: dropped~~\n').cut).toEqual([
+      '~~Outcome: dropped~~',
+    ])
+  })
+
+  it('should read a struck outcome as cut with its checkbox closed', () => {
+    const text = '- [x] ~~Outcome: dropped~~ Cut 2026-09-02\n'
+
+    expect(readOutcomes(text).closed).toEqual([])
+    expect(readOutcomes(text).cut).toEqual([
+      '~~Outcome: dropped~~ Cut 2026-09-02',
+    ])
   })
 })
 
@@ -291,6 +318,31 @@ describe('archiveTask', () => {
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
       ok: false,
       reason: 'no-outcomes',
+    })
+  })
+
+  it('should archive a task whose outcomes are entirely cut', async () => {
+    const stem = await seedTask({
+      outcomes: '- ~~Outcome: dropped~~ Cut 2026-09-02',
+    })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
+      ok: true,
+      closed: 0,
+      cut: 1,
+    })
+  })
+
+  it('should report both counts on a task mixing closed and cut outcomes', async () => {
+    const stem = await seedTask({
+      outcomes:
+        '- [x] Outcome: shipped\n- [x] ~~Outcome: dropped~~ Cut 2026-09-02',
+    })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
+      ok: true,
+      closed: 1,
+      cut: 1,
     })
   })
 

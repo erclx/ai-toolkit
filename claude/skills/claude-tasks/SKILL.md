@@ -110,7 +110,7 @@ On success the record carries `from`, `to`, `priorityRowRemoved`, and `indexRege
 
 Each reason has one resolution and none of them is to archive around it:
 
-- `open-outcomes`: the named outcomes are unmarked or genuinely open. Run `claude-docs` when the work shipped and nothing marked it. Leave the task on the board when the outcome is real. Cut the outcomes first when the work is being abandoned, so the board records what was dropped.
+- `open-outcomes`: the named outcomes are unmarked or genuinely open. Run `claude-docs` when the work shipped and nothing marked it. Leave the task on the board when the outcome is real. When the work is being abandoned, cut it by striking the body, `- ~~<outcome>~~ <why>`, whatever the checkbox holds, so the board records what was dropped rather than meeting this refusal a second time.
 - `ambiguous`: two tasks name one pull request, which is the misfile `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` rules out. Resolve the citation by hand, since no sweep repairs it.
 - `no-match`: the stem or number names nothing on the board. Check the name against the listed stems.
 - `bad-input`: the command line was wrong rather than the board. Read the message, fix the arguments, and run it again. Nothing on the board needs repair, which is what separates this from the two above.

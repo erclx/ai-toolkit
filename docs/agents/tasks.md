@@ -24,6 +24,8 @@ canon tasks archive --pull-request 673 --json
 
 Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a warning, because `.husky/post-merge` calls this with nobody watching. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, `no-outcomes`, `open-outcomes`, or `bad-input`.
 
+An outcome whose body is struck reads as cut rather than open or closed, whatever its checkbox holds: `- ~~<outcome>~~ <why>`. A task carrying only cut outcomes archives, since the gate refuses `no-outcomes` only when both the closed and the cut counts are zero. The success record carries `closed` and `cut` as counts, so a reader tells a shipped task from an abandoned one without opening the file.
+
 The task carries its plan with it. When the closing task is the last live one whose `Plan:` line resolves onto that file, the plan moves to `.canon/plans/archive/` under its own name and the archived task's line is rewritten as `Plan: [feature-<slug>](../../plans/archive/feature-<slug>.md)`, a folder deeper than the live task wrote it. The `plan` field on the success record carries that `from` and `to`, and is `null` when nothing moved.
 
 A plan several tasks share stays where it is, and the task archives anyway. Moving it on the first task to close strands every sibling's pointer at a path that has gone, and `.canon/plans/` is gitignored so no history recovers the target. A `Plan:` line resolving to no file leaves the plan alone too, since a pointer somebody typed wrong is not a plan to move and holding the whole archive over it would park the board behind a repair the merge cannot make.
