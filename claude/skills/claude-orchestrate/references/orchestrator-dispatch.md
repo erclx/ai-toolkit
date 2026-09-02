@@ -80,7 +80,7 @@ claude --bg --model <model> -n "worker-<project>-<slug>" "Run /canon:claude-work
 
 The prefix reads `worker-` because that is the role it marks. It read `orchestrator-` until 2026-08-31, and no controlling session ever carried it, so a worker filtering the roster for that string found a sibling or itself on every row. Nothing matches the prefix programmatically, which is what kept the rename down to three strings.
 
-`<project>` is the basename of the main worktree root, not of wherever the dispatcher happens to be running. Resolve the main root first, the way `claude-worktree` Step 1 does, since a bare `git rev-parse --show-toplevel` inside a linked worktree returns the worktree path rather than the project's. See Worktrees in `CLAUDE.md`.
+`<project>` is the basename of the main worktree root, not of wherever the dispatcher happens to be running. Resolve the main root first, the way `claude-worktree` Step 1 does, since a bare `git rev-parse --show-toplevel` inside a linked worktree returns the worktree path rather than the project's.
 
 `claude agents` lists every session on the machine with no path column and no per-project filter, so `<project>` in the name is the only thing left telling two fleets apart, and a session named off the worktree path instead would carry the branch folder rather than the project. Two projects each dispatching a bare `worker-page-driver` used to read as one row in that view.
 

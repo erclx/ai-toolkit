@@ -81,7 +81,7 @@ Omit empty sections. Do not print `None identified.` in chat.
 
 ### Full mode
 
-Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.canon/plans/feature-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist.
+Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.canon/plans/feature-<slug>.md` at the main worktree root, not the current worktree. Resolve that root the way `claude-worktree` does. Create the directory if it does not exist.
 
 From a linked worktree the file-editing tools refuse that path, so the plan goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 

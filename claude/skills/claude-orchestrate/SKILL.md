@@ -23,7 +23,7 @@ session's review are different passes, and how a feature is sized.
 
 ## On invocation
 
-Read the board in parallel, resolving the paths at the main worktree root per Worktrees in `CLAUDE.md`:
+Read the board in parallel, resolving the paths at the main worktree root the way `claude-worktree` does:
 
 - `.canon/tasks/priority.md`: execution order and what each task is waiting on
 - `.canon/tasks/backlog.md`: what is not being scheduled, when the file exists

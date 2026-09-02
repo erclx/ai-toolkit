@@ -25,7 +25,7 @@ Derive `<slug>` from the concern and the surface, kebab-case, naming the subject
 - No matching folder, or the operator names a concern and a surface: **Propose**.
 - A matching folder exists and the operator says apply, ship, or commit the answers: **Apply**.
 
-All `.canon/proposals/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+All `.canon/proposals/` reads and writes resolve at the main worktree root, not the current worktree. Resolve that root the way `claude-worktree` does.
 
 ## Write scope
 

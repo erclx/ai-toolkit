@@ -49,7 +49,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 - `.claude/DESIGN.md`
 - `.claude/wireframes/index.md` and every `.claude/wireframes/<surface>.md`
 
-Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
+Read the task board from the main worktree root instead, resolving that root the way `claude-worktree` does. It is gitignored scratch and never commits with the branch:
 
 - `.canon/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step, which is the only step here that opens a task file.
 
@@ -210,7 +210,7 @@ Report a block left unfolded rather than dropping it:
 
 ## Step 9: sweep consumed receipts
 
-Sweep the review and memory receipts this session consumed. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+Sweep the review and memory receipts this session consumed. Resolve all paths at the main worktree root, not the current worktree, the way `claude-worktree` does.
 
 Every delete below is a shell operation, so send each as a plain single `Bash` command rather than joining two with `&&`, which is refused as compound from a linked worktree.
 

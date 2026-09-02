@@ -7,7 +7,7 @@ description: Resumes a previous session by reading the handoff it left behind, t
 
 ## Step 1: read tracked work
 
-Resolve `.canon/plans/`, `.canon/memory/`, and `.canon/tasks/` at the main worktree root per Worktrees in `CLAUDE.md`.
+Resolve `.canon/plans/`, `.canon/memory/`, and `.canon/tasks/` at the main worktree root the way `claude-worktree` does.
 
 Read these in parallel, skipping any that do not exist:
 
@@ -40,7 +40,7 @@ End with one line: `Start with: <first Up next item>` and note whether it has a 
 
 When the board is empty and a handoff was found, name what the handoff leaves open instead: `Start with: <the open thread the handoff names>`. A recommendation slot filled with nothing reads as a failed run, and a handoff on an empty board is the shape a session leaves when it was reasoning rather than shipping.
 
-Do not offer to remove entries. A completed task is archived out of `.canon/tasks/` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the plan lifecycle rule in `CLAUDE.md`.
+Do not offer to remove entries. A completed task is archived out of `.canon/tasks/` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the lifecycle rule in `${CLAUDE_SKILL_DIR}/../../standards/plan.md`.
 
 Memory is updated only when a recorded fact becomes wrong, never on resume. A domain fact reaches a session through `.claude/context/`, which `claude-memory-capture` routes to and the three-tier model loads on demand, so the memory folder read here is the residue no context entry owns.
 
