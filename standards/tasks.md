@@ -73,7 +73,11 @@ The `Waiting on` column under `## Up next` carries that reason in one of three f
 
 Under `## Up next` a collision names the file held by the task already running, a sibling task names that task, and an external condition names both the condition and what would satisfy it. Naming what would satisfy it is what separates a blocked row from one nobody has examined, so a cell stating a condition with no way out of it fails the test. The header text is the contract the way the group names are, because anything reading the cell resolves the column by header rather than by position.
 
-Under `## Needs a plan` the cell carries two halves and each takes one clause: what the task needs before it can be planned, then why it sits at this position. A cell running past that is the paragraph this file already deletes, arriving one row at a time rather than all at once, and the group is where it costs the most, since it holds the rows nobody has read recently and is the longest group on any board that needs a backlog at all.
+Under `## Needs a plan` the cell carries two halves and each takes one clause: what the task needs before it can be planned, then why it sits at this position. The second clause is comparative, and it names what the row is ranked against in one of two forms: a sibling row, or the class of rows it sits in. The row `leads`, `heads`, `opens`, `closes`, `trails`, `precedes`, `follows`, or `outranks` whichever it names, or `sits under`, `above`, or `below` it. Either form puts something other than this row in the clause, which is what makes the position readable by anyone but its author.
+
+Why the task matters is not that claim, and it is what the cell drifts into. A reason naming no other row ranks against nothing, so every row reads defensible on its own and the order records when each was filed. The comparison replaces that reason rather than joining it, since the cell still takes two clauses and no third one is licensed by naming a rival in the second. A cell running past that is the paragraph this file already deletes, arriving one row at a time rather than all at once, and the group is where it costs the most, since it holds the rows nobody has read recently and is the longest group on any board that needs a backlog at all.
+
+`canon tasks validate` reads that clause back, so a cell phrased comparatively and unusually reports as unranked. The vocabulary above is the whole of what it recognizes, and widening it is a change to the check rather than something the cell may decide for itself.
 
 ```markdown
 ---
@@ -96,9 +100,9 @@ description: One line on what the board covers
 
 ## Needs a plan
 
-| Task                            | Waiting on                                                     |
-| ------------------------------- | -------------------------------------------------------------- |
-| [vXX.Y <slug>](vXX.Y-<slug>.md) | <what it needs before it can be planned, and why it sits here> |
+| Task                            | Waiting on                                                                        |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| [vXX.Y <slug>](vXX.Y-<slug>.md) | <what it needs before it can be planned, and which row or class it ranks against> |
 ```
 
 The tests live here so the board does not carry them. Writing them as a sentence under each heading produces the paragraph the rule above deletes, and a criterion with no home gets restated from memory every time the board is touched.

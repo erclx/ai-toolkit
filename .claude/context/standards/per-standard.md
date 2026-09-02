@@ -104,6 +104,8 @@ The three tests are read in order, so widening `## Up next` alone leaves its new
 
 The external kind names what would satisfy the condition rather than the condition alone. Without that clause the kind admits any excuse, including a row nobody has looked at, which collapses the group into a holding pen for whatever is stalled.
 
+The `## Needs a plan` cell has a second half and it takes the same treatment one paragraph later than the three forms above did. The standard already said the cell states why the row sits where it does, and the clause drifted into stating why the row matters, which is an excuse of the shape the paragraph above rejects: it admits every row at once, so position recorded when each was filed and nobody chose the order. Naming the row or the class it is ranked against is what a comparison costs, and it is the same clause rather than a third one. `canon tasks validate` reads it back, and the mechanism behind that read sits at [.claude/context/cli/audits.md](../cli/audits.md) rather than here.
+
 `canon tasks validate` resolves the `Task`, `Plan`, and `Touches` columns by header text and never reads the `Waiting on` cell, so the widened test holds on reading alone and the standard says so. A non-empty check is the alternative and every row already passes it, which buys a check that has never once fired. Every finding the validator does report compares a written claim against the tree, and an external condition puts no fact there to disagree with, unlike a plan pointer that resolves or two file sets that intersect.
 
 ## What the memory pen measured
