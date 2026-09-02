@@ -94,15 +94,18 @@ function isNotRepositoryPath(span: string): boolean {
 }
 
 /**
- * Whether the span's last segment carries a file extension.
+ * Whether the span's last segment is a bare dotted-decimal number, such as
+ * an address (`127.0.0.1`) or an unprefixed version number (`1.2.3`).
  *
- * The extension has to start with a letter, which is what keeps `127.0.0.1`
- * out. A bare dotted number reaching the comparison is the shape that put
- * `src/serve/127.0.0.1` in a report over a body that was correct.
+ * This is the one exclusion `resolveSpan` still applies to a non-directory
+ * span. A bare dotted number reaching the comparison is the shape that put
+ * `src/serve/127.0.0.1` in a report over a body that was correct, and every
+ * other segment carrying no extension, such as `.husky/post-merge`, now
+ * resolves.
  */
-function hasExtension(span: string): boolean {
+function isDottedNumber(span: string): boolean {
   const segment = span.slice(span.lastIndexOf('/') + 1)
-  return /\.[A-Za-z][A-Za-z0-9]*$/.test(segment)
+  return /^\d+(?:\.\d+)+$/.test(segment)
 }
 
 /** Blanks every backticked span so a cue search never fires inside one. */
@@ -285,7 +288,7 @@ function resolveSpan(span: string): ResolvedSpan | undefined {
       : { path: span, directory: true }
   }
 
-  return hasExtension(span) ? { path: span, directory: false } : undefined
+  return isDottedNumber(span) ? undefined : { path: span, directory: false }
 }
 
 /**
