@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execa } from 'execa'
@@ -37,8 +37,8 @@ describe('canon pr key-changes --body resolution', () => {
 
   afterEach(async () => {
     await Promise.all([
-      execa('rm', ['-rf', cwdDir], { reject: false }),
-      execa('rm', ['-rf', rootDir], { reject: false }),
+      rm(cwdDir, { recursive: true, force: true }),
+      rm(rootDir, { recursive: true, force: true }),
     ])
   })
 
@@ -57,7 +57,6 @@ describe('canon pr key-changes --body resolution', () => {
 
   it('should not resolve --body against --root', async () => {
     await writeFile(join(rootDir, 'body.md'), '## Key Changes\n')
-    await mkdir(cwdDir, { recursive: true })
 
     const { reason } = await runKeyChanges(cwdDir, [
       '--body',
