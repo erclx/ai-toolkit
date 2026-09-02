@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.19.2](https://github.com/erclx/canon/compare/v4.19.1...v4.19.2) (2026-09-02)
+
+
+### Bug Fixes
+
+* **labels:** split the record-path predicate by root ([#1363](https://github.com/erclx/canon/issues/1363)) ([fad5d11](https://github.com/erclx/canon/commit/fad5d111d1d75a035e90900748e637dcbd014af7))
+
 ## [4.19.1](https://github.com/erclx/canon/compare/v4.19.0...v4.19.1) (2026-09-02)
 
 
