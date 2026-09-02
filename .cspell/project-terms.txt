@@ -160,6 +160,7 @@ unrequested
 unreviewed
 unrouted
 unsourced
+unspelled
 untabled
 unwired
 updatability

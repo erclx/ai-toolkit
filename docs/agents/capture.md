@@ -13,13 +13,13 @@ canon capture assets/install.html --selector .window
 canon capture assets --selector .window --out .canon/review/captures
 ```
 
-`--selector` is required and every example above passes it. The element a capture crops to belongs to the page, not to the command, so there is no value that could be right for an arbitrary project's markup. `.window` is what this repository's own two sources declare, and a project renders its own pages by naming whatever theirs declare.
+`--selector` is required and every example above passes it. The element a capture crops to belongs to the page, not to the command, so there is no value that could be right for an arbitrary project's markup. `.window` is what this repository's own five sources declare, and a project renders its own pages by naming whatever theirs declare.
 
 ## What this repository captures
 
-`assets/` here holds four sources, so one run over the folder rebuilds every one. None is edited by hand. `scripts/core/regen-hero.sh` writes each from a template beside it, filling one shared value map into all of them, and `bun run check` regenerates them and fails on the difference.
+`assets/` here holds five sources, so one run over the folder rebuilds every one. None is edited by hand. `scripts/core/regen-hero.sh` writes each from a template beside it, filling one shared value map into all of them, and `bun run check` regenerates them and fails on the difference.
 
-Three of the four take catalog data, so a stack gaining a rule moves the frame on the next run. The terminal text on `install.html` is the exception, coming from a real run and held in the template rather than in the generated file.
+Three of the five take catalog data, so a stack gaining a rule moves the frame on the next run. `install.html` and `showcase-task-board.html` are the two exceptions: the first holds terminal text from a real run and the second holds a hand-frozen snapshot of a gitignored board, each in its template rather than derived from a live catalog at build time.
 
 The folder is read flat and never descends, by the regeneration script, by this command, and by the drift stage alike. A source in a subfolder is skipped by all three with nothing reported, so a new frame takes a name prefix rather than a folder of its own.
 
