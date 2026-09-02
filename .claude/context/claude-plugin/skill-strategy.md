@@ -203,6 +203,22 @@ A sandbox run against a two-file fixture, one claim correctable from a source in
 
 The variant count, three labelled bets on the invented change against one replacement on the corrected one, held across every run once the format reference stated `### N.` for a change and `#### A/B/C` for a variant explicitly. An early run had written changes at `##` and skipped a heading level to reach them.
 
+## The candidate surface is the sixty-eighth skill, and the composed sheet it wanted has no verb
+
+`draft-and-pick` covers work where several drafts are produced, looked at, and iterated until one is good enough. The four nearest surfaces all miss it by assuming the answer is known: `claude-feature` plans one answer, `claude-ux-audit` reports roughness from source in one pass, `claude-ux-measure` reads numbers off a running interface, and `claude-ui-test` writes tests for a change already made. Each takes one pass at one answer, so a decision settled by looking landed on whichever of them matched the word "UI".
+
+The name drops the `claude-` prefix on the axis above. That family maintains a Claude workflow surface, and this one writes candidates to `.canon/tmp/<slug>/` and deletes them with the pick, so a bare verb phrase places it beside `restate-plainly` and `decision-escalate` rather than beside the workflow skills. `claude-candidates` was the alternative and names a noun with no act in it.
+
+`captureSources` renders one image per source and composes nothing, so the contact sheet the source skill relied on has no counterpart verb here. What replaces it is authoring every arm side by side on one self-contained page and capturing that once, which gives the comparison the sheet existed for and needs no new verb. One file per arm was the alternative and hands the operator several images to hold against each other in memory, which is the comparison the page makes visible instead.
+
+The measurement rules are cited rather than restated. `canon drive` ships the probes carrying most of the source skill's nine, and the body keeps the three no probe reaches: composite alpha before reading a color, sample inside the shape rather than at a bounding-box corner, and ask whether a reader would see the thing at all. A `references/measurement.md` was planned for the remainder and never written, since three rules sit well under the fifteen-line move checkpoint.
+
+What travels and what does not is stated in the skill's own `REQUIREMENT.md` rather than in the plan or the task. Both of those are archived or gitignored at ship, so the requirement is the only one of the three a later reader opens. Three source capabilities stay behind, and a verb answers two of them: an arm switcher compiled into a project's own page gives way to `canon serve` over a scratch page, a site-wide treatment walker gives way to `canon drive` reading one page, and a copy cycle keyed to canonical text in a second repository is replaced by nothing at all, since no toolkit surface has that shape.
+
+The pull request boundary rule went to `claude-feature` and not to `standards/plan.md`. It is the whole of the source skill's phase 1, and a session decides scope while writing the plan, so it lands in the skill that writes one rather than in the document standard that plan follows. A rule stated in both is two sources for one rule.
+
+The arm is honest about what it cannot reach. No sandbox carries a browser binary and none can fetch one, so a run authors its candidate set and then stops at the render refusal, which leaves the page under scratch, the seeded surface untouched, and the repair named as the whole of what a pattern asserts. The pick, the loop, and whether the arms differed in a way worth choosing between all sit behind that render and stay in `manual`.
+
 ## Whether a skill earns its place
 
 The redundancy audit below runs outward, against community counterparts. Nothing ran inward, against the catalog's own two zero-cost tells, until this section: a folder wrapping something already reachable, and a folder nobody calls. `create-skill` now asks the first two before a folder exists, and `570-skill.md` carries the same check for whatever creates a `SKILL.md` some other way.

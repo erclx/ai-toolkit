@@ -39,6 +39,7 @@ A cell no source anchors ends in `? verify`, and the preview shows that marker b
 - `canon:claude-ui-test` for e2e test generation after UI changes
 - `canon:claude-ux-audit` for UX gap detection on existing surfaces
 - `canon:claude-ux-measure` for what a running surface costs to paint, read against published thresholds
+- `canon:draft-and-pick` for a call settled by looking, drafting several candidates onto one page and taking your pick
 - Anthropic's `frontend-design` plugin optional for light visual steering
 
 ### When to pick

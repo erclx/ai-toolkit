@@ -212,6 +212,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:claude-intake-answer` | When an intake folder holds unread slots waiting on your decision               |
 | `canon:claude-groundwork`    | When the state is unmeasured and more than one approach is live                 |
 | `canon:decision-escalate`    | When open decisions turn on your preference and want batching into one set      |
+| `canon:draft-and-pick`       | When the call is taste and wants several candidates rendered side by side       |
 | `canon:claude-tasks`         | When a decided item needs a file on the board, or a shipped one needs archiving |
 | `canon:claude-feature`       | When the approach is settled and the next step is a plan                        |
 
