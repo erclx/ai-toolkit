@@ -60,7 +60,7 @@ The check is preventive rather than diagnostic. Every mechanical rule passed acr
 
 ```bash
 canon claude skills drift HEAD~20
-canon claude skills drift 02d7b265 --json
+canon claude skills drift 02d7b265 --json # canon-allow-reference: a copyable command takes a literal git ref, which no qualified form is
 ```
 
 | Option   | Behavior                                                   |

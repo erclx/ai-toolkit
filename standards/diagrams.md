@@ -37,7 +37,7 @@ An entry that fails these is non-conforming regardless of whether it satisfies e
 - `title` (required): sentence case, names what the entry answers (`System context`, `Request flow`), not what it draws.
 - `description` (required): one line on which question the entry settles and which source signal drives it.
 - `category` (required): the diagram kind, one of the five in Entry kinds. It is the grouping field `canon indexes regen` renders headings from.
-- `verified` (required): the short commit SHA an entry was last checked against and the ISO date of that check, separated by a space (`73e9a3f8 2026-08-02`). A stub nobody has drawn yet carries the literal `TODO: never verified` instead, which is the one other accepted value.
+- `verified` (required): the short commit SHA an entry was last checked against and the ISO date of that check, separated by a space (`73e9a3f8 2026-08-02`). A stub nobody has drawn yet carries the literal `TODO: never verified` instead, which is the one other accepted value. <!-- canon-allow-reference: illustrates the field's two-token format, which a qualified sha would misstate -->
 - `stale` (optional): one line naming what changed under the entry since that check. Nothing writes it on its own, so it sits on an entry because a reader put it there and is absent everywhere else.
 
 The first three feed `.canon/diagrams/index.md` when regenerated. The catalog sorts categories alphabetically rather than in narrative order, so an entry cannot rely on its position to introduce another. Each entry names its own starting point, and the catalog's subtitle routes a first-time reader to the system context entry.
