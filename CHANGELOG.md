@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.16.0](https://github.com/erclx/canon/compare/v4.15.1...v4.16.0) (2026-09-02)
+
+
+### Features
+
+* **labels:** report a board identifier in a pull request title or body ([#1348](https://github.com/erclx/canon/issues/1348)) ([834dbbf](https://github.com/erclx/canon/commit/834dbbf8274a7f13a1a7983af5bddfba307be69d))
+
 ## [4.15.1](https://github.com/erclx/canon/compare/v4.15.0...v4.15.1) (2026-09-02)
 
 
