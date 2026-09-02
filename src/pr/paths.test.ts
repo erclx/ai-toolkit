@@ -141,6 +141,18 @@ describe('extractKeyChangePaths', () => {
     ).toEqual(['src/serve/static.ts'])
   })
 
+  it('should resolve a non-directory span with no extension', () => {
+    expect(
+      pathsOf('- Add the post-merge hook at `scripts/hooks/post-merge`.'),
+    ).toEqual(['scripts/hooks/post-merge'])
+  })
+
+  it('should drop a dotted-decimal span sitting behind a folder prefix', () => {
+    expect(
+      pathsOf('- Bind the loopback address `scripts/serve/127.0.0.1`.'),
+    ).toEqual([])
+  })
+
   it('should drop a bare top-level folder nobody claims to have rewritten (#1250)', () => {
     expect(
       pathsOf(

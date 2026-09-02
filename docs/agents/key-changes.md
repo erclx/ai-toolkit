@@ -58,7 +58,7 @@ A span anywhere in the bullet has to survive all of these:
 | No whitespace, `<`, `>`, `$`, `*`, `\|`, `?`, `^` | A backticked command, a placeholder, a glob, a pattern |
 | No `://` and no leading `/`, `~`, `@`, `#`, `!`   | A URL, an absolute path, a module alias                |
 | Contains `/`                                      | A bare filename with no folder around it               |
-| Extension starts with a letter, or ends with `/`  | A dotted number such as an address                     |
+| Not a dotted-decimal segment, or ends with `/`    | A dotted number such as an address                     |
 | Not a single top-level folder                     | `src/`, which nobody claims to have rewritten whole    |
 | A `file:line` span leads its bullet               | A citation into a file the bullet is describing        |
 | The region carries no no-change marker            | A bullet recording a file it deliberately left alone   |
