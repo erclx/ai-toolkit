@@ -112,7 +112,7 @@ export async function scanTitleSpelling(
     return {
       kind: 'unavailable',
       reason: 'check-failed',
-      message: result.stderr.trim().split('\n').pop() ?? 'no output on stderr',
+      message: result.stderr.trim().split('\n').pop() || 'no output on stderr',
     }
   }
 

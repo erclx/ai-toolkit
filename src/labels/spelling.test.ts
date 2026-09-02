@@ -85,6 +85,18 @@ describe('scanTitleSpelling', () => {
         message: 'boom',
       })
     })
+
+    it('should fall back to a stated message when the binary writes nothing to stderr', async () => {
+      writeFakeCspell(root, '#!/bin/sh\nexit 42\n')
+
+      const result = await scanTitleSpelling('feat: anything', root)
+
+      expect(result).toEqual({
+        kind: 'unavailable',
+        reason: 'check-failed',
+        message: 'no output on stderr',
+      })
+    })
   })
 })
 
