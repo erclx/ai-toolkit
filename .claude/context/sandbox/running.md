@@ -76,6 +76,8 @@ The warning sits on stderr among the framing, where a caller reading the tail of
 
 No record is written at all when the skill session itself exits non-zero, which is the run that most needs one. `run.sh` reads the session's stdout into a variable, deletes the temp file, and then takes the `session_code` branch, which logs `The session exited <n> before a verdict could be taken.` and exits without printing what it read a line earlier. So the reason sits in a variable nothing emits, and recovering it means invoking `claude -p` against the already-provisioned tree by hand, carrying the same `--plugin-dir`, `--model`, `--permission-mode`, `--allowedTools`, and `--max-turns` the script passes. Measured on 2026-09-02 against `claude:address-review`, where the harness run exited 1 and a hand re-run of the same session completed at 18 turns with no permission denial, so the exit was not a refusal of the nested spawn.
 
+An earlier silent failure carries its own message rather than the session-exit one. A non-zero exit from `manage-sandbox.sh` during provisioning logs `Provisioning exited <n> before the session could start.`, distinguishing that failure from the session-exit case above, since both otherwise leave the same absent verdict and no run record.
+
 ### Turn budget
 
 The default turn cap is 30. A clean `claude/docs` `drift` run takes 29 turns, and a truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, so the global default sits above observed cost.

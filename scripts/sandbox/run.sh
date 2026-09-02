@@ -296,7 +296,12 @@ main() {
   log_step "Sandbox: $sandbox"
 
   log_step "Provisioning $target"
-  bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2
+  local provision_code=0
+  bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2 || provision_code=$?
+  if [ "$provision_code" -ne 0 ]; then
+    log_warn "Provisioning exited $provision_code before the session could start."
+    exit "$provision_code"
+  fi
 
   local before after envelope writes escapes
   before="$(mktemp)"
