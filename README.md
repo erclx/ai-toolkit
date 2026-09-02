@@ -69,6 +69,12 @@ Governance is the third shape, and it is worth seeing rather than reading about,
 
 Stacks compose, so a react project inherits node and node inherits base. A rule with a glob loads only when a matching path is edited, and a rule with none loads every session. Both counts and every row above are read from the catalogs when the image is built.
 
+The toolkit tracks its own work the same way, in a task board no catalog can read back.
+
+![the task board's Run now table, one row per task in flight, each naming the files it touches and the plan it runs under](assets/showcase-task-board.png)
+
+`.canon/tasks/` is gitignored session scratch, so unlike the two frames above, this one is a hand-taken snapshot rather than something the build reads live, and it goes stale the moment the board moves.
+
 ## Documentation
 
 Scaffolding your first project? Start with target projects, then the AI workflow loop. Everything else answers questions that arrive later.
