@@ -7,7 +7,7 @@ description: Retirement act the wind-down owes the fleet it dispatched, the two 
 
 Settle this act before writing the map. A session retired afterwards is one the map already listed as running, and the map is what the next session reads the fleet off.
 
-The act reaches every session this one dispatched that no verb can decide. `canon worktrees reclaim` calls a directory reclaimable on three conditions together, being a merged pull request, a clean tree, and no live session holding it, and a running session fails the third whatever its branch did. Retiring that session is what clears the third condition, which is why the retirement runs ahead of the reclaim rather than after it.
+The act reaches every session this one dispatched that no verb can decide. `canon worktrees reclaim` refuses a directory on any of seven conditions and reclaims one that trips none, and three of the seven are what this act turns on: a merged pull request, a clean tree, and no live session holding the directory. A running session trips the third whatever its branch did, and retiring it is what clears that one, which is why the retirement runs ahead of the reclaim rather than after it.
 
 Two cases stay undecided even once the session is gone. A worker whose branch has not merged is refused on `no-merged-pull-request`, and a planner is refused as `main-worktree` and handed a null removal route, since it never enters a worktree and registers against the tree it was launched from.
 
@@ -25,7 +25,9 @@ The read is the report this session is holding. Retire a session whose delivery 
 
 ### The act, and the order it runs in
 
-`claude rm <name>` removes a background session and its worktree together, measured working on 2026-08-27. It belongs to the client rather than to this toolkit, so a target running another client performs whatever removal that client offers.
+`claude rm <id>` removes a background session and its worktree together, and it takes one target per call, so a wave costs one call per session. The argument is the id rather than the name, which `claude agents --json` carries beside the name on every row, so a session read off a roster by name is matched to its id there before the call. Both readings are from 2026-09-02, where the name form answered `No job matching`.
+
+The command belongs to the client rather than to this toolkit, so a target running another client performs whatever removal that client offers.
 
 Run `canon worktrees reclaim` after the retirements rather than before them. `held-by-session` is one of the conditions that reading refuses on, so a reclaim taken first refuses the directories the retirement is about to free and reports a board with nothing left to do.
 

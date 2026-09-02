@@ -89,7 +89,7 @@ The read is one `gh pr list --state merged` for the whole repository rather than
 
 `route` names which one applies rather than choosing it, since picking wrong strands state.
 
-- `session`: a live session holds the directory, and `claude rm <name>` removes the session and its worktree together. The `sessions` field carries the names, and a name is whatever string the session was launched under, spaces included, so quote it.
+- `session`: a live session holds the directory, and `claude rm <id>` removes the session and its worktree together. The `sessions` field carries names rather than ids, and a name is whatever string the session was launched under, spaces included, so quote it and match it against `claude agents --json`, which carries the id beside the name on every row.
 - `worktree`: the session has ended, and `canon worktrees reclaim` is what runs the remove and the branch delete.
 - `null`: the main worktree, which no removal shape reaches.
 
