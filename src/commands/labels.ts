@@ -389,6 +389,7 @@ async function runScan(opts: ScanOptions): Promise<number> {
     for (const link of result.sessionLinks) logWarn(link)
   }
 
+  const spellingChecked = spelling.kind === 'checked'
   const unspelledWords =
     spelling.kind === 'checked' ? spelling.unknownWords : []
 
@@ -399,8 +400,14 @@ async function runScan(opts: ScanOptions): Promise<number> {
         ? 'Clean'
         : 'Unspelled word found',
   )
-  if (spelling.kind === 'unavailable') {
-    logInfo('no cspell binary resolved here, so the title was not checked')
+  if (spelling.kind === 'unavailable' && spelling.reason === 'no-binary') {
+    logInfo(
+      `no node_modules/.bin/cspell resolved walking up from ${spelling.probedFrom}, so the title was not checked`,
+    )
+  } else if (spelling.kind === 'unavailable') {
+    logInfo(
+      `cspell did not exit clean or with issues found (${spelling.message}), so the title was not checked`,
+    )
   } else if (unspelledWords.length === 0) {
     logInfo('no word in the title is absent from every dictionary')
   } else {
@@ -421,6 +428,7 @@ async function runScan(opts: ScanOptions): Promise<number> {
         boardReferences: result.boardReferences,
         sessionLinks: result.sessionLinks,
         unspelledWords,
+        spellingChecked,
       })}\n`,
     )
   }
