@@ -102,7 +102,7 @@ A document is always-loaded only when an `@` line in `CLAUDE.md` names it. `.cla
 
 ### The root map stays in the always-loaded file
 
-The context standard caps re-derivable folder structure inside an entry, and the same sentence reads as a reason to move the root file's own map out to an entry, which it is not. The map orients a reader who has opened no entry yet, so replacing it with a pointer into the catalog costs a discovery hop the tier split exists to remove. Measured on the v59.2 pass, where the relocation was proposed, approved, and reversed before it landed.
+The context standard caps re-derivable folder structure inside an entry, and the same sentence reads as a reason to move the root file's own map out to an entry, which it is not. The map orients a reader who has opened no entry yet, so replacing it with a pointer into the catalog costs a discovery hop the tier split exists to remove. Measured on the `v59.2` pass, where the relocation was proposed, approved, and reversed before it landed.
 
 What the cap governs is a second copy of the structure inside a per-domain entry, where the reader has already arrived and the folder is one `ls` away.
 
