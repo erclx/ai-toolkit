@@ -47,6 +47,25 @@ describe('referencesIn', () => {
     expect(found[0]?.text).toBe('5653721')
   })
 
+  it('should report a seven-digit measurement, which admitting an all-digit sha admits with it', () => {
+    const found = referencesIn(
+      'docs/agents/alpha.md',
+      'The sweep read 2119000 paragraphs.',
+    )
+
+    expect(found).toHaveLength(1)
+    expect(found[0]?.kind).toBe('commit')
+  })
+
+  it('should let the marker answer a seven-digit measurement, since no narrowing can', () => {
+    expect(
+      referencesIn(
+        'docs/agents/alpha.md',
+        `The sweep read 2119000 paragraphs. <!-- ${REFERENCE_MARKER}: a count, not a commit -->`,
+      ),
+    ).toEqual([])
+  })
+
   it('should pass a pull request number qualified with its repository', () => {
     expect(
       referencesIn(

@@ -88,11 +88,20 @@ const PULL_REQUEST = /(?<![0-9A-Za-z_])#([0-9]+)(?![0-9A-Za-z_])/g
  * passes the check that told the author to write it, and rejects `#` so a hex
  * color long enough to reach the floor is not reported twice under two names.
  *
- * Two false-positive classes survive by construction and the marker is what
- * answers either. An all-digit hex color is indistinguishable from a pull
- * request number, and a seven-letter word spelled from `a` through `f` alone,
- * such as `defaced`, reads as a sha. Neither occurs anywhere in the corpus
- * today, measured over every file in it.
+ * Three false-positive classes survive by construction and the marker is what
+ * answers each. An all-digit hex color is indistinguishable from a pull request
+ * number. A seven-letter word spelled from `a` through `f` alone, such as
+ * `defaced`, reads as a sha. Neither occurs anywhere in the corpus today.
+ *
+ * The third is the one a later author meets. Admitting an all-digit sha admits
+ * every run of seven or more decimal digits with it, so a date written without
+ * separators, a large count, or a float artifact reads as a commit reference.
+ * The corpus carries no instance and that is the exclusions rather than luck:
+ * twelve such runs sit under the seven roots, eleven of them under
+ * `scripts/sandbox/`, `scripts/eval/`, or a test file, and the twelfth is the
+ * genuine sha in `orchestrator-poll.md`. Write a seven-digit measurement into a
+ * shipped page and the push fails on it, which the marker answers and no
+ * narrowing can, since requiring a letter loses the all-digit sha above.
  */
 const COMMIT_SHA = /(?<![0-9A-Za-z_@/#])([0-9a-f]{7,40})(?![0-9A-Za-z_])/g
 
