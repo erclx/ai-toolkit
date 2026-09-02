@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.19.0](https://github.com/erclx/canon/compare/v4.18.0...v4.19.0) (2026-09-02)
+
+
+### Features
+
+* **labels:** fail a pull request carrying a per-session link ([#1358](https://github.com/erclx/canon/issues/1358)) ([d31cb1c](https://github.com/erclx/canon/commit/d31cb1cbd1d4a0ac2a3b2058986f1d27572d13c2))
+
 ## [4.18.0](https://github.com/erclx/canon/compare/v4.17.0...v4.18.0) (2026-09-02)
 
 
