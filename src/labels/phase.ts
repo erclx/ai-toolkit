@@ -1,4 +1,5 @@
 import { linesOutsideFences, maskCodeSpans } from '@/markdown/scan'
+import { RECORD_ENTRIES, RECORD_ROOTS, spell } from '@/record-root'
 
 /**
  * The two version namespaces `standards/versioning.md` keeps apart, and why a
@@ -22,9 +23,62 @@ export interface PhaseScanResult {
   readonly cutsRelease: boolean
   readonly phaseLabels: readonly string[]
   readonly semverTags: readonly string[]
+  /**
+   * Text naming the board rather than the change: a version token a code span
+   * quotes, and a path under a record root.
+   *
+   * It sits beside the two namespaces rather than inside either, because a
+   * record path is version-shaped in neither and a quoted token is one the
+   * reading below has already declined to sort. Both are one defect at the
+   * destination, which is a reader on a remote holding neither the task board
+   * nor the gitignored folder a path names.
+   */
+  readonly boardReferences: readonly string[]
 }
 
 const VERSION_TOKEN = /\bv\d+(?:\.\d+){1,2}\b/g
+
+/**
+ * A code span holding a version token and nothing else.
+ *
+ * The closing delimiter refers back to the opening one, so a span opened on two
+ * backticks closes on two, which is the rule `maskCodeSpans` reads a span by.
+ * Content is the token alone rather than a token found inside longer content,
+ * which is the whole of what separates a quoted phase label from `#1208`.
+ */
+const VERSION_SPAN = /(`+)(v\d+(?:\.\d+){1,2})\1/g
+
+/** Sentence punctuation a path picks up at the end of a clause. */
+const TRAILING_PUNCTUATION = /[.,;]+$/
+
+/** Escapes a literal so it can sit inside a constructed pattern. */
+function escapeLiteral(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * A path under a record root, which is a root plus one of the entries that root
+ * owns rather than the root alone.
+ *
+ * `.claude/` is tracked and holds `rules`, `skills`, `hooks`, and `context`, so
+ * a rule path resolves in any clone and is not a board reference. Only the
+ * entries `src/record-root.ts` names are gitignored, and the scratch folder
+ * goes through `spell` because it is the one entry whose name differs by root.
+ * Both are read from that module rather than restated here, so a folder added
+ * there is matched here without an edit.
+ *
+ * The tail runs to the first whitespace or closing delimiter, so a report names
+ * the whole path an author has to remove rather than the prefix that matched.
+ */
+const RECORD_PATH = new RegExp(
+  `(?<![\\w./-])(?:${RECORD_ROOTS.map(
+    (root) =>
+      `${escapeLiteral(root)}/(?:${RECORD_ENTRIES.map((entry) =>
+        escapeLiteral(spell(root, entry)),
+      ).join('|')})`,
+  ).join('|')})(?![\\w-])[^\\s\`)\\]]*`,
+  'g',
+)
 
 /**
  * The head branch release-please opens every release pull request under.
@@ -53,6 +107,15 @@ function isReleasePullRequest(input: PhaseScanInput): boolean {
   )
 }
 
+/** Replaces a version span's delimiters with spaces, holding the line's width. */
+function unquoteVersionSpans(line: string): string {
+  return line.replace(
+    VERSION_SPAN,
+    (_span, ticks: string, token: string) =>
+      `${' '.repeat(ticks.length)}${token}${' '.repeat(ticks.length)}`,
+  )
+}
+
 /**
  * Drops a fenced block outright and blanks a code span inside what remains,
  * so a token quoted rather than written is read the way a reader reads it:
@@ -69,9 +132,34 @@ function isReleasePullRequest(input: PhaseScanInput): boolean {
  * compare link's URL, and masking it would empty `semverTags` on the one
  * pull request this check exists to pass, trading the corpus's one code-span
  * leak for a hole in every release.
+ *
+ * `keepVersionSpans` widens that reading for the board-reference pass alone. A
+ * span whose whole content is a version token survives it, which is the shape
+ * the leak reached the remote through, and longer content stays blanked, which
+ * is what holds `#1208` closed. Two passes over one source rather than one pass
+ * sorting its own output, because a token is a board reference by virtue of the
+ * span it came out of and nothing downstream of the match can see that.
  */
-function readable(text: string): string {
-  return linesOutsideFences(text).map(maskCodeSpans).join('\n')
+function readable(text: string, keepVersionSpans = false): string {
+  return linesOutsideFences(text)
+    .map((line) =>
+      maskCodeSpans(keepVersionSpans ? unquoteVersionSpans(line) : line),
+    )
+    .join('\n')
+}
+
+function versionTokens(text: string): string[] {
+  return [...new Set(text.match(VERSION_TOKEN) ?? [])]
+}
+
+function recordPaths(text: string): string[] {
+  return [
+    ...new Set(
+      (text.match(RECORD_PATH) ?? []).map((path) =>
+        path.replace(TRAILING_PUNCTUATION, ''),
+      ),
+    ),
+  ]
 }
 
 /**
@@ -83,13 +171,39 @@ function readable(text: string): string {
  * legitimately carries, and every other pull request's tokens are read as
  * leaked phase labels, which is what `standards/versioning.md` names the
  * defect this exists to catch.
+ *
+ * A release pull request reports no board reference either, on the argument
+ * that already empties its phase labels: release-please generates that body
+ * from merged history, so its author has nothing to rewrite and a report there
+ * would fail the one pull request this check exists to pass.
  */
 export function scanPhaseLabels(input: PhaseScanInput): PhaseScanResult {
-  const text = readable(`${input.title}\n${input.body}`)
-  const tokens = [...new Set(text.match(VERSION_TOKEN) ?? [])]
+  const source = `${input.title}\n${input.body}`
+  const tokens = versionTokens(readable(source))
   const cutsRelease = isReleasePullRequest(input)
 
-  return cutsRelease
-    ? { cutsRelease, phaseLabels: [], semverTags: tokens }
-    : { cutsRelease, phaseLabels: tokens, semverTags: [] }
+  if (cutsRelease) {
+    return {
+      cutsRelease,
+      phaseLabels: [],
+      semverTags: tokens,
+      boardReferences: [],
+    }
+  }
+
+  // Dropped where the same token is also written bare, since the phase-label
+  // half already names it and reporting it twice asks for one removal twice.
+  const quoted = versionTokens(readable(source, true)).filter(
+    (token) => !tokens.includes(token),
+  )
+
+  return {
+    cutsRelease,
+    phaseLabels: tokens,
+    semverTags: [],
+    boardReferences: [
+      ...quoted,
+      ...recordPaths(linesOutsideFences(source).join('\n')),
+    ],
+  }
 }

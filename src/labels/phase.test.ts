@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { scanPhaseLabels } from '@/labels/phase'
+import { BAN_SETS } from '@/markdown/bans'
 
 const FEATURE_HEAD = 'feat/phase-label-gate'
 const RELEASE_HEAD = 'release-please--branches--main--components--canon'
@@ -17,6 +18,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: ['v59.7'],
       semverTags: [],
+      boardReferences: [],
     })
   })
 
@@ -31,6 +33,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: true,
       phaseLabels: [],
       semverTags: ['v3.45.0', 'v3.46.0'],
+      boardReferences: [],
     })
   })
 
@@ -45,6 +48,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: ['v3.44', 'v68.5'],
       semverTags: [],
+      boardReferences: [],
     })
   })
 
@@ -65,6 +69,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: [],
       semverTags: [],
+      boardReferences: [],
     })
   })
 
@@ -79,6 +84,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: [],
       semverTags: [],
+      boardReferences: [],
     })
   })
 
@@ -93,6 +99,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: ['v59.7'],
       semverTags: [],
+      boardReferences: [],
     })
   })
 
@@ -107,6 +114,7 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: ['v59.7'],
       semverTags: [],
+      boardReferences: [],
     })
   })
 
@@ -121,6 +129,138 @@ describe('scanPhaseLabels', () => {
       cutsRelease: false,
       phaseLabels: [],
       semverTags: [],
+      boardReferences: [],
+    })
+  })
+
+  it('should report a board identifier a code span holds on its own', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Planned under `v75.1` and nothing else.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['v75.1'],
+    })
+  })
+
+  it('should report a board identifier a code span holds where the possessive sits outside it', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: "Carried over from `v53.9`'s pass on the same surface.",
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['v53.9'],
+    })
+  })
+
+  it('should name a token once when it is written both bare and quoted', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'Planned under v75.1, which the row writes as `v75.1`.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: ['v75.1'],
+      semverTags: [],
+      boardReferences: [],
+    })
+  })
+
+  it('should report a record path whether or not a code span holds it', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'See .canon/review/feedback/ and `.canon/tasks/priority.md` for detail.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.canon/review/feedback/', '.canon/tasks/priority.md'],
+    })
+  })
+
+  it('should report a record path written at the root an unmigrated project still uses', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'The row sits in .claude/tasks/priority.md on that target.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: ['.claude/tasks/priority.md'],
+    })
+  })
+
+  it('should leave a tracked path under the same root alone', () => {
+    const result = scanPhaseLabels({
+      title: 'feat: widen the scan',
+      body: 'The rule is .claude/rules/core/005-behavior.md, which every clone resolves.',
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+    })
+  })
+
+  it('should report nothing when a fenced block carries every reportable shape', () => {
+    const result = scanPhaseLabels({
+      title: 'fix: quote the row verbatim',
+      body: [
+        'Reproducing what the board holds:',
+        '',
+        '```',
+        '- v59.7: fix the gate',
+        'Planned under `v75.1`, tracked at .canon/tasks/priority.md',
+        '```',
+      ].join('\n'),
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
+    })
+  })
+
+  it('should find no board identifier in the markdown ban sets, which are scanned inside the repository', () => {
+    const result = scanPhaseLabels({
+      title: 'fix: restate the ban sets',
+      body: [
+        ...BAN_SETS.characters,
+        ...BAN_SETS.words,
+        ...BAN_SETS.spellings,
+      ].join(' '),
+      headRefName: FEATURE_HEAD,
+    })
+
+    expect(result).toEqual({
+      cutsRelease: false,
+      phaseLabels: [],
+      semverTags: [],
+      boardReferences: [],
     })
   })
 })

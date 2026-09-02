@@ -90,7 +90,7 @@ export function register(program: Command): void {
   labels
     .command('scan')
     .description(
-      'Fail a pull request whose title or body carries a phase label',
+      'Fail a pull request whose title or body carries a phase label or a board identifier',
     )
     .helpOption('-h, --help', 'Show this help message')
     .option(
@@ -112,10 +112,16 @@ export function register(program: Command): void {
         'other pull request may carry neither, so any token found there is a',
         'leaked phase label.',
         '',
+        'It reports a board identifier beside that, being text naming the task',
+        'board rather than the change: a version token a code span quotes, and a',
+        'path under a record root, both of which a reader on the remote holds no',
+        'copy of. A path under a tracked folder is left alone, so a rule or a',
+        'skill any clone resolves is not reported.',
+        '',
         'Exit codes:',
-        '  0  no phase label found',
+        '  0  no phase label and no board identifier found',
         '  1  refused, with the reason on stderr or in the JSON record',
-        '  2  the title or body carries a phase label',
+        '  2  the title or body carries a phase label or a board identifier',
         '',
         'Examples:',
         '  canon labels scan --event "$GITHUB_EVENT_PATH"',
@@ -345,6 +351,18 @@ async function runScan(opts: ScanOptions): Promise<number> {
     for (const label of result.phaseLabels) logWarn(label)
   }
 
+  logStep(
+    result.boardReferences.length === 0 ? 'Clean' : 'Board identifier found',
+  )
+  if (result.boardReferences.length === 0) {
+    logInfo('no quoted label or record path in the title or body')
+  } else {
+    logWarn(
+      `${plural(result.boardReferences.length, 'board identifier')} in the title or body. Name what a reader on the remote can open, since a record path is gitignored there and a quoted label reads as one only from the board.`,
+    )
+    for (const reference of result.boardReferences) logWarn(reference)
+  }
+
   outro()
 
   if (emitJson) {
@@ -353,9 +371,12 @@ async function runScan(opts: ScanOptions): Promise<number> {
         cutsRelease: result.cutsRelease,
         phaseLabels: result.phaseLabels,
         semverTags: result.semverTags,
+        boardReferences: result.boardReferences,
       })}\n`,
     )
   }
 
-  return result.phaseLabels.length === 0 ? 0 : 2
+  return result.phaseLabels.length === 0 && result.boardReferences.length === 0
+    ? 0
+    : 2
 }
