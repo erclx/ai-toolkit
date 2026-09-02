@@ -228,7 +228,7 @@ The `What is right` section is optional, capped at three bullets, and included o
 
 Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
-Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.canon/tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
+Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.canon/tmp/`, so this scan is the only gate ahead of the post. A finding phrased against an internal phase label is what the label half of the scan catches here. `phase-label-gate.yml` reads the same text again once posted, on the `pull_request_review` trigger, which is what closes the gap this scan leaves open for a review a person writes and posts by hand with no scripted step in front of it.
 
 Do not run the command below when `<prior-heading>` from Step 2 reads `## Review closed` and this pass carries nothing owed. That pass replaces the standing comment rather than adding one, under `### A close-out that repeats the standing one` at the end of this step. Posting first and reaching that section afterward leaves two close-outs both naming the new head, which is worse than the pair the guard exists against.
 

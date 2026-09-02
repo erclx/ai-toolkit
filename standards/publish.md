@@ -44,7 +44,7 @@ Two shapes get past a reader scanning for a bare label. A code span quoting a la
 
 Rewrite a hit to name what the reader can reach rather than deleting it. A row's subject stated plainly replaces its label, and what a record folder holds, said in a sentence, replaces its path.
 
-`canon labels scan` runs this check and the phase-label one over a pull request title and body. It reads that pair alone, so every other channel is the author's own scan.
+`canon labels scan` runs this check and the phase-label one over a pull request title and body, and over a posted review's own text once one is submitted. Any other channel, a plain issue comment among them, is still the author's own scan.
 
 ## Session links
 
