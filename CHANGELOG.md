@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.24.1](https://github.com/erclx/canon/compare/v4.24.0...v4.24.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **pr:** resolve an extensionless path in Key Changes bullets ([#1382](https://github.com/erclx/canon/issues/1382)) ([37270f9](https://github.com/erclx/canon/commit/37270f99fe939bde0d0254ec88a4788a54abd71b))
+
 ## [4.24.0](https://github.com/erclx/canon/compare/v4.23.1...v4.24.0) (2026-09-02)
 
 
