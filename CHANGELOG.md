@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.15.0](https://github.com/erclx/canon/compare/v4.14.1...v4.15.0) (2026-09-02)
+
+
+### Features
+
+* **worker:** read a held file at the hunk before conceding it ([#1346](https://github.com/erclx/canon/issues/1346)) ([dd7684e](https://github.com/erclx/canon/commit/dd7684e89bfc1490e77f7040cdb3fb62e0ac8847))
+
 ## [4.14.1](https://github.com/erclx/canon/compare/v4.14.0...v4.14.1) (2026-09-02)
 
 
