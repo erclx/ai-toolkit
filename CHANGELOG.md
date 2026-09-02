@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.1](https://github.com/erclx/canon/compare/v4.14.0...v4.14.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **orchestrate:** point the poll-start bullet at its runbook ([#1345](https://github.com/erclx/canon/issues/1345)) ([ca8254d](https://github.com/erclx/canon/commit/ca8254d8f48a427a3244c6f0c0a58947fa027348))
+
 ## [4.14.0](https://github.com/erclx/canon/compare/v4.13.0...v4.14.0) (2026-09-01)
 
 
