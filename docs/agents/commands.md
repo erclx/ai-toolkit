@@ -56,7 +56,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon context audit`         | Report required sections, length, cited paths, reference form, catalog tables, provenance, superseded-decision narration, and index drift                             |
 | `canon markdown audit`        | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                                                |
 | `canon claude skills audit`   | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                                                        |
-| `canon standards audit`       | Report the corpus against the `## Success criterion` gate, failing only on a standard new to the branch (`--json`, `--arrivals-only`)                                 |
+| `canon standards audit`       | Report the corpus against the success-criterion gate `standards/standard.md` states, failing only on a standard new to the branch (`--json`, `--arrivals-only`)       |
 | `canon claude skills drift`   | Name the shipped skill bodies rewritten between a given ref and `HEAD`, and the installed version against the newest published (`--json`)                             |
 | `canon claude skills reach`   | Report the bodies in either skill corpus citing a toolkit path no target project receives, exiting 2 on an unqualified one                                            |
 | `canon claude skills rank`    | Score either skill corpus's descriptions against a case corpus by TF-IDF cosine similarity, reporting rank-one and top-three (`--cases <path>`)                       |

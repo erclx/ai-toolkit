@@ -62,7 +62,7 @@ export function register(program: Command): void {
   standards
     .command('audit')
     .description(
-      'Report the corpus against the `## Success criterion` gate in standards/standard.md',
+      'Report the corpus against the success-criterion gate standards/standard.md states',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -78,7 +78,7 @@ export function register(program: Command): void {
         'Exit codes:',
         '  0  the audit completed with every arriving standard carrying the section',
         '  1  refused, with the reason on stderr',
-        '  2  a standard new to this branch carries no ## Success criterion section',
+        '  2  a standard new to this branch carries no success-criterion section',
         '',
         'A standard already in the corpus without the section is a known gap',
         'standards/standard.md names, not a violation, so only an arrival fails.',
@@ -204,8 +204,8 @@ function reportArrivalGate(
   intro('canon standards audit')
   logError(
     missing.length === 1
-      ? '1 standard new to this branch carries no ## Success criterion section'
-      : `${missing.length} standards new to this branch carry no ## Success criterion section`,
+      ? '1 standard new to this branch carries no success-criterion section'
+      : `${missing.length} standards new to this branch carry no success-criterion section`,
   )
   pipeOutput(missing.join('\n'))
   outro()
@@ -217,7 +217,7 @@ function reportCorpus(
   logStep('Corpus')
   logInfo(`${plural(audit.standards.length, 'standard')} at standards/`)
   logInfo(
-    `${plural(audit.withCriterion.length, 'standard')} carrying ## Success criterion`,
+    `${plural(audit.withCriterion.length, 'standard')} carrying a success criterion`,
   )
 
   logStep('Known gaps')
@@ -241,7 +241,7 @@ function reportCorpus(
   }
 
   logError(
-    `${plural(audit.arrivalsWithoutCriterion.length, 'standard')} arrived carrying no ## Success criterion section`,
+    `${plural(audit.arrivalsWithoutCriterion.length, 'standard')} arrived carrying no success-criterion section`,
   )
   pipeOutput(audit.arrivalsWithoutCriterion.join('\n'))
 }
