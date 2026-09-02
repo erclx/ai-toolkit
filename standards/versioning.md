@@ -38,17 +38,18 @@ External release identity used in git tags and release notes. Independent of pha
 
 ## Where each appears
 
-| Surface                   | Phase labels | Semver tags                         |
-| ------------------------- | ------------ | ----------------------------------- |
-| `.canon/tasks/`           | yes          | no                                  |
-| Chat with the operator    | yes          | no                                  |
-| PR titles                 | no           | only when the PR cuts a release     |
-| PR bodies                 | no           | only when the PR cuts a release     |
-| Review comments           | no           | only when referencing a release     |
-| Issue titles and bodies   | no           | only when referencing a release     |
-| Commit messages           | no           | only when the commit cuts a release |
-| Git tags                  | no           | yes                                 |
-| README and `CHANGELOG.md` | no           | yes                                 |
+| Surface                                    | Phase labels | Semver tags                         |
+| ------------------------------------------ | ------------ | ----------------------------------- |
+| `.canon/tasks/`                            | yes          | no                                  |
+| Chat with the operator                     | yes          | no                                  |
+| Tracked prose (context entries, standards) | conditional  | no                                  |
+| PR titles                                  | no           | only when the PR cuts a release     |
+| PR bodies                                  | no           | only when the PR cuts a release     |
+| Review comments                            | no           | only when referencing a release     |
+| Issue titles and bodies                    | no           | only when referencing a release     |
+| Commit messages                            | no           | only when the commit cuts a release |
+| Git tags                                   | no           | yes                                 |
+| README and `CHANGELOG.md`                  | no           | yes                                 |
 
 ## Rules
 
@@ -57,6 +58,7 @@ External release identity used in git tags and release notes. Independent of pha
 - Git tags use semver only. Phase labels never become tags.
 - A PR that cuts a release may reference its semver tag in the title or body. Phase labels still do not appear.
 - PR bodies, review comments, and issue text name the change itself, never the internal stream that scheduled it. Describe the work rather than the label it was planned under.
+- A phase label in tracked prose is permitted only as a bare provenance pointer to something the surrounding sentence already resolves, or paired with its substance restated inline. A label that names neither is forbidden, since a reader without the board has nothing to resolve it against.
 
 ## Pre-publish check
 
