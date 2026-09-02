@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.26.1](https://github.com/erclx/canon/compare/v4.26.0...v4.26.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **pr:** resolve --body against the working directory, not --root ([#1392](https://github.com/erclx/canon/issues/1392)) ([9dc11c2](https://github.com/erclx/canon/commit/9dc11c21a8ccae8409c500c6f4a19387f71ba38c))
+
 ## [4.26.0](https://github.com/erclx/canon/compare/v4.25.0...v4.26.0) (2026-09-02)
 
 
