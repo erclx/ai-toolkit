@@ -43,6 +43,7 @@ export const FINDING_KINDS = [
   'row-misshapen',
   'row-untabled',
   'row-misordered',
+  'row-unranked',
   'touches-unstated',
   'touches-collided',
   'blocker-settled',
@@ -103,6 +104,8 @@ export interface BoardRow {
   readonly waiting: string | undefined
   /** The ordinal phrase a `Waiting on` cell states about its own position, undefined when the cell carries none. */
   readonly ordinal: OrdinalWord | 'last' | undefined
+  /** Whether a `Waiting on` cell ranks its row against a sibling row or a class of rows, false when the group fixes no such column. */
+  readonly ranked: boolean
 }
 
 export interface ValidateReport {
@@ -277,6 +280,45 @@ function readOrdinal(cell: string): OrdinalWord | 'last' | undefined {
   return LAST_AT_END.test(cell) ? 'last' : undefined
 }
 
+const RANK_VERB =
+  /\b(?:leads|heads|opens|closes|trails|precedes|follows|outranks|sits\s+(?:under|above|below))\b/i
+
+/** A phase label, the group a row opens or closes, or the sibling rows it is ranked among. */
+const RANK_OBJECT = /\bv\d+\.\d+\b|\bgroups?\b|\brows?\b/i
+
+/**
+ * A clause boundary, which is any of the three punctuation marks that end one
+ * plus the two conjunctions every live cell uses to hang its reason off its
+ * position claim. All three marks are bounded away from digits on both sides,
+ * which is what keeps a phase label one token, since `v80.4` is the commonest
+ * positional object on the board and splitting it at its own period would
+ * leave the verb holding nothing.
+ */
+const CLAUSE_BREAK = /(?<!\d)[.;,](?!\d)|\band\b|\bbecause\b/i
+
+/**
+ * Whether a `Waiting on` cell ranks its row against something rather than
+ * arguing that the row matters. The two are indistinguishable to a reader
+ * scanning the board, since a reason with no other row in it reads defensible
+ * on every row at once, which is how insertion order became the ordering.
+ *
+ * The test is a closed verb vocabulary sitting in one clause with a positional
+ * object, which mirrors `readOrdinal` bounding itself to a closed word list for
+ * the same reason: a parser loose enough to grade prose reports a correctly
+ * phrased row. Both halves are needed, since `closes` alone matches `it closes
+ * a gap the reference gate leaves open`, which claims no position at all. The
+ * clause bound is what keeps a verb in one half of the cell from pairing with
+ * an object in the other.
+ *
+ * A cell phrased comparatively and unusually reads as unranked, which is a
+ * false negative and the safe direction for a check over prose.
+ */
+function readRank(cell: string): boolean {
+  return cell
+    .split(CLAUSE_BREAK)
+    .some((clause) => RANK_VERB.test(clause) && RANK_OBJECT.test(clause))
+}
+
 function isRowLine(line: string): boolean {
   return line.trimStart().startsWith('|')
 }
@@ -388,6 +430,7 @@ export function readBoard(text: string): {
       touches: touchesAt >= 0 ? readPaths(cells[touchesAt] ?? '') : undefined,
       waiting,
       ordinal: waiting ? readOrdinal(waiting) : undefined,
+      ranked: waiting ? readRank(waiting) : false,
     })
   }
 
@@ -395,20 +438,39 @@ export function readBoard(text: string): {
 }
 
 /**
- * Reports a `## Needs a plan` row whose stated ordinal disagrees with where it
- * actually sits in that group. Reading the sequence for gaps and duplicates on
- * its own would detect less, since row position is contiguous by
- * construction, and a hand-renumbered sequence is exactly a case where the
- * prose and the position have come apart.
+ * Reports the two ways a `## Needs a plan` row's stated position fails. A row
+ * carrying an ordinal is checked against where it actually sits, and reading
+ * the sequence for gaps and duplicates on its own would detect less, since row
+ * position is contiguous by construction and a hand-renumbered sequence is
+ * exactly a case where the prose and the position have come apart. A row
+ * carrying no position claim of either form is reported for that instead,
+ * since a cell arguing only that the task matters ranks it against nothing and
+ * leaves the position recording when the row was filed.
+ *
+ * Both are one question rather than two checks. An ordinal is already a
+ * comparative claim, so it exempts the row from the second half, and the two
+ * findings read off one walk over the same group.
  */
-function checkOrdinals(rows: readonly BoardRow[]): Finding[] {
+function checkOrdering(rows: readonly BoardRow[]): Finding[] {
   const findings: Finding[] = []
   const parked = rows.filter((row) => row.group === 'Needs a plan')
 
   parked.forEach((row, index) => {
-    if (!row.ordinal) return
-
     const position = index + 1
+
+    if (!row.ordinal) {
+      if (row.ranked) return
+
+      findings.push({
+        kind: 'row-unranked',
+        group: row.group,
+        subject: subjectOf(row),
+        message: `names no row or class it is ranked against, so its position ${position} of ${parked.length} in ${row.group} records only when it was filed.`,
+      })
+
+      return
+    }
+
     const expected =
       row.ordinal === 'last'
         ? parked.length
@@ -1061,7 +1123,7 @@ export async function validateBoard(
     ...checkPlans(rows, dir, root),
     ...(await checkPlanAgreement(rows, dir, root)),
     ...checkCollisions(rows),
-    ...checkOrdinals(rows),
+    ...checkOrdering(rows),
     ...parked.findings,
   ]
 
