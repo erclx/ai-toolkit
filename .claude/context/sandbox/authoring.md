@@ -107,6 +107,18 @@ A stack install narrows what arrives. The copy it replaced took all 70 rules und
 
 A failed install aborts provisioning with the installer's own stderr, since a sandbox missing the rules a scenario depends on would otherwise fail later somewhere unrelated.
 
+### Which commit `SANDBOX_SKIP_AUTO_COMMIT` actually gates
+
+Two helpers in `scripts/manage-sandbox.sh` commit, and the flag reaches only the second. `initialize_sandbox_environment` provisions and then calls `setup_sandbox_assets`, which injects seeds and rules and closes on `commit_environment_setup`. Only afterwards does `execute_sandbox_and_commit` run `stage_setup`, then `inject_changed_skills`, then `commit_sandbox_changes`, which is the one the flag guards.
+
+The order is what lets an arm stage a deliberately dirty tree. Work that `stage_setup` leaves staged, unstaged, or untracked survives provisioning under the flag, because the unconditional commit already ran before `stage_setup` was called. `claude:review` depends on that, staging one bug in each of four halves so the selection rule has all four to read. Reading the two helpers as one makes such a fixture look impossible, which is the misreading to avoid rather than a constraint on the arm.
+
+`inject_changed_skills` runs inside that window and copies each changed skill body to `.claude/skills/<name>/SKILL.md`, so under the flag those copies stay untracked in the sandbox. An arm whose skill reads untracked files therefore reviews its own injected body.
+
+### `inject_changed_skills` resolves against bare local `main`
+
+Its changed set comes from `git -C "$PROJECT_ROOT" diff main --name-only`, which reads the local ref rather than a merge base against `origin/main`. This is the defect the diff-baseline port corrected across five skill bodies, still live in the harness, so a checkout whose local `main` trails the remote injects skill bodies that other merged branches changed rather than only the ones the branch under test touched. The extra copies land untracked and stay, since the flag skips the commit that would have absorbed them.
+
 ## use_anchor
 
 `use_anchor` marks a scenario as one that needs a real remote. Declaring it stages the sandbox from the anchor fixture instead of starting empty, and names the repository the scenario will push to.
