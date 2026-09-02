@@ -23,7 +23,7 @@ alias clp='claude --plugin-dir $TOOLKIT/claude'
 alias clps='clp --model sonnet'
 ```
 
-For the full alias set covering resume, continue, worktree, and model shortcuts, see `docs/zshrc-aliases.md`.
+For the full alias set covering resume, continue, worktree, and model shortcuts, see `docs/workflow/zshrc-aliases.md`.
 
 Machine provisioning is a separate concern reachable by the same word. `canon claude setup` installs user-level Claude config at `~/.claude/` and is covered in `.claude/context/claude-plugin/cli.md`.
 

@@ -23,7 +23,7 @@ A hand-written copy of the roster stood here and drifted the way `standards/cont
 
 ## The consumer map groups by phase, and its table is the corpus
 
-`docs/ai-workflow.md` carries the when-to-use map, and the `## Skills` table under it is what a coverage claim is measured against. Groups run in the order a project meets them, from setup through building, checking, and shipping to the pull request and the toolkit-sync relationship. The last two hold what serves no single moment: one for artifacts generated on request, one for skills answering a question at any point.
+`docs/workflow/ai-workflow.md` carries the when-to-use map, and the `## Skills` table under it is what a coverage claim is measured against. Groups run in the order a project meets them, from setup through building, checking, and shipping to the pull request and the toolkit-sync relationship. The last two hold what serves no single moment: one for artifacts generated on request, one for skills answering a question at any point.
 
 Naming the map rather than the table leaves the claim open, since mentions elsewhere in the file reach further than the table does. Measured on 2026-08-14 against the shipped folder listing, the table named 19, every mention in the file reached 24, every consumer doc reached 35, and adding `docs/agents/` gave 37. An outcome saying every skill appears is four claims until one block is named, so the table is the block and coverage claimed anywhere else does not count toward it.
 
@@ -272,7 +272,7 @@ Four of the other five held at a flat zero. `create-snippet` reads 2 rather than
 
 ### Set up a project: the first batch of the remaining fifty-one
 
-`feature-remaining-skill-verdicts.md` splits the 51 skills neither prior pass touched, the denominator this pass read on 2026-08-27, into the phase groups `docs/ai-workflow.md`'s `## Skills` table already carries, one pull request per group. This pass runs `create-skill`'s three questions against the first group, "Set up a project": `setup-init`, `canon-operator`, `setup-gov`, `setup-indexes`, `setup-plugins`, `setup-verify`, `claude-design-extract`, and `claude-diagram`.
+`feature-remaining-skill-verdicts.md` splits the 51 skills neither prior pass touched, the denominator this pass read on 2026-08-27, into the phase groups `docs/workflow/ai-workflow.md`'s `## Skills` table already carries, one pull request per group. This pass runs `create-skill`'s three questions against the first group, "Set up a project": `setup-init`, `canon-operator`, `setup-gov`, `setup-indexes`, `setup-plugins`, `setup-verify`, `claude-design-extract`, and `claude-diagram`.
 
 None carries a plausible community counterpart, so no redundancy comparison runs for this batch. The first two orchestrate installs no third-party marketplace ships, the middle three wrap this toolkit's own catalogs, and the last two write into formats this toolkit defines.
 
@@ -421,7 +421,7 @@ One of the nine took a fresh comparison, recorded in `## Redundancy audit` below
 
 ### The closing batch: the five groups the consumer map had left
 
-Twenty-two skills carry no verdict, and they distribute across exactly the five groups `docs/ai-workflow.md` still had unread. The operator ended the audit here on 2026-08-28 rather than running five more branches, on the ground that stating the test was the expensive part and batch one did that. Every remaining skill takes a verdict below, grouped as the consumer map groups them.
+Twenty-two skills carry no verdict, and they distribute across exactly the five groups `docs/workflow/ai-workflow.md` still had unread. The operator ended the audit here on 2026-08-28 rather than running five more branches, on the ground that stating the test was the expensive part and batch one did that. Every remaining skill takes a verdict below, grouped as the consumer map groups them.
 
 #### What separates a verdict from a mention
 
@@ -576,4 +576,4 @@ Each taken borrow carries the body it landed in and the date, matching how this 
   - Theirs cleans the one worktree the session sits in, at the end of one branch, and only for two of its four options. Ours enumerates every worktree in the repository at any time, resolves each branch's merge state through `gh` with a local-ancestry fallback, and removes the merged set in one batch.
   - One borrow the closing batch left standing, taken after it as `v68.0` on its own row. Theirs tests the worktree path against a known prefix before removing anything and leaves a workspace the harness owns in place. Ours guarded on merge state, cleanliness, and the current-worktree exclusion alone, so `git worktree list` reporting every worktree put a merged clean tree an operator added by hand elsewhere on disk inside the remove set, its branch following under `branch -D`. The fix adds a fourth enumeration test: a non-main row whose path sits outside `<MAIN_ROOT>/.claude/worktrees/` reads as `foreign` and joins the skip set with that reason, in `list` and `cleanup` both. No instance was observed, and nothing in the skill would have reported one. The row taking the other four read this one as a data-loss shape wanting its own verification rather than a line in a parity batch.
 
-`wiki/claude/claude-skills.md` covers the Claude Code skill feature itself, and `docs/visual-design-workflow.md` is the worked example of per-workflow skill recommendations.
+`wiki/claude/claude-skills.md` covers the Claude Code skill feature itself, and `docs/workflow/visual-design-workflow.md` is the worked example of per-workflow skill recommendations.
