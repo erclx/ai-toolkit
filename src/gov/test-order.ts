@@ -1,12 +1,6 @@
 import { execaSync } from 'execa'
+import { baseCandidates, isMergeBase } from '@/git-base'
 import { gitEnv } from '@/git-env'
-
-/**
- * Preferred first, matching `src/tasks/trunk.ts`. A clone with no remote still
- * answers off its local trunk, and a local `main` trailing the remote widens
- * the range rather than narrowing it, which over-reports instead of hiding.
- */
-const TRUNK_REFS = ['origin/main', 'main'] as const
 
 /**
  * The extensions this check can pair. A test sits beside its subject under one
@@ -349,22 +343,17 @@ function resolveBase(
   ref: string | undefined,
   head: string,
 ): string | { kind: 'unreadable'; reason: TestOrderRefusal; message: string } {
-  if (ref !== undefined) {
-    const merged = git(root, ['merge-base', head, ref])
-    if (merged === undefined || merged === '') {
-      return {
-        kind: 'unreadable',
-        reason: 'bad-base',
-        message: `Ref ${ref} shares no history with HEAD in ${root}. Pass a ref this branch was taken from.`,
-      }
-    }
-    return merged
+  for (const candidate of baseCandidates(ref)) {
+    const merged = git(root, ['merge-base', head, candidate])
+    if (isMergeBase(merged)) return merged
   }
 
-  for (const trunk of TRUNK_REFS) {
-    if (revParse(root, trunk) === undefined) continue
-    const merged = git(root, ['merge-base', head, trunk])
-    if (merged !== undefined && merged !== '') return merged
+  if (ref !== undefined) {
+    return {
+      kind: 'unreadable',
+      reason: 'bad-base',
+      message: `Ref ${ref} shares no history with HEAD in ${root}. Pass a ref this branch was taken from.`,
+    }
   }
 
   const rootCommits = git(root, ['rev-list', '--max-parents=0', head])
