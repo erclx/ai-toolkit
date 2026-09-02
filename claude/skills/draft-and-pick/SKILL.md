@@ -28,6 +28,7 @@ Write every arm side by side on one self-contained HTML page at `.canon/tmp/<slu
 - One page, never one file per arm. The comparison is the artifact, and several images handed over separately ask the operator to hold the differences in memory.
 - Label each arm on the page with its id and its cost, so the render carries what the question will ask about.
 - Inline every style, script, and asset the page needs. The render reads the file off disk, so a page reaching for a build step or a network font renders without it and the arms differ by something nobody chose.
+- Declare a font stack the machine resolves, such as `system-ui` behind a generic fallback. The render refuses a page that would rewrap against a substitute rather than shipping a false comparison, so a page naming no font at all is refused on whatever the default resolves to.
 - Vary one property across the arms. A page whose arms differ in three ways answers no question, since the pick cannot say which difference decided it.
 
 ## Step 3: render and hand off
@@ -65,7 +66,8 @@ Put the choice to the operator through the structured question surface, per `.cl
 
 1. Apply the winning arm to the real surface, in one change.
 2. Delete `.canon/tmp/<slug>/` and every losing arm with it. A variant left behind is a second design nobody maintains.
-3. Report the surface that changed on its own line, and name the arm that won by its id and its cost.
+3. Report the scratch folder as still standing when that delete is refused, naming the path for the operator to remove, rather than closing on a report the tree contradicts. The pick is applied either way, so the run has done its work and the folder is what outlives it.
+4. Report the surface that changed on its own line, and name the arm that won by its id and its cost.
 
 ## Reading a measurement
 
