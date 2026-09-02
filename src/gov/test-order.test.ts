@@ -163,6 +163,20 @@ describe('readTestOrder', () => {
     expect(subjects(report.unclassified)).toEqual(['src/parser.ts'])
   })
 
+  it('should resolve a named base to the merge base when the trunk has moved past it', () => {
+    const mergeBase = git('rev-parse', 'HEAD').trim()
+    git('checkout', '-q', '-b', 'feat/parser')
+    commit('test: cover the parser', { 'src/parser.test.ts': 'test' })
+    commit('feat: add the parser', { 'src/parser.ts': 'code' })
+    git('checkout', '-q', 'main')
+    commit('feat: add the widget', { 'src/widget.ts': 'code' })
+    git('checkout', '-q', 'feat/parser')
+
+    const report = measured(readTestOrder(ROOT, { base: 'main' }))
+
+    expect(report.base).toBe(mergeBase)
+  })
+
   it('should report a declaration file as read past rather than as an implementation', () => {
     const base = git('rev-parse', 'HEAD').trim()
     commit('chore: declare the shim', { 'src/shim.d.ts': 'declare' })
