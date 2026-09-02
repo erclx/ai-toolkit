@@ -1,7 +1,7 @@
 {
   "name": "@erclx/canon",
   "type": "module",
-  "version": "4.30.0",
+  "version": "4.30.1",
   "description": "Infrastructure and quality tooling for developer workflows",
   "license": "MIT",
   "bin": {

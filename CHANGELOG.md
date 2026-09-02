@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.30.1](https://github.com/erclx/canon/compare/v4.30.0...v4.30.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **labels:** scan a posted review's own body for phase labels ([#1418](https://github.com/erclx/canon/issues/1418)) ([141885c](https://github.com/erclx/canon/commit/141885c2ead296610c0e3f04e3d92b6d360713ac))
+
 ## [4.30.0](https://github.com/erclx/canon/compare/v4.29.1...v4.30.0) (2026-09-02)
 
 
