@@ -105,7 +105,7 @@ Read each changed file in scope. Skip deleted files. Run reads in parallel.
 
 ## Step 3: review
 
-Review the diff and files for the same axes as `claude-review` (bugs, edge cases, error handling, logic flaws, security, rule violations), then add the three lenses a self-review structurally cannot apply:
+Review the diff and files for the same axes as `claude-review` (bugs, edge cases, error handling, logic flaws, security, rule violations, checkout assumptions in a shipped file), then add the three lenses a self-review structurally cannot apply:
 
 - Integration: does this fit the board's order, the shared wiring seam, and any sibling PR in flight?
 - Contract: does a contract downstream features depend on land correctly, and should the plan itself be questioned?

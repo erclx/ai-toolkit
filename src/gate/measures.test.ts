@@ -354,6 +354,44 @@ describe('shippedReferences', () => {
 
     expect(report.failure).toBeUndefined()
   })
+
+  it('fails on a docs path that resolves against the checkout, threading root through', async () => {
+    write('docs/agents/real.md', 'placeholder\n')
+    write(
+      'claude/skills/alpha/SKILL.md',
+      'Read `docs/agents/real.md` for the reference shape.\n',
+    )
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toContain('One reference')
+    expect(report.emissions[0]?.text).toContain('docs/agents/real.md')
+    expect(report.emissions[0]?.text).toContain('registry install')
+  })
+
+  it("passes a docs path that names a target's own tree rather than this checkout's", async () => {
+    write(
+      'claude/skills/alpha/SKILL.md',
+      'Write the fixture to `docs/retry.md`.\n',
+    )
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toBeUndefined()
+  })
+
+  it('fails on a bare phase-label-shaped token', async () => {
+    write(
+      'claude/skills/alpha/SKILL.md',
+      'Named the task `v28.1-trigger-escalation` for tracking.\n',
+    )
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toContain('One reference')
+    expect(report.emissions[0]?.text).toContain('v28.1')
+    expect(report.emissions[0]?.text).toContain('no target holds')
+  })
 })
 
 describe('clientCommandCitations', () => {

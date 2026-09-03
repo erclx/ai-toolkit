@@ -25,7 +25,7 @@ Internal coordination vocabulary used in the task board and chat.
 
 - Format is project-specific.
 - Used to order work and disambiguate streams during planning.
-- Re-numbers freely as scope shifts. Inserting a half-step between two existing labels (a `v1.5` between `v1` and `v2`) is fine.
+- Re-numbers freely as scope shifts. Inserting a half-step between two existing labels (a `v1.5` between `v1` and `v2`) is fine. <!-- canon-allow-reference: illustrates the renumbering rule's own format, not a citation of a real row -->
 - Does not have to map to any external release.
 
 ## Semver tags

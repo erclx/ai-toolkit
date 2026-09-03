@@ -12,7 +12,7 @@ description: Selecting a shipped task by stem or pull request, recording a numbe
 Name the task by its filename stem, or by the pull request it carries:
 
 ```bash
-canon tasks archive v28.1-trigger-escalation
+canon tasks archive v28.1-trigger-escalation # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
 canon tasks archive --pull-request 673 --json
 ```
 
@@ -66,7 +66,7 @@ Branch on `reason` rather than on the exit code, which is the rule the archive s
 A `live` location with an empty `citedBy` is the sweep to run. One whose `citedBy` names a sibling is a plan several tasks share, which the sweep leaves alone and the archive gate lets through.
 
 ```bash
-canon tasks plan-citations v28.1-trigger-escalation --json | jq -r '.location'
+canon tasks plan-citations v28.1-trigger-escalation --json | jq -r '.location' # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
 ```
 
 ## Plan answers
@@ -111,7 +111,7 @@ canon tasks plan-answers dispatch-answer-gate --json | jq -r '.launchable'
 Name the task by its filename stem, or by the plan its `Plan:` line points at:
 
 ```bash
-canon tasks pull-request 673 v28.1-trigger-escalation
+canon tasks pull-request 673 v28.1-trigger-escalation # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
 canon tasks pull-request 673 --plan worktree-scratch-routing --json
 ```
 
@@ -132,7 +132,7 @@ A malformed argument refuses as `bad-input` instead, which sits outside that set
 `canon tasks outcome` marks outcomes `[x]` on a task by their position in its outcome list, counting every checkbox in file order from 1.
 
 ```bash
-canon tasks outcome v28.1-trigger-escalation --close 1 --close 3
+canon tasks outcome v28.1-trigger-escalation --close 1 --close 3 # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
 canon tasks outcome --plan worktree-scratch-routing --close 2 --json
 ```
 
@@ -188,7 +188,7 @@ The comparative phrase is bounded the same way and for the same reason. A closed
 
 The collision check is the one a person cannot run by eye. Paths come from the backticked spans in the Touches column, a span naming no file is dropped, and a directory collides with any file beneath it. A `## Run now` row whose column parses to nothing is reported rather than skipped, since a row stating no file set makes a claim nothing can check.
 
-Where a directory holds the other row's file, the finding names the row that claimed it, reading `both touch src/tasks, which v2.0-second claims as a folder.` The shared strings alone leave an over-broad cell and a genuine overlap identical, which is how a correct report was once read as the verb comparing folders rather than files.
+Where a directory holds the other row's file, the finding names the row that claimed it, reading `both touch src/tasks, which v2.0-second claims as a folder.` The shared strings alone leave an over-broad cell and a genuine overlap identical, which is how a correct report was once read as the verb comparing folders rather than files. <!-- canon-allow-reference: illustrates the finding's own sentence shape, not a citation of a real task -->
 
 The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or by its work reaching the trunk, and a collision is settled by nothing under `## Run now` still holding the file the cell cites.
 
@@ -207,7 +207,7 @@ The other three kinds rest on a person's judgment, so a row neither half reached
   "untested": [
     {
       "group": "Needs a plan",
-      "subject": "v50.6-a-standard-no-skill-reads",
+      "subject": "v50.6-a-standard-no-skill-reads", // canon-allow-reference: shows the subject field's real vXX.Y-slug shape, not a citation of a real task
       "message": "..."
     }
   ]
@@ -223,7 +223,7 @@ A `## Run now` row whose Touches column names a bare folder lands in a third arr
   "claims": [
     {
       "group": "Run now",
-      "subject": "v1.0-first",
+      "subject": "v1.0-first", // canon-allow-reference: shows the subject field's real vXX.Y-slug shape, not a citation of a real task
       "message": "claims the whole src/tasks folder, so it collides with every row written under it."
     }
   ]

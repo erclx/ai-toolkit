@@ -13,6 +13,7 @@ import {
   REFERENCE_MARKER,
   referencesIn,
   SHIPPED_CORPORA,
+  type ShippedReference,
 } from '@/shipped/references'
 
 export interface CommandResult {
@@ -482,9 +483,28 @@ function shippedCorpusFiles(root: string): string[] {
   return files.sort()
 }
 
+/** The clause `shippedReferences` appends after naming a reference's text. */
+function describeShippedReference(reference: ShippedReference): string {
+  if (reference.selfCitation) {
+    return "a citation of this repository's own history that resolves for no reader outside it, qualified or not"
+  }
+
+  switch (reference.kind) {
+    case 'commit':
+      return 'a commit sha that resolves nowhere for a reader in a target'
+    case 'pull-request':
+      return 'a pull request number that resolves elsewhere for a reader in a target'
+    case 'docs-path':
+      return 'a path into this repository that a registry install never carries'
+    case 'phase-label':
+      return 'a phase label that names a board no target holds'
+  }
+}
+
 /**
- * A pull request number or a commit sha that a reader in a target cannot
- * resolve, over the seven corpora that reach one.
+ * A pull request number, a commit sha, a docs-path citation, or a phase
+ * label that a reader in a target cannot resolve, over the seven corpora
+ * that reach one.
  *
  * Every instance on the trunk was written by a branch that passed review, this
  * row's own planning session included, so the only instrument before this stage
@@ -513,7 +533,7 @@ export const shippedReferences: Measure = async (ctx) => {
   }
 
   const found = files.flatMap((file) =>
-    referencesIn(file, readFileSync(join(ctx.root, file), 'utf8')),
+    referencesIn(file, readFileSync(join(ctx.root, file), 'utf8'), ctx.root),
   )
 
   if (found.length === 0) {
@@ -529,15 +549,13 @@ export const shippedReferences: Measure = async (ctx) => {
   return {
     emissions: found.map((reference) =>
       warn(
-        reference.selfCitation
-          ? `${reference.file}:${reference.line} carries ${reference.text}, a citation of this repository's own history that resolves for no reader outside it, qualified or not`
-          : `${reference.file}:${reference.line} carries ${reference.text}, a ${reference.kind === 'commit' ? 'commit sha that resolves nowhere' : 'pull request number that resolves elsewhere'} for a reader in a target`,
+        `${reference.file}:${reference.line} carries ${reference.text}, ${describeShippedReference(reference)}`,
       ),
     ),
     failure:
       found.length === 1
-        ? `One reference in the shipped corpora resolves wrong for a reader in a target. Qualify a cross-repository citation as owner/repo#123 or owner/repo@abc1234, state a same-repository citation as a fact instead and relocate the evidence to the owning .claude/context/ entry, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`
-        : `${found.length} references in the shipped corpora resolve wrong for a reader in a target. Qualify a cross-repository citation as owner/repo#123 or owner/repo@abc1234, state a same-repository citation as a fact instead and relocate the evidence to the owning .claude/context/ entry, or mark each line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`,
+        ? `One reference in the shipped corpora resolves wrong for a reader in a target. Qualify a cross-repository citation as owner/repo#123 or owner/repo@abc1234, cite a docs page through canon docs <name>, state a same-repository citation or a phase label as a fact instead and relocate the evidence to the owning .claude/context/ entry, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`
+        : `${found.length} references in the shipped corpora resolve wrong for a reader in a target. Qualify a cross-repository citation as owner/repo#123 or owner/repo@abc1234, cite a docs page through canon docs <name>, state a same-repository citation or a phase label as a fact instead and relocate the evidence to the owning .claude/context/ entry, or mark each line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`,
   }
 }
 

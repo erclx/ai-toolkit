@@ -88,7 +88,7 @@ collect_docs() {
 # It stops at the folder where listTopics goes on to name each sub-area file.
 # This is the downstream catalog and that one answers what a caller could have
 # typed, so a reachable name absent here is the same divergence the internal
-# topics already carry, and docs/agents/docs.md states it.
+# topics already carry, and `canon docs docs` states it.
 collect_context() {
   local file name description
   {
