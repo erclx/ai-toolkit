@@ -30,6 +30,11 @@ export const LAYOUTS: LayoutInfo[] = [
   { name: 'stat-callout', description: 'Row of large stats with captions' },
   { name: 'grid', description: 'Two-by-two cards, each a term and detail' },
   { name: 'quote', description: 'Large pull quote with attribution' },
+  {
+    name: 'freeform',
+    description:
+      'Explicit shapes at a declared position and size, for a figure the other layouts cannot draw',
+  },
 ]
 
 const LAYOUT_NAMES = new Set(LAYOUTS.map((layout) => layout.name))
@@ -55,6 +60,7 @@ const RENDERERS: Record<
   'stat-callout': renderStatCallout,
   grid: renderGrid,
   quote: renderQuote,
+  freeform: renderFreeform,
 }
 
 export function renderDeckSlide(
@@ -343,6 +349,81 @@ function renderQuote(s: PptxSlide, slide: Slide, theme: Theme): void {
       color: theme.accent,
       valign: 'top',
     })
+  }
+}
+
+const SHAPE_KEYS = new Set(['x', 'y', 'w', 'h', 'color'])
+const COLOR_ROLES: (keyof Theme)[] = [
+  'background',
+  'surface',
+  'ink',
+  'muted',
+  'accent',
+]
+
+function renderFreeform(s: PptxSlide, slide: Slide, theme: Theme): void {
+  addTitle(s, slide.title, theme)
+  for (const line of slide.content) {
+    if (!line.trim().startsWith('-')) throw malformedShape(slide.title, line)
+    renderShapeLine(s, line, slide.title, theme)
+  }
+}
+
+function malformedShape(title: string, line: string): Error {
+  return new Error(
+    `Malformed freeform shape on slide "${title}": ${line.trim()}`,
+  )
+}
+
+function renderShapeLine(
+  s: PptxSlide,
+  line: string,
+  title: string,
+  theme: Theme,
+): void {
+  const stripped = line.replace(/^\s*-\s*/, '')
+  const colonIndex = stripped.indexOf(':')
+  const head = (
+    colonIndex === -1 ? stripped : stripped.slice(0, colonIndex)
+  ).trim()
+  const text = colonIndex === -1 ? '' : stripped.slice(colonIndex + 1).trim()
+
+  const tokens = head.split(/\s+/).filter(Boolean)
+  const kind = tokens.shift()
+  if (kind !== 'text' && kind !== 'rect') throw malformedShape(title, line)
+  if (kind === 'text' && colonIndex === -1) throw malformedShape(title, line)
+
+  const attrs: Record<string, string> = {}
+  for (const token of tokens) {
+    const match = token.match(/^(\w+)=(.+)$/)
+    if (!match) throw malformedShape(title, line)
+    if (!SHAPE_KEYS.has(match[1])) throw malformedShape(title, line)
+    attrs[match[1]] = match[2]
+  }
+
+  const x = Number(attrs.x)
+  const y = Number(attrs.y)
+  const w = Number(attrs.w)
+  const h = Number(attrs.h)
+  if (![x, y, w, h].every(Number.isFinite)) throw malformedShape(title, line)
+
+  const role = attrs.color as keyof Theme
+  if (!COLOR_ROLES.includes(role)) throw malformedShape(title, line)
+  const color = theme[role]
+
+  if (kind === 'text') {
+    s.addText(clean(text), {
+      x,
+      y,
+      w,
+      h,
+      fontFace: FONTS.body,
+      fontSize: TYPE.body,
+      color,
+      valign: 'top',
+    })
+  } else {
+    s.addShape('rect', { x, y, w, h, fill: { color } })
   }
 }
 

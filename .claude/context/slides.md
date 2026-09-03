@@ -30,11 +30,13 @@ A `SLIDES.md` opens with deck frontmatter between `---` delimiters:
 
 Each slide follows as a section, separated by a `---` rule. A slide opens with a `# Title` and a `layout:` line naming a layout, then carries content shaped to that layout. When a slide omits `layout:`, the parser infers `bullets` for content with list items and `title` otherwise.
 
-A `layout:` value outside the catalog falls back to the bullets layout rather than failing the render. `canon slides render` still reports it, naming the value read, the slide it sits on, and the eight catalog names, one line per unrecognized value with duplicate slides collapsed into it. The exit code stays 0, since the report is the whole deliverable and a typo degrades rather than blocks.
+A `layout:` value outside the catalog falls back to the bullets layout rather than failing the render. `canon slides render` still reports it, naming the value read, the slide it sits on, and the nine catalog names, one line per unrecognized value with duplicate slides collapsed into it. The exit code stays 0, since the report is the whole deliverable and a typo degrades rather than blocks.
 
 ## Layout catalog
 
 `canon slides list --json` emits the catalog so a skill reads layout names at runtime rather than hardcoding them. The layouts cover a cover title, a contents slide, a section divider, a bullet list, two labeled columns, a row of stat callouts, a card grid, and a pull quote. Each layout function owns its geometry and enforces the type scale, so content sizes to fit rather than overflowing.
+
+`freeform` is the ninth: it reads an explicit position and size per shape from the source line and takes its color from the shared palette, with no layout algorithm between the two. It still draws its title through the shared title band, which occupies the top 1.4 inches of the canvas, so a shape declared above `y=1.4` renders underneath the heading.
 
 ## Navigation
 
@@ -58,4 +60,4 @@ After the first render it runs a one-pass quality check: convert the deck to ima
 
 ## Reference deck
 
-`examples/slides/showcase.md` exercises every layout in one deck. Render it to inspect the design system end to end and to verify a styling change visually.
+`examples/slides/showcase.md` exercises every layout in one deck. Render it to inspect the design system end to end and to verify a styling change visually. `images/` holds a dated screenshot of both variants, rendered by hand with `canon slides render` followed by a `soffice --headless --convert-to pdf` and `pdftoppm -png` pass, and nothing regenerates it when the source changes.

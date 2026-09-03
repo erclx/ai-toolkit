@@ -69,7 +69,7 @@ layout: section
 
 layout: stat-callout
 
-- 8 : layouts in the catalog
+- 9 : layouts in the catalog
 - 1 : source file per deck
 - 5 : safe fonts for reliable rendering
 - 2 : variants from one token set
@@ -84,6 +84,16 @@ layout: grid
 - **Bullets and columns** : Carry the dense explanatory slides
 - **Stat and grid** : Land numbers and compact comparisons
 - **Quote and contents** : Close with a voice and navigate the deck
+
+---
+
+# When the catalog runs out
+
+layout: freeform
+
+- rect x=0.7 y=1.7 w=5 h=3 color=surface
+- text x=0.9 y=1.9 w=4.6 h=2.6 color=ink: freeform reads a position, a size, and a color straight from the line, with no layout algorithm in between
+- rect x=6.5 y=1.7 w=6.1 h=3 color=accent
 
 ---
 
