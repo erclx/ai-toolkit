@@ -135,6 +135,30 @@ rm -rf .canon/tmp/pr
 printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 ```
 
+### Post the UI checklist
+
+`claude-ui-test` writes a manual checklist to `.canon/tmp/ui-checklist/<slug>.md` at the main worktree root when a change needs visual verification, with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. This step is the file's sole consumer. Resolve the main root the way `claude-worktree` does (`git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`) and check for the file there. A missing file means no checklist was produced, and there is nothing to post.
+
+When it exists, scan it against `${CLAUDE_SKILL_DIR}/../../standards/publish.md` before posting, the same as the pull request body above. Post it as its own comment on `<number>`, the number the final command above resolved, rather than folding it into the body, since a later push editing the body would overwrite checkboxes a reviewer already ticked:
+
+```bash
+gh pr comment <number> --body-file <main-root>/.canon/tmp/ui-checklist/<slug>.md
+```
+
+Run the cleanup below only once that call reports success. On a failure, stop and leave the file in place: a retry needs the checklist to still be there, and deleting it on a failed post loses the only copy with nothing landed on the pull request.
+
+From a linked worktree the file-editing tools refuse a main-root path, so the cleanup goes out through `Bash` as two plain commands, the file and then the folder, rather than joined by `&&`, which is refused as compound:
+
+```bash
+rm <main-root>/.canon/tmp/ui-checklist/<slug>.md
+```
+
+```bash
+rmdir <main-root>/.canon/tmp/ui-checklist 2>/dev/null || true
+```
+
+The `rmdir` is a no-op when another branch's pending checklist still sits in the folder, which keeps this step from deleting a handoff that is not its own.
+
 ### Record the number on the task
 
 Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. `${CLAUDE_SKILL_DIR}/REQUIREMENT.md` states why: a lookup that resolves by branch alone can return a closed pull request sharing that head, so the number is resolved once and reused rather than re-derived.
@@ -166,5 +190,9 @@ Add a line for each `uncovered` path the labels step reported, naming the path a
 Add a further line only when the labelling command printed its warning, quoting the label `gh` refused:
 
 `⚠️ Labels not applied: <what gh reported>`
+
+Add a line when the UI checklist step posted a comment, naming the pull request it landed on:
+
+`📋 Posted the UI checklist to <number>.`
 
 Do not add any other text.

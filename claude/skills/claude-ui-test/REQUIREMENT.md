@@ -11,13 +11,15 @@ Without this skill, UI work ships on the confidence of the session that wrote it
 
 The visual half is where the record is lost. A checklist printed into chat scrolls away before anyone verifies it, so the ship step has nothing to gate on and the work reads as verified because a list was produced. Written from a linked worktree against `pwd`, the file lands where the caller does not look.
 
+Writing the checklist correctly to disk does not close the gap either. The file sits under a gitignored folder on the machine that authored it, so a pull request reviewer, on that machine or another, never sees it. A record that only the author can open reads as verified for the same reason a record that never existed does.
+
 ## Must
 
 - Split every change into automatable and visual-only before writing anything
 - Read the project's existing test config and patterns before writing a test against them
 - Assert a user action and its outcome per test, covering the happy path and the key edge cases
 - Run the tests after writing them and fix what fails
-- Write a produced checklist to the branch-derived path at the main worktree root, overwriting
+- Write a produced checklist to the `.canon/tmp/ui-checklist/<slug>.md` handoff at the main worktree root, overwriting
 - Report that everything is covered rather than manufacturing a checklist to show work
 
 ## Must not
@@ -26,6 +28,7 @@ The visual half is where the record is lost. A checklist printed into chat scrol
 - Re-test what unit or component tests written during implementation already cover
 - Repeat the full checklist in chat, which is what made it evaporate
 - Stage or commit the checklist, which is gitignored scratch
+- Talk to GitHub directly. Posting the checklist to a pull request belongs to `git-pr`, the sole consumer of the handoff file
 
 ## Guards
 
