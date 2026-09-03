@@ -7,7 +7,7 @@ export default defineConfig({
   testDir: 'e2e',
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
+  // No override here: Playwright's own CPU-derived default suits every CI runner
   reporter: isCI ? 'list' : 'html',
   use: {
     trace: 'on-first-retry',
