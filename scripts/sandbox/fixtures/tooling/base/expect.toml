@@ -13,7 +13,7 @@
 paths = [".github/workflows/phase-label-gate.yml", ".github/workflows/verify.yml"]
 
 manual = [
-  "The seeded copy's job shape matches the checkout-root original. Semantic: a content pin can confirm the scan step invokes the published CLI, but cannot confirm the triggers, the `if:`, and the job name were copied rather than reinvented",
+  "The seeded copy's triggers, `if:`, and job name match the checkout-root original, and it deliberately carries no Install Dependencies step, since `bunx` needs no local dependency tree and the step would fail outright on a target with no lockfile of its own. Semantic: a content pin can confirm the scan step invokes the published CLI, but cannot confirm the rest of the job shape was copied rather than reinvented",
   "The checkout-only `src/cli.ts` path never leaked into the seeded copy. Semantic: `test()` runs per line under the `m` flag, so a negative pattern matches on any line that lacks the substring rather than asserting no line carries it, which the single scan-step pin below already covers by naming the one invocation the step takes",
 ]
 
