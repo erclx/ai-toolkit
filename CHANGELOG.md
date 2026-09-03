@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.37.0](https://github.com/erclx/canon/compare/v4.36.1...v4.37.0) (2026-09-03)
+
+
+### Features
+
+* **tooling:** gate a target's push on markdown bans ([#1449](https://github.com/erclx/canon/issues/1449)) ([6ca2ddc](https://github.com/erclx/canon/commit/6ca2ddcfc6c2c6b320f6f5113847d9393d3e6416))
+
 ## [4.36.1](https://github.com/erclx/canon/compare/v4.36.0...v4.36.1) (2026-09-03)
 
 
