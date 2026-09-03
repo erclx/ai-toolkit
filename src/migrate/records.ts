@@ -134,7 +134,7 @@ export const RECORD_ONLY_ROOTS: readonly RecordRoot[] = RECORD_ROOTS.filter(
  *
  * The asymmetry is the point. A whole-root prefix is correct for the new root
  * and wrong for the old one, which is mixed: this repository tracks 163 files
- * under `.claude/`, and a target's installed `.claude/rules/core/035-tasks.md`
+ * under `.claude/`, and a target's installed `.claude/rules/canon/core/035-tasks.md`
  * is the file the sweep exists to repoint, so a bare `.claude/` prefix strands
  * it silently. The old root is therefore entry-scoped, through `spell` so the
  * one naming variant stays decided in `record-root.ts`.

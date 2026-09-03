@@ -28,11 +28,11 @@ stage_setup() {
     rule=$(basename "$file" .md)
     local subdir
     subdir=$(rule_subdir "$file" "$src_rules")
-    local dest=".claude/rules/${rule}.md"
-    [ -n "$subdir" ] && dest=".claude/rules/$subdir/${rule}.md"
+    local dest=".claude/rules/canon/${rule}.md"
+    [ -n "$subdir" ] && dest=".claude/rules/canon/$subdir/${rule}.md"
     [ -f "$dest" ] || continue
     echo "# stale" >>"$dest"
-    stale_rules+=("${dest#.claude/rules/}")
+    stale_rules+=("${dest#.claude/rules/canon/}")
     [ "${#stale_rules[@]}" -eq 2 ] && break
   done < <(find "$src_rules" -type f -name "*.md" | sort)
 

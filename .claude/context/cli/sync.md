@@ -102,6 +102,10 @@ An unresolvable anchor is a gap the fallback still carries. `read` returns an em
 
 `held` drops a rule by name before the fallback's band test runs. A rule the toolkit moved between bands reaches this diff as an addition, since `--diff-filter=A` sees a rename as one, and the name is what tells that apart from a rule the target never had. The chain-based read gets the same protection from `installedRuleNames`, which matches by basename regardless of which band folder the target's copy sits in.
 
+`bands` and the chain-based read's entitlement check share a source that looks unrelated: `INSTALL_MARKERS.governance` in `src/sync/check.ts`. `installedStampDomains` reads it as a presence check, and `readInstalledRules`'s `bands` derivation walks the same directory and takes each installed file's top-level segment as its domain band.
+
+Both moved together when `createGovAdapter.installedRoot` narrowed from `.claude/rules/` to `.claude/rules/canon/`, since leaving `INSTALL_MARKERS.governance` at the old root would have had `bands` reporting `["canon"]` in place of real domain names like `["core", "ui"]`, silently breaking the entitlement filter above for any target still on this fallback path. A change to one adapter's `installedRoot` is a change to `INSTALL_MARKERS` for the same domain too, since nothing else keeps the two in step.
+
 Nothing here reaches `hasDrift`. `unmigrated` counts because running the relocation closes it, and a command closes this too, so the exclusion rests on consent rather than on the absence of a remedy: gating CI on the count would pressure a target into adopting rules nobody picked.
 
 ### The reverse walk

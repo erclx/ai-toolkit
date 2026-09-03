@@ -78,6 +78,7 @@ function payloadRel(root: string): string {
   return creationRel(root, SCRATCH, 'gov', 'rules.md')
 }
 const RULES_REL = join('.claude', 'rules')
+const CANON_RULES_REL = join('.claude', 'rules', 'canon')
 
 interface InstallOptions {
   readonly add?: string
@@ -139,7 +140,7 @@ export function register(program: Command): void {
 
   gov
     .command('install')
-    .description('Install a governance stack into .claude/rules/')
+    .description('Install a governance stack into .claude/rules/canon/')
     .argument('[stack]', 'Stack name (e.g. base, node, react)')
     .argument('[target]', 'Target directory', '.')
     .helpOption('-h, --help', 'Show this help message')
@@ -167,7 +168,7 @@ export function register(program: Command): void {
 
   gov
     .command('sync')
-    .description('Update rules already installed under .claude/rules/')
+    .description('Update rules already installed under .claude/rules/canon/')
     .argument('[target]', 'Target directory', '.')
     .helpOption('-h, --help', 'Show this help message')
     .action(async (target: string) => {
@@ -230,7 +231,7 @@ export function register(program: Command): void {
       'after',
       [
         '',
-        'Measures the rule in .claude/rules/core/070-planning.md that asks for',
+        'Measures the rule in .claude/rules/canon/core/070-planning.md that asks for',
         'the test before the code. It reports and never gates, because pairing',
         'a test to an implementation is a judgment.',
         '',
@@ -1191,7 +1192,7 @@ async function runInstall(
   for (const source of found) logInfo(source.rule)
 
   const shouldInstall = await select({
-    message: `Install ${found.length} rules to ${displayPath(target, RULES_REL)}?`,
+    message: `Install ${found.length} rules to ${displayPath(target, CANON_RULES_REL)}?`,
     options: [
       { value: true, label: 'Yes' },
       { value: false, label: 'No' },

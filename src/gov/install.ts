@@ -21,13 +21,26 @@ export function installedRulesDir(target: string): string {
   return join(target, '.claude', 'rules')
 }
 
+/** Toolkit-shipped stack rules, wrapped so their source reads from location. */
+export function canonRulesDir(target: string): string {
+  return join(installedRulesDir(target), 'canon')
+}
+
 /**
- * Rule names a target already holds, read off the installed tree by basename
- * rather than off a recorded stack, since a target may hold rules `--add`
- * layered on that no stack lists.
+ * This repository's own toolkit-only rules, installed beside `canon/` rather
+ * than interleaved into its bands. No target ever holds this folder.
+ */
+export function installedInternalRulesDir(target: string): string {
+  return join(installedRulesDir(target), 'internal')
+}
+
+/**
+ * Rule names a target already holds, read off the installed `canon/` tree by
+ * basename rather than off a recorded stack, since a target may hold rules
+ * `--add` layered on that no stack lists.
  */
 export function installedRuleNames(target: string): Set<string> {
-  const dir = installedRulesDir(target)
+  const dir = canonRulesDir(target)
   const names = new Set<string>()
   if (!existsSync(dir)) return names
 
@@ -114,12 +127,20 @@ export function lookupRules(
  * Copies each rule into the subdirectory it was authored in, so the installed
  * tree keeps the band structure `governance/rules/` carries. Returns the
  * target-relative paths the timeline prints.
+ *
+ * `destSubdir` picks which wrapper the rule lands under: `canon` for every
+ * target-facing install, and `internal` only for this repository's own
+ * toolkit-only rules, which `regenConsumedRules` installs separately.
  */
 export async function installRules(
   sources: readonly RuleSource[],
   target: string,
+  destSubdir: 'canon' | 'internal' = 'canon',
 ): Promise<string[]> {
-  const rulesDir = installedRulesDir(target)
+  const rulesDir =
+    destSubdir === 'canon'
+      ? canonRulesDir(target)
+      : installedInternalRulesDir(target)
   const installed: string[] = []
 
   for (const source of sources) {

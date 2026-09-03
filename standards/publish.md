@@ -40,7 +40,9 @@ This check is one of the two the destination rule above scopes. The reader insid
 
 A phase label is one way text names the board, and a path under a record root is the other. Both resolve for a reader holding this checkout and neither resolves for anyone else, so this check is the second one the destination rule scopes.
 
-Two shapes get past a reader scanning for a bare label. A code span quoting a label is still the label, so read a span whose whole content is one as a hit and leave a longer token inside a span alone, which is a fixture name rather than a reference. The second shape is a path under a record root, gitignored and therefore absent from every clone, so `.canon/review/feedback/` names a folder the remote's reader cannot open. Under `.claude/`'s own tracked folders there is no hit, since `.claude/rules/core/005-behavior.md` resolves everywhere. `.canon/` carries no such carve-out: one ignore line covers the root whole, so every path beneath it is a hit regardless of which folder names it.
+Two shapes get past a reader scanning for a bare label. A code span quoting a label is still the label, so read a span whose whole content is one as a hit and leave a longer token inside a span alone, which is a fixture name rather than a reference. The second shape is a path under a record root, gitignored and therefore absent from every clone, so `.canon/review/feedback/` names a folder the remote's reader cannot open.
+
+Under `.claude/`'s own tracked folders there is no hit, since `.claude/context/governance/rules.md` resolves everywhere. `.canon/` carries no such carve-out: one ignore line covers the root whole, so every path beneath it is a hit regardless of which folder names it.
 
 Rewrite a hit to name what the reader can reach rather than deleting it. A row's subject stated plainly replaces its label, and what a record folder holds, said in a sentence, replaces its path.
 

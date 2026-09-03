@@ -81,7 +81,7 @@ The citation sweep behind `canon migrate records` passes over the records themse
 
 `isRecordArtifact` in `src/migrate/records.ts` is what closes it, applied inside `planRecordsMove` for correctness and again in `runRecords` ahead of `readSources`, which is what keeps 9,744 files at 83M off the read path. The verb reports what it passed over as a count on its own line rather than in `excluded`, which exists so a reader can go and check a handful by hand.
 
-The two roots take different rules and the asymmetry is deliberate. `.canon/` is read whole, since `.claude/ARCHITECTURE.md` fixes the rule that every gitignored record moves there and nothing tracked ever lands there, which covers a folder `RECORD_ENTRIES` has yet to learn about. `.claude/` is mixed and has to be entry-scoped, because a bare prefix there drops 163 tracked files here and strands a target's installed `.claude/rules/core/035-tasks.md`, which is the file the sweep exists to repoint.
+The two roots take different rules and the asymmetry is deliberate. `.canon/` is read whole, since `.claude/ARCHITECTURE.md` fixes the rule that every gitignored record moves there and nothing tracked ever lands there, which covers a folder `RECORD_ENTRIES` has yet to learn about. `.claude/` is mixed and has to be entry-scoped, because a bare prefix there drops 163 tracked files here and strands a target's installed `.claude/rules/canon/core/035-tasks.md`, which is the file the sweep exists to repoint.
 
 What that leaves standing is a record holding a live pointer, which keeps the old spelling after the move. `v75.1` owns the split between a live pointer and prose dating a decision, and the predicate ships exported for that row to invert rather than restate.
 

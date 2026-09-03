@@ -97,7 +97,7 @@ log_step "Assert scaffold"
 # folder-whole entry the same way it does `core` and `claude`.
 for path in "CLAUDE.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".canon/diagrams/index.md" \
   ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
-  ".claude/rules/core/000-constitution.md" ".claude/rules/snippets/505-at-references.md"; do
+  ".claude/rules/canon/core/000-constitution.md" ".claude/rules/canon/snippets/600-at-references.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then
     log_error "Missing after canon init: $path"
   fi

@@ -26,8 +26,12 @@ function writeFixture(path: string, content: string): void {
 }
 
 function installedFile(relToRoot: string): InstalledFile {
-  const path = join(TARGET, '.claude', 'rules', relToRoot)
-  return { path, relToRoot, rel: join('.claude', 'rules', relToRoot) }
+  const path = join(TARGET, '.claude', 'rules', 'canon', relToRoot)
+  return {
+    path,
+    relToRoot,
+    rel: join('.claude', 'rules', 'canon', relToRoot),
+  }
 }
 
 beforeEach(() => {
@@ -77,10 +81,12 @@ describe('indexSourceRules', () => {
 })
 
 describe('createGovAdapter', () => {
-  it('should point the installed root at .claude/rules', () => {
+  it('should point the installed root at .claude/rules/canon', () => {
     const adapter = createGovAdapter(TOOLKIT)
 
-    expect(adapter.installedRoot(TARGET)).toBe(join(TARGET, '.claude', 'rules'))
+    expect(adapter.installedRoot(TARGET)).toBe(
+      join(TARGET, '.claude', 'rules', 'canon'),
+    )
   })
 
   it('should match an installed rule to its source by name', () => {
@@ -129,8 +135,8 @@ describe('createGovAdapter', () => {
     expect(adapter.collectRetired?.(TARGET)).toEqual([])
   })
 
-  it('should declare project as the project-authored subfolder', () => {
-    expect(createGovAdapter(TOOLKIT).projectSubdir).toBe('project')
+  it('should declare no project-authored subfolder, since project/ sits outside the narrowed installed root', () => {
+    expect(createGovAdapter(TOOLKIT).projectSubdir).toBeUndefined()
   })
 
   it('should not ship a project/ rule category, which the subfolder reserves for a target', () => {
@@ -150,7 +156,10 @@ describe('createGovAdapter', () => {
         join(TOOLKIT, 'governance/stacks/astro.toml'),
         'extends = ""\nrules = ["400-ui", "440-capture"]\n',
       )
-      writeFixture(join(TARGET, '.claude/rules/ui/400-ui.md'), '# 400-ui\n')
+      writeFixture(
+        join(TARGET, '.claude/rules/canon/ui/400-ui.md'),
+        '# 400-ui\n',
+      )
       await writeChainStamp(
         TARGET,
         { domain: 'governance', toolkitRoot: TOOLKIT },
@@ -162,9 +171,16 @@ describe('createGovAdapter', () => {
 
       expect(adapter.collectMissing?.(TARGET)).toEqual([
         {
-          path: join(TARGET, '.claude', 'rules', 'ui', '440-capture.md'),
-          rel: join('.claude', 'rules', 'ui', '440-capture.md'),
-          notice: `${join('.claude', 'rules', 'ui', '440-capture.md')} (listed by astro, not installed. Run canon gov install astro to add it.)`,
+          path: join(
+            TARGET,
+            '.claude',
+            'rules',
+            'canon',
+            'ui',
+            '440-capture.md',
+          ),
+          rel: join('.claude', 'rules', 'canon', 'ui', '440-capture.md'),
+          notice: `${join('.claude', 'rules', 'canon', 'ui', '440-capture.md')} (listed by astro, not installed. Run canon gov install astro to add it.)`,
         },
       ])
     })

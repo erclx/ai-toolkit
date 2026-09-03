@@ -19,8 +19,8 @@ stage_setup() {
     subdir=$(rule_subdir "$file" "$src_rules")
     local rule
     rule=$(basename "$file" .md)
-    local dest_dir="sync/.claude/rules"
-    [ -n "$subdir" ] && dest_dir="sync/.claude/rules/$subdir"
+    local dest_dir="sync/.claude/rules/canon"
+    [ -n "$subdir" ] && dest_dir="sync/.claude/rules/canon/$subdir"
     mkdir -p "$dest_dir"
     cp "$file" "$dest_dir/${rule}.md"
     echo "# stale" >>"$dest_dir/${rule}.md"
@@ -31,8 +31,8 @@ stage_setup() {
     subdir=$(rule_subdir "$file" "$src_rules")
     local rule
     rule=$(basename "$file" .md)
-    local dest_dir="build/.claude/rules"
-    [ -n "$subdir" ] && dest_dir="build/.claude/rules/$subdir"
+    local dest_dir="build/.claude/rules/canon"
+    [ -n "$subdir" ] && dest_dir="build/.claude/rules/canon/$subdir"
     mkdir -p "$dest_dir"
     cp "$file" "$dest_dir/${rule}.md"
   done < <(find "$src_rules" -type f -name "*.md" | sort)
@@ -41,7 +41,7 @@ stage_setup() {
   # because `gov regen` produces a repository's own consumed copy and refuses
   # nothing. It needs a stack catalog, a record, and an internal rule to reach
   # every branch the producer has.
-  mkdir -p regen/internal/rules/claude regen/.claude/rules/claude
+  mkdir -p regen/internal/rules/claude regen/.claude/rules/canon/claude
   cp -R "$PROJECT_ROOT/governance" regen/governance
 
   cat >regen/internal/governance.toml <<'TOML'
@@ -59,10 +59,10 @@ RULE
 
   # A destination-only file the regen must delete, and a drifted copy it must
   # overwrite. Together they are the before state the run is judged against.
-  echo "# orphan, no source anywhere" >regen/.claude/rules/claude/999-orphan.md
-  mkdir -p regen/.claude/rules/core
-  cp "$src_rules/core/000-constitution.md" regen/.claude/rules/core/000-constitution.md
-  echo "# stale" >>regen/.claude/rules/core/000-constitution.md
+  echo "# orphan, no source anywhere" >regen/.claude/rules/canon/claude/999-orphan.md
+  mkdir -p regen/.claude/rules/canon/core
+  cp "$src_rules/core/000-constitution.md" regen/.claude/rules/canon/core/000-constitution.md
+  echo "# stale" >>regen/.claude/rules/canon/core/000-constitution.md
 
   git add .
   git commit -m "chore(sandbox): scaffold gov test directories" --no-verify -q
@@ -104,7 +104,7 @@ RULE
 
   log_step "Governance sandbox"
   log_info "install/ : clean target, no rules present"
-  log_info "sync/    : stale .claude/rules/ present"
+  log_info "sync/    : stale .claude/rules/canon/ present"
   log_info "build/   : full .claude/rules/ present, generates .canon/tmp/gov/rules.md"
   log_info "list     : read-only catalog dump, no target needed"
   log_info "regen/   : toolkit-shaped root, orphan and drifted rule present"

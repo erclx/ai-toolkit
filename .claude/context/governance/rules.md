@@ -13,29 +13,33 @@ What earns a rule in the first place, and which standard each one routes to, is 
 
 Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
-| Range     | Domain                                                                                                                                                                                                                            |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                                                                      |
-| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                                                                   |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                                                                        |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                                                                 |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                                                                               |
-| `500–599` | claude and snippets (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring, plus the `@`-reference convention) |
-| `700–799` | ci (GitHub Actions workflow files)                                                                                                                                                                                                |
+| Range     | Domain                                                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                      |
+| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                   |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                        |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                 |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                               |
+| `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring) |
+| `700–799` | ci (GitHub Actions workflow files)                                                                                                                                                |
 
-`snippets/` is the one folder sharing a band rather than holding its own. Its single rule numbers at 505, so the leading digit reads as claude and the folder is what separates them. Every other folder maps one to one, which is why a number states its domain everywhere else.
+`snippets/` is the one folder drawing a single number from the headroom rather than holding a band of its own. Its one rule, the `@`-reference convention, numbers at 600 rather than claiming a hundred for one file. Every other folder maps a whole band to its domain, which is why a number states its domain everywhere else.
 
-An eighth range sits outside the table. `900-999` is reserved for a rule a target authored itself, and no shipped rule takes a number in it. `600-699` and `800-899` are what remain of the headroom between the two, held for categories the toolkit has not added. `ci` is the first category drawn from that headroom, opening `700` at a band boundary rather than crowding a range the six original folders already divide.
+An eighth range sits outside the table. `900-999` is reserved for a rule a target authored itself, and no shipped rule takes a number in it. The rest of `600-699`, plus `800-899`, is what remains of the headroom between the two, held for a category the toolkit has not added a full band for. `ci` is the first category drawn from that headroom, opening `700` at a band boundary rather than crowding a range the six original folders already divide.
 
 ### Two sources numbering into one folder
 
-`internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, so the two sources cannot collide silently. The core band is already full at every ten, which is what forces the split rather than leaving it to convention.
+`internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, a division stated in `standards/rule.md`. The core band is already full at every ten, which is what forced the split rather than leaving it to convention.
 
 `core/087-git.md` is the first shipped rule in this band to claim a gap. The `claude` and `lib` bands already hold several, so a reader taking core's unbroken run of tens as the pattern would have read the convention backwards.
 
-A target's own rules are the third source and they are divided by reservation rather than by that convention. Neither of the two bands the toolkit crowds most has room left for a top-of-band claim: `core/` runs to 090 with internal at 095 through 097, and `claude/` runs to 592 with internal at 595 through 598, leaving three free numbers in the band where the collision was actually measured. `standards/rule.md` states `900-999` instead, which no release can reach.
+The division used to be the only thing preventing a silent collision, since both sources installed into the same directory and a colliding `<n>-<slug>` left one file overwriting the other with nothing reporting which lost. It now installs into `.claude/rules/canon/` and `.claude/rules/internal/`, a second, location-based split sitting alongside the numeric one rather than replacing it.
 
-`standards/rule.md` also keeps the top-of-band division for a pair the reservation does not cover, which is the internal-against-shipped split above. Nothing checks either one.
+The folder is what a reader who has only opened the tree sees, and the number is what a reader who has only a citation in hand, such as one written before this repository carried the split, still resolves correctly against either corpus. `internal/` exists only in this repository, and no target's `.claude/rules/` ever holds it, since a target has no rule source of its own that ships nowhere.
+
+A target's own rules are the third source and they are divided by reservation rather than by either of the above. Neither of the two bands the toolkit crowds most has room left for a top-of-band claim: `core/` runs to 090 with internal at 095 through 097, and `claude/` runs to 592 with internal at 595 through 598, leaving three free numbers in the band where the collision was actually measured. `standards/rule.md` states `900-999` instead, which no release can reach, and `.claude/rules/project/` sits as a third sibling folder beside `canon/` and `internal/`.
+
+Nothing checks any of the three divisions.
 
 ### What the number supplies
 
@@ -89,12 +93,14 @@ Glob the rule against every ecosystem it governs rather than only the one its st
 
 ## Project-local rules
 
-Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/project/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, taking the lowest free number at or above 900.
+Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/project/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, taking the lowest free number at or above 900. That folder sits beside `.claude/rules/canon/` rather than inside it.
 
-These rules live only in the target. `canon gov sync` skips any rule with no toolkit source match, classified as `orphaned` by `planSync` in `src/sync/engine.ts`. A rule under `.claude/rules/project/`, which is where `create-rule` writes, is orphaned by location instead, since the gov adapter declares that subfolder on `SyncAdapter`, so it survives sync even if a later toolkit rule takes the same name.
+These rules live only in the target. `canon gov sync` walks only `.claude/rules/canon/`, since `createGovAdapter`'s `installedRoot` narrowed to that folder to carry the toolkit-owned wrapper. `.claude/rules/project/` sits outside the walk by location, so it is never read, matched against a source, or classified at all, which is a stronger guarantee than the `orphaned`-by-location state `planSync` in `src/sync/engine.ts` used to assign it: a file the walk never reaches cannot collide with a later toolkit rule taking the same name inside `canon/` either.
 
-An orphan the name inference caught rather than the location test now carries a notice naming the path under `project/` it would take, since that is the shape the two measured targets are in. Seven files across `career` and `erclx.dev` sit at flat toolkit paths, two of them at 561 and 562, which the toolkit later shipped as `561-teach` and `562-session`. The report names the destination and moves nothing, because a rule's installed path is one the project's own rules and docs may cite, and the seven were reported rather than migrated for the same reason.
+A file under `.claude/rules/canon/` itself that no toolkit source names is still classified `orphaned` by the name lookup, but the report no longer offers a destination for it. The gov adapter used to declare `project` as `SyncAdapter.projectSubdir`, which let the report suggest `.claude/rules/project/<path>` for a name-orphaned file on the theory the project had dropped it in the wrong place. Narrowing the walked root retired that field, and a suggested destination nested inside `canon/` would have been wrong regardless, since that folder is toolkit-owned and replaced wholesale on sync.
 
-The notice offers that destination on a condition rather than asserting the project wrote the file, because no source name matching is also what a rule the toolkit shipped and later renamed looks like. Moving one of those into `project/` marks it the project's permanently. The stamp does not separate the two: `recordStamp` skips a file whose source is gone and `writeStamp` replaces the domain's whole `files` map, so a renamed rule's entry survives exactly one sync past the rename, and a target installed before stamping shipped carries no entry at all. `src/sync/engine.test.ts` holds that as a test rather than a comment, since it is the reason the wording is conditional.
+Two measured targets, `career` and `erclx.dev`, together carry seven files still sitting at flat toolkit paths from before this repository's own layout changed, two of them, 561 and 562, since shipped as `561-teach` and `562-session`. The toolkit cannot tell those from a project-authored rule at the same numbers, so neither gets a suggested move, only the generic orphaned report.
 
-The band is what keeps a number from reading as a coincidence, and location is what keeps a file from being overwritten. Neither is checked at write time. The report is the only thing that names a rule sitting on the wrong side of either, and it names location alone, since nothing reads a number back against the reserved range.
+The stamp does not separate a renamed toolkit rule from a project-authored one either: `recordStamp` skips a file whose source is gone and `writeStamp` replaces the domain's whole `files` map, so a renamed rule's entry survives exactly one sync past the rename, and a target installed before stamping shipped carries no entry at all. That is what made the retired notice conditional rather than assertive, and it is also why no replacement notice was worth building: the ambiguity the wording was hedging against is unresolved either way.
+
+The band is what keeps a number from reading as a coincidence, and location is what keeps a file from being overwritten. Neither is checked at write time, and nothing reads a number back against the reserved range.

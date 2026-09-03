@@ -699,7 +699,7 @@ export function readRestated(root: string): RestatedReport {
   // Every candidate's rare set is invariant across the subject loop, so it is
   // built once here rather than per pair. The corpora multiply out to hundreds
   // of thousands of pairings, and rebuilding a set inside that is the shape
-  // `.claude/rules/core/040-performance.md` names.
+  // `.claude/rules/canon/core/040-performance.md` names.
   const rareCandidates = candidates.map((candidate) => ({
     ...candidate,
     rare: distinctive(candidate.analysis),

@@ -30,7 +30,7 @@ A sibling domain asking the same question applies the condition against its own 
 
 Run `canon standards list` for the catalog of installable standards and their descriptions.
 
-`internal/standards/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set. The toolkit-local rule `.claude/rules/claude/595-tooling-reference.md` routes edits to it at that authoring path, which is where its two readers sit.
+`internal/standards/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set. The toolkit-local rule `.claude/rules/internal/claude/595-tooling-reference.md` routes edits to it at that authoring path, which is where its two readers sit.
 
 ## CLI
 

@@ -16,7 +16,11 @@ import {
   readConsumedRecord,
   regenConsumedRules,
 } from '@/gov/consumed'
-import { installedRulesDir, rulesSourceDir } from '@/gov/install'
+import {
+  canonRulesDir,
+  installedInternalRulesDir,
+  rulesSourceDir,
+} from '@/gov/install'
 
 let root: string
 
@@ -41,8 +45,12 @@ function seedRecord(body: string): void {
   write(consumedRecordPath(root), body)
 }
 
-function installedPath(...segments: string[]): string {
-  return join(installedRulesDir(root), ...segments)
+function canonPath(...segments: string[]): string {
+  return join(canonRulesDir(root), ...segments)
+}
+
+function internalPath(...segments: string[]): string {
+  return join(installedInternalRulesDir(root), ...segments)
 }
 
 beforeEach(() => {
@@ -114,38 +122,41 @@ describe('regenConsumedRules', () => {
     expect(result).toEqual({
       ok: true,
       installed: [
-        join('.claude', 'rules', 'core', '000-constitution.md'),
-        join('.claude', 'rules', 'lang', '100-typescript.md'),
-        join('.claude', 'rules', 'lib', '300-testing-ts.md'),
+        join('.claude', 'rules', 'canon', 'core', '000-constitution.md'),
+        join('.claude', 'rules', 'canon', 'lang', '100-typescript.md'),
+        join('.claude', 'rules', 'canon', 'lib', '300-testing-ts.md'),
       ],
     })
   })
 
-  it('should install an internal rule alongside the stack rules', async () => {
+  it('should install an internal rule under internal/, beside the stack rules under canon/', async () => {
     seedInternalRule(join('claude', '595-tooling.md'), 'T')
 
     const result = await regenConsumedRules(root)
 
     expect(result.ok).toBe(true)
-    expect(existsSync(installedPath('claude', '595-tooling.md'))).toBe(true)
+    expect(existsSync(internalPath('claude', '595-tooling.md'))).toBe(true)
+    expect(existsSync(canonPath('core', '000-constitution.md'))).toBe(true)
   })
 
-  it('should delete a destination file no source accounts for', async () => {
-    write(installedPath('claude', '999-orphan.md'), 'stale')
+  it('should delete a destination file no source accounts for, in either subtree', async () => {
+    write(canonPath('claude', '999-orphan.md'), 'stale')
+    write(internalPath('claude', '999-orphan.md'), 'stale')
 
     await regenConsumedRules(root)
 
-    expect(existsSync(installedPath('claude', '999-orphan.md'))).toBe(false)
+    expect(existsSync(canonPath('claude', '999-orphan.md'))).toBe(false)
+    expect(existsSync(internalPath('claude', '999-orphan.md'))).toBe(false)
   })
 
   it('should overwrite a destination file that drifted from its source', async () => {
-    write(installedPath('core', '000-constitution.md'), 'drifted')
+    write(canonPath('core', '000-constitution.md'), 'drifted')
 
     await regenConsumedRules(root)
 
-    expect(
-      readFileSync(installedPath('core', '000-constitution.md'), 'utf8'),
-    ).toBe('C')
+    expect(readFileSync(canonPath('core', '000-constitution.md'), 'utf8')).toBe(
+      'C',
+    )
   })
 
   it('should refuse when the record names a stack with no definition', async () => {
@@ -176,14 +187,14 @@ describe('regenConsumedRules', () => {
   })
 
   it('should leave the destination untouched when it refuses', async () => {
-    write(installedPath('core', '000-constitution.md'), 'existing')
+    write(canonPath('core', '000-constitution.md'), 'existing')
     seedRecord('stack = "ghost"\n')
 
     await regenConsumedRules(root)
 
-    expect(
-      readFileSync(installedPath('core', '000-constitution.md'), 'utf8'),
-    ).toBe('existing')
+    expect(readFileSync(canonPath('core', '000-constitution.md'), 'utf8')).toBe(
+      'existing',
+    )
   })
 
   it('should refuse when no record exists', async () => {
