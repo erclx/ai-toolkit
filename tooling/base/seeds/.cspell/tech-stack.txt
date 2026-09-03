@@ -4,6 +4,7 @@ bunx
 commitlint
 dbaeumer
 dotfolders
+erclx
 esbenp
 frontmatter
 lintstagedrc

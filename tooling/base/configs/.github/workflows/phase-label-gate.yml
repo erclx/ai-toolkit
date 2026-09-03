@@ -25,8 +25,5 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install Dependencies
-        run: bun install --frozen-lockfile
-
       - name: Scan the pull request or review for a phase label, a board identifier, or a session link
-        run: bun src/cli.ts labels scan --event "$GITHUB_EVENT_PATH"
+        run: bunx -y @erclx/canon labels scan --event "$GITHUB_EVENT_PATH"

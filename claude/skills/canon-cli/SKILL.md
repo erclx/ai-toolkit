@@ -41,6 +41,7 @@ Run `canon tooling sync <stack> <target> --check` for the list resolved against 
 
 - `.editorconfig`
 - `.github/pull_request_template.md`
+- `.github/workflows/phase-label-gate.yml`
 - `.github/workflows/verify.yml`
 - `.husky/commit-msg`
 - `.husky/post-merge`
