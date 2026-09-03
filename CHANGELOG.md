@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.40.1](https://github.com/erclx/canon/compare/v4.40.0...v4.40.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **feedback:** default the feedback skill to --github for target readers ([#1458](https://github.com/erclx/canon/issues/1458)) ([0d75d3e](https://github.com/erclx/canon/commit/0d75d3e84986d3c7f13ec41d3f19c41fe013cb90))
+
 ## [4.40.0](https://github.com/erclx/canon/compare/v4.39.0...v4.40.0) (2026-09-03)
 
 
