@@ -122,3 +122,7 @@ The Indexes stage asserts drift against the working tree, so the first `bun run 
 Its membership is the shipped `SPELLINGS` plus `analyse`, a word no set carries and a comment in `src/markdown/bans.ts` explains the absence of. The two are therefore not the same list and neither derives from the other, which is what `bans.test.ts` asserts. Stating the rule alone was not enough: the file claimed to be the shipped set while omitting `centre` and carrying `analyse`, and it passed because the base dictionary accepts `centre` on its own. An omission here stays invisible until that dictionary tightens and then fails a file nobody touched, so the assertion is what closes it rather than the comment.
 
 The list is stated as a property rather than a count, since a count of the files carrying a banned spelling goes stale against the same corpus the audit measures. It read three while six were listed, and no stage compares the sentence to the array beside it.
+
+### A generated base64 module needs its own cspell exemption
+
+cspell has no way to recognize a base64 payload as non-prose, so a generated TypeScript module holding one as a string literal, such as `src/design/fonts.ts` embedding WOFF2 font data subset to Latin and basic punctuation, floods `check:spell` with an unknown-word finding for nearly every substring inside it. Add the file's path to `cspell.json`'s `ignorePaths` rather than growing `project-terms.txt` with meaningless fragments, the same way `tooling/**` is already exempted wholesale for content the dictionary was never meant to grade.
