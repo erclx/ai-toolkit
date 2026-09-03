@@ -64,6 +64,27 @@ describe('planRename', () => {
 
     expect(plan.entries).toHaveLength(0)
   })
+
+  it('should rewrite a seeded hook body carrying the retired binary', () => {
+    const plan = planRename([
+      source('.claude/hooks/memory-index.sh', 'aitk indexes regen'),
+    ])
+
+    expect(plan.entries[0]?.text).toBe('canon indexes regen')
+  })
+
+  it('should rewrite only the binary name in a customized hook body', () => {
+    const plan = planRename([
+      source(
+        '.claude/hooks/memory-index.sh',
+        'echo "custom line"\naitk indexes regen',
+      ),
+    ])
+
+    expect(plan.entries[0]?.text).toBe(
+      'echo "custom line"\ncanon indexes regen',
+    )
+  })
 })
 
 describe('isToolkitOwned', () => {
@@ -81,5 +102,9 @@ describe('isToolkitOwned', () => {
 
   it('should not own the project root file', () => {
     expect(isToolkitOwned('CLAUDE.md')).toBe(false)
+  })
+
+  it('should own a seeded hook', () => {
+    expect(isToolkitOwned('.claude/hooks/memory-index.sh')).toBe(true)
   })
 })
