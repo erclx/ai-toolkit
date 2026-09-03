@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.40.0](https://github.com/erclx/canon/compare/v4.39.0...v4.40.0) (2026-09-03)
+
+
+### Features
+
+* **wireframes:** transcribe the nine slide layouts ([#1457](https://github.com/erclx/canon/issues/1457)) ([467bdd8](https://github.com/erclx/canon/commit/467bdd8c40ad057c33fbfb4762e3b32128854a37))
+
 ## [4.39.0](https://github.com/erclx/canon/compare/v4.38.0...v4.39.0) (2026-09-03)
 
 
