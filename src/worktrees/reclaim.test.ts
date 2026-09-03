@@ -176,8 +176,88 @@ describe('reclaimReport', () => {
     const verdict = verdictFor(report, path)
     expect(verdict.reclaimable).toBe(false)
     expect(verdict.refusals).toContain('held-by-session')
-    expect(verdict.sessions).toEqual(['orchestrator-parser'])
+    expect(verdict.sessions).toEqual([
+      { name: 'orchestrator-parser', kind: 'interactive', id: null },
+    ])
     expect(verdict.route).toBe('session')
+  })
+
+  it('should resolve a background holder to the id claude agents --json carries beside it', async () => {
+    const path = linked('wt-parser', 'feat/parser')
+    const repository = await repositoryOf(ROOT)
+
+    const report = await reclaimReport({
+      cwd: ROOT,
+      resolve: async () =>
+        roster([
+          session({
+            name: 'worker-parser',
+            kind: 'bg',
+            pid: 4242,
+            worktree: path,
+            branch: 'feat/parser',
+            repository,
+          }),
+        ]),
+      mergedPullRequests: async () => merged(['feat/parser', 673]),
+      claudeAgentIds: async () => new Map([[4242, 'abcd1234']]),
+    })
+
+    expect(verdictFor(report, path).sessions).toEqual([
+      { name: 'worker-parser', kind: 'bg', id: 'abcd1234' },
+    ])
+  })
+
+  it('should leave a background holder null when the lookup could not resolve it', async () => {
+    const path = linked('wt-parser', 'feat/parser')
+    const repository = await repositoryOf(ROOT)
+
+    const report = await reclaimReport({
+      cwd: ROOT,
+      resolve: async () =>
+        roster([
+          session({
+            name: 'worker-parser',
+            kind: 'bg',
+            pid: 4242,
+            worktree: path,
+            branch: 'feat/parser',
+            repository,
+          }),
+        ]),
+      mergedPullRequests: async () => merged(['feat/parser', 673]),
+      claudeAgentIds: async () => new Map(),
+    })
+
+    expect(verdictFor(report, path).sessions).toEqual([
+      { name: 'worker-parser', kind: 'bg', id: null },
+    ])
+  })
+
+  it('should leave an interactive holder null even where a pid happens to collide', async () => {
+    const path = linked('wt-parser', 'feat/parser')
+    const repository = await repositoryOf(ROOT)
+
+    const report = await reclaimReport({
+      cwd: ROOT,
+      resolve: async () =>
+        roster([
+          session({
+            name: 'orchestrator-parser',
+            kind: 'interactive',
+            pid: 4242,
+            worktree: path,
+            branch: 'feat/parser',
+            repository,
+          }),
+        ]),
+      mergedPullRequests: async () => merged(['feat/parser', 673]),
+      claudeAgentIds: async () => new Map([[4242, 'abcd1234']]),
+    })
+
+    expect(verdictFor(report, path).sessions).toEqual([
+      { name: 'orchestrator-parser', kind: 'interactive', id: null },
+    ])
   })
 
   it('should not count a session holding the same branch in another repository', async () => {

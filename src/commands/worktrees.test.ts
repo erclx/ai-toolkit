@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { reclaimRecord } from '@/commands/worktrees'
+import {
+  describe as describeVerdict,
+  reclaimRecord,
+} from '@/commands/worktrees'
+import type { HeldSession, WorktreeVerdict } from '@/worktrees/reclaim'
 import type { RemovalOutcome, RemovalReport } from '@/worktrees/remove'
 
 function removed(path: string, branch: string): RemovalOutcome {
@@ -117,5 +121,50 @@ describe('reclaimRecord', () => {
     expect(serialized.indexOf('"outcomes"')).toBeGreaterThan(
       serialized.indexOf('"failed"'),
     )
+  })
+})
+
+function heldVerdict(sessions: readonly HeldSession[]): WorktreeVerdict {
+  return {
+    path: '/repo/.claude/worktrees/wt-parser',
+    branch: 'feat/parser',
+    reclaimable: false,
+    refusals: ['held-by-session'],
+    pullRequest: 673,
+    sessions,
+    route: 'session',
+    missing: false,
+  }
+}
+
+describe('describe', () => {
+  it('should print the real removal command for a resolved background holder', () => {
+    const row = describeVerdict(
+      heldVerdict([{ name: 'worker-parser', kind: 'bg', id: 'abcd1234' }]),
+    )
+
+    expect(row).toContain("claude rm 'abcd1234'")
+  })
+
+  it('should point an unresolved background holder at the manual cross-reference', () => {
+    const row = describeVerdict(
+      heldVerdict([{ name: 'worker-parser', kind: 'bg', id: null }]),
+    )
+
+    expect(row).toContain('worker-parser')
+    expect(row).toContain('claude agents --json')
+    expect(row).not.toContain("claude rm 'null'")
+  })
+
+  it('should name an interactive holder as having no removal route', () => {
+    const row = describeVerdict(
+      heldVerdict([
+        { name: 'orchestrator-parser', kind: 'interactive', id: null },
+      ]),
+    )
+
+    expect(row).toContain('orchestrator-parser')
+    expect(row).toContain('until its terminal closes')
+    expect(row).not.toContain('claude rm')
   })
 })
