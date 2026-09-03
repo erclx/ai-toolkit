@@ -85,7 +85,7 @@ The two roots take different rules and the asymmetry is deliberate. `.canon/` is
 
 What that leaves standing is a record holding a live pointer, which keeps the old spelling after the move. `v75.1` owns the split between a live pointer and prose dating a decision, and the predicate ships exported for that row to invert rather than restate.
 
-The marker's own comment syntax has to match the file it sits in, since the sweep only tests the raw substring on the line or the one above it. A `.gitignore` pattern takes no trailing comment, so the marker needs its own comment line directly above the pattern, while a TOML array entry can carry it trailing on the same line and a markdown sentence takes the inline `<!-- canon-keep-record-root -->` form. Forgetting it on a new `.claude/<record-entry>` citation fails the Record idempotence stage rather than drifting silently.
+The marker's own comment syntax has to match the file it sits in, since the sweep tests the raw substring on the line itself or on the nearest non-blank line above it, walking past any blank run between them. A `.gitignore` pattern takes no trailing comment, so the marker needs its own comment line directly above the pattern, while a TOML array entry can carry it trailing on the same line and a markdown sentence takes the inline `<!-- canon-keep-record-root -->` form. Forgetting it on a new `.claude/<record-entry>` citation fails the Record idempotence stage rather than drifting silently.
 
 ### What a spike leaves behind
 

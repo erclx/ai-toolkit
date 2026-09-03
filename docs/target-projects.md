@@ -142,7 +142,7 @@ Order matters between the first line and the two under it. The sync prunes the t
 
 Read the `ok` field out of the `--json` record rather than the exit code. A shell profile that wraps `canon` in a function takes its status from whatever the function runs last, so an absent subcommand and a clean run can both exit 0, and a reader watching the exit alone concludes the move happened.
 
-A tracked file that names an old record path on purpose, such as prose dating a decision, keeps it by carrying `canon-keep-record-root` on that line or the one above. The report pass prints every file it would rewrite, which is where to catch one before `--write` runs.
+A tracked file that names an old record path on purpose, such as prose dating a decision, keeps it by carrying `canon-keep-record-root` on that line or the nearest non-blank line above. The report pass prints every file it would rewrite, which is where to catch one before `--write` runs.
 
 Until the move runs, the project is exposed. The shipped ignore set no longer names the old record paths, so a project holding records at `.claude/` stops ignoring them on its next `canon tooling sync`, and the first sign is a memory file or a task board appearing in a commit. Every command reads either root, so nothing else breaks in the meantime, and running the move is what closes it.
 

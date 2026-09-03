@@ -180,14 +180,21 @@ export function isRecordArtifact(path: string): boolean {
  * Prose that dates a decision, records where a defect landed, or names the
  * fallback a target still resolves through all have to keep saying `.claude/`,
  * and a sweep cannot tell those from a live path. The marker sits on the line
- * itself or on the one above it, which is the placement `canon-keep-retired`
- * and `canon-allow-superseded` already use here.
+ * itself or on the nearest non-blank line above it, walking past a run of
+ * blank markdown lines to reach a marker written on its own line above the
+ * paragraph it protects. `canon-keep-retired` and `canon-allow-superseded`
+ * mark code instead, where no blank line ever falls between the marker and
+ * the line it protects, so neither needs the walk.
  */
 const KEEP_MARKER = 'canon-keep-record-root'
 
 function isKept(lines: readonly string[], index: number): boolean {
   if (lines[index]?.includes(KEEP_MARKER)) return true
-  return index > 0 && (lines[index - 1]?.includes(KEEP_MARKER) ?? false)
+
+  let above = index - 1
+  while (above >= 0 && lines[above]?.trim() === '') above -= 1
+
+  return above >= 0 && (lines[above]?.includes(KEEP_MARKER) ?? false)
 }
 
 /** Rewrites every unmarked citation into a moved entry. */
