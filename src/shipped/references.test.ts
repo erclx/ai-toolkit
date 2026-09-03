@@ -1,7 +1,15 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest'
 import {
   isShippedCorpus,
   REFERENCE_MARKER,
@@ -10,11 +18,25 @@ import {
 } from '@/shipped/references'
 
 describe('referencesIn', () => {
+  // No test in this top-level block exercises a `docs/`-shaped token, so this
+  // fixture root exists only to satisfy the required parameter and is never
+  // read. The `DOCS_PATH` describe below owns a root that resolves for real.
+  let noDocsRoot: string
+
+  beforeAll(() => {
+    noDocsRoot = mkdtempSync(join(tmpdir(), 'canon-references-no-docs-'))
+  })
+
+  afterAll(() => {
+    rmSync(noDocsRoot, { recursive: true, force: true })
+  })
+
   it('should report a bare pull request number', () => {
     expect(
       referencesIn(
         'claude/skills/alpha/SKILL.md',
         'The poll told an operator the opposite of what the worker said in #1307.',
+        noDocsRoot,
       ),
     ).toEqual([
       {
@@ -28,7 +50,11 @@ describe('referencesIn', () => {
 
   it('should report a bare commit sha', () => {
     expect(
-      referencesIn('docs/agents/alpha.md', 'Measured at `6c273324`.'),
+      referencesIn(
+        'docs/agents/alpha.md',
+        'Measured at `6c273324`.',
+        noDocsRoot,
+      ),
     ).toEqual([
       {
         file: 'docs/agents/alpha.md',
@@ -43,6 +69,7 @@ describe('referencesIn', () => {
     const found = referencesIn(
       'claude/skills/alpha/SKILL.md',
       'against `5653721`',
+      noDocsRoot,
     )
 
     expect(found).toHaveLength(1)
@@ -54,6 +81,7 @@ describe('referencesIn', () => {
     const found = referencesIn(
       'docs/agents/alpha.md',
       'The sweep read 2119000 paragraphs.',
+      noDocsRoot,
     )
 
     expect(found).toHaveLength(1)
@@ -65,6 +93,7 @@ describe('referencesIn', () => {
       referencesIn(
         'docs/agents/alpha.md',
         `The sweep read 2119000 paragraphs. <!-- ${REFERENCE_MARKER}: a count, not a commit -->`,
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -74,6 +103,7 @@ describe('referencesIn', () => {
       referencesIn(
         'claude/skills/alpha/SKILL.md',
         'Measured on `erclx/canon#1299`.',
+        noDocsRoot,
       ),
     ).toEqual([
       {
@@ -91,6 +121,7 @@ describe('referencesIn', () => {
       referencesIn(
         'claude/skills/claude-worktree/SKILL.md',
         'Tracked upstream as `anthropics/claude-code#58345`, closed as not planned.',
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -100,6 +131,7 @@ describe('referencesIn', () => {
       referencesIn(
         'docs/agents/alpha.md',
         'A pass written against `erclx/canon@5653721`.',
+        noDocsRoot,
       ),
     ).toEqual([
       {
@@ -117,13 +149,18 @@ describe('referencesIn', () => {
       referencesIn(
         'governance/rules/framework/250-tailwind.md',
         '- Use arbitrary values (`bg-[#316ff6]`) instead.',
+        noDocsRoot,
       ),
     ).toEqual([])
   })
 
   it('should pass a hex color long enough to reach the sha floor', () => {
     expect(
-      referencesIn('standards/design.md', 'as in `` `#ffffff ? verify` ``'),
+      referencesIn(
+        'standards/design.md',
+        'as in `` `#ffffff ? verify` ``',
+        noDocsRoot,
+      ),
     ).toEqual([])
   })
 
@@ -132,6 +169,7 @@ describe('referencesIn', () => {
       referencesIn(
         'docs/agents/alpha.md',
         'Written to `.canon/review/6c273324/report.md`.',
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -140,6 +178,7 @@ describe('referencesIn', () => {
     const found = referencesIn(
       'claude/skills/claude-orchestrate/references/orchestrator-poll.md',
       'Measured on `#1299`, where a pass written against `5653721` landed stamped `a5ceb40`.',
+      noDocsRoot,
     )
 
     expect(found.map((reference) => reference.text)).toEqual([
@@ -154,6 +193,7 @@ describe('referencesIn', () => {
       referencesIn(
         'standards/publish.md',
         `Write \`#123\` there. <!-- ${REFERENCE_MARKER}: illustrates the form this section defines -->`,
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -163,6 +203,7 @@ describe('referencesIn', () => {
       referencesIn(
         'standards/diagrams.md',
         `<!-- ${REFERENCE_MARKER}: illustrates the verified field's format -->\nas in \`73e9a3f8 2026-08-02\`.`,
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -172,6 +213,7 @@ describe('referencesIn', () => {
       referencesIn(
         'docs/agents/alpha.md',
         `Runs on \`erclx/canon#632\` and \`erclx/canon#634\` landed 2026-08-02. <!-- ${REFERENCE_MARKER}: illustrates the input shape the rule reads -->`,
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -181,6 +223,7 @@ describe('referencesIn', () => {
       referencesIn(
         'docs/agents/alpha.md',
         `A bullet can cite where something is defined while claiming an edit somewhere else, as \`erclx/canon#1274\` does. <!-- ${REFERENCE_MARKER}: illustrates the input shape the rule reads -->`,
+        noDocsRoot,
       ),
     ).toEqual([])
   })
@@ -190,13 +233,18 @@ describe('referencesIn', () => {
       referencesIn(
         'standards/publish.md',
         `Write \`#123\` there. <!-- ${REFERENCE_MARKER} -->`,
+        noDocsRoot,
       ),
     ).toHaveLength(1)
   })
 
   it('should report nothing in prose carrying no reference', () => {
     expect(
-      referencesIn('docs/agents/alpha.md', 'The count reads low, and it errs.'),
+      referencesIn(
+        'docs/agents/alpha.md',
+        'The count reads low, and it errs.',
+        noDocsRoot,
+      ),
     ).toEqual([])
   })
 
@@ -204,6 +252,7 @@ describe('referencesIn', () => {
     const found = referencesIn(
       'docs/agents/alpha.md',
       'first\nsecond\nsee `#516`',
+      noDocsRoot,
     )
 
     expect(found[0]?.line).toBe(3)
@@ -250,15 +299,6 @@ describe('referencesIn', () => {
       ).toEqual([])
     })
 
-    it('should pass every docs path when no root is supplied to resolve against', () => {
-      expect(
-        referencesIn(
-          'claude/skills/alpha/SKILL.md',
-          'Read `docs/agents/real.md` for the reference shape.',
-        ),
-      ).toEqual([])
-    })
-
     it('should pass a resolving docs path cited from inside the docs/ corpus itself', () => {
       expect(
         referencesIn(
@@ -281,11 +321,22 @@ describe('referencesIn', () => {
   })
 
   describe('PHASE_LABEL', () => {
+    let root: string
+
+    beforeAll(() => {
+      root = mkdtempSync(join(tmpdir(), 'canon-references-phase-'))
+    })
+
+    afterAll(() => {
+      rmSync(root, { recursive: true, force: true })
+    })
+
     it('should report a bare phase-label-shaped token', () => {
       expect(
         referencesIn(
           'claude/skills/alpha/SKILL.md',
           'Named the task `v28.1-trigger-escalation` for tracking.',
+          root,
         ),
       ).toEqual([
         {
@@ -302,6 +353,7 @@ describe('referencesIn', () => {
         referencesIn(
           'claude/skills/alpha/SKILL.md',
           'Inserting a half-step between two existing labels (a `v1.5` between `v1` and `v2`) is fine.',
+          root,
         ),
       ).toEqual([
         {
@@ -313,11 +365,22 @@ describe('referencesIn', () => {
       ])
     })
 
+    it('should pass a three-group semver tag, which a two-group phase label never carries', () => {
+      expect(
+        referencesIn(
+          'docs/agents/comments.md',
+          'canon comments scan --since v0.5.0',
+          root,
+        ),
+      ).toEqual([])
+    })
+
     it('should mute a phase-label-shaped token marked as an illustration', () => {
       expect(
         referencesIn(
           'standards/versioning.md',
           `Inserting a half-step between two existing labels (a \`v1.5\` between \`v1\` and \`v2\`) is fine. <!-- ${REFERENCE_MARKER}: illustrates the renumbering rule's own format -->`,
+          root,
         ),
       ).toEqual([])
     })

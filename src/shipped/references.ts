@@ -1,7 +1,6 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { isMarked } from '@/exempt-marker'
-import { VERSION_TOKEN } from '@/labels/phase'
 
 /**
  * The corpora a target reader reaches, which is the `files` field less `src`.
@@ -150,14 +149,25 @@ const SAME_REPOSITORY =
 const DOCS_PATH = /(?<![\w./-])docs\/[^\s`)\]]*\.md\b/g
 
 /**
- * A phase-label-shaped token, sharing `VERSION_TOKEN`'s shape from
- * `src/labels/phase.ts` rather than duplicating it.
+ * A phase-label-shaped token: exactly two numeric groups, with a negative
+ * lookahead rejecting a third.
+ *
+ * This does not reuse `VERSION_TOKEN` from `src/labels/phase.ts`, which
+ * admits one or two decimal groups and therefore matches a three-group
+ * semver tag as readily as a two-group phase label. That is the right shape
+ * there, since `scanPhaseLabels` sorts the two namespaces apart by asking
+ * whether the pull request carrying the token is release-please's own, a
+ * signal this reader has no equivalent of: a shipped-corpus file carries no
+ * pull request to test. Shape is the only discriminator available here, and
+ * every phase label this board issues carries exactly two groups while every
+ * semver tag carries three, so narrowing to two removes the semver class by
+ * construction rather than by a marker standing in for the missing signal.
  *
  * A target holds no board to resolve a label against, so a bare instance
  * here is unresolvable the same way a same-repository citation is, and is
  * muted the same way when it names the label format rather than a real row.
  */
-const PHASE_LABEL = VERSION_TOKEN
+const PHASE_LABEL = /\bv\d+\.\d+(?!\.\d)\b/g
 
 export interface ShippedReference {
   readonly file: string
@@ -181,18 +191,14 @@ export interface ShippedReference {
  * than by a pattern exemption: a citation from inside `docs/` is read
  * together with the rest of that corpus through the same `canon docs`
  * resolution, which is a weaker claim than one from a skill body with no
- * `docs/` sibling at all. `root` is optional because most callers, this
- * file's own tests among them, never exercise a `DOCS_PATH` match and have
- * no fixture to resolve against; omitting it reports nothing rather than
- * guessing.
+ * `docs/` sibling at all.
  */
 function isDocsPathResolvable(
   file: string,
   path: string,
-  root: string | undefined,
+  root: string,
 ): boolean {
   if (file.startsWith('docs/')) return false
-  if (root === undefined) return false
   return existsSync(join(root, path))
 }
 
@@ -205,7 +211,9 @@ function isDocsPathResolvable(
  * draws in `skills-reach.ts`. `DOCS_PATH` is the one pattern that still needs
  * a filesystem, since resolving against this checkout is the only thing that
  * separates its two readings, so it takes `root` as the one caller-supplied
- * exception to that rule.
+ * exception to that rule. `root` is required rather than defaulted, since a
+ * caller that dropped it silently would report zero docs-path findings
+ * rather than raising, which is the wrong failure direction for a gate.
  *
  * The unit is the match rather than the line, unlike those two, because one
  * line here can carry three separate tokens each needing its own repair and a
@@ -218,7 +226,7 @@ function isDocsPathResolvable(
 export function referencesIn(
   file: string,
   text: string,
-  root?: string,
+  root: string,
 ): ShippedReference[] {
   const lines = text.split('\n')
   const references: ShippedReference[] = []

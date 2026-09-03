@@ -10,7 +10,7 @@ description: Comment density by language and kind, the two structural exclusions
 ```bash
 canon comments scan
 canon comments scan src --json
-canon comments scan --since v0.5.0 # canon-allow-reference: a semver tag illustrating the flag's own shape, not a phase label
+canon comments scan --since v0.5.0
 ```
 
 | Option               | Behavior                                                        |
