@@ -16,24 +16,36 @@ interface Recording {
   target: RenderTarget
   texts: string[]
   shapes: string[]
+  textOptions: Record<string, unknown>[]
+  shapeOptions: Record<string, unknown>[]
 }
 
 function recorder(): Recording {
   const texts: string[] = []
   const shapes: string[] = []
+  const textOptions: Record<string, unknown>[] = []
+  const shapeOptions: Record<string, unknown>[] = []
   const stub = {
-    addText(content: unknown) {
+    addText(content: unknown, options?: Record<string, unknown>) {
       if (typeof content === 'string') {
         texts.push(content)
       } else if (Array.isArray(content)) {
         for (const run of content) texts.push((run as { text: string }).text)
       }
+      if (options) textOptions.push(options)
     },
-    addShape(name: string) {
+    addShape(name: string, options?: Record<string, unknown>) {
       shapes.push(name)
+      if (options) shapeOptions.push(options)
     },
   }
-  return { target: stub as unknown as RenderTarget, texts, shapes }
+  return {
+    target: stub as unknown as RenderTarget,
+    texts,
+    shapes,
+    textOptions,
+    shapeOptions,
+  }
 }
 
 const theme = buildTheme('light')
@@ -53,6 +65,7 @@ describe('LAYOUTS catalog', () => {
       'stat-callout',
       'grid',
       'quote',
+      'freeform',
     ])
   })
 })
@@ -167,6 +180,84 @@ describe('renderDeckSlide', () => {
       theme,
     )
     expect(texts).toContain('still shown')
+  })
+
+  it('places a freeform text shape at its declared position with the resolved color', () => {
+    const { target, texts, textOptions } = recorder()
+    renderDeckSlide(
+      target,
+      slide({
+        layout: 'freeform',
+        content: ['- text x=1 y=2 w=3 h=0.5 color=ink: Caption'],
+      }),
+      theme,
+    )
+    expect(texts).toContain('Caption')
+    expect(textOptions).toContainEqual(
+      expect.objectContaining({ x: 1, y: 2, w: 3, h: 0.5, color: theme.ink }),
+    )
+  })
+
+  it('draws a freeform rect shape at its declared position with the resolved color', () => {
+    const { target, shapes, shapeOptions } = recorder()
+    renderDeckSlide(
+      target,
+      slide({
+        layout: 'freeform',
+        content: ['- rect x=0.5 y=0.5 w=4 h=2 color=accent'],
+      }),
+      theme,
+    )
+    expect(shapes).toEqual(['rect'])
+    expect(shapeOptions).toContainEqual(
+      expect.objectContaining({
+        x: 0.5,
+        y: 0.5,
+        w: 4,
+        h: 2,
+        fill: { color: theme.accent },
+      }),
+    )
+  })
+
+  it('throws on a malformed freeform shape line', () => {
+    expect(() =>
+      renderDeckSlide(
+        recorder().target,
+        slide({
+          layout: 'freeform',
+          title: 'Bad slide',
+          content: ['- oval x=1 y=1 w=1 h=1 color=ink'],
+        }),
+        theme,
+      ),
+    ).toThrow(/Bad slide/)
+  })
+
+  it('throws on an unparsable freeform coordinate', () => {
+    expect(() =>
+      renderDeckSlide(
+        recorder().target,
+        slide({
+          layout: 'freeform',
+          content: ['- rect x=nope y=1 w=1 h=1 color=ink'],
+        }),
+        theme,
+      ),
+    ).toThrow()
+  })
+
+  it('throws on an unknown freeform color role', () => {
+    expect(() =>
+      renderDeckSlide(
+        recorder().target,
+        slide({
+          layout: 'freeform',
+          content: ['- rect x=1 y=1 w=1 h=1 color=blue'],
+        }),
+        theme,
+      ),
+    ).toThrow()
   })
 })
 
