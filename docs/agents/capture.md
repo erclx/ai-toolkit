@@ -5,7 +5,7 @@ description: Rendering HTML sources to PNG, what the command asserts about fonts
 
 # Capture
 
-`canon capture [source] --selector <sel>` renders HTML sources to PNG, which is how a generated documentation image is rebuilt from the markup it was generated out of. The source defaults to `assets/`, where a directory expands to every `.html` directly inside it, so adding a capture means dropping a file beside the first one and running the same command.
+`canon capture [source] --selector <sel>` renders HTML sources to PNG, which is how a generated documentation image is rebuilt from the markup it was generated out of. The source defaults to `assets/`, where a directory expands to every `.html` directly inside it, so adding a capture means dropping a file beside the first one and running the same command. That default names this repository's own folder rather than a convention every target shares, and it stays because a missing one still refuses loud, naming the argument, rather than failing silently.
 
 ```bash
 canon capture --selector .window
@@ -38,7 +38,7 @@ Each source renders at `deviceScaleFactor` 2 with a transparent background, and 
 
 What is asserted is the font. The command reads the first family the captured element declares and fails when the browser did not resolve it, because a fallback face rewraps the block and silently changes the output. Sources therefore name a real font rather than relying on `monospace`. A source that cannot render reports its own line and exits 1 without dropping the rest of the batch.
 
-A run refuses before it reads anything else when `--selector` is absent, naming the flag and pointing at `--help`. Ordering it first is what keeps the message about the invocation: the source defaults to `assets`, so checking that first would answer `assets not found` from whatever directory the caller happened to be in and say nothing about the flag that was actually missing.
+A run refuses before it reads anything else when `--selector` is absent, naming the flag and pointing at `--help`. Ordering it first is what keeps the message about the invocation: the source defaults to `assets`, so checking that first would answer `assets not found` from whatever directory the caller happened to be in and say nothing about the flag that was actually missing. That source default is a deliberate choice rather than one inherited from some general convention: a missing folder still refuses loud, naming the argument, once the flag check passes, where the selector's dropped default cropped the wrong region in silence.
 
 The browser binary installs separately from the package. A first run does `bunx playwright install chromium` once, and a run that cannot launch one reports the engine's own remediation inside the frame and exits 1 rather than escaping as a stack trace.
 
