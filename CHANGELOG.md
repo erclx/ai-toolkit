@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.43.0](https://github.com/erclx/canon/compare/v4.42.0...v4.43.0) (2026-09-03)
+
+
+### Features
+
+* **claude:** route claude-ui-test's checklist to the pull request ([#1470](https://github.com/erclx/canon/issues/1470)) ([b2a92f8](https://github.com/erclx/canon/commit/b2a92f8651298165af97e479ce33ee0962ff5efe))
+
 ## [4.42.0](https://github.com/erclx/canon/compare/v4.41.0...v4.42.0) (2026-09-03)
 
 
