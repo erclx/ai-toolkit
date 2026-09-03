@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.31.0](https://github.com/erclx/canon/compare/v4.30.2...v4.31.0) (2026-09-03)
+
+
+### Features
+
+* **markdown:** add relative link resolution to markdown audit ([#1423](https://github.com/erclx/canon/issues/1423)) ([bcb6562](https://github.com/erclx/canon/commit/bcb6562e0455d833a6821d248205d37b035fff4e))
+
 ## [4.30.2](https://github.com/erclx/canon/compare/v4.30.1...v4.30.2) (2026-09-03)
 
 
