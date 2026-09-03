@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# canon-no-seed: calls scripts/lib/worktree.sh, toolkit-internal and never shipped, so seeding this alone ships a permanent no-op. It already no-ops safely where the library is absent.
+
 # Claude Code's worktree entry writes core.bare into the shared config and its
 # exit never restores it, so every later git command fails. verify.sh runs the
 # same repair, but a session that only reads git never runs the suite, so the

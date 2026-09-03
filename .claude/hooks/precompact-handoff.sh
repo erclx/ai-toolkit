@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# canon-no-seed: a scaffolded target without the plugin would meet a blocked /compact naming canon:session-map, a skill it does not carry. See "The handoff routes on the trigger" in .claude/ARCHITECTURE.md.
+
 # Claude Code sends a payload and closes stdin. A bare read with nothing feeding
 # it blocks forever and holds the session open, so the read is bounded. `read`
 # rather than `timeout cat`, which macOS does not ship.

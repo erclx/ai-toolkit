@@ -84,6 +84,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 
 ### Seed ownership
 
+- Whether a hook, a workflow, or a husky script installs turns on presence in its domain's seed or config source, gated by `scripts/core/check-capability-seeding.sh` and recorded in `.claude/ARCHITECTURE.md` under "A capability's presence in a seed or config decides whether it installs, and a gate is exempt by kind".
 - The base stack owns `.claude/context/index.md` and the claude tree ships none, though it seeds three sibling indexes. Base owns it because it seeds the entries listed, and two trees writing one target path let install order pick the content, since neither installer overwrites a file the target has. Without one the tree is not auditable, since `resolveFolders` skips a folder lacking it.
 - Per-stack `ci.md` and `development.md` seeds are not shipped, because seeds are user-owned and never overwritten. Stack references carry `## CI docs (extend)` sections telling the agent which rows to append instead.
 

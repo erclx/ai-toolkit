@@ -256,6 +256,14 @@ Re-deriving a wider ceiling from that same history was the alternative, and it f
 
 The paragraph weight checkpoint in `markdown.md`, gated by `canon markdown audit`, is the one part of this mechanism that was ever enforced, and it still governs every entry here, this one included. Measured at `50c523f5` on 2026-09-02.
 
+### A capability's presence in a seed or config decides whether it installs, and a gate is exempt by kind
+
+Presence in a domain's own seed or config source is what now decides whether a hook, a workflow, or a husky script reaches a target. `scripts/core/check-capability-seeding.sh` reads that criterion mechanically, walking `.claude/hooks/`, `.github/workflows/`, and `.husky/` by filename against `tooling/claude/seeds/.claude/hooks/`, every `tooling/*/configs/.github/workflows/`, and `tooling/base/configs/.husky/`, and failing a source file absent from every destination unless the file itself carries a `canon-no-seed:` comment naming why. The walk that wrote this decision found four hooks and one workflow reaching neither side with no reason recorded anywhere, a state the criterion closes rather than reports.
+
+A maintained exclusion list was the alternative, naming every withheld capability once in a file the way `TOOLING_STACK_EXCLUDE` names an excluded stack. It puts the reason a lookup away from the file it explains, where `stub: true` on a seed's own frontmatter already answered the same question for a different check: the exemption a reader meets belongs beside the thing being exempted, not in a registry a reviewer has to cross-reference to learn why a hook is missing. The marker is named `canon-no-seed:` rather than joining the `canon-keep-*` family the rename migration reads, since the two answer different questions and a reader skimming a diff for one should not mistake it for the other.
+
+A hook that reached the seed tree with nobody wiring it into `settings.json` fails the identical way a hook that never reached the tree does, so the check's second pass confirms every `tooling/claude/seeds/.claude/hooks/*.sh` name appears in a `command` string there. `src/gate/` and the `scripts/core/check-*.sh` scripts beside this one are exempt by kind rather than by marker, because a target never receives this checkout's own build, and nothing about seed presence applies to the gate that measures it. Measured at `141885c2` on 2026-09-02.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects that call.

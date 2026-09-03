@@ -297,6 +297,20 @@ export const STAGES: readonly Stage[] = [
     success: 'Seed prose cites no toolkit CLI',
   },
   {
+    // A hook, a workflow, or a husky script reaching one side of the seed or
+    // config boundary and not the other is a capability withheld with no
+    // recorded reason, per the criterion in .claude/ARCHITECTURE.md.
+    id: 'capability-seeding',
+    label: 'Capability seeding',
+    checks: [
+      script(
+        'check-capability-seeding.sh',
+        'A capability reaches one side of the seed or config boundary and not the other.',
+      ),
+    ],
+    success: 'Capability seeding clean',
+  },
+  {
     // A stack entry naming a rule folder takes every rule in it, which is what
     // stops a new rule from needing a second edit to reach a target. The
     // failure it leaves open is a rule authored into a folder no stack names,

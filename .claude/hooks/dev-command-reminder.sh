@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# canon-no-seed: points a session at .claude/context/development/index.md, a toolkit-authored entry describing this checkout's own scripts, which does not and should not exist in a target.
+
 # Claude Code sends a payload and closes stdin. A bare read with nothing feeding
 # it blocks forever and holds the session open, so the read is bounded. `read`
 # rather than `timeout cat`, which macOS does not ship.
