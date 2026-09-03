@@ -66,13 +66,21 @@ describe('referencesIn', () => {
     ).toEqual([])
   })
 
-  it('should pass a pull request number qualified with its repository', () => {
+  it('should report a pull request number qualified with its own repository', () => {
     expect(
       referencesIn(
         'claude/skills/alpha/SKILL.md',
         'Measured on `erclx/canon#1299`.',
       ),
-    ).toEqual([])
+    ).toEqual([
+      {
+        file: 'claude/skills/alpha/SKILL.md',
+        line: 1,
+        kind: 'pull-request',
+        text: 'erclx/canon#1299',
+        selfCitation: true,
+      },
+    ])
   })
 
   it('should pass the qualified form a shipped body already carries', () => {
@@ -84,13 +92,21 @@ describe('referencesIn', () => {
     ).toEqual([])
   })
 
-  it('should pass a sha qualified with its repository', () => {
+  it('should report a sha qualified with its own repository', () => {
     expect(
       referencesIn(
         'docs/agents/alpha.md',
         'A pass written against `erclx/canon@5653721`.',
       ),
-    ).toEqual([])
+    ).toEqual([
+      {
+        file: 'docs/agents/alpha.md',
+        line: 1,
+        kind: 'commit',
+        text: 'erclx/canon@5653721',
+        selfCitation: true,
+      },
+    ])
   })
 
   it('should pass a Tailwind arbitrary hex color, which an unbounded pattern reads as #316', () => {
@@ -144,6 +160,24 @@ describe('referencesIn', () => {
       referencesIn(
         'standards/diagrams.md',
         `<!-- ${REFERENCE_MARKER}: illustrates the verified field's format -->\nas in \`73e9a3f8 2026-08-02\`.`,
+      ),
+    ).toEqual([])
+  })
+
+  it('should mute a same-repository illustration of a date-exclusion clause', () => {
+    expect(
+      referencesIn(
+        'docs/agents/alpha.md',
+        `Runs on \`erclx/canon#632\` and \`erclx/canon#634\` landed 2026-08-02. <!-- ${REFERENCE_MARKER}: illustrates the input shape the rule reads -->`,
+      ),
+    ).toEqual([])
+  })
+
+  it('should mute a same-repository illustration of a definition-versus-edit-target bullet', () => {
+    expect(
+      referencesIn(
+        'docs/agents/alpha.md',
+        `A bullet can cite where something is defined while claiming an edit somewhere else, as \`erclx/canon#1274\` does. <!-- ${REFERENCE_MARKER}: illustrates the input shape the rule reads -->`,
       ),
     ).toEqual([])
   })
