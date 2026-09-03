@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.35.0](https://github.com/erclx/canon/compare/v4.34.1...v4.35.0) (2026-09-03)
+
+
+### Features
+
+* **design:** declare a shared favicon on every rendered surface ([#1441](https://github.com/erclx/canon/issues/1441)) ([69186bb](https://github.com/erclx/canon/commit/69186bb119445210a182f5a18ad042aada1967fe))
+
 ## [4.34.1](https://github.com/erclx/canon/compare/v4.34.0...v4.34.1) (2026-09-03)
 
 
