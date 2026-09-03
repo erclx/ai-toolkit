@@ -268,6 +268,10 @@ Explicit shapes at a declared position and size, for a figure the other eight la
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
+## Copy
+
+- Every string in the blocks above stands in for whatever a deck's own slide carries, and is a placeholder rather than fixed text. `Contents` in the `toc` block is the one exception: it is the literal default title `renderToc` draws when a `toc` slide carries no title of its own, and the same literal string `addFooter` writes as the link back to it.
+
 ## Behavior
 
 - Every layout except `title` and `toc` carries a footer: the deck title bottom-left and, when the deck has a `toc` slide, a "Contents" link back to it bottom-right.
