@@ -65,6 +65,34 @@ check_capability "Workflows" "$PROJECT_ROOT/.github/workflows" \
 check_capability "Husky" "$PROJECT_ROOT/.husky" \
   "$PROJECT_ROOT"/tooling/base/configs/.husky/*
 
+# The reverse direction: a destination file whose source here is gone reaches
+# neither check_capability above nor the wiring pass below, both of which read
+# forward from the source, and it ships a target a hook, workflow, or husky
+# script this repository has already deleted.
+check_orphans() {
+  local label="$1" src_dir="$2" dest_dir="$3"
+
+  [ -d "$dest_dir" ] || return 0
+
+  local dest_file name
+  for dest_file in "$dest_dir"/*; do
+    [ -f "$dest_file" ] || continue
+    name=$(basename "$dest_file")
+    [ -f "$src_dir/$name" ] && continue
+    failures="$failures  $label: ${dest_file#"$PROJECT_ROOT/"} is seeded or configured with no source at ${src_dir#"$PROJECT_ROOT/"}/$name"$'\n'
+  done
+}
+
+check_orphans "Hooks" "$PROJECT_ROOT/.claude/hooks" \
+  "$PROJECT_ROOT/tooling/claude/seeds/.claude/hooks"
+
+for dir in "$PROJECT_ROOT"/tooling/*/configs/.github/workflows; do
+  check_orphans "Workflows" "$PROJECT_ROOT/.github/workflows" "$dir"
+done
+
+check_orphans "Husky" "$PROJECT_ROOT/.husky" \
+  "$PROJECT_ROOT/tooling/base/configs/.husky"
+
 # A hook that reached the seed tree with no wiring in the seeded settings.json
 # is installed dead, which fails the same way an unseeded hook does.
 SEED_HOOKS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude/hooks"
