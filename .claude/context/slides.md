@@ -60,4 +60,4 @@ After the first render it runs a one-pass quality check: convert the deck to ima
 
 ## Reference deck
 
-`examples/slides/showcase.md` exercises every layout in one deck. Render it to inspect the design system end to end and to verify a styling change visually.
+`examples/slides/showcase.md` exercises every layout in one deck. Render it to inspect the design system end to end and to verify a styling change visually. `images/` holds a dated screenshot of both variants, rendered by hand with `canon slides render` followed by a `soffice --headless --convert-to pdf` and `pdftoppm -png` pass, and nothing regenerates it when the source changes.
