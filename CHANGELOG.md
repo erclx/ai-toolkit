@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.41.0](https://github.com/erclx/canon/compare/v4.40.2...v4.41.0) (2026-09-03)
+
+
+### Features
+
+* **migrate:** add rule-layout to move installed rules onto canon/ ([#1463](https://github.com/erclx/canon/issues/1463)) ([5c7a957](https://github.com/erclx/canon/commit/5c7a957d1b53abfe0ee7a0aec39a09a293f77577))
+* **teach:** generate the root nav, contents pages, and lesson chrome ([#1465](https://github.com/erclx/canon/issues/1465)) ([5cc60c8](https://github.com/erclx/canon/commit/5cc60c86c1d42cf01d7bf63331510143a0c669a1))
+
 ## [4.40.2](https://github.com/erclx/canon/compare/v4.40.1...v4.40.2) (2026-09-03)
 
 
