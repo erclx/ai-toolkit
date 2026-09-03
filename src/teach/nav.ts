@@ -53,24 +53,65 @@ const CLOSE_OUTSIDE_CLICK_SCRIPT = `<script>
 const QUIZ_SCRIPT =
   '<script>document.querySelectorAll(".q").forEach(function(q){var f=q.querySelector(".fb");q.querySelectorAll(".opt").forEach(function(b){b.addEventListener("click",function(){if(f.classList.contains("show"))return;q.querySelectorAll(".opt").forEach(function(o){o.dataset.state=o.dataset.a==="1"?"right":(o===b?"chosen":"wrong");});f.classList.add("show");});});});</script>'
 
+const GLOSSARY_FILTER_SCRIPT = `<script>
+(function () {
+  var input = document.getElementById("gfilter");
+  var list = document.getElementById("gloss");
+  if (!input || !list) return;
+  input.addEventListener("input", function () {
+    var q = input.value.toLowerCase();
+    var n = 0;
+    list.querySelectorAll(".gterm").forEach(function (entry) {
+      var match = entry.textContent.toLowerCase().includes(q);
+      entry.style.display = match ? "" : "none";
+      if (match) n++;
+    });
+    list.classList.toggle("none", n === 0);
+  });
+  var clear = list.querySelector(".clear");
+  if (clear) {
+    clear.addEventListener("click", function () {
+      input.value = "";
+      input.dispatchEvent(new Event("input"));
+      input.focus();
+    });
+  }
+})();
+</script>`
+
 /**
- * Ramps the outline rail's focus line from near the top at scroll 0 to the
- * viewport's bottom edge at max scroll, so the last heading is reachable
- * regardless of how little content trails it. The prior formula ended the
- * ramp 120px short of the edge, which left a heading followed by under 120px
- * of trailing content permanently unmarked, since its top never fell below
- * the line even at max scroll. `sync` in `OUTLINE_SCRIPT` embeds this same
- * formula for the browser to run; the two are tested by different means and
- * have to be kept in step by hand.
+ * The outline rail's focus-line ramp, as the JavaScript source `OUTLINE_SCRIPT`
+ * embeds verbatim, so there is one copy of the formula rather than a TS
+ * reimplementation that could drift from what a browser actually runs.
+ *
+ * It ramps the line from near the top at scroll 0 to the viewport's bottom
+ * edge at max scroll, so the last heading is reachable regardless of how
+ * little content trails it. The prior formula ended the ramp 120px short of
+ * the edge, which left a heading followed by under 120px of trailing content
+ * permanently unmarked, since its top never fell below the line even at max
+ * scroll.
+ */
+const FOCUS_LINE_BODY = `if (max <= 0) return innerHeight;
+    var progress = Math.min(1, Math.max(0, scrollY / max));
+    return 120 + progress * Math.max(0, innerHeight - 120);`
+
+/**
+ * Compiles and runs `FOCUS_LINE_BODY`, so a test exercises the exact source
+ * the browser runs rather than a parallel copy of it.
  */
 export function focusLine(
   scrollY: number,
   max: number,
   innerHeight: number,
 ): number {
-  if (max <= 0) return innerHeight
-  const progress = Math.min(1, Math.max(0, scrollY / max))
-  return 120 + progress * Math.max(0, innerHeight - 120)
+  const compiled = new Function(
+    'scrollY',
+    'max',
+    'innerHeight',
+    FOCUS_LINE_BODY,
+  ) as (scrollY: number, max: number, innerHeight: number) => number
+
+  return compiled(scrollY, max, innerHeight)
 }
 
 const OUTLINE_SCRIPT = `<script>
@@ -99,9 +140,7 @@ const OUTLINE_SCRIPT = `<script>
 
   function focusLine() {
     var max = document.documentElement.scrollHeight - innerHeight;
-    if (max <= 0) return innerHeight;
-    var progress = Math.min(1, Math.max(0, scrollY / max));
-    return 120 + progress * Math.max(0, innerHeight - 120);
+    ${FOCUS_LINE_BODY}
   }
 
   function sync() {
@@ -232,8 +271,12 @@ function renderHeader(
 </header>`
 }
 
-function renderScripts(includeQuiz: boolean): string {
+function renderScripts(
+  includeQuiz: boolean,
+  includeGlossaryFilter: boolean,
+): string {
   const scripts = [THEME_SCRIPT, CLOSE_OUTSIDE_CLICK_SCRIPT, OUTLINE_SCRIPT]
+  if (includeGlossaryFilter) scripts.push(GLOSSARY_FILTER_SCRIPT)
   if (includeQuiz) scripts.push(QUIZ_SCRIPT)
   return scripts.join('\n')
 }
@@ -367,8 +410,8 @@ function renderGlossarySection(entries: readonly string[]): string {
   const rendered = entries.map(renderGlossaryEntry).join('')
 
   return `<h2>Glossary <span class="count">${entries.length}</span></h2>
-<input class="filter" type="search" id="gfilter" aria-label="Filter glossary terms" aria-controls="gloss" placeholder="term" oninput="var q=this.value.toLowerCase();var g=document.querySelector('.gloss');var n=0;g.querySelectorAll('.gterm').forEach(function(e){var m=e.textContent.toLowerCase().includes(q);e.style.display=m?'':'none';if(m)n++;});g.classList.toggle('none',n===0);">
-<div class="gloss" id="gloss"><p class="empty">No term matches that. <button type="button" class="clear" onclick="var f=document.getElementById('gfilter');f.value='';f.dispatchEvent(new Event('input'));f.focus();">Clear the filter</button></p>${rendered}</div>
+<input class="filter" type="search" id="gfilter" aria-label="Filter glossary terms" aria-controls="gloss" placeholder="term">
+<div class="gloss" id="gloss"><p class="empty">No term matches that. <button type="button" class="clear">Clear the filter</button></p>${rendered}</div>
 `
 }
 
@@ -419,7 +462,7 @@ ${renderHeader(segments, track)}
 <ul class="toc">${rows}</ul>
 
 </main>
-${renderScripts(false)}
+${renderScripts(false, false)}
 </body>
 </html>
 `
@@ -530,7 +573,7 @@ ${renderHeader(segments, track)}
 ${sections}
 
 </main>
-${renderScripts(false)}
+${renderScripts(false, true)}
 </body>
 </html>
 `
@@ -623,7 +666,7 @@ async function rewriteLesson(
     ['style', `<style>\n${css}\n</style>`],
     ['header', header],
     ['footnav', renderFootNav(metas, index)],
-    ['scripts', renderScripts(html.includes('class="quiz"'))],
+    ['scripts', renderScripts(html.includes('class="quiz"'), false)],
   ]
 
   for (const [region, content] of regions) {
