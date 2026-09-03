@@ -35,7 +35,7 @@ Read these on both paths, skipping any that do not exist:
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: word, punctuation, and formatting constraints
 - The `write-human` skill: tone and sentence construction constraints
 
-On the source path, also read the UI surfaces matched in Step 1 plus any `docs/agents/output-shape.md` and `docs/index.md` the project itself carries, for output shape or framing rules already documented. Those two are the toolkit's own spelling, so a project keeping its framing rules elsewhere is read there instead.
+On the source path, also read the UI surfaces matched in Step 1 plus `canon docs output-shape` and `canon docs index`, for output shape or framing rules already documented in the toolkit's own reference. Skip either that fails to resolve, since a project keeping its framing rules elsewhere is read there instead.
 
 On the greenfield path, also read `.claude/ARCHITECTURE.md` for platform, tech stack, and surface type. Do not scan `src/`, stylesheets, or UI modules. Step 1 already established they hold nothing.
 

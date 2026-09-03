@@ -31,7 +31,7 @@ Accept work whose origin is the conversation itself only when the user says so e
 
 List the existing filenames in `.canon/tasks/` and read `index.md` for what each holds. Propose the next label from what is already on the board, and say which neighbors it sits between.
 
-Do not derive the label from a version file. `${CLAUDE_SKILL_DIR}/../../standards/versioning.md` permits free renumbering, so the board is the only surface that knows what a label currently means. Pad the phase to two digits in the filename, since index entries sort by filename alone and a bare `v9.0` sorts after `v15.0`.
+Do not derive the label from a version file. `${CLAUDE_SKILL_DIR}/../../standards/versioning.md` permits free renumbering, so the board is the only surface that knows what a label currently means. Pad the phase to two digits in the filename, since index entries sort by filename alone and a bare `v9.0` sorts after `v15.0`. <!-- canon-allow-reference: illustrates the padding rule's own sort collision, not a citation of a real task -->
 
 ### Step 3: write the file
 

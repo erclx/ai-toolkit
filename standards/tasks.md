@@ -31,8 +31,8 @@ Does not govern:
 ├── priority.md           ← hand-maintained execution order
 ├── backlog.md            ← unordered, what is not being scheduled
 ├── session-<slug>.md     ← optional, what a compaction is about to destroy
-├── v09.0-sync-paths.md
-└── v13.0-toolkit-drift.md
+├── v09.0-sync-paths.md      # canon-allow-reference: illustrates the vXX.Y-slug filename this section defines
+└── v13.0-toolkit-drift.md   # canon-allow-reference: illustrates the vXX.Y-slug filename this section defines
 ```
 
 One file per task is what keeps the board safe under parallel sessions. Two sessions working different tasks never write the same file, which matters because a gitignored board has no history to recover a clobbered write from.
@@ -137,13 +137,13 @@ Add no fourth readiness group in place of this file. The three group names are t
 
 ## Validation
 
-`canon tasks validate` reads the board against the tree, and what it checks, what it refuses on, and what it reports are at `docs/agents/tasks.md`. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on.
+`canon tasks validate` reads the board against the tree, and what it checks, what it refuses on, and what it reports are at `canon docs tasks`. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on.
 
 ## Filenames
 
 `vXX.Y-<slug>.md`, where the version is the phase label zero-padded to two digits and the slug is kebab-case.
 
-Padding is load-bearing. Index entries sort by filename and nothing else, so a bare `v9.0` sorts after `v15.0` and the catalog reads out of board order. `standards/versioning.md` governs the label itself and permits free renumbering, so expect the occasional rename. Nothing points at a task filename, since a `Plan:` line runs from task to plan rather than the reverse.
+Padding is load-bearing. Index entries sort by filename and nothing else, so a bare `v9.0` sorts after `v15.0` and the catalog reads out of board order. `standards/versioning.md` governs the label itself and permits free renumbering, so expect the occasional rename. Nothing points at a task filename, since a `Plan:` line runs from task to plan rather than the reverse. <!-- canon-allow-reference: illustrates the padding rule's own sort collision, not a citation of a real task -->
 
 ## Frontmatter
 
@@ -151,7 +151,7 @@ Every task file carries both fields. The index walker fails the whole folder whe
 
 ```yaml
 ---
-title: 'v13.0: Detect and close toolkit drift in target projects'
+title: 'v13.0: Detect and close toolkit drift in target projects' # canon-allow-reference: illustrates the quoted title shape, not a citation of a real task
 description: Record what a target installed and report the delta against the toolkit
 ---
 ```
@@ -245,7 +245,7 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.canon/tasks/archive/` under its own name, and the live index regenerates without it. `canon tasks archive` owns that move, and what it does and what it refuses on are at `docs/agents/tasks.md`.
+Never delete a task file. A shipped task moves to `.canon/tasks/archive/` under its own name, and the live index regenerates without it. `canon tasks archive` owns that move, and what it does and what it refuses on are at `canon docs tasks`.
 
 The archive nests inside `.canon/tasks/` rather than sitting beside it as a flat `.claude/task-archive/`. Nesting is what lets a reader tell the two shapes apart on sight: the flat sibling is what a binary predating this convention still writes, so meeting one names an older checkout rather than a second archive to reconcile against this one.
 

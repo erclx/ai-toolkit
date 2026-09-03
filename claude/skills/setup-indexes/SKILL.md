@@ -7,7 +7,7 @@ description: Bootstraps the toolkit's `index.md` system in a target project. Sca
 
 Adds the index.md system to a project that does not have it. Operates in the active Claude session: Claude reads files, drafts frontmatter, confirms with the user, and writes. The CLI handles validation and regeneration only.
 
-Read `.claude/context/indexes.md` from the toolkit if context on the system is needed before scanning.
+Read `canon docs indexes` from the toolkit if context on the system is needed before scanning.
 
 ## Scope
 
@@ -147,7 +147,4 @@ Replace bracketed values with the values from this run. Drop the "Folders bootst
 
 ## Reference
 
-Both pages sit in the toolkit and install nowhere, so a target reads them there rather than in its own tree.
-
-- The toolkit's `.claude/context/indexes.md`: system rationale, frontmatter contract, when to adopt
-- The toolkit's `docs/agents/indexes.md`: `canon indexes regen` flags, exit codes, JSON shape
+- Run `canon docs indexes` for `canon indexes regen` flags, exit codes, and JSON shape. It resolves from the toolkit rather than from the target's own tree.
