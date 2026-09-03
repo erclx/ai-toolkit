@@ -50,7 +50,7 @@ export interface PhaseScanResult {
   readonly sessionLinks: readonly string[]
 }
 
-const VERSION_TOKEN = /\bv\d+(?:\.\d+){1,2}\b/g
+export const VERSION_TOKEN = /\bv\d+(?:\.\d+){1,2}\b/g
 
 /**
  * A code span holding a version token and nothing else.

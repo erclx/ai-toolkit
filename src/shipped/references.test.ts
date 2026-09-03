@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   isShippedCorpus,
   REFERENCE_MARKER,
@@ -204,6 +207,120 @@ describe('referencesIn', () => {
     )
 
     expect(found[0]?.line).toBe(3)
+  })
+
+  describe('DOCS_PATH', () => {
+    let root: string
+
+    beforeEach(() => {
+      root = mkdtempSync(join(tmpdir(), 'canon-references-'))
+      const real = join(root, 'docs/agents/real.md')
+      mkdirSync(dirname(real), { recursive: true })
+      writeFileSync(real, 'placeholder\n')
+    })
+
+    afterEach(() => {
+      rmSync(root, { recursive: true, force: true })
+    })
+
+    it('should report a docs path that resolves against the checkout', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Read `docs/agents/real.md` for the reference shape.',
+          root,
+        ),
+      ).toEqual([
+        {
+          file: 'claude/skills/alpha/SKILL.md',
+          line: 1,
+          kind: 'docs-path',
+          text: 'docs/agents/real.md',
+        },
+      ])
+    })
+
+    it("should pass a docs path that names a target's own tree rather than this checkout's", () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Write the fixture to `docs/retry.md`.',
+          root,
+        ),
+      ).toEqual([])
+    })
+
+    it('should pass every docs path when no root is supplied to resolve against', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Read `docs/agents/real.md` for the reference shape.',
+        ),
+      ).toEqual([])
+    })
+
+    it('should pass a resolving docs path cited from inside the docs/ corpus itself', () => {
+      expect(
+        referencesIn(
+          'docs/agents/rule-citations.md',
+          'See `docs/agents/real.md` for the shape a citation takes.',
+          root,
+        ),
+      ).toEqual([])
+    })
+
+    it('should mute a resolving docs path marked as deliberate', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          `Read \`docs/agents/real.md\` for the reference shape. <!-- ${REFERENCE_MARKER}: illustrates the resolving form -->`,
+          root,
+        ),
+      ).toEqual([])
+    })
+  })
+
+  describe('PHASE_LABEL', () => {
+    it('should report a bare phase-label-shaped token', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Named the task `v28.1-trigger-escalation` for tracking.',
+        ),
+      ).toEqual([
+        {
+          file: 'claude/skills/alpha/SKILL.md',
+          line: 1,
+          kind: 'phase-label',
+          text: 'v28.1',
+        },
+      ])
+    })
+
+    it('should pass a bare major version with no decimal group', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Inserting a half-step between two existing labels (a `v1.5` between `v1` and `v2`) is fine.',
+        ),
+      ).toEqual([
+        {
+          file: 'claude/skills/alpha/SKILL.md',
+          line: 1,
+          kind: 'phase-label',
+          text: 'v1.5',
+        },
+      ])
+    })
+
+    it('should mute a phase-label-shaped token marked as an illustration', () => {
+      expect(
+        referencesIn(
+          'standards/versioning.md',
+          `Inserting a half-step between two existing labels (a \`v1.5\` between \`v1\` and \`v2\`) is fine. <!-- ${REFERENCE_MARKER}: illustrates the renumbering rule's own format -->`,
+        ),
+      ).toEqual([])
+    })
   })
 })
 

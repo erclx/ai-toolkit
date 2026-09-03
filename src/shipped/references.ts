@@ -1,4 +1,7 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { isMarked } from '@/exempt-marker'
+import { VERSION_TOKEN } from '@/labels/phase'
 
 /**
  * The corpora a target reader reaches, which is the `files` field less `src`.
@@ -125,11 +128,42 @@ const COMMIT_SHA = /(?<![0-9A-Za-z_@/#])([0-9a-f]{7,40})(?![0-9A-Za-z_])/g
 const SAME_REPOSITORY =
   /(?<![0-9A-Za-z_/])erclx\/canon(#[0-9]+|@[0-9a-f]{7,40})(?![0-9A-Za-z_])/g
 
+/**
+ * A repository-relative path under `docs/`, reported only where `isResolvable`
+ * confirms it resolves against this checkout.
+ *
+ * Shape alone cannot separate a citation of this repository's own reference
+ * corpus from an illustration naming a target's own tree, since both are
+ * `docs/...md` tokens: `docs/agents/tasks.md` and `docs/retry.md` read
+ * identically to a pattern with no filesystem behind it. Of 124 such tokens
+ * across the shipped corpora, four distinct paths resolved here and the rest
+ * named a target's own tree, measured on 2026-09-03. Resolving against `root`
+ * is what turns that 124-hit pattern into the four-hit gate.
+ *
+ * `.claude/context/` carries no equivalent pattern. The same resolution test
+ * cannot separate a path every scaffolded project holds, such as
+ * `.claude/context/index.md`, from this repository's own domain entry, such
+ * as `.claude/context/indexes.md`, since both resolve here and only the
+ * second is a defect. That is a semantic read no pattern makes, so it stays
+ * with the rule and the review checklist rather than joining this reader.
+ */
+const DOCS_PATH = /(?<![\w./-])docs\/[^\s`)\]]*\.md\b/g
+
+/**
+ * A phase-label-shaped token, sharing `VERSION_TOKEN`'s shape from
+ * `src/labels/phase.ts` rather than duplicating it.
+ *
+ * A target holds no board to resolve a label against, so a bare instance
+ * here is unresolvable the same way a same-repository citation is, and is
+ * muted the same way when it names the label format rather than a real row.
+ */
+const PHASE_LABEL = VERSION_TOKEN
+
 export interface ShippedReference {
   readonly file: string
   /** One-based, matching the `file:line` form a reader clicks. */
   readonly line: number
-  readonly kind: 'pull-request' | 'commit'
+  readonly kind: 'pull-request' | 'commit' | 'docs-path' | 'phase-label'
   /** The reference as written, so a report names the token to qualify. */
   readonly text: string
   /**
@@ -141,12 +175,37 @@ export interface ShippedReference {
 }
 
 /**
+ * Whether a `DOCS_PATH` match names a real file in this checkout.
+ *
+ * `file` gates the `docs/` corpus out by the caller's own location rather
+ * than by a pattern exemption: a citation from inside `docs/` is read
+ * together with the rest of that corpus through the same `canon docs`
+ * resolution, which is a weaker claim than one from a skill body with no
+ * `docs/` sibling at all. `root` is optional because most callers, this
+ * file's own tests among them, never exercise a `DOCS_PATH` match and have
+ * no fixture to resolve against; omitting it reports nothing rather than
+ * guessing.
+ */
+function isDocsPathResolvable(
+  file: string,
+  path: string,
+  root: string | undefined,
+): boolean {
+  if (file.startsWith('docs/')) return false
+  if (root === undefined) return false
+  return existsSync(join(root, path))
+}
+
+/**
  * Every reference in one shipped file that no marker mutes.
  *
- * The corpus walk is deliberately absent, which lets the shape be tested
- * against a string rather than against a fixture. That is the seam
+ * The corpus walk is deliberately absent, which lets most of the shape be
+ * tested against a string rather than against a fixture. That is the seam
  * `headingCitationsIn` draws in `src/claude/skills-headings.ts` and `citationsIn`
- * draws in `skills-reach.ts`.
+ * draws in `skills-reach.ts`. `DOCS_PATH` is the one pattern that still needs
+ * a filesystem, since resolving against this checkout is the only thing that
+ * separates its two readings, so it takes `root` as the one caller-supplied
+ * exception to that rule.
  *
  * The unit is the match rather than the line, unlike those two, because one
  * line here can carry three separate tokens each needing its own repair and a
@@ -156,7 +215,11 @@ export interface ShippedReference {
  * marker mutes a line and nothing narrower. A real citation later added beside
  * a marked illustration ships unreported.
  */
-export function referencesIn(file: string, text: string): ShippedReference[] {
+export function referencesIn(
+  file: string,
+  text: string,
+  root?: string,
+): ShippedReference[] {
   const lines = text.split('\n')
   const references: ShippedReference[] = []
 
@@ -188,6 +251,25 @@ export function referencesIn(file: string, text: string): ShippedReference[] {
         kind: match[1]?.startsWith('#') ? 'pull-request' : 'commit',
         text: match[0],
         selfCitation: true,
+      })
+    }
+
+    for (const match of line.matchAll(DOCS_PATH)) {
+      if (!isDocsPathResolvable(file, match[0], root)) continue
+      references.push({
+        file,
+        line: index + 1,
+        kind: 'docs-path',
+        text: match[0],
+      })
+    }
+
+    for (const match of line.matchAll(PHASE_LABEL)) {
+      references.push({
+        file,
+        line: index + 1,
+        kind: 'phase-label',
+        text: match[0],
       })
     }
   }
