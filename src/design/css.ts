@@ -122,7 +122,7 @@ ${component.rules}`,
 }
 
 /**
- * `@font-face` rules carrying the mono stack's four faces as base64, so a
+ * `@font-face` rules carrying the mono stack's primary family as base64, so a
  * stylesheet renders in the same typeface everywhere regardless of what the
  * reader's machine has installed. Only the teach stylesheet opts in today.
  */

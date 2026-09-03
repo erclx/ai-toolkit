@@ -133,12 +133,11 @@ describe('buildDesignCss', () => {
     }
   })
 
-  it('emits four @font-face blocks when asked to embed fonts', () => {
+  it('emits two @font-face blocks when asked to embed fonts', () => {
     const css = buildDesignCss(undefined, { embedFonts: true })
 
-    expect(css.match(/@font-face/g)).toHaveLength(4)
+    expect(css.match(/@font-face/g)).toHaveLength(2)
     expect(css).toContain("font-family: 'Noto Sans Mono';")
-    expect(css).toContain("font-family: 'DejaVu Sans Mono';")
     expect(css).toContain('url(data:font/woff2;base64,')
   })
 
