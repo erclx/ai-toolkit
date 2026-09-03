@@ -41,9 +41,10 @@ write_scope = [
 
 # A clean run cost 21 turns on 2026-08-02, against 29 for the run before the
 # fixture was corrected, where the skill spent its budget reporting the unmounted
-# input. One clean sample against a fixture that has moved once already, and the
-# arm's cost turns on how many changes the skill judges visual-only. The ceiling
-# holds at the default until a second pass shows the cost is stable.
+# input. A run on 2026-09-03, from a branch that only rewrote the checklist's
+# destination and touched no line here, came in at 31, one over the ceiling.
+# That is a second sample showing the cost moved rather than one showing it
+# held, so the ceiling stays until a third pass says which reading was noise.
 max_turns = 30
 
 manual = [
