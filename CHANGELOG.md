@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.42.0](https://github.com/erclx/canon/compare/v4.41.0...v4.42.0) (2026-09-03)
+
+
+### Features
+
+* **tooling:** seed the astro scenario switcher ([#1468](https://github.com/erclx/canon/issues/1468)) ([98be540](https://github.com/erclx/canon/commit/98be540ac00b2be39f798efd300fce020badab23))
+
 ## [4.41.0](https://github.com/erclx/canon/compare/v4.40.2...v4.41.0) (2026-09-03)
 
 
