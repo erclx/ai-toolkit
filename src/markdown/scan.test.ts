@@ -133,6 +133,13 @@ describe('maskDisplayed', () => {
     expect(masked).toContain('the docs')
     expect(masked).not.toContain(';')
   })
+
+  it('should blank a whole destination carrying one level of balanced parentheses', () => {
+    const masked = maskDisplayed('See [the docs](https://x.test/a(1);b) now.')
+
+    expect(masked).toContain('the docs')
+    expect(masked).not.toContain(';')
+  })
 })
 
 describe('visibleText', () => {
@@ -167,6 +174,12 @@ describe('visibleText', () => {
   it('should still drop a link that sits after a code span', () => {
     expect(visibleText('Run `canon` then [the entry](docs/a.md) next.')).toBe(
       'Run `canon` then the entry next.',
+    )
+  })
+
+  it('should drop a whole link whose destination carries balanced parentheses', () => {
+    expect(visibleText('See [the docs](https://x.test/a(1);b) now.')).toBe(
+      'See the docs now.',
     )
   })
 

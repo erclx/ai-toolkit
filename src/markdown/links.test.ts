@@ -98,4 +98,27 @@ describe('findBrokenLinks', () => {
       { line: 1, column: 10, destination: 'docs/agents/100%.md' },
     ])
   })
+
+  it('should not report a destination carrying one level of balanced parentheses that exists', () => {
+    const { exists, calls } = fake(['docs/agents/file(1).md'])
+    const found = findBrokenLinks(
+      bodyLines('See [x](docs/agents/file(1).md).\n'),
+      exists,
+    )
+
+    expect(calls).toEqual(['docs/agents/file(1).md'])
+    expect(found).toEqual([])
+  })
+
+  it('should report a destination carrying balanced parentheses that does not exist', () => {
+    const { exists } = fake([])
+    const found = findBrokenLinks(
+      bodyLines('See [x](docs/agents/file(1).md).\n'),
+      exists,
+    )
+
+    expect(found).toEqual([
+      { line: 1, column: 8, destination: 'docs/agents/file(1).md' },
+    ])
+  })
 })
