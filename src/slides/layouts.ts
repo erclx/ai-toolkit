@@ -362,8 +362,9 @@ const COLOR_ROLES: (keyof Theme)[] = [
 ]
 
 function renderFreeform(s: PptxSlide, slide: Slide, theme: Theme): void {
+  addTitle(s, slide.title, theme)
   for (const line of slide.content) {
-    if (!line.trim().startsWith('-')) continue
+    if (!line.trim().startsWith('-')) throw malformedShape(slide.title, line)
     renderShapeLine(s, line, slide.title, theme)
   }
 }

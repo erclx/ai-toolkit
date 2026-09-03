@@ -220,6 +220,34 @@ describe('renderDeckSlide', () => {
     )
   })
 
+  it('draws the slide title on a freeform slide', () => {
+    const { target, texts } = recorder()
+    renderDeckSlide(
+      target,
+      slide({
+        layout: 'freeform',
+        title: 'A heading',
+        content: ['- rect x=0.5 y=0.5 w=4 h=2 color=accent'],
+      }),
+      theme,
+    )
+    expect(texts).toContain('A heading')
+  })
+
+  it('throws on a freeform content line missing its leading dash', () => {
+    expect(() =>
+      renderDeckSlide(
+        recorder().target,
+        slide({
+          layout: 'freeform',
+          title: 'Bad slide',
+          content: ['rect x=1 y=1 w=1 h=1 color=ink'],
+        }),
+        theme,
+      ),
+    ).toThrow(/Bad slide/)
+  })
+
   it('throws on a malformed freeform shape line', () => {
     expect(() =>
       renderDeckSlide(
