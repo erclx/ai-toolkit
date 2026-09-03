@@ -318,6 +318,8 @@ The README is the one recorded healthy sample that reads worse than the corpus, 
 
 ### Taking the ban corpus to zero
 
+Measured at `4b7b13a2` on 2026-08-05 across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint, 88 of the paragraphs firing on weight alone. That is the baseline the corpus sweep started from.
+
 A closed-set word ban cannot separate the sense a standard bans from a correct one spelling the same token. `markdown.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so five of the eight word hits standing between the corpus and a gate were permanent non-violations. Four were the temporal `just` meaning a moment ago, and the fifth quoted an anti-pattern a skill exists to forbid.
 
 Rewriting all five is what settled them, over adding an exemption path. An exemption has three consumers, `src/markdown/scan.ts` for the patterns, `src/markdown/bans.ts` for the sets, and `.claude/hooks/standards-audit.sh`, which held its own copy in awk at that point. One landing in the verb and not the hook leaves an exempted line still failing on edit, which is the surface an author meets.
