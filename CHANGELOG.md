@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.31.1](https://github.com/erclx/canon/compare/v4.31.0...v4.31.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **sandbox:** resolve the skill injector against a merge base ([#1427](https://github.com/erclx/canon/issues/1427)) ([2341382](https://github.com/erclx/canon/commit/2341382f48d5e75bbff454911b47c5fc9af2e4a2))
+
 ## [4.31.0](https://github.com/erclx/canon/compare/v4.30.2...v4.31.0) (2026-09-03)
 
 
