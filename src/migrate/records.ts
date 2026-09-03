@@ -91,6 +91,13 @@ function escape(value: string): string {
  * pair into two copies of the new one and shellcheck reports a pattern that can
  * never match. The guard then stops firing in a project the move has not
  * reached, which is silent: the index goes stale while every save succeeds.
+ *
+ * A file outside this list can still couple to one inside it, naming an
+ * excluded path as plain text while it also carries a live citation of its
+ * own, which `referencesExcluded` reports separately below. Widening this list
+ * or `EXCLUDED_SUFFIXES` to catch that case would mean guessing at a naming
+ * convention no project here declares, where the coupling check instead reads
+ * what the file's own text already says.
  */
 const EXCLUDED_PREFIXES: readonly string[] = [
   'src/migrate/',
@@ -107,6 +114,25 @@ export function isExcludedPath(path: string): boolean {
   if (EXCLUDED_PATHS.includes(path)) return true
   if (EXCLUDED_PREFIXES.some((prefix) => path.startsWith(prefix))) return true
   return EXCLUDED_SUFFIXES.some((suffix) => path.endsWith(suffix))
+}
+
+/**
+ * Whether `text` names an `EXCLUDED_PREFIXES` or `EXCLUDED_PATHS` entry as
+ * literal substring text, which is how a rewritten file can couple to one this
+ * module leaves alone: a citation gets rewritten clean while a line a few away
+ * still spells the excluded path it was testing against.
+ *
+ * `EXCLUDED_SUFFIXES` plays no part here, since a suffix names a file's own
+ * shape rather than text its content could quote. The one gap this cannot
+ * close is a file that names the excluded surface by description rather than
+ * by path, such as "the exemption hook" rather than `.claude/hooks/`, which is
+ * the same limit `isExcludedPath` already carries for content it cannot parse.
+ */
+export function referencesExcluded(text: string): boolean {
+  return (
+    EXCLUDED_PATHS.some((path) => text.includes(path)) ||
+    EXCLUDED_PREFIXES.some((prefix) => text.includes(prefix))
+  )
 }
 
 /**
@@ -299,6 +325,7 @@ export interface RecordsPlan {
   readonly collisions: readonly string[]
   readonly entries: readonly CitationEntry[]
   readonly excluded: readonly string[]
+  readonly coupled: readonly string[]
   readonly rewritten: number
   readonly kept: number
 }
@@ -318,6 +345,7 @@ export function planRecordsMove(
   const moves = planFolderMoves(root)
   const entries: CitationEntry[] = []
   const excluded: string[] = []
+  const coupled: string[] = []
   let kept = 0
 
   for (const source of sources) {
@@ -339,6 +367,8 @@ export function planRecordsMove(
     kept += counts.kept
     if (counts.rewritten === 0) continue
 
+    if (referencesExcluded(source.text)) coupled.push(source.path)
+
     entries.push({
       path: source.path,
       text: rewriteText(source.text),
@@ -352,6 +382,7 @@ export function planRecordsMove(
     collisions: collisions(root, moves),
     entries,
     excluded,
+    coupled,
     rewritten: entries.reduce((sum, entry) => sum + entry.rewritten, 0),
     kept,
   }
