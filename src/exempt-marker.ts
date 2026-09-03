@@ -7,7 +7,7 @@
  * wrong lines and one holding a parenthesis throws, and neither failure is the
  * caller's to anticipate.
  */
-function escapeForPattern(token: string): string {
+export function escapeForPattern(token: string): string {
   return token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
