@@ -145,10 +145,12 @@ export function register(program: Command): void {
         ...CONDITIONS,
         '',
         'This reports and removes nothing. "route" names which removal shape',
-        'applies: "session" when a live session holds the directory, where',
-        '`claude rm <id>` takes the session and its worktree together, and',
-        '"worktree" when the session has ended, where `canon worktrees',
-        'reclaim` is the pair of a remove and a branch delete.',
+        'applies: "session" when a live session holds the directory,',
+        'where `claude rm <id>` is meant to remove it and its worktree',
+        'together, but its own report is not reliable, so run this command',
+        'again afterward to see what happened. "worktree" is the shape once',
+        'the session has ended, where `canon worktrees reclaim` is the pair',
+        'of a remove and a branch delete.',
         '',
         'Examples:',
         '  canon worktrees list',
@@ -185,8 +187,10 @@ export function register(program: Command): void {
         'gone sweeps stale registrations once before the branch deletes.',
         '',
         'It deletes only what a reading called reclaimable. A worktree a live',
-        'session holds is refused rather than removed, since `claude rm <id>`',
-        'is what takes a session and its worktree together.',
+        'session holds is refused rather than removed here. `claude rm <id>`',
+        'is meant to remove the session and its worktree together, but its',
+        'own report is not reliable, so run `canon worktrees list` again',
+        'afterward to see what happened.',
         '',
         'The stale-registration sweep is the one step that reaches wider, since',
         'git takes no path to scope it. It clears the bookkeeping for every',
@@ -429,20 +433,27 @@ function reportWorktrees(worktrees: readonly WorktreeVerdict[]): void {
  * what to remove, so a row phrased for the first alone leaves the second
  * removing a directory on a conclusion it cannot check.
  */
-function describe(verdict: WorktreeVerdict): string {
+export function describe(verdict: WorktreeVerdict): string {
   const held = verdict.branch ?? 'detached'
   const head = `${verdict.path}  ${held}`
 
   if (!verdict.reclaimable) {
     const reasons = verdict.refusals.map((refusal) => REFUSALS[refusal])
-    // A name is quoted because a session carries whatever string it was
-    // launched under, spaces included, and one command per name because a
-    // joined list reads as a single argument.
+    // Three cases rather than one line, since only a resolved background
+    // holder has a real command to print. An interactive holder has no id to
+    // look up at all, and an unresolved background one has an id somewhere in
+    // `claude agents --json` that this reading could not cross-reference.
     const routes =
       verdict.route === 'session'
-        ? verdict.sessions.map(
-            (name) => `\n  Removal there goes through: claude rm '${name}'`,
-          )
+        ? verdict.sessions.map((session) => {
+            if (session.kind === 'interactive') {
+              return `\n  ${session.name}: interactive, so nothing removes it until its terminal closes.`
+            }
+            if (session.id === null) {
+              return `\n  ${session.name}: match it against claude agents --json for its id, then claude rm '<id>'.`
+            }
+            return `\n  Removal there goes through: claude rm '${session.id}'`
+          })
         : []
     return `${head}\n  Refused: ${reasons.join('; ')}.${routes.join('')}`
   }

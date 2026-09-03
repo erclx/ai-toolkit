@@ -89,11 +89,14 @@ The read is one `gh pr list --state merged` for the whole repository rather than
 
 `route` names which one applies rather than choosing it, since picking wrong strands state.
 
-- `session`: a live session holds the directory, and `claude rm <id>` removes the session and its worktree together. The `sessions` field carries names rather than ids, and a name is whatever string the session was launched under, spaces included, so quote it and match it against `claude agents --json`, which carries the id beside the name on every row.
+- `session`: a live session holds the directory, and the `sessions` field carries `{name, kind, id}` per holder rather than a bare name, since `claude rm <id>` takes the id and never the name. `kind` reads `bg` or `interactive` off this repository's session registry.
+  - A resolved background holder: `id` carries the value `claude agents --json` reports, so `claude rm <id>` is the command to run. Its own report is not reliable: two runs under matched conditions on 2026-09-03 both printed `kept`, and one of them had already removed the worktree, so read `canon worktrees list` again afterward rather than trust what the command printed.
+  - An unresolved background holder: `id` is `null` because the binary is missing, fails, or has not reported that pid yet, so its id has to come from a manual read of `claude agents --json` instead.
+  - An interactive holder: `id` is always `null`, since no id exists for one at all, and nothing removes it until a person closes its terminal.
 - `worktree`: the session has ended, and `canon worktrees reclaim` is what runs the remove and the branch delete.
 - `null`: the main worktree, which no removal shape reaches.
 
-A held worktree is refused rather than reported reclaimable, and its route is reported for whoever decides to act on it. Deleting a directory underneath a live session is the case that has to refuse.
+A held worktree is refused rather than reported reclaimable, and its route is reported for whoever decides to act on it. Deleting a directory underneath a live session is the case that has to refuse, and an interactive holder is the one shape inside that refusal with no removal route at all.
 
 ## What an unreadable input does
 

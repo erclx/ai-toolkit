@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { clientCommandCitations } from '@/gate/measures'
 import { STAGES } from '@/gate/stages'
 
 function scopeOf(id: string): RegExp {
@@ -56,5 +57,18 @@ describe('the shipped-references stage scope', () => {
 
     expect(scope.test('docs-site/index.md')).toBe(false)
     expect(scope.test('src/docs/read.ts')).toBe(false)
+  })
+})
+
+describe('the client-command-citations stage', () => {
+  it('should register the measure unscoped, so no changed-file pattern skips it', () => {
+    const stage = STAGES.find(
+      (candidate) => candidate.id === 'client-command-citations',
+    )
+
+    expect(stage?.scope).toBeUndefined()
+    expect(stage?.checks).toEqual([
+      { kind: 'measure', measure: clientCommandCitations },
+    ])
   })
 })

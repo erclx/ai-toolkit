@@ -2,6 +2,13 @@ import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  CLIENT_COMMAND_MARKER,
+  CLIENT_COMMANDS,
+  type ClientCommand,
+  clientCommandCitationsIn,
+} from '@/client-commands'
+import { listRepositoryFiles } from '@/git-files'
+import {
   isShippedCorpus,
   REFERENCE_MARKER,
   referencesIn,
@@ -529,6 +536,69 @@ export const shippedReferences: Measure = async (ctx) => {
       found.length === 1
         ? `One reference in the shipped corpora names this repository without saying so. Qualify it as owner/repo#123 or owner/repo@abc1234, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`
         : `${found.length} references in the shipped corpora name this repository without saying so. Qualify each as owner/repo#123 or owner/repo@abc1234, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`,
+  }
+}
+
+/**
+ * Every git-tracked file quoting a listed client command with the wrong
+ * argument, over the whole tree rather than one corpus, since a wrong
+ * quotation can land in any file this repository writes.
+ *
+ * `commands` defaults to the shipped table and takes a narrower one only to
+ * cover the case where that table ships empty, which is a broken check rather
+ * than a clean tree, exactly as an empty ban set is for `markdownBans`.
+ */
+export const clientCommandCitations = async (
+  ctx: MeasureContext,
+  commands: readonly ClientCommand[] = CLIENT_COMMANDS,
+): Promise<MeasureReport> => {
+  if (commands.length === 0) {
+    return {
+      emissions: [],
+      failure:
+        'The client command table is empty, so the corpus was walked and nothing was looked for. Check src/client-commands.ts.',
+    }
+  }
+
+  const files = await listRepositoryFiles(ctx.root)
+  if (files === undefined) {
+    return {
+      emissions: [],
+      unmeasured:
+        'The tracked file list could not be read, so no client command citation was checked.',
+    }
+  }
+
+  const found = files.flatMap((file) => {
+    let text: string
+    try {
+      text = readFileSync(join(ctx.root, file), 'utf8')
+    } catch {
+      return []
+    }
+    return clientCommandCitationsIn(file, text, commands)
+  })
+
+  if (found.length === 0) {
+    return {
+      emissions: [
+        info(
+          `No client command carries a wrong argument across ${files.length} tracked files`,
+        ),
+      ],
+    }
+  }
+
+  return {
+    emissions: found.map((citation) =>
+      warn(
+        `${citation.file}:${citation.line} carries ${citation.text}, which quotes \`${citation.command}\` with the wrong argument`,
+      ),
+    ),
+    failure:
+      found.length === 1
+        ? `One tracked citation quotes a client command with the wrong argument. Match it against the canonical form in src/client-commands.ts, or mark the line ${CLIENT_COMMAND_MARKER}: <reason> where the argument differs on purpose.`
+        : `${found.length} tracked citations quote a client command with the wrong argument. Match each against the canonical form in src/client-commands.ts, or mark the line ${CLIENT_COMMAND_MARKER}: <reason> where the argument differs on purpose.`,
   }
 }
 

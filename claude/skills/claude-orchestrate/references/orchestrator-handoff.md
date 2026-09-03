@@ -17,6 +17,8 @@ Name the planner as the case always in this set, and scope the act no narrower. 
 
 Retire what this session dispatched. Report a hand-launched session and leave the act to the operator, since the knowledge making the act safe is a delivery this session received and it received nothing from a session it never launched. The `worker-` and `planner-` name prefixes separate the two populations, per `orchestrator-dispatch.md`.
 
+A capability gap sits beside the knowledge gap, and it holds even where delivery is somehow known. A hand-launched session is as often interactive as background, and `claude rm <id>` has no id to take for an interactive one at all, so the command cannot reach it whatever this session learned about its delivery.
+
 ### Telling a delivered session from a blocked one
 
 No status field carries the difference. `status` reads `busy` or `waiting` straight off the client record, and both describe the last turn rather than the work, so `waiting` is the ordinary answer for a session that reported and stopped, which is what a correct delivery looks like. The `statusDwellMs` beside it separates a long idle from a short one and separates nothing else.
@@ -25,7 +27,7 @@ The read is the report this session is holding. Retire a session whose delivery 
 
 ### The act, and the order it runs in
 
-`claude rm <id>` removes a background session and its worktree together, and it takes one target per call, so a wave costs one call per session. The argument is the id rather than the name, which `claude agents --json` carries beside the name on every row, so a session read off a roster by name is matched to its id there before the call. Both readings are from 2026-09-02, where the name form answered `No job matching`.
+`claude rm <id>` is meant to remove a background session and its worktree together, though its own report is not reliable, so `canon worktrees list` is the reading to trust afterward. It takes one target per call, so a wave costs one call per session. The argument is the id rather than the name, which `claude agents --json` carries beside the name on every row, so a session read off a roster by name is matched to its id there before the call. Both readings are from 2026-09-02, where the name form answered `No job matching`.
 
 The command belongs to the client rather than to this toolkit, so a target running another client performs whatever removal that client offers.
 

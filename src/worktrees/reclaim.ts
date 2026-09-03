@@ -16,6 +16,9 @@ import {
 
 const GH_TIMEOUT_MS = 30_000
 
+/** A local binary read, not a network round trip, so the bound is tighter. */
+const CLAUDE_AGENTS_TIMEOUT_MS = 10_000
+
 /**
  * How many merged pull requests one read covers. A worktree older than this
  * many merges reads as having none and is refused, which is the safe direction:
@@ -47,6 +50,21 @@ export type Route = 'session' | 'worktree'
 /** No removal shape reaches the main worktree, which is what `null` says. */
 export type RemovalRoute = Route | null
 
+/**
+ * One live session holding a worktree, enriched with the id `claude rm` takes.
+ *
+ * `id` is null on two occasions a caller cannot tell apart from the name
+ * alone: an interactive holder, which carries no id at all since nothing but a
+ * person closing its terminal removes it, and a background holder whose id
+ * `claude agents --json` could not resolve, whether the binary is missing,
+ * failing, or simply has not reported that pid.
+ */
+export interface HeldSession {
+  readonly name: string
+  readonly kind: string
+  readonly id: string | null
+}
+
 export interface WorktreeVerdict {
   readonly path: string
   readonly branch: string | null
@@ -55,12 +73,8 @@ export interface WorktreeVerdict {
   readonly refusals: readonly Refusal[]
   /** The pull request that retired the branch, so a report can name what it read. */
   readonly pullRequest: number | null
-  /**
-   * The names of the live sessions holding this worktree. `claude rm` takes an
-   * id rather than a name, so a caller acting on this matches each name to the
-   * id `claude agents --json` carries beside it.
-   */
-  readonly sessions: readonly string[]
+  /** The live sessions holding this worktree. */
+  readonly sessions: readonly HeldSession[]
   readonly route: RemovalRoute
   /**
    * True when the directory is already gone and only the registration remains,
@@ -107,6 +121,9 @@ export interface ReclaimOptions {
   readonly mergedPullRequests?: (cwd: string) => Promise<MergedReport>
   readonly worktreeStatus?: (path: string) => Promise<StatusReport>
   readonly resolve?: () => Promise<SessionReport>
+  readonly claudeAgentIds?: (
+    cwd: string,
+  ) => Promise<ReadonlyMap<number, string>>
 }
 
 /**
@@ -171,6 +188,45 @@ async function mergedPullRequests(cwd: string): Promise<MergedReport> {
 }
 
 /**
+ * Reads every live agent's session id, keyed by its process id, from `claude
+ * agents --json`.
+ *
+ * Guarded like `mergedPullRequests`, reading the same way, but degrading
+ * rather than refusing: the id enriches a caller's report and is never an
+ * input the reclaim logic depends on, where the merge state decides whether a
+ * removal is safe at all. A missing or failing binary leaves every entry
+ * unresolved instead of refusing the whole reading.
+ */
+async function claudeAgentIds(
+  cwd: string,
+): Promise<ReadonlyMap<number, string>> {
+  if (Bun.which('claude') === null) return new Map()
+
+  try {
+    const result = await execa('claude', ['agents', '--json'], {
+      cwd,
+      timeout: CLAUDE_AGENTS_TIMEOUT_MS,
+      env: gitEnv(),
+      extendEnv: false,
+    })
+    const rows = JSON.parse(result.stdout) as readonly {
+      pid?: unknown
+      id?: unknown
+    }[]
+
+    const ids = new Map<number, string>()
+    for (const row of rows) {
+      if (typeof row.pid === 'number' && typeof row.id === 'string') {
+        ids.set(row.pid, row.id)
+      }
+    }
+    return ids
+  } catch {
+    return new Map()
+  }
+}
+
+/**
  * Reports whether a worktree holds work no history is behind.
  *
  * Untracked files count for a directory that still exists, since a worktree is
@@ -214,16 +270,14 @@ function holders(
   entry: WorktreeEntry,
   sessions: readonly ResolvedSession[],
   repository: string | null,
-): readonly string[] {
-  return sessions
-    .filter(
-      (candidate) =>
-        candidate.worktree === entry.path ||
-        (entry.branch !== null &&
-          candidate.branch === entry.branch &&
-          candidate.repository === repository),
-    )
-    .map((candidate) => candidate.name)
+): readonly ResolvedSession[] {
+  return sessions.filter(
+    (candidate) =>
+      candidate.worktree === entry.path ||
+      (entry.branch !== null &&
+        candidate.branch === entry.branch &&
+        candidate.repository === repository),
+  )
 }
 
 function verdict(
@@ -234,8 +288,20 @@ function verdict(
   merged: ReadonlyMap<string, number>,
   sessions: readonly ResolvedSession[],
   repository: string | null,
+  agentIds: ReadonlyMap<number, string>,
 ): WorktreeVerdict {
   const held = holders(entry, sessions, repository)
+  // An interactive holder carries no id to look up at all, so the branch is
+  // explicit rather than relying on `claude agents --json` never reporting one
+  // for a pid this repository's own registry marked interactive.
+  const heldSessions: HeldSession[] = held.map((session) => ({
+    name: session.name,
+    kind: session.kind,
+    id:
+      session.kind === 'interactive'
+        ? null
+        : (agentIds.get(session.pid) ?? null),
+  }))
   const pullRequest =
     entry.branch === null ? null : (merged.get(entry.branch) ?? null)
   const refusals: Refusal[] = []
@@ -262,7 +328,7 @@ function verdict(
     reclaimable: refusals.length === 0,
     refusals,
     pullRequest,
-    sessions: held,
+    sessions: heldSessions,
     // No removal shape reaches the main worktree, and reporting one there
     // offers a command whose only effect is to break the checkout. Deciding it
     // here rather than in the reporter keeps the record and the framed output
@@ -301,14 +367,17 @@ export async function reclaimReport(
   const readMerged = opts.mergedPullRequests ?? mergedPullRequests
   const readStatus = opts.worktreeStatus ?? worktreeStatus
   const resolve = opts.resolve ?? resolveSessions
+  const readAgentIds = opts.claudeAgentIds ?? claudeAgentIds
 
-  const [entries, merged, sessions, repository, current] = await Promise.all([
-    listAll(cwd),
-    readMerged(cwd),
-    resolve(),
-    repositoryOf(cwd),
-    currentWorktreeRoot(cwd),
-  ])
+  const [entries, merged, sessions, repository, current, agentIds] =
+    await Promise.all([
+      listAll(cwd),
+      readMerged(cwd),
+      resolve(),
+      repositoryOf(cwd),
+      currentWorktreeRoot(cwd),
+      readAgentIds(cwd),
+    ])
 
   if (merged.kind === 'unreadable') {
     return {
@@ -344,6 +413,7 @@ export async function reclaimReport(
       byBranch,
       sessions.sessions,
       repository,
+      agentIds,
     ),
   )
 

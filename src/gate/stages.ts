@@ -1,6 +1,7 @@
 import {
   auditSet,
   captureStamps,
+  clientCommandCitations,
   markdownBans,
   type Measure,
   pluginManifests,
@@ -369,6 +370,13 @@ export const STAGES: readonly Stage[] = [
     id: 'markdown-bans',
     label: 'Markdown bans',
     checks: [{ kind: 'measure', measure: markdownBans }],
+  },
+  {
+    // Unscoped, since a wrong quotation of a client command can land in any
+    // tracked file rather than in one corpus.
+    id: 'client-command-citations',
+    label: 'Client command citations',
+    checks: [{ kind: 'measure', measure: clientCommandCitations }],
   },
   {
     // Scoped to the corpora it reads rather than run unconditionally, so a

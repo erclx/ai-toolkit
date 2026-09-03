@@ -1,12 +1,16 @@
+import { execaSync } from 'execa'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { BASELINE_REL } from '@/audits/baseline'
+import { CLIENT_COMMAND_MARKER } from '@/client-commands'
+import { gitEnv } from '@/git-env'
 import type { CommandResult, MeasureContext } from '@/gate/measures'
 import {
   AUDITS_BASELINE,
   captureStamps,
+  clientCommandCitations,
   recordIdempotence,
   shippedReferences,
 } from '@/gate/measures'
@@ -335,6 +339,93 @@ describe('shippedReferences', () => {
     const report = await shippedReferences(context())
 
     expect(report.failure).toBeUndefined()
+  })
+})
+
+describe('clientCommandCitations', () => {
+  let root: string
+
+  const refuse = () => {
+    throw new Error('clientCommandCitations runs no command')
+  }
+
+  const context = (): MeasureContext => ({
+    root,
+    ci: false,
+    run: refuse,
+    cli: refuse,
+  })
+
+  const git = (...args: string[]): string =>
+    execaSync('git', ['-C', root, ...args], {
+      env: gitEnv(),
+      extendEnv: false,
+    }).stdout
+
+  const commit = (path: string, content: string): void => {
+    const full = join(root, path)
+    mkdirSync(join(full, '..'), { recursive: true })
+    writeFileSync(full, content)
+    git('add', '--all')
+    git('commit', '-m', `add ${path}`)
+  }
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'canon-client-commands-'))
+    git('init', '--initial-branch=main')
+    git('config', 'user.email', 'test@example.com')
+    git('config', 'user.name', 'Test')
+    commit('README.md', 'seed\n')
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  it('passes a tree quoting the canonical form', async () => {
+    commit(
+      'docs/agents/worktrees.md',
+      'Removal there goes through `claude rm <id>`.\n',
+    )
+
+    const report = await clientCommandCitations(context())
+
+    expect(report.failure).toBeUndefined()
+    expect(report.emissions[0]?.text).toContain('No client command')
+  })
+
+  it('fails on a wrong argument and names the file and line', async () => {
+    commit(
+      'src/commands/worktrees.ts',
+      // canon-allow-client-command: fixture for a wrong argument, not a real citation
+      "first\ngoes through: claude rm '${name}'\n",
+    )
+
+    const report = await clientCommandCitations(context())
+
+    expect(report.failure).toContain('One tracked citation')
+    expect(report.emissions).toHaveLength(1)
+    expect(report.emissions[0]?.text).toContain('src/commands/worktrees.ts:2')
+  })
+
+  it('passes a marked line carrying the wrong argument on purpose', async () => {
+    commit(
+      'src/commands/worktrees.ts',
+      `goes through: claude rm '\${name}' <!-- ${CLIENT_COMMAND_MARKER}: illustrates the wrong form on purpose -->\n`,
+    )
+
+    const report = await clientCommandCitations(context())
+
+    expect(report.failure).toBeUndefined()
+  })
+
+  it('reports the shipped table left empty as a failure rather than a clean tree', async () => {
+    // canon-allow-client-command: fixture for a wrong argument, not a real citation
+    commit('src/commands/worktrees.ts', "goes through: claude rm '${name}'\n")
+
+    const report = await clientCommandCitations(context(), [])
+
+    expect(report.failure).toContain('table is empty')
   })
 })
 
