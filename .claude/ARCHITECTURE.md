@@ -272,6 +272,14 @@ A driven spike answered that rather than assuming it from the shape of an unrela
 
 Advising was the alternative and it is what a scaffolded target would have received under the plan as written, since a hook that never blocks a target's own turns costs nothing a project would notice at scaffold time. What it costs instead is the report itself, since a channel nobody reads is not a report, and the row's own risk section already named a missed report as the worse of its two failure modes. Blocking is what stays, bounded by `stop_hook_active` alone rather than by a marker file, which the same spike confirmed by driving a block and its forced continuation. Measured at `f47f8f02` on 2026-09-03.
 
+### `assets/` and `examples/` split on who the folder is talking to
+
+Both folders hold a hand-authored source, a render step, and output sitting beside it, so a source-versus-output rule cannot separate them. What separates them is the reader each is written for: `assets/` is this repository's self-portrait, rendered for a visitor who never opens the source, and `examples/` is sample input written for a reader about to copy and run it themselves. `README.md` naming every `assets/*.png` directly, against nothing outside `examples/slides/` naming its own rendered output, is the concrete instance the test resolves.
+
+The same test answers the staleness question, so the two folders read as one policy rather than an arbitrary gate on one and a disclaimer on the other. A render gates when something else committed depends on it staying current, which is `assets/`'s case through `captureStamps`, and stays disclaimed when nothing does, which is `examples/`'s case. Widening the gate to cover `examples/slides/` was considered and declined on that ground: nothing outside `examples/` depends on its rendered output staying current, and building a mechanism for the one case that already has a gate does not generalize to the one that needs none.
+
+Measured at `686d8665` on 2026-09-03.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects that call.
