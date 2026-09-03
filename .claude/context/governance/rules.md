@@ -63,6 +63,8 @@ Always-on rules such as the core persona, testing, and error handling emit with 
 
 `.claude/rules/*.md` discovers recursively at session start. Rules without a `paths:` field always apply, with the same priority as `CLAUDE.md`. Rules with `paths:` apply when Claude reads files matching the glob. See `wiki/claude/claude-memory.md` for the loading-time details.
 
+Recursive discovery is what makes a target still on the flat `.claude/rules/<subdir>/` layout dangerous rather than merely stale. Neither bootstrap verb detects or clears the flat tree, so a target that runs `canon gov install` after the `canon/` wrapper landed ends up with both the flat copy and the new `canon/` copy on disk, and Claude Code loads both, one of them frozen at whatever content the flat copy carried. `canon migrate rule-layout` is the mover, covered in `.claude/context/governance/install.md`.
+
 An always-loaded rule sitting in `core/` reads as an odd fit next to the folder's path-scoped members, since nothing about `paths:` requires the band. The reason is whether a target can update it rather than glob scope: `governance/stacks/base.toml` takes `core` whole, so a bullet moved there from the seeded root file reaches a target through `canon gov sync` instead of through a one-time copy nothing ever refreshes. A `CLAUDE.md` bullet carries the same session-start priority either way, so the band is the only thing the move changes.
 
 ## Gotchas

@@ -91,6 +91,15 @@ headlessly, so a call that names its stack is unchanged.
 target before anything else, so a path that does not exist fails rather than
 being scaffolded.
 
+A target still on the flat installed-rule layout from an older release reports
+"No governance surfaces found in target" from `canon gov sync` and exits 0,
+since sync reads only the current wrapped destination. `canon gov install`
+against that same target writes a second, wrapped copy beside the flat one
+rather than reading or clearing it, so the target ends up holding both, and
+Claude Code loads both copies of an edited rule at session start. Run `canon
+migrate rule-layout` first to move a target off the flat layout, which reports
+what it would move and applies it under `--write`.
+
 ## Standards resolution
 
 `canon standards <name>` writes the document to stdout and the root it answered

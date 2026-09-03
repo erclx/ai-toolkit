@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { listRepositoryFiles } from '@/git-files'
+import { indexSourceRules } from '@/gov/adapter'
 import { applyRecordsMove, applyRename, readSources } from '@/migrate/apply'
 import { isToolkitOwned, planRename, type RenamePlan } from '@/migrate/plan'
 import {
@@ -17,6 +18,14 @@ import {
   planRecordsMove,
   type RecordsPlan,
 } from '@/migrate/records'
+import {
+  applyRuleLayout,
+  planRuleLayout,
+  type RuleLayoutPlan,
+  walkFlatRules,
+} from '@/migrate/rule-layout'
+import { PROJECT_ROOT } from '@/project-root'
+import { readStamp, stampedHashes } from '@/sync/stamp'
 import { logError, logInfo, logStep, logWarn, pipeOutput, plural } from '@/ui'
 
 interface RenameOptions {
@@ -416,6 +425,103 @@ function toRecordTreeRecord(
   }
 }
 
+interface RuleLayoutOptions {
+  readonly json?: boolean
+  readonly write?: boolean
+  readonly root?: string
+}
+
+/**
+ * Moves a target's flat `.claude/rules/<subdir>/` tree onto
+ * `.claude/rules/canon/<subdir>/`.
+ *
+ * No ignore gate here, unlike `runRecords`. Nothing this verb moves is
+ * gitignored: an installed rule is a file the target tracks, so relocating it
+ * publishes nothing that was not already committed.
+ */
+async function runRuleLayout(opts: RuleLayoutOptions): Promise<number> {
+  const root = opts.root ?? process.cwd()
+
+  const files = await walkFlatRules(root)
+  const hashes = stampedHashes(readStamp(root), 'governance')
+  const catalog = new Set(indexSourceRules(PROJECT_ROOT).keys())
+  const plan = planRuleLayout(root, files, hashes, catalog)
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify(toRuleLayoutRecord(plan, opts.write))}\n`,
+    )
+  }
+
+  reportRuleLayout(plan)
+
+  if (plan.collisions.length > 0) {
+    logError(
+      `${plural(plan.collisions.length, 'file')} collide with an existing canon/ copy carrying different bytes. Neither side moved.`,
+    )
+    for (const collision of plan.collisions) {
+      logError(`  ${collision.path} -> ${collision.destination}`)
+    }
+  }
+
+  if (plan.moves.length === 0 && plan.duplicates.length === 0) {
+    return plan.collisions.length > 0 ? 1 : 0
+  }
+
+  if (!opts.write) {
+    logWarn('Nothing was written. Pass --write to apply this plan.')
+    return 2
+  }
+
+  const applied = await applyRuleLayout(root, plan, PROJECT_ROOT)
+  logStep(
+    `Moved ${plural(applied.moved, 'file')} and deleted ${plural(applied.deleted, 'duplicate')}.`,
+  )
+
+  if (applied.failed.length > 0) {
+    logError(`Could not move ${plural(applied.failed.length, 'file')}.`)
+    for (const path of applied.failed) logError(`  ${path}`)
+    return 1
+  }
+
+  return plan.collisions.length > 0 ? 1 : 0
+}
+
+function reportRuleLayout(plan: RuleLayoutPlan): void {
+  logInfo(`${plural(plan.moves.length, 'file')} to move.`)
+  for (const move of plan.moves) {
+    logInfo(`  ${move.from} -> ${move.to} (${move.status})`)
+  }
+
+  if (plan.duplicates.length > 0) {
+    logInfo(
+      `${plural(plan.duplicates.length, 'file')} already duplicated at their destination, to delete.`,
+    )
+    for (const duplicate of plan.duplicates) logInfo(`  ${duplicate.path}`)
+  }
+
+  if (plan.unclaimed.length > 0) {
+    logWarn(
+      `${plural(plan.unclaimed.length, 'file')} neither the stamp nor the current catalog can vouch for. Left in place.`,
+    )
+    for (const path of plan.unclaimed) logWarn(`  ${path}`)
+  }
+}
+
+function toRuleLayoutRecord(
+  plan: RuleLayoutPlan,
+  wrote: boolean | undefined,
+): unknown {
+  return {
+    ok: plan.collisions.length === 0,
+    wrote: wrote === true,
+    moves: plan.moves,
+    duplicates: plan.duplicates,
+    collisions: plan.collisions,
+    unclaimed: plan.unclaimed,
+  }
+}
+
 export function register(program: Command): void {
   const migrate = program
     .command('migrate')
@@ -550,5 +656,49 @@ export function register(program: Command): void {
     )
     .action(async (opts: RenameOptions) => {
       process.exitCode = await runRename(opts)
+    })
+
+  migrate
+    .command('rule-layout')
+    .description('Move installed rules from the flat layout onto canon/')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option('--write', 'Apply the plan rather than reporting it')
+    .option(
+      '--root <path>',
+      'Project root, defaulting to the working directory',
+    )
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Moves .claude/rules/<subdir>/<rule>.md to',
+        '.claude/rules/canon/<subdir>/<rule>.md. A file is never overwritten:',
+        'this verb only relocates a rule, even one classified as edited.',
+        '',
+        'Classification: clean when the target stamp still hashes to the',
+        'installed content, edited when it does not, and unclaimed when',
+        'neither the stamp nor the current rule catalog can vouch for the',
+        'name. An unclaimed file is reported and never moved.',
+        '',
+        'A destination already holding the same bytes marks the flat file a',
+        'duplicate, which --write deletes rather than moves. A destination',
+        'holding different bytes is a collision: neither file is touched,',
+        'it is reported by name, and every other planned move still applies.',
+        '',
+        'Exit codes:',
+        '  0  nothing to move, or --write applied the whole plan clean',
+        '  1  a move failed, or an unresolved collision remains',
+        '  2  a plan exists and --write was not passed',
+        '',
+        'Examples:',
+        '  canon migrate rule-layout',
+        '  canon migrate rule-layout --write',
+        '  canon migrate rule-layout --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: RuleLayoutOptions) => {
+      process.exitCode = await runRuleLayout(opts)
     })
 }
