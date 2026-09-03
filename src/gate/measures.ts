@@ -85,7 +85,7 @@ const output = (text: string): Emission => ({ kind: 'output', text })
 /**
  * Rules no stack reaches, sorted the way `canon gov list` emits them.
  * `260-shadcn` and `320-tanstack-query` are opt-in libraries a project may not
- * want. `505-at-references` used to sit here too, shipping with no stack on
+ * want. `600-at-references` used to sit here too, shipping with no stack on
  * purpose since a rule under `claude/` would reach every base consumer through
  * the folder-whole entry there. Its own install channel, `canon snippets
  * install`, retired with nothing left to deliver it, so `base` now carries

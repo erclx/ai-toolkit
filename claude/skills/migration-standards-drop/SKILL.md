@@ -86,7 +86,7 @@ Print the blocks below, omitting any that is empty.
 ## Citations to repoint
 
 - `CLAUDE.md:42` → `canon standards markdown`
-- `.claude/rules/core/<n>-<slug>.md:8` → `canon standards skill`
+- `.claude/rules/canon/core/<n>-<slug>.md:8` → `canon standards skill`
 
 ## You supply
 

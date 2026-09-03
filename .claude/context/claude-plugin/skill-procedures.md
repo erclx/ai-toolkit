@@ -191,7 +191,7 @@ The read sites were left alone. `Read` resolves against the main root normally, 
 
 ### The drift gate stages a file that mis-scopes the review
 
-Two documented behaviors meet on any branch editing an authoring surface, and the result is a review of the wrong file set. The Consumed copies stage clears only on a staged regeneration, so a branch that edits `governance/rules/core/X.md` has to stage `.claude/rules/core/X.md` before `bun run check` passes. <!-- audit-ignore-citations: .claude/rules/core/X.md --> `claude-review` Step 2 then takes a non-empty `git diff --staged` as its diff scope, which is the generated mirror alone and none of the files carrying the change.
+Two documented behaviors meet on any branch editing an authoring surface, and the result is a review of the wrong file set. The Consumed copies stage clears only on a staged regeneration, so a branch that edits `governance/rules/core/X.md` has to stage `.claude/rules/canon/core/X.md` before `bun run check` passes. <!-- audit-ignore-citations: .claude/rules/canon/core/X.md --> `claude-review` Step 2 then takes a non-empty `git diff --staged` as its diff scope, which is the generated mirror alone and none of the files carrying the change.
 
 Nothing reports it, since the review runs, writes a receipt, and reads clean. On a branch before its first commit the branch pair is empty too, so `git diff HEAD` is the only read at correct scope and the staged-set rule has to be overridden by hand. Measured 2026-08-20, where the staged set held one file against four the branch had changed.
 

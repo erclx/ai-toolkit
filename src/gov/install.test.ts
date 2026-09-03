@@ -101,8 +101,8 @@ describe('installRules', () => {
     const installed = await installRules(found, target)
 
     expect(installed).toEqual([
-      join('.claude', 'rules', 'core', '000-a.md'),
-      join('.claude', 'rules', 'lang', '100-b.md'),
+      join('.claude', 'rules', 'canon', 'core', '000-a.md'),
+      join('.claude', 'rules', 'canon', 'lang', '100-b.md'),
     ])
   })
 
@@ -112,13 +112,23 @@ describe('installRules', () => {
     const { found } = lookupRules(root, ['000-a'])
 
     expect(await installRules(found, target)).toEqual([
-      join('.claude', 'rules', '000-a.md'),
+      join('.claude', 'rules', 'canon', '000-a.md'),
+    ])
+  })
+
+  it('should install internal-only rules under internal/ when asked', async () => {
+    seedRule(join('claude', '598-a.md'), 'A')
+
+    const { found } = lookupRules(root, ['598-a'])
+
+    expect(await installRules(found, target, 'internal')).toEqual([
+      join('.claude', 'rules', 'internal', 'claude', '598-a.md'),
     ])
   })
 
   it('should leave an existing destination mode alone', async () => {
     seedRule(join('core', '000-a.md'), 'A')
-    const dest = join(target, '.claude', 'rules', 'core', '000-a.md')
+    const dest = join(target, '.claude', 'rules', 'canon', 'core', '000-a.md')
     mkdirSync(dirname(dest), { recursive: true })
     writeFileSync(dest, 'old')
     chmodSync(dest, 0o600)

@@ -31,4 +31,4 @@ paths:
 
 ## Authority
 
-- Follow `.claude/rules/lib/300-testing-ts.md` for framework choice, file placement, and test naming.
+- Follow `.claude/rules/canon/lib/300-testing-ts.md` for framework choice, file placement, and test naming.

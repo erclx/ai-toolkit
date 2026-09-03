@@ -9,22 +9,25 @@ The behavior notes behind the verbs listed in `commands.md`. Each one records wh
 
 ## Domain sync
 
-`canon gov sync` updates only rules already present under `.claude/rules/` and
-never adds new ones. A rule the toolkit does not ship is left alone, which is
-how project-authored rules survive, and one under `.claude/rules/project/`
-is left alone regardless of its name, since that subfolder is project-authored
-by location. It also removes a stale `.claude/GOV.md`
-from the retired build. Use `canon gov install` to add rules.
+`canon gov sync` updates only rules already present under
+`.claude/rules/canon/` and never adds new ones. That wrapper marks the
+toolkit-owned half of the tree, and it is the whole of what the walk reaches:
+`.claude/rules/project/` sits outside it by location and is never read,
+matched, or reported on, which is how project-authored rules survive. It also
+removes a stale `.claude/GOV.md` from the retired build. Use
+`canon gov install` to add rules.
 
-A rule the toolkit finds no source for, sitting in a shared subdirectory rather
-than under `.claude/rules/project/`, is reported with the path under that
-subfolder it would take. The offer is conditional on the project having written
-the rule, since a rule the toolkit shipped and later renamed reaches the same
-line, and moving one there would mark it the project's for good. Nothing is
-moved either way, because a rule's installed path is one the project's own
-rules, skills, and docs may cite. `canon standards rule` carries the reserved
-number bands behind that placement, where `900-999` is the range a
-project-authored rule takes and everything below it belongs to the toolkit.
+A rule under `.claude/rules/canon/` that the toolkit finds no source for is
+reported orphaned with no destination offered. The toolkit cannot tell a rule
+a project dropped there from one it shipped and later renamed, and a
+destination nested inside `canon/` would be wrong for the first case
+regardless, since that folder is replaced wholesale on sync.
+
+Nothing is moved either way, because a rule's installed path is one the
+project's own rules, skills, and docs may cite. `canon standards rule` carries
+the reserved number bands behind the three-way split, where `900-999` under
+`.claude/rules/project/` is what a project-authored rule takes and everything
+under `.claude/rules/canon/` belongs to the toolkit.
 
 `canon sync --check` does not report an orphaned entry. It skips every one, so
 the destination reaches `canon gov sync` alone among the two per-file domain
@@ -52,8 +55,8 @@ without governance has yet to install what every project carries, while one
 without design chose that.
 
 When the target's install recorded a stack, `canon gov sync` also reports a
-rule that stack lists and `.claude/rules/` does not hold, as a `missing` entry
-carrying no change. This is what makes a target whose recorded sync point
+rule that stack lists and `.claude/rules/canon/` does not hold, as a `missing`
+entry carrying no change. This is what makes a target whose recorded sync point
 postdates a rule joining its stack still see that rule: the report reads the
 target's current entitlement against its current tree rather than diffing
 from an anchor a later sync could advance past the rule's own commit. A
@@ -109,9 +112,12 @@ runs the verb again for that name.
 
 `canon gov regen` is the one governance verb that runs against the toolkit root,
 because the `.claude/rules/` it writes there is produced output rather than an
-operator's working copy. It reads the stack recorded in `internal/governance.toml`,
-installs it alongside anything under `internal/rules/`, and clears the
-destination first so a rule the record stopped naming disappears.
+operator's working copy. It reads the stack recorded in `internal/governance.toml`
+into `.claude/rules/canon/`, installs anything under `internal/rules/` into a
+separate `.claude/rules/internal/`, and clears both destinations first so a
+rule the record stopped naming disappears. `internal/` is what this repository
+alone carries: no `canon gov install` or `canon gov sync` target ever writes it,
+since a target has no rule source of its own that ships nowhere.
 
 It takes `--root <path>` and defaults to the toolkit root, prints nothing on success, and
 reports the reason on stderr with exit 1 when the record names a stack or rule

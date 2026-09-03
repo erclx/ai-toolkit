@@ -52,7 +52,7 @@ describe('gov install', () => {
 
     expect(
       readFileSync(
-        join(target, '.claude/rules/core/000-constitution.md'),
+        join(target, '.claude/rules/canon/core/000-constitution.md'),
         'utf8',
       ),
     ).toContain('# Role persona')
@@ -65,7 +65,7 @@ describe('gov sync', () => {
   })
 
   it('should replace a local edit to an installed rule', () => {
-    const path = join(target, '.claude/rules/core/000-constitution.md')
+    const path = join(target, '.claude/rules/canon/core/000-constitution.md')
     writeFileSync(path, `${readFileSync(path, 'utf8')}\n<!-- local edit -->\n`)
 
     const run = runCli(['gov', 'sync', target], { cwd: target })

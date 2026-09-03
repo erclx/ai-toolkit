@@ -5,7 +5,7 @@ description: Where rules land in a target, why install and sync and build stay s
 
 # Install and sync
 
-Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved, covering `core/`, `lang/`, `framework/`, `lib/`, `ui/`, and `claude/`. Source rules already carry the Claude shape, so the copy is a passthrough rather than a transform.
+Rules install per-file at `.claude/rules/canon/<subdir>/<rule>.md` with subdirectories preserved, covering `core/`, `lang/`, `framework/`, `lib/`, `ui/`, and `claude/`. Source rules already carry the Claude shape, so the copy is a passthrough rather than a transform.
 
 ## Decisions
 
@@ -23,7 +23,7 @@ Sync matches an installed rule to its source by rule name rather than by relativ
 
 ### This repository's own rules are produced, not written
 
-The toolkit's `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `canon gov regen` resolves it through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside. Recording the subset stops the producer from reading its own output to decide what that output should be.
+The toolkit's `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `canon gov regen` resolves it into `.claude/rules/canon/` through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside into a separate `.claude/rules/internal/`, since it governs this repository's own authoring paths and ships nowhere. Recording the subset stops the producer from reading its own output to decide what that output should be.
 
 Registering a new rule for this repository means naming it somewhere the record resolves. Add it to a stack in `governance/stacks/`, to the `add` list in `internal/governance.toml`, or to `internal/rules/` when it governs toolkit authoring alone.
 
@@ -42,7 +42,7 @@ A rule whose source no stack names never installs, and the drift assertion still
 
 | Command             | What it does                                                      |
 | ------------------- | ----------------------------------------------------------------- |
-| `canon gov install` | Bootstrap rules for a stack into `.claude/rules/`                 |
+| `canon gov install` | Bootstrap rules for a stack into `.claude/rules/canon/`           |
 | `canon gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
 | `canon gov build`   | Concatenate installed rules into `.canon/tmp/gov/rules.md`        |
 | `canon gov regen`   | Rebuild this repository's own `.claude/rules/` from its record    |
@@ -64,7 +64,7 @@ To set up a new project:
 
 ```bash
 canon gov install react ../my-app
-# resolves react → node → base, copies each rule to .claude/rules/<subdir>/<rule>.md
+# resolves react → node → base, copies each rule to .claude/rules/canon/<subdir>/<rule>.md
 ```
 
 To layer extra rules on top of a stack without creating a new stack definition:

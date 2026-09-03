@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { basename, join, relative, resolve } from 'node:path'
+import { canonRulesDir } from '@/gov/install'
 import { resolveMissingRules } from '@/gov/stacks'
 import type { InstalledFile, RetiredSurface, SyncAdapter } from '@/sync/engine'
 import { readStamp, stampedChain } from '@/sync/stamp'
@@ -42,6 +43,13 @@ export function indexSourceRules(root: string): Map<string, string> {
  * Matches installed rules to sources by rule name rather than by relative
  * path, so a rule that moved between subdirectories in the toolkit still
  * syncs into the subdirectory the target already uses.
+ *
+ * Declares no `projectSubdir`. That exemption existed to keep a project's
+ * `.claude/rules/project/` folder out of the walk by location before any
+ * name lookup ran, and `installedRoot` narrowing to `.claude/rules/canon/`
+ * already leaves `project/` outside the walked root, so a second exemption
+ * computing a stale `canon/project/` destination would be wrong rather than
+ * merely redundant.
  */
 export function createGovAdapter(root: string): SyncAdapter {
   const index = indexSourceRules(root)
@@ -52,12 +60,11 @@ export function createGovAdapter(root: string): SyncAdapter {
     missingMessage:
       "No governance surfaces found in target. Run 'canon gov install' first.",
     unit: 'changes',
-    installedRoot: (target: string) => join(target, '.claude', 'rules'),
+    installedRoot: canonRulesDir,
     locateSource: (file: InstalledFile) =>
       index.get(basename(file.path, '.md')),
     collectRetired: (target: string) => collectRetiredGov(target),
     collectMissing: (target: string) => collectMissingGov(root, target),
-    projectSubdir: 'project',
     stamp: { domain: 'governance', toolkitRoot: root },
   }
 }
@@ -72,13 +79,7 @@ function collectMissingGov(root: string, target: string): RetiredSurface[] {
   const chain = stampedChain(readStamp(target), 'governance')
 
   return resolveMissingRules(root, target, chain).map((source) => {
-    const dest = join(
-      target,
-      '.claude',
-      'rules',
-      source.subdir,
-      `${source.rule}.md`,
-    )
+    const dest = join(canonRulesDir(target), source.subdir, `${source.rule}.md`)
     const rel = relative(target, dest)
     return {
       path: dest,

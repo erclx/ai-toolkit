@@ -217,7 +217,7 @@ describe('installedStampDomains', () => {
   })
 
   it('should report only the domains present on disk', () => {
-    mkdirSync(join(TARGET, '.claude/rules'), { recursive: true })
+    mkdirSync(join(TARGET, '.claude/rules/canon'), { recursive: true })
 
     expect(installedStampDomains(TARGET)).toEqual(['governance'])
   })
@@ -447,7 +447,7 @@ describe('parseNewSkills', () => {
 
 describe('readInstalledRules', () => {
   function install(rel: string): void {
-    const full = join(TARGET, '.claude', 'rules', rel)
+    const full = join(TARGET, '.claude', 'rules', 'canon', rel)
     mkdirSync(dirname(full), { recursive: true })
     writeFileSync(full, '# rule\n')
   }
@@ -600,7 +600,7 @@ describe('readNewRules', () => {
   }
 
   function install(rel: string): void {
-    const full = join(TARGET, '.claude', 'rules', rel)
+    const full = join(TARGET, '.claude', 'rules', 'canon', rel)
     mkdirSync(dirname(full), { recursive: true })
     writeFileSync(full, '# rule\n')
   }

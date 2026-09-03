@@ -67,7 +67,7 @@ const ADAPTERS: Record<ScannedDomain, (root: string) => SyncAdapter> = {
 }
 
 const INSTALL_MARKERS: Record<ScannedDomain, readonly string[]> = {
-  governance: ['.claude', 'rules'],
+  governance: ['.claude', 'rules', 'canon'],
   design: DESIGN_INSTALL_DIR.split(sep),
 }
 

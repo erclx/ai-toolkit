@@ -57,5 +57,5 @@ marker="$marker_dir/$key"
 mkdir -p "$marker_dir"
 : >"$marker"
 
-msg='Temporary file write outside the project scratch folder. Write temp files to .canon/tmp/<slug>/ in the project root, or .claude/.tmp/<slug>/ where the project carries no .canon/ root, not system temp. See the Scratch rule at .claude/rules/core/055-scratch.md.'
+msg='Temporary file write outside the project scratch folder. Write temp files to .canon/tmp/<slug>/ in the project root, or .claude/.tmp/<slug>/ where the project carries no .canon/ root, not system temp. See the Scratch rule at .claude/rules/canon/core/055-scratch.md.'
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PreToolUse",additionalContext:$msg}}'

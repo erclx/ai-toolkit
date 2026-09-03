@@ -28,7 +28,7 @@ function seedRule(folder: string, name: string): void {
 }
 
 function installRule(folder: string, name: string): void {
-  const dir = join(target, '.claude', 'rules', folder)
+  const dir = join(target, '.claude', 'rules', 'canon', folder)
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, `${name}.md`), `# ${name}\n`)
 }

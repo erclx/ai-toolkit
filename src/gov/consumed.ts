@@ -2,8 +2,9 @@ import { existsSync, readFileSync } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import {
+  canonRulesDir,
+  installedInternalRulesDir,
   installRules,
-  installedRulesDir,
   lookupRules,
   type RuleSource,
   ruleSubdir,
@@ -117,12 +118,15 @@ export async function regenConsumedRules(
 
   // Clearing first is what makes a rule the record stopped naming disappear.
   // Copying over the destination would leave it behind as an unsourced file,
-  // which is the state this producer exists to end.
-  await rm(installedRulesDir(root), { recursive: true, force: true })
+  // which is the state this producer exists to end. Each subtree clears on
+  // its own rather than through the shared `.claude/rules/` parent, so a
+  // `project/` folder landing beside them later is never in the blast radius.
+  await rm(canonRulesDir(root), { recursive: true, force: true })
+  await rm(installedInternalRulesDir(root), { recursive: true, force: true })
 
   const installed = [
-    ...(await installRules(found, root)),
-    ...(await installRules(internal, root)),
+    ...(await installRules(found, root, 'canon')),
+    ...(await installRules(internal, root, 'internal')),
   ]
 
   return { ok: true, installed: installed.sort() }
