@@ -8,12 +8,15 @@ const CLAUDE_DIR = '.claude'
 
 /**
  * Domains an older toolkit installed at the project root, each with the source
- * folder naming what it owns. Governance is absent because its rules have always
- * landed under `.claude/rules/`, so there is no earlier location to be stranded
- * at. Standards and snippets are absent because no copy installs into a target
- * at all now, so a root `standards/` or `snippets/` folder there is the
- * project's own authoring surface and reporting it as unmigrated would propose
- * moving files nothing installed.
+ * folder naming what it owns. Governance is absent because its move stayed
+ * inside `.claude/rules/`, from a flat `<subdir>/` layout to a `canon/`-wrapped
+ * one, and this shape represents a domain stranded at the project root rather
+ * than one stranded a folder short of where it belongs. `canon migrate
+ * rule-layout` is the separate command that move needed instead. Standards and
+ * snippets are absent because no copy installs into a target at all now, so a
+ * root `standards/` or `snippets/` folder there is the project's own authoring
+ * surface and reporting it as unmigrated would propose moving files nothing
+ * installed.
  *
  * A tuple array rather than a partial record, so the domain key stays typed
  * without asserting an `Object.entries` result back into the union. Empty

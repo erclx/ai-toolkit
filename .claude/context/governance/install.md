@@ -37,6 +37,7 @@ A rule whose source no stack names never installs, and the drift assertion still
 - `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts.
 - The payload builder behind `build` is `src/gov/payload.ts`, and frontmatter stripping is `src/frontmatter.ts`, which `docs` shares. Do not duplicate either inside `src/gov/`.
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
+- A target still on the flat `.claude/rules/<subdir>/` layout from before the `canon/` wrapper landed is invisible to both bootstrap verbs. `canon gov sync` narrows its walk to `.claude/rules/canon/`, so it reports the missing-surfaces message and exits 0 rather than reading the flat tree at all. `canon gov install` writes only into that same narrowed destination and never reads or clears the flat one, so the target ends up holding both, and Claude Code loads both copies of an edited rule at session start, one of them frozen. `canon migrate rule-layout` moves a target off the flat layout first. Run it before either bootstrap verb sees anything.
 
 ## CLI
 
