@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.40.2](https://github.com/erclx/canon/compare/v4.40.1...v4.40.2) (2026-09-03)
+
+
+### Bug Fixes
+
+* **tooling:** drop the isCI serial playwright worker override ([#1460](https://github.com/erclx/canon/issues/1460)) ([45abfed](https://github.com/erclx/canon/commit/45abfedfbb72f813eebb0ae1135178cf366b72aa))
+
 ## [4.40.1](https://github.com/erclx/canon/compare/v4.40.0...v4.40.1) (2026-09-03)
 
 
