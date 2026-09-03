@@ -258,6 +258,10 @@ describe('applyRuleLayout', () => {
     const result = await plan()
     await applyRuleLayout(root, result, root)
 
+    expect(
+      existsSync(join(root, '.claude/rules/canon/core/040-catalog-only.md')),
+    ).toBe(true)
+
     const hashes = stampedHashes(readStamp(root), 'governance')
     expect(
       hashes['.claude/rules/canon/core/040-catalog-only.md'],
