@@ -318,6 +318,18 @@ Archiving a plan at ship time leaves `.canon/tasks/priority.md` pointing at a pa
 
 `claude-worktree` Step 2 asks the user when more than one `feature-*.md` plan exists and the current branch matches none of them. A `claude-autoship <task-file>` invocation carries information that step does not: the plan's own Constraints section already cites the task file it was written for. Matching the autoship argument against each candidate plan's citation resolves the ambiguity without asking, which is what a worktree entry made in isolation from that argument cannot do.
 
+### A stamped review can carry a stale head
+
+A review's `commit.oid` is stamped with the head at submission rather than with the commit the reviewer read, so `SEEN` can fire on a head still awaiting its first look at a real delta. That fired on `#1299` on 2026-08-31, where a pass written against `5653721` landed stamped `a5ceb40` and the delta it skipped was a real fix. Treat a `SEEN` on a head you do not recognize as worth one `gh pr view --json reviews` before believing it.
+
+### A pull request's draft flag can read ready mid-undo
+
+Marking a pull request a draft and reading the flag back are two separate calls, and nothing marks the moment between them completing. A read taken in that window sees a genuinely ready pull request about to become a draft, which is what a poll on `#1307` told an operator, the opposite of what the worker had said. Read the flag itself rather than trusting a worker's own report for exactly this window.
+
+### The expansion trial's citations
+
+Two pull requests anchor the expansion-route findings `orchestrator-dispatch.md` states without a number. `claude-autoship` first carried `disable-model-invocation` in `#365`, and the trial's Observation B shipped as `#1382`. The dispatch-to-address-a-review case is `#1251`, narrated in full under `.claude/context/claude-plugin/skill-review.md`'s channel section.
+
 ### A peer's merge claim needs the commits, not the net diff
 
 A pull request's net file diff can read as untouched for a file a peer session correctly described as changed, when an earlier commit in the same PR added content and a later commit removed it before merge. A peer session told a worker mid-build that `#1398` had routed four lines into a context entry and then cut them on review. The worker's first check read the merged file list, found the entry absent from it, and read the claim as false.

@@ -27,7 +27,7 @@ Most of these name a folder rather than a file, because the number an entry anch
 
 The third rule reaches folders alone, which is what keeps it off `CLAUDE.md`. Breadth is the whole reason it exists, and a root file has none: it names one path the diff either carries or does not.
 
-What it does stop is a citation of `.claude/` matching every branch. `src/`, `scripts/`, and `.claude/` each name a tree a project organizes most of its work under, so a prefix match on one fires constantly and rebuilds the ignored warning this sweep exists to avoid. Measured against this repository's record at `erclx/canon@87b11e87`, the skip drops 13 of the 26 folder citations and keeps the ones carrying a signal, among them `src/tooling/`, `.claude/rules/`, and `governance/rules/`.
+What it does stop is a citation of `.claude/` matching every branch. `src/`, `scripts/`, and `.claude/` each name a tree a project organizes most of its work under, so a prefix match on one fires constantly and rebuilds the ignored warning this sweep exists to avoid. Measured against this repository's record, the skip drops 13 of the 26 folder citations and keeps the ones carrying a signal, among them `src/tooling/`, `.claude/rules/`, and `governance/rules/`.
 
 A decision whose folder citations are all a single segment, and which cites no file, therefore never fires. That is the correct outcome rather than a gap: a count over a whole tree moves on nearly every branch, so flagging it every time tells a reader that time has passed and nothing else.
 

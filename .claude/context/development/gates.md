@@ -115,7 +115,7 @@ The Standard success criteria stage runs `bun src/cli.ts standards audit --arriv
 
 ## Shipped references
 
-The Shipped references stage reads `referencesIn` from `src/shipped/references.ts` over the seven corpora a target reader reaches, which is the package's `files` field less `src` and less the two trees that field already negates. It fails a push on a bare pull request number or a bare commit sha, since a reader holding a plugin cache rather than this repository resolves the first against their own tree and reaches something else, and resolves the second nowhere at all.
+The Shipped references stage reads `referencesIn` from `src/shipped/references.ts` over the seven corpora a target reader reaches, which is the package's `files` field less `src` and less the two trees that field already negates. It fails a push on a bare pull request number, a bare commit sha, or either form qualified against this repository's own name, since a reader holding a plugin cache rather than this repository resolves the first against their own tree and reaches something else, resolves the second nowhere at all, and resolves the third exactly as badly as the bare form it qualifies.
 
 The corpus stops short of `src/` on the reader rather than on the shipping. A `src/` doc comment lands on a target's disk and nothing serves it to a target reader, so its every number resolves for the person actually reading it. That boundary is also what keeps the check a prose pattern instead of a parser, since `src/design/` writes sixteen values shaped `#191512` and no width or boundary rule separates an all-digit hex color from a pull request number.
 
@@ -127,7 +127,7 @@ The walk passes `dot: true`, which is what reaches the seeds. `Bun.Glob` skips a
 
 It does not follow `claude/standards` and `claude/snippets`, measured at 0 of the 159 files under `claude/` arriving through either link. Nothing is lost, since both trees are corpora here in their own right, and following them would read those two twice and report every finding in them under two paths.
 
-The marker mutes a line and nothing narrower, because `isMarked` reads the line itself and the one above and stops there. Four lines carry it, each an illustration whose bare form is the rule it states: the `#123` spelling in `standards/publish.md`, the `verified` field format in `standards/diagrams.md` and in `claude-diagram`, and a copyable `canon claude skills drift` invocation in `docs/agents/skills-audit.md` whose argument has to be a literal git ref. A real citation later added to any of those four ships unreported.
+The marker mutes a line and nothing narrower, because `isMarked` reads the line itself and the one above and stops there. Six lines carry it, each an illustration whose bare form is the rule it states: the `#123` spelling in `standards/publish.md`, the `verified` field format in `standards/diagrams.md` and in `claude-diagram`, a copyable `canon claude skills drift` invocation in `docs/agents/skills-audit.md` whose argument has to be a literal git ref, and two same-repository citations illustrating the input shape a rule reads, in `docs/agents/context-audit-checks.md` and `docs/agents/key-changes.md`. A real citation later added to any of those six ships unreported.
 
 ## Audit set
 

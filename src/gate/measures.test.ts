@@ -267,13 +267,27 @@ describe('shippedReferences', () => {
 
   it('reads a corpus carrying no reference as a pass', async () => {
     write('claude/skills/alpha/SKILL.md', 'The count reads low.\n')
-    write('docs/agents/alpha.md', 'Qualified as `erclx/canon#1299`.\n')
+    write(
+      'docs/agents/alpha.md',
+      'Qualified as `anthropics/claude-code#58345`.\n',
+    )
 
     const report = await shippedReferences(context())
 
     expect(report.failure).toBeUndefined()
     expect(report.unmeasured).toBeUndefined()
     expect(report.emissions[0]?.text).toContain('No unresolvable reference')
+  })
+
+  it('fails on a same-repository citation whether or not it is qualified', async () => {
+    write('docs/agents/alpha.md', 'Measured on `erclx/canon#1299`.\n')
+
+    const report = await shippedReferences(context())
+
+    expect(report.failure).toContain('One reference')
+    expect(report.emissions).toHaveLength(1)
+    expect(report.emissions[0]?.text).toContain('erclx/canon#1299')
+    expect(report.emissions[0]?.text).toContain("this repository's own history")
   })
 
   it('fails on a bare reference and names the file and line', async () => {

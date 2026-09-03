@@ -529,13 +529,15 @@ export const shippedReferences: Measure = async (ctx) => {
   return {
     emissions: found.map((reference) =>
       warn(
-        `${reference.file}:${reference.line} carries ${reference.text}, a ${reference.kind === 'commit' ? 'commit sha that resolves nowhere' : 'pull request number that resolves elsewhere'} for a reader in a target`,
+        reference.selfCitation
+          ? `${reference.file}:${reference.line} carries ${reference.text}, a citation of this repository's own history that resolves for no reader outside it, qualified or not`
+          : `${reference.file}:${reference.line} carries ${reference.text}, a ${reference.kind === 'commit' ? 'commit sha that resolves nowhere' : 'pull request number that resolves elsewhere'} for a reader in a target`,
       ),
     ),
     failure:
       found.length === 1
-        ? `One reference in the shipped corpora names this repository without saying so. Qualify it as owner/repo#123 or owner/repo@abc1234, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`
-        : `${found.length} references in the shipped corpora name this repository without saying so. Qualify each as owner/repo#123 or owner/repo@abc1234, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`,
+        ? `One reference in the shipped corpora resolves wrong for a reader in a target. Qualify a cross-repository citation as owner/repo#123 or owner/repo@abc1234, state a same-repository citation as a fact instead and relocate the evidence to the owning .claude/context/ entry, or mark the line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`
+        : `${found.length} references in the shipped corpora resolve wrong for a reader in a target. Qualify a cross-repository citation as owner/repo#123 or owner/repo@abc1234, state a same-repository citation as a fact instead and relocate the evidence to the owning .claude/context/ entry, or mark each line ${REFERENCE_MARKER}: <reason> where the bare form is the point.`,
   }
 }
 

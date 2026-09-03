@@ -318,6 +318,8 @@ The README is the one recorded healthy sample that reads worse than the corpus, 
 
 ### Taking the ban corpus to zero
 
+Measured at `4b7b13a2` on 2026-08-05 across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint, 88 of the paragraphs firing on weight alone. That is the baseline the corpus sweep started from.
+
 A closed-set word ban cannot separate the sense a standard bans from a correct one spelling the same token. `markdown.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so five of the eight word hits standing between the corpus and a gate were permanent non-violations. Four were the temporal `just` meaning a moment ago, and the fifth quoted an anti-pattern a skill exists to forbid.
 
 Rewriting all five is what settled them, over adding an exemption path. An exemption has three consumers, `src/markdown/scan.ts` for the patterns, `src/markdown/bans.ts` for the sets, and `.claude/hooks/standards-audit.sh`, which held its own copy in awk at that point. One landing in the verb and not the hook leaves an exempted line still failing on edit, which is the surface an author meets.
@@ -619,6 +621,10 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - `no-map` is the one refusal the catalog reads as an absence, which makes this the second tracked corpus taking that allowance beside the secret scan. A project declaring no map is labelled silently by design, and treating that as a break would make the map mandatory for every target.
 - What it leaves unmeasured is a prefix reaching no path, so a row left behind by a deleted folder stays forever. That is the map going stale from the other side and a second measure.
 - Replaying `3a0fd695..190af80b` reports 53 wholly declined commits, every one a release, matching what the map's comment records. The 54th carrying no label is the commit that edited the map at its former path, which the `repo` row stopped reaching when the file moved into `.claude/canon/`.
+
+## The key-changes bijection
+
+`canon pr key-changes` reads a pull request's file list off one `gh pr view` call, which caps at 100 rows and says nothing about having done so. That surfaced on `#1250`, a 101-file pull request the view reported as 100, so a pull request at the cap takes a second read through the paginated endpoint and refuses as `gh-truncated` on a failure there rather than comparing against a set silently one file short.
 
 ## The state-scoped checks
 

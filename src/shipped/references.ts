@@ -105,6 +105,26 @@ const PULL_REQUEST = /(?<![0-9A-Za-z_])#([0-9]+)(?![0-9A-Za-z_])/g
  */
 const COMMIT_SHA = /(?<![0-9A-Za-z_@/#])([0-9a-f]{7,40})(?![0-9A-Za-z_])/g
 
+/**
+ * A same-repository citation, qualified or not. Qualifying `#123` or a sha
+ * against `erclx/canon` is the repair `PULL_REQUEST` and `COMMIT_SHA` above
+ * read as the fix, and it fixes nothing here: a reader holding only the
+ * plugin cache or the published package still cannot open this repository's
+ * own history, so the qualified form resolves exactly as badly as the bare
+ * one.
+ *
+ * The literal is hardcoded rather than read from `package.json` or
+ * `git remote`, matching `src/github-format.ts` and `src/commands/repo.ts`,
+ * which already hardcode it.
+ *
+ * Same word-boundary discipline as the two patterns above: a word character
+ * ahead of `erclx` would mean this match is a suffix of some other token, and
+ * a word character behind the digits would mean the citation continues past
+ * what was captured.
+ */
+const SAME_REPOSITORY =
+  /(?<![0-9A-Za-z_/])erclx\/canon(#[0-9]+|@[0-9a-f]{7,40})(?![0-9A-Za-z_])/g
+
 export interface ShippedReference {
   readonly file: string
   /** One-based, matching the `file:line` form a reader clicks. */
@@ -112,6 +132,12 @@ export interface ShippedReference {
   readonly kind: 'pull-request' | 'commit'
   /** The reference as written, so a report names the token to qualify. */
   readonly text: string
+  /**
+   * Set only for a citation of this repository's own history. Qualifying it
+   * is not the fix `kind` alone would suggest, so a caller reads this before
+   * choosing a remedy.
+   */
+  readonly selfCitation?: true
 }
 
 /**
@@ -152,6 +178,16 @@ export function referencesIn(file: string, text: string): ShippedReference[] {
         line: index + 1,
         kind: 'commit',
         text: match[0],
+      })
+    }
+
+    for (const match of line.matchAll(SAME_REPOSITORY)) {
+      references.push({
+        file,
+        line: index + 1,
+        kind: match[1]?.startsWith('#') ? 'pull-request' : 'commit',
+        text: match[0],
+        selfCitation: true,
       })
     }
   }
