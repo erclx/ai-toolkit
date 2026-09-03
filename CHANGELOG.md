@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.39.0](https://github.com/erclx/canon/compare/v4.38.0...v4.39.0) (2026-09-03)
+
+
+### Features
+
+* **gate:** catch docs-path and phase-label assumptions in shipped files ([#1456](https://github.com/erclx/canon/issues/1456)) ([b299013](https://github.com/erclx/canon/commit/b299013c65734e99c05a62224f7d46b7feee5742))
+
 ## [4.38.0](https://github.com/erclx/canon/compare/v4.37.1...v4.38.0) (2026-09-03)
 
 
