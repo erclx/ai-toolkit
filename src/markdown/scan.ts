@@ -31,8 +31,11 @@ const AUTOLINK = /<[^>\s]+>/g
  * the destination. The narrower pattern still runs after this one, since a link
  * wrapped across two source lines puts its opening bracket on a line this one
  * never matches.
+ *
+ * Exported so `src/markdown/links.ts` matches a destination against the same
+ * pattern rather than a second definition of the same shape.
  */
-const LINK = /\[([^\]]*)\]\([^)]*\)/g
+export const LINK = /\[([^\]]*)\]\([^)]*\)/g
 
 export interface BodyLine {
   readonly number: number

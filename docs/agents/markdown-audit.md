@@ -59,6 +59,12 @@ A banned spelling keeps the plain word boundary, hyphens included. The two bans 
 
 Two ban shapes stay unmeasured and the report says so on every run. A multi-word ban escapes the harvest by width, whether it carries a placeholder standing in for the rest of the sentence or spells the phrase out in full, and every rule under `## Voice` is a judgment. The bans `## Language` states over what a sentence may claim sit in the first group by construction, since a literal match over a pattern reports the compliant text and reaches none of the violations. A report listing hits without naming those would read as a verdict on the whole standard.
 
+### Links
+
+A relative link's destination resolves against the filesystem, over the same corpus the ban scan reads. A destination is skipped rather than resolved when it is empty, opens with a URL scheme, opens with `#` as a same-file anchor, opens with `/` as a root-absolute reference, or carries `<` as a template placeholder such as `<slug>` or `<name>`. What remains is split on its first `#`, decoded, and resolved against the linking file's own folder, and a destination resolving to nothing on disk reports.
+
+The placeholder exemption is the one live case the corpus needs. Every current instance is a genuine illustration rather than a literal path, and a marker-based override is available for the day a real one needs an exception instead.
+
 ### Bullets, paragraphs, and depth
 
 Bullet weight and depth are the checks that moved off `canon context audit`, carrying what they measured at the time. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run reports past roughly 40 rendered lines, measured at 80 columns, where a heading breaks one and so does a bold section marker taking the whole line at column zero, either ending in a colon, or holding one whole code span at any width, or running to 20 characters or fewer, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows. Each file reports its longest run alone, so a second run past the checkpoint in the same file is never named.
@@ -124,7 +130,7 @@ The condition on that was something identifying a finite verb rather than guessi
 
 ## Exit codes
 
-Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, and cadence is a distribution whose healthy range moves with the surface, so all four report under every code.
+Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit or a dead relative link, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling and a relative link resolving to nothing on disk each fail the run, both facts a scan settles rather than a reader judging. Bullet, paragraph, and depth weight are judgments a reader settles, and cadence is a distribution whose healthy range moves with the surface, so all four report under every code.
 
 `3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `canon gate run` is right to report it as unmeasured rather than as a pass. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
 

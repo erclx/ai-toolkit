@@ -1,10 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import { type GateInput, isGating } from '@/markdown/gate'
+import type { LinkFinding } from '@/markdown/links'
 import type { BanFinding } from '@/markdown/scan'
 import type { StructureReport } from '@/markdown/structure'
 
 function makeBan(overrides: Partial<BanFinding> = {}): BanFinding {
   return { line: 12, column: 4, kind: 'character', term: '—', ...overrides }
+}
+
+function makeLink(overrides: Partial<LinkFinding> = {}): LinkFinding {
+  return {
+    line: 12,
+    column: 15,
+    destination: 'docs/agents/commands.md',
+    ...overrides,
+  }
 }
 
 function makeStructure(
@@ -28,7 +38,7 @@ function makeStructure(
 }
 
 function makeInput(overrides: Partial<GateInput> = {}): GateInput {
-  return { bans: [], structure: [], ...overrides }
+  return { bans: [], links: [], structure: [], ...overrides }
 }
 
 describe('isGating', () => {
@@ -131,6 +141,18 @@ describe('isGating', () => {
         makeStructure({ heavyBullets: [{ line: 8, characters: 512 }] }),
       ],
     })
+
+    expect(isGating(input)).toBe(true)
+  })
+
+  it('should fail a dead link', () => {
+    const input = makeInput({ links: [makeLink()] })
+
+    expect(isGating(input)).toBe(true)
+  })
+
+  it('should fail a ban hit sitting beside a dead link', () => {
+    const input = makeInput({ bans: [makeBan()], links: [makeLink()] })
 
     expect(isGating(input)).toBe(true)
   })

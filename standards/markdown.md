@@ -101,6 +101,7 @@ When frontmatter carries a short `title` or `description` used for catalog displ
 
 - Use descriptive anchor text for links. Avoid `click here` or `read more`.
 - Wrap file references in backticks by default. Use a labeled markdown link (`[label](path)`) only on rendered-for-human surfaces (`README.md`, `docs/`) and in an index file, whose rows exist to be followed. Never repeat the path verbatim as the label.
+- A relative link's destination resolves against the filesystem, over the same corpus the ban scan reads. A destination carrying a template placeholder in angle brackets, such as `<slug>` or `<name>`, reads as an illustration rather than a literal path and is exempt.
 
 ## Examples
 

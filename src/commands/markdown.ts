@@ -1,9 +1,11 @@
+import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { dirname, relative, resolve } from 'node:path'
 import type { Command } from 'commander'
 import { BAN_SETS, emptyBanSets } from '@/markdown/bans'
 import { type MarkdownAuditRefusal, resolveMarkdown } from '@/markdown/files'
 import { isGating } from '@/markdown/gate'
+import { decodePath, findBrokenLinks, type LinkFinding } from '@/markdown/links'
 import {
   type BanFinding,
   type BanSets,
@@ -47,6 +49,7 @@ interface AuditCommandOptions {
 interface FileReport {
   readonly rel: string
   readonly bans: readonly BanFinding[]
+  readonly links: readonly LinkFinding[]
   readonly structure: StructureReport
 }
 
@@ -74,12 +77,13 @@ export function register(program: Command): void {
         'Exit codes:',
         '  0  the audit completed with no gating finding',
         '  1  refused, with the reason on stderr',
-        '  2  a banned character, word, or spelling is present',
+        '  2  a banned character, word, or spelling is present, or a relative',
+        '     link resolves to nothing on disk',
         '  3  a shipped ban set is empty, so the run measured nothing',
         '',
-        'A ban hit is a fact and gates unconditionally. Bullet, paragraph, and',
-        'depth weight are judgments a reader settles, so all three report and',
-        'none of them fails a run.',
+        'A ban hit and a dead link are each a fact and gate unconditionally.',
+        'Bullet, paragraph, and depth weight are judgments a reader settles,',
+        'so all three report and none of them fails a run.',
         '',
         'Cadence reports the same way and carries one more caveat. Its range is',
         'drawn from prose a person reads, so terse reference prose sits below',
@@ -143,10 +147,14 @@ async function runAudit(
 
   const reports: FileReport[] = await Promise.all(
     scope.files.map(async (rel) => {
-      const lines = bodyLines(await readFile(resolve(root, rel), 'utf8'))
+      const abs = resolve(root, rel)
+      const lines = bodyLines(await readFile(abs, 'utf8'))
       return {
         rel,
         bans: scanBans(lines, bans),
+        links: findBrokenLinks(lines, (path) =>
+          existsSync(resolve(dirname(abs), path)),
+        ),
         structure: measureStructure(rel, lines, checkpoints),
       }
     }),
@@ -155,6 +163,7 @@ async function runAudit(
   intro('canon markdown audit')
   reportScope(scope.files, scope.unmatched)
   reportBans(reports, bans, empty)
+  reportLinks(reports, root)
   reportBullets(reports, checkpoints)
   reportParagraphs(reports, checkpoints)
   reportCadence(reports, checkpoints)
@@ -187,6 +196,7 @@ async function runAudit(
         entries: reports.map((report) => ({
           path: report.rel,
           bans: report.bans,
+          links: report.links,
           longestRun: report.structure.longestRun,
           longestRunLine: report.structure.longestRunLine,
           heavyBullets: report.structure.heavyBullets,
@@ -203,6 +213,7 @@ async function runAudit(
 
   const gating = isGating({
     bans: reports.flatMap((report) => report.bans),
+    links: reports.flatMap((report) => report.links),
     structure: reports.map((report) => report.structure),
   })
 
@@ -297,6 +308,59 @@ function reportBans(
             .map(
               (found) =>
                 `  :${found.line}:${found.column + 1}  ${found.kind}  ${found.term}`,
+            )
+            .join('\n')}`,
+      )
+      .join('\n'),
+  )
+}
+
+/**
+ * Names both the destination as written and the path it resolved to, since
+ * the second is what an editor can go check and the first is what a fix
+ * touches.
+ */
+function resolvedLinkPath(
+  root: string,
+  rel: string,
+  destination: string,
+): string {
+  const path = decodePath(destination)
+  if (path === undefined) return '(destination carries a malformed encoding)'
+  return relative(root, resolve(dirname(resolve(root, rel)), path))
+}
+
+function reportLinks(reports: readonly FileReport[], root: string): void {
+  logStep('Links')
+  logInfo(
+    "A relative link's destination resolves against the filesystem, over the same corpus the ban scan reads.",
+  )
+  logInfo(
+    'A destination carrying a template placeholder in angle brackets reads as an illustration rather than a literal path.',
+  )
+
+  const carrying = reports
+    .filter((report) => report.links.length > 0)
+    .sort((a, b) => b.links.length - a.links.length)
+
+  if (carrying.length === 0) {
+    logInfo('No relative link resolving to nothing on disk.')
+    return
+  }
+
+  const total = carrying.reduce((sum, report) => sum + report.links.length, 0)
+  logWarn(
+    `${plural(total, 'dead link')} across ${plural(carrying.length, 'file')}`,
+  )
+  logWarn('This fails the run. Every other check below reports.')
+  pipeOutput(
+    carrying
+      .map(
+        (report) =>
+          `${report.rel}  ${plural(report.links.length, 'link')}\n${report.links
+            .map(
+              (found) =>
+                `  :${found.line}:${found.column + 1}  ${found.destination}  -> ${resolvedLinkPath(root, report.rel, found.destination)}`,
             )
             .join('\n')}`,
       )
