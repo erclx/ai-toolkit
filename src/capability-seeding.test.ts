@@ -185,6 +185,16 @@ describe('check-capability-seeding', () => {
     )
   })
 
+  it('should pass a target-only workflow with no root counterpart that carries a canon-no-seed reason', () => {
+    writeHook(
+      'tooling/web/configs/.github/workflows',
+      'deploy.yml',
+      'name: Deploy\n# canon-no-seed: stack-specific job with no root counterpart by design\n',
+    )
+
+    expect(check().status).toBe(0)
+  })
+
   it('should refuse a tree with no tooling root rather than report clean', () => {
     rmSync(join(root, 'tooling'), { force: true, recursive: true })
 

@@ -68,7 +68,10 @@ check_capability "Husky" "$PROJECT_ROOT/.husky" \
 # The reverse direction: a destination file whose source here is gone reaches
 # neither check_capability above nor the wiring pass below, both of which read
 # forward from the source, and it ships a target a hook, workflow, or husky
-# script this repository has already deleted.
+# script this repository has already deleted. A destination carrying the same
+# marker clears just as a source does, which is the escape hatch a target-only
+# capability needs, such as a stack-specific workflow with no root counterpart
+# by design.
 check_orphans() {
   local label="$1" src_dir="$2" dest_dir="$3"
 
@@ -79,6 +82,7 @@ check_orphans() {
     [ -f "$dest_file" ] || continue
     name=$(basename "$dest_file")
     [ -f "$src_dir/$name" ] && continue
+    has_reason "$dest_file" && continue
     failures="$failures  $label: ${dest_file#"$PROJECT_ROOT/"} is seeded or configured with no source at ${src_dir#"$PROJECT_ROOT/"}/$name"$'\n'
   done
 }
