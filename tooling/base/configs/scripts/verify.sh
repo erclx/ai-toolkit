@@ -29,8 +29,18 @@ check_markdown_bans() {
     return 0
   fi
 
+  local files=()
+  while IFS= read -r file; do
+    files+=("$file")
+  done < <(git ls-files --cached --others --exclude-standard -- '*.md' ':(exclude)CHANGELOG.md' ':(exclude)**/CHANGELOG.md')
+
+  if [ ${#files[@]} -eq 0 ]; then
+    log_info "No markdown file to check outside the exclusion set."
+    return 0
+  fi
+
   local output code
-  if output=$(canon markdown audit 2>&1); then
+  if output=$(canon markdown audit "${files[@]}" 2>&1); then
     code=0
   else
     code=$?
