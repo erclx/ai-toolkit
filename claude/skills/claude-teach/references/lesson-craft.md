@@ -11,9 +11,9 @@ Judgment rather than shape. The workspace standard fixes where a lesson sits and
 
 A workspace accumulates lessons over weeks. The learner reads them as one body of material, so a lesson that invents its own look reads as someone else's work.
 
-- Write the shared stylesheet into the workspace assets on the first lesson, and link it from every lesson after
+- Write the shared stylesheet into the workspace assets on the first lesson, and embed it in every lesson after
 - Promote anything used a second time into that stylesheet. A second use makes it a component of the course.
-- Add to that stylesheet rather than replacing it. The lesson writing it is rarely the lesson that needs it changed, and a rewrite drops what every earlier lesson links it for.
+- Add to that stylesheet rather than replacing it. The lesson writing it is rarely the lesson that needs it changed, and a rewrite drops what every earlier lesson embeds it for.
 - Keep the structural furniture identical across lessons: where the title sits, where the quiz sits, what a correct answer looks like
 - Do not restate styles inside a lesson. A local override is a decision the next lesson has to either copy or contradict.
 

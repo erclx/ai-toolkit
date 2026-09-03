@@ -635,6 +635,8 @@ describe('writeStylesheet', () => {
     expect(outcome.written).toBe(true)
     expect(body).toContain('--color-accent: #e0724b;')
     expect(body).toContain('.status::before')
+    expect(body).toContain('@font-face')
+    expect(body).toContain('base64,')
   })
 
   it('leaves a stylesheet the workspace already carries, since lessons add to it', async () => {

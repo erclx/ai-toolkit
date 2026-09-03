@@ -1,4 +1,5 @@
 import { COMPONENTS } from '@/design/components'
+import { FONT_FACES } from '@/design/fonts'
 import type { DesignTokens } from '@/design/tokens'
 import { TOKENS } from '@/design/tokens'
 
@@ -120,11 +121,30 @@ ${component.rules}`,
   ).join('\n\n')
 }
 
+/**
+ * `@font-face` rules carrying the mono stack's four faces as base64, so a
+ * stylesheet renders in the same typeface everywhere regardless of what the
+ * reader's machine has installed. Only the teach stylesheet opts in today.
+ */
+function fontFaceBlock(): string {
+  return FONT_FACES.map(
+    (face) => `@font-face {
+  font-family: '${face.family}';
+  font-weight: ${face.weight};
+  font-style: normal;
+  font-display: swap;
+  src: url(data:font/woff2;base64,${face.base64}) format('woff2');
+}`,
+  ).join('\n\n')
+}
+
 export interface CssOptions {
   /** Prepended as a comment, naming what wrote the file and from where. */
   readonly banner?: string
   /** Component rules ride along by default; a token-only consumer opts out. */
   readonly components?: boolean
+  /** Off by default. Embeds the mono stack's faces as base64 `@font-face` rules. */
+  readonly embedFonts?: boolean
 }
 
 export function buildDesignCss(
@@ -134,7 +154,8 @@ export function buildDesignCss(
   const banner =
     options.banner === undefined ? '' : `/* ${options.banner} */\n\n`
   const root = [':root {', ...tokenProperties(tokens), '}'].join('\n')
-  const parts = [root, lightBlock(tokens)]
+  const parts = options.embedFonts ? [fontFaceBlock(), root] : [root]
+  parts.push(lightBlock(tokens))
 
   if (options.components !== false) parts.push(componentBlock())
 

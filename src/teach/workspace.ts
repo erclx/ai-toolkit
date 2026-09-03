@@ -893,7 +893,10 @@ export async function writeStylesheet(
   await mkdir(join(root, workspace.path, TEACH_ASSETS), { recursive: true })
   await writeFile(
     path,
-    buildDesignCss(undefined, { banner: STYLESHEET_BANNER }),
+    buildDesignCss(undefined, {
+      banner: STYLESHEET_BANNER,
+      embedFonts: true,
+    }),
   )
 
   return { ok: true, slug: workspace.slug, path: rel, written: true }

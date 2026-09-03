@@ -826,7 +826,6 @@ function reportLesson(
         path: outcome.path,
         lesson: outcome.lesson,
         stylesheet: outcome.stylesheet,
-        stylesheetHref: outcome.stylesheetHref,
         stylesheetExists: outcome.stylesheetExists,
         success: outcome.success,
         quiz: outcome.quiz,
@@ -840,7 +839,7 @@ function reportLesson(
   logInfo(outcome.lesson)
 
   logStep(outcome.stylesheetExists ? 'Stylesheet' : 'Stylesheet (to write)')
-  logInfo(`${outcome.stylesheet} linked as ${outcome.stylesheetHref}`)
+  logInfo(`${outcome.stylesheet} resolved for embedding`)
 
   logStep(outcome.success.length > 0 ? 'Exit criteria' : 'Exit criteria (none)')
   for (const line of outcome.success) logInfo(line)

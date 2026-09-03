@@ -132,4 +132,17 @@ describe('buildDesignCss', () => {
       expect(css).toContain(`--color-${slug(token.role)}: ${token.value};`)
     }
   })
+
+  it('emits four @font-face blocks when asked to embed fonts', () => {
+    const css = buildDesignCss(undefined, { embedFonts: true })
+
+    expect(css.match(/@font-face/g)).toHaveLength(4)
+    expect(css).toContain("font-family: 'Noto Sans Mono';")
+    expect(css).toContain("font-family: 'DejaVu Sans Mono';")
+    expect(css).toContain('url(data:font/woff2;base64,')
+  })
+
+  it('emits no @font-face block by default', () => {
+    expect(buildDesignCss()).not.toContain('@font-face')
+  })
 })

@@ -80,7 +80,7 @@ Open with retrieval on what the last session got wrong, before anything new. A l
 
 Two outputs with two lifetimes, and the split decides the format.
 
-- A lesson is a self-contained page carrying its own quiz and the feedback for each answer. It links one shared stylesheet rather than restating styles, and it is disposable and never promoted.
+- A lesson is a self-contained page carrying its own quiz and the feedback for each answer. It embeds one shared stylesheet rather than restating styles, and it is disposable and never promoted.
 - A reference page goes to `reference/<slug>.md`, written for a reader with no learner in it. This is the half that survives the workspace, so it is written in markdown to pass the authoring gates a promotion would put it through.
 
 Resolve the lesson before writing it, rather than composing its name or its quiz order by hand:
@@ -95,7 +95,7 @@ canon teach lesson <topic> --json \
 It writes nothing and reports four things:
 
 - `lesson`, the numbered path the lesson takes. Write it there.
-- `stylesheet` with `stylesheetExists` and `stylesheetHref`. Link it at `stylesheetHref` and seed it through the verb below when `stylesheetExists` is false, which is the first lesson in the workspace. Every lesson after that links the file already on disk and adds to it rather than replacing it, since overwriting discards what the last lesson put there.
+- `stylesheet` with `stylesheetExists`. Read it and embed its content into a `<style>` block in `<head>`, seeding it through the verb below when `stylesheetExists` is false, which is the first lesson in the workspace. Every lesson after that embeds the file's current content and adds to it rather than replacing it, since overwriting discards what the last lesson put there.
 - `success`, the mission's success lines, carried here so Step 5 needs no second read.
 - `quiz`, one entry per question, carrying `order` and `answer`.
 
@@ -125,7 +125,7 @@ Follow `${CLAUDE_SKILL_DIR}/references/lesson-craft.md` for what makes a lesson 
 
 ### Hand over a link, never a path
 
-A lesson is a page carrying a stylesheet and a script, and an editor preview opens it with neither, so a path alone delivers unstyled markup that reads as the lesson. Serve the teach root and give the learner a link they can click:
+A lesson is a page carrying a script, and an editor preview cannot run it, so a path alone opens markup with no working quiz. Serve the teach root and give the learner a link they can click:
 
 ```bash
 canon serve .canon/teach --entry <nn>-<topic>/index.html --json

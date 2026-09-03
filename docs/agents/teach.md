@@ -121,7 +121,7 @@ canon teach lesson regular-expressions \
 | `--json`          | Emit a machine-readable record on stdout                  |
 | `--root <path>`   | Teach root, defaulting to the main worktree               |
 
-It reports four things. `lesson` is the numbered path the lesson takes, derived from the highest ordinal already in `lessons/` the way an open derives a workspace ordinal. `stylesheet` names the one file every lesson in the workspace links, with `stylesheetExists` saying whether it is on disk yet and `stylesheetHref` carrying what the lesson's own link element holds. `success` carries the mission's success lines, so a session reports progress against the exit criteria without a second read of `MISSION.md`. `quiz` carries one entry per question.
+It reports four things. `lesson` is the numbered path the lesson takes, derived from the highest ordinal already in `lessons/` the way an open derives a workspace ordinal. `stylesheet` names the one file every lesson in the workspace embeds, with `stylesheetExists` saying whether it is on disk yet. `success` carries the mission's success lines, so a session reports progress against the exit criteria without a second read of `MISSION.md`. `quiz` carries one entry per question.
 
 The stylesheet is reported rather than written. A verb that wrote it on every lesson would discard whatever the last lesson added, and the second lesson in a workspace is the one that needs the file the first one left.
 
