@@ -17,6 +17,8 @@ Name the planner as the case always in this set, and scope the act no narrower. 
 
 Retire what this session dispatched. Report a hand-launched session and leave the act to the operator, since the knowledge making the act safe is a delivery this session received and it received nothing from a session it never launched. The `worker-` and `planner-` name prefixes separate the two populations, per `orchestrator-dispatch.md`.
 
+A capability gap sits beside the knowledge gap, and it holds even where delivery is somehow known. A hand-launched session is as often interactive as background, and `claude rm <id>` has no id to take for an interactive one at all, so the command cannot reach it whatever this session learned about its delivery.
+
 ### Telling a delivered session from a blocked one
 
 No status field carries the difference. `status` reads `busy` or `waiting` straight off the client record, and both describe the last turn rather than the work, so `waiting` is the ordinary answer for a session that reported and stopped, which is what a correct delivery looks like. The `statusDwellMs` beside it separates a long idle from a short one and separates nothing else.
