@@ -151,6 +151,14 @@ if (!MARK_SVG) {
   process.exit(1)
 }
 
+const accentMatch = tokenCss.match(/--color-accent:\s*(#[0-9a-fA-F]{3,8})/)
+if (!accentMatch) {
+  console.error("regen-hero: token css carries no --color-accent value, refusing to write a colorless favicon")
+  process.exit(1)
+}
+const faviconSvg = MARK_SVG.replace(/<!--[\s\S]*?-->/, "").trim().replaceAll("currentColor", accentMatch[1])
+const FAVICON = `data:image/svg+xml,${encodeURIComponent(faviconSvg)}`
+
 const escape = (value) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
@@ -329,6 +337,7 @@ const values = {
   TOOLING_STACK_COUNT: String(toolingStacks.length),
   COMMAND_COUNT: String(commandCount),
   MARK_SVG,
+  FAVICON,
   SKILL_ENTRIES: markup(featured(skills, FEATURED_SKILLS)),
   RULE_ENTRIES: entries(deliveredRules),
   STANDARD_ENTRIES: entries(standards),

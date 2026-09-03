@@ -127,6 +127,8 @@ The walk passes `dot: true`, which is what reaches the seeds. `Bun.Glob` skips a
 
 It does not follow `claude/standards` and `claude/snippets`, measured at 0 of the 159 files under `claude/` arriving through either link. Nothing is lost, since both trees are corpora here in their own right, and following them would read those two twice and report every finding in them under two paths.
 
+The commit-sha pattern reads 7 to 40 contiguous hex characters with no width check narrower than that, so a URL-encoded hex color inside shipped prose collides with it. `%23e0724b`, the percent-encoding of `#e0724b`, decodes to a `#` the check does not see and eight trailing hex characters it reads as a short sha. A data URI naming a fill color in shipped skill prose avoids the collision by writing the color as `rgb(224,114,75)` rather than a hex literal.
+
 The marker mutes a line and nothing narrower, because `isMarked` reads the line itself and the one above and stops there. Six lines carry it, each an illustration whose bare form is the rule it states: the `#123` spelling in `standards/publish.md`, the `verified` field format in `standards/diagrams.md` and in `claude-diagram`, a copyable `canon claude skills drift` invocation in `docs/agents/skills-audit.md` whose argument has to be a literal git ref, and two same-repository citations illustrating the input shape a rule reads, in `docs/agents/context-audit-checks.md` and `docs/agents/key-changes.md`. A real citation later added to any of those six ships unreported.
 
 ## Audit set

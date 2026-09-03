@@ -87,6 +87,14 @@ describe('renderDesignDoc', () => {
     )
   })
 
+  it('should declare a favicon in the head', () => {
+    const { html } = render(
+      doc(colorTable(['| border | panel edges | #E4DCD0 |'])),
+    )
+
+    expect(html).toContain('rel="icon"')
+  })
+
   it('should show the marker beside the value rather than inside it', () => {
     const { html } = render(
       doc(colorTable(['| border | panel edges | #E4DCD0 ? verify |'])),

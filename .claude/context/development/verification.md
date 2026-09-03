@@ -126,3 +126,7 @@ The list is stated as a property rather than a count, since a count of the files
 ### A generated base64 module needs its own cspell exemption
 
 cspell has no way to recognize a base64 payload as non-prose, so a generated TypeScript module holding one as a string literal, such as `src/design/fonts.ts` embedding WOFF2 font data subset to Latin and basic punctuation, floods `check:spell` with an unknown-word finding for nearly every substring inside it. Add the file's path to `cspell.json`'s `ignorePaths` rather than growing `project-terms.txt` with meaningless fragments, the same way `tooling/**` is already exempted wholesale for content the dictionary was never meant to grade.
+
+### A percent-encoded data URI inside prose needs an inline exemption, not a path one
+
+A path-level `ignorePaths` entry only exempts a whole file, which is too wide for a percent-encoded data URI sitting in one line of otherwise ordinary markdown prose, such as an inline SVG favicon literal in a shipped skill body. Each percent-encoded angle bracket glued to the tag name after it reads as one unknown word to cspell. `cspell.json`'s `ignoreRegExpList` closes this at the substring instead: a pattern matching from `data:image/svg+xml,` to the next `"` skips the encoded segment without exempting the prose around it.
