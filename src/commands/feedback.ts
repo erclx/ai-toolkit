@@ -106,7 +106,7 @@ export function register(program: Command): void {
         }
         const reason = issueFailureMessage(result)
         if (!isToolkitSource()) {
-          frameError(`${reason} No toolkit source to fall back to.`)
+          frameError(reason)
           process.exitCode = 1
           return
         }
