@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.30.2](https://github.com/erclx/canon/compare/v4.30.1...v4.30.2) (2026-09-03)
+
+
+### Bug Fixes
+
+* **gov:** pair citation backticks by run length via a shared tokenizer ([#1421](https://github.com/erclx/canon/issues/1421)) ([2f3e68d](https://github.com/erclx/canon/commit/2f3e68d0ff426e087447f36853cb466215ab491d))
+
 ## [4.30.1](https://github.com/erclx/canon/compare/v4.30.0...v4.30.1) (2026-09-02)
 
 
