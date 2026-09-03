@@ -47,12 +47,27 @@ paths=$(tail -n +"$line_start" "$transcript_path" | jq -r '
 ' 2>/dev/null | sort -u)
 [ -n "$paths" ] || exit 0
 
+# Two written paths can share a basename, and a bare basename match would then
+# read one mention as covering both. Counting first is what lets a collision
+# fall back to the full path, which the ordinary case never needs.
+declare -A base_count
+while IFS= read -r path; do
+  [ -n "$path" ] || continue
+  base=$(basename "$path")
+  base_count["$base"]=$((${base_count["$base"]:-0} + 1))
+done <<<"$paths"
+
 unmentioned=()
 while IFS= read -r path; do
   [ -n "$path" ] || continue
   base=$(basename "$path")
+  if [ "${base_count[$base]}" -gt 1 ]; then
+    needle="$path"
+  else
+    needle="$base"
+  fi
   case "$last_message" in
-  *"$base"*) ;;
+  *"$needle"*) ;;
   *) unmentioned+=("$path") ;;
   esac
 done <<<"$paths"
