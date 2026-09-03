@@ -199,6 +199,22 @@ describe('readCitations', () => {
     ])
   })
 
+  it('should resolve a citation past a doubled-backtick span earlier on the line', async () => {
+    write('docs/agents/output-shape.md', '# Output shape')
+    writeRule(
+      'core/095-cli-output.md',
+      '- Reading ``canon markdown audit``, then follow `docs/agents/output-shape.md`.',
+    )
+    git('add', '--all')
+
+    const report = await readCitations(ROOT)
+
+    expect(withStatus(report, 'dead')).toEqual([])
+    expect(withStatus(report, 'resolved')).toEqual([
+      'docs/agents/output-shape.md',
+    ])
+  })
+
   it('should anchor on the whole span rather than a trailing standards pattern', async () => {
     // Cutting `standards/tooling-reference.md` out of this span and resolving
     // it against the standards root reports a file that exists as missing,

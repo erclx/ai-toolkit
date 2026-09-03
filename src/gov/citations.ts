@@ -6,6 +6,7 @@ import { isMarked } from '@/exempt-marker'
 import { gitEnv } from '@/git-env'
 import { listRuleFiles } from '@/gov/payload'
 import { parseFrontmatter } from '@/indexes/frontmatter'
+import { findBacktickSpans } from '@/markdown/backticks'
 
 /**
  * The inline token exempting one line from this sweep, shaped on the
@@ -113,13 +114,6 @@ const PREVIEW_LIMIT = 200
 const FENCE = /^\s*(?:```|~~~)/
 
 const FRONTMATTER_DELIMITER = /^---\s*$/
-
-/**
- * A backticked span, which is the only carrier a rule writes a citation in. No
- * rule in either corpus uses a markdown link, and matching running prose would
- * report every sentence that happens to name a file.
- */
-const BACKTICKED = /`([^`\n]+)`/g
 
 /**
  * The verb form, with the name captured. A leading letter or digit is required,
@@ -254,8 +248,10 @@ export function collectCitations(text: string): RawCitation[] {
       })
     }
 
-    for (const match of line.matchAll(BACKTICKED)) {
-      const span = match[1] ?? ''
+    // A backticked span is the only carrier a rule writes a citation in. No
+    // rule in either corpus uses a markdown link, and matching running prose
+    // would report every sentence that happens to name a file.
+    for (const { content: span } of findBacktickSpans(line)) {
       const form = classifySpan(span)
       if (form === undefined) continue
       found.push({ line: index + 1, form, cited: span, preview, marked })
