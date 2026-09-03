@@ -109,6 +109,19 @@ describe('rewriteText', () => {
     )
   })
 
+  it('should leave a paragraph separated from its marker by a blank line alone', () => {
+    const text = '<!-- canon-keep-record-root -->\n\n.claude/memory/x.md'
+    expect(rewriteText(text)).toBe(text)
+  })
+
+  it('should resume rewriting the line after a blank-separated protected paragraph', () => {
+    const text =
+      '<!-- canon-keep-record-root -->\n\n.claude/memory/a.md\n.claude/memory/b.md'
+    expect(rewriteText(text)).toBe(
+      '<!-- canon-keep-record-root -->\n\n.claude/memory/a.md\n.canon/memory/b.md',
+    )
+  })
+
   it('should be idempotent over an already-swept tree', () => {
     const once = rewriteText('.claude/plans/x.md and .claude/.tmp/y')
     expect(rewriteText(once)).toBe(once)
@@ -122,6 +135,13 @@ describe('scanText', () => {
 
   it('should count a marked citation as kept rather than rewritten', () => {
     const counts = scanText('.claude/memory/a.md canon-keep-record-root')
+    expect(counts).toEqual({ rewritten: 0, kept: 1 })
+  })
+
+  it('should count a citation kept across a blank line as kept', () => {
+    const counts = scanText(
+      '<!-- canon-keep-record-root -->\n\n.claude/memory/x.md',
+    )
     expect(counts).toEqual({ rewritten: 0, kept: 1 })
   })
 
