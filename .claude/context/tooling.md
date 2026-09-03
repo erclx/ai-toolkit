@@ -55,7 +55,8 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Stacks do not compose horizontally. Single-root polyglot is unsupported, and a monorepo uses the subfolder pattern instead.
 - `tooling/claude/` is storage, not a stack. It holds seeds, user-level config, and a minimal manifest consumed only by the `canon claude` CLI, so `TOOLING_STACK_EXCLUDE` keeps it out of discovery.
 - The non-goal against shipping application code turns on the word application, and its own carve-out in `.claude/REQUIREMENTS.md` already reads configs, seeds, snippets, and rules
-- Test files, an e2e spec, the screenshot template, and six shell scripts land executable non-config source in a target, and `injectManifest` in `src/tooling/inject.ts` runs `bun add -D` against it, so the line reads as a hard stop on a stack that installs an entry point and is not one
+- Test files, an e2e spec, the screenshot template, and six shell scripts land executable non-config source in a target, and `injectManifest` in `src/tooling/inject.ts` runs `bun add -D` against it. The non-goal's build-exclusion carve-out is what covers this class: each of the four already-shipped test-infrastructure files proves out under it, since none reaches a target's production build.
+- The scenario switcher component ships from `tooling/astro/configs/` rather than `tooling/web/` because `vite-react` shares the `web` parent and cannot parse `.astro` syntax. `vite-react` gets no equivalent until a React version is written against a real decision.
 - A whole-stack install records the chain it resolved into `.claude/canon/config.json` through `recordToolingChain` in `src/tooling/stamp.ts`, which is what makes tooling drift measurable in `canon sync --check`. The write lands after the copies, so a partial apply that throws leaves the previous record rather than a claim the target does not meet.
 - Rationale and the workspace-root refusal sit in `.claude/context/cli/sync.md`
 

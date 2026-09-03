@@ -34,6 +34,7 @@ Run `canon tooling sync <stack> <target> --check` for the list resolved against 
 - `astro.config.mjs`
 - `eslint.config.js`
 - `playwright.config.ts`
+- `src/components/dev/scenarios.astro`
 - `tsconfig.json`
 - `vitest.config.ts`
 
