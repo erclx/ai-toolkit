@@ -42,6 +42,10 @@ A bare run reports every repository and carries a `repository` field on each row
 
 The match can return more than one session. Read the count rather than the first row, since nothing stops two sessions holding one branch, and a caller that treats the result as singular picks among candidates without knowing it.
 
+Resolution reads a session's registered `cwd`, taken at whatever `locate()` finds there, not wherever the session has since worked from. A session that changes worktrees or repositories through commands, rather than through a fresh session entering the worktree, keeps the `cwd` it registered at. It therefore answers for the branch that `cwd` sits in, and no other.
+
+A zero for a different branch that session is genuinely working on is not evidence the branch is unclaimed. It only reports the one branch the registration can see.
+
 ## Whether a branch is already claimed
 
 With `--branch`, the JSON record also carries `worktree` (the path of any worktree already checked out to it, or `null`), `refs` (the refs that already name the branch, the local head and the `origin` remote-tracking ref alike), and `claimed` (`true` when any of the three holds it).
