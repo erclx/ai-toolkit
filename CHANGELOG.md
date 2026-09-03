@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.34.1](https://github.com/erclx/canon/compare/v4.34.0...v4.34.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **sandbox:** rekey the seed-sync fixture to content, not position ([#1440](https://github.com/erclx/canon/issues/1440)) ([fa38e45](https://github.com/erclx/canon/commit/fa38e45e5564d0fad63d5246ead4d62d02e264db))
+
 ## [4.34.0](https://github.com/erclx/canon/compare/v4.33.0...v4.34.0) (2026-09-03)
 
 
