@@ -11,6 +11,7 @@ bierner
 calibri
 cambria
 canva
+chdir
 cksum
 clack
 commander

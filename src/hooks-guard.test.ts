@@ -297,6 +297,43 @@ beforeAll(() => {
           tool_name: 'Write',
         }),
     },
+    'silent-turn.sh': {
+      code: 2,
+      expect: 'did not name:',
+      payload: (nonce) => {
+        const key = nonce.replace(/[^A-Za-z0-9_.-]/g, '_')
+        const transcriptPath = join(fixture, `transcript-${key}.jsonl`)
+        const promptId = `prompt-${key}`
+        const writtenPath = join(fixture, `silent-turn-written-${key}.txt`)
+        const lines = [
+          { promptId, type: 'user' },
+          {
+            message: {
+              content: [
+                {
+                  input: { file_path: writtenPath },
+                  name: 'Write',
+                  type: 'tool_use',
+                },
+              ],
+            },
+            type: 'assistant',
+          },
+        ]
+        writeFileSync(
+          transcriptPath,
+          lines.map((line) => JSON.stringify(line)).join('\n') + '\n',
+        )
+        return payloadFor({
+          hook_event_name: 'Stop',
+          last_assistant_message: 'Done.',
+          prompt_id: promptId,
+          stop_hook_active: false,
+          transcript_path: transcriptPath,
+        })
+      },
+      stream: 'stderr',
+    },
     'standards-audit.sh': {
       expect: join(project, 'doc.md'),
       path: [join(fixture, 'bin'), hookPath].join(delimiter),
