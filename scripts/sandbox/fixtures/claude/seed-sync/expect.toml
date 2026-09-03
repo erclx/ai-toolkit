@@ -35,7 +35,7 @@ write_scope = [".canon/review/**"]
 
 manual = [
   "The truncated `CLAUDE.md` sections are proposed as Add rather than as Update. Semantic: which verdict a missing section earns is the skill's judgment and both spellings put the section name in the same file",
-  "The mutated `- Use active voice.` bullet reads as Stale rather than Customized, so it is proposed rather than recorded in the scope table alone. Semantic: the customized-versus-stale call is the reasoning under test and a pattern matching either label cannot tell a correct call from a coincidence",
+  "The mutated `## Context` bullet is judged by appearance rather than by history, since the skill runs `canon` from a global install carrying no `.git`, and reads as Stale rather than Customized, proposed as an Update rather than recorded in the scope table alone. Semantic: the customized-versus-stale call is the reasoning under test and a pattern matching either label cannot tell a correct call from a coincidence",
   "No target file is written before the user fills in a `Decision:`. Semantic: an assertion naming what a run must not have written passes for the file being elsewhere rather than for the run being correct",
 ]
 

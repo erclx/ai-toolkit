@@ -20,8 +20,15 @@ EOF
   git add . && git commit -m "chore(project): init" --no-verify -q
 
   if [ -f "CLAUDE.md" ]; then
-    head -n 10 CLAUDE.md >CLAUDE.md.tmp && mv CLAUDE.md.tmp CLAUDE.md
-    sed -i 's/before changes, when present\./before edits\./' CLAUDE.md
+    if ! grep -q '^## Commands' CLAUDE.md; then
+      log_error "CLAUDE.md carries no ## Commands heading, so the truncation has nothing to cut at."
+    fi
+    sed -i '/^## Commands/,$d' CLAUDE.md
+
+    if ! grep -q 'Pick which from the index anchors below\.' CLAUDE.md; then
+      log_error "CLAUDE.md carries no anchors sentence to mutate, so the drift stage would stage nothing."
+    fi
+    sed -i 's/Pick which from the index anchors below\./Pick which from the index below./' CLAUDE.md
   fi
 
   # No standards drift is staged. The corpus installs into no target, so the
