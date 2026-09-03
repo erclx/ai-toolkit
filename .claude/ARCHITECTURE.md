@@ -274,11 +274,11 @@ Advising was the alternative and it is what a scaffolded target would have recei
 
 ### `assets/` and `examples/` split on who the folder is talking to
 
-Both folders hold a hand-authored source, a render step, and output sitting beside it, so a source-versus-output rule cannot separate them. What separates them is the reader each is written for: `assets/` is this repository's self-portrait, rendered for a visitor who never opens the source, and `examples/` is sample input written for a reader about to copy and run it themselves. `README.md` naming every `assets/*.png` directly, against nothing outside `examples/slides/` naming its own rendered output, is the concrete instance the test resolves.
+Both folders hold a hand-authored source, a render step, and output sitting beside it, so a source-versus-output rule cannot separate them. What separates them is the reader each is written for: `assets/` is this repository's self-portrait, rendered for a visitor who never opens the source, and `examples/` is sample input written for a reader about to copy and run it themselves. `README.md` depending on every `assets/*.png` staying current, against nothing outside `examples/` depending on its rendered output staying current, is the concrete instance the test resolves.
 
 The same test answers the staleness question, so the two folders read as one policy rather than an arbitrary gate on one and a disclaimer on the other. A render gates when something else committed depends on it staying current, which is `assets/`'s case through `captureStamps`, and stays disclaimed when nothing does, which is `examples/`'s case. Widening the gate to cover `examples/slides/` was considered and declined on that ground: nothing outside `examples/` depends on its rendered output staying current, and building a mechanism for the one case that already has a gate does not generalize to the one that needs none.
 
-Measured at `686d8665` on 2026-09-03.
+Measured at `80038b95` on 2026-09-03.
 
 ## Risks / open questions
 
