@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.37.1](https://github.com/erclx/canon/compare/v4.37.0...v4.37.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **migrate:** reach a seeded hook's retired binary name ([#1453](https://github.com/erclx/canon/issues/1453)) ([f68495a](https://github.com/erclx/canon/commit/f68495ad1c456931adfe0f00ad208fe35618c3f0))
+
 ## [4.37.0](https://github.com/erclx/canon/compare/v4.36.1...v4.37.0) (2026-09-03)
 
 
