@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.36.1](https://github.com/erclx/canon/compare/v4.36.0...v4.36.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **feedback:** pin the github issue target to the toolkit's own repo ([#1447](https://github.com/erclx/canon/issues/1447)) ([61aa4b2](https://github.com/erclx/canon/commit/61aa4b2a9af1e2d83c82d0b40b712928e0d1e7dc))
+* **migrate:** widen the record-root marker past a blank line ([#1448](https://github.com/erclx/canon/issues/1448)) ([686d866](https://github.com/erclx/canon/commit/686d8665fe5328a0676c53e980f9a03726cba3de))
+
 ## [4.36.0](https://github.com/erclx/canon/compare/v4.35.0...v4.36.0) (2026-09-03)
 
 
