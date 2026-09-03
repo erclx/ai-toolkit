@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.32.1](https://github.com/erclx/canon/compare/v4.32.0...v4.32.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **gate:** ban same-repository citations regardless of qualification ([#1433](https://github.com/erclx/canon/issues/1433)) ([8a13a73](https://github.com/erclx/canon/commit/8a13a73220a995cdd4a3c5f3cd13f7e32bc3f962))
+
 ## [4.32.0](https://github.com/erclx/canon/compare/v4.31.1...v4.32.0) (2026-09-03)
 
 
