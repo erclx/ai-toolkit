@@ -34,7 +34,9 @@ A `layout:` value outside the catalog falls back to the bullets layout rather th
 
 ## Layout catalog
 
-`canon slides list --json` emits the catalog so a skill reads layout names at runtime rather than hardcoding them. The layouts cover a cover title, a contents slide, a section divider, a bullet list, two labeled columns, a row of stat callouts, a card grid, and a pull quote. Each layout function owns its geometry and enforces the type scale, so content sizes to fit rather than overflowing. `freeform` is the ninth: it reads an explicit position and size per shape from the source line and takes its color from the shared palette, with no layout algorithm between the two.
+`canon slides list --json` emits the catalog so a skill reads layout names at runtime rather than hardcoding them. The layouts cover a cover title, a contents slide, a section divider, a bullet list, two labeled columns, a row of stat callouts, a card grid, and a pull quote. Each layout function owns its geometry and enforces the type scale, so content sizes to fit rather than overflowing.
+
+`freeform` is the ninth: it reads an explicit position and size per shape from the source line and takes its color from the shared palette, with no layout algorithm between the two. It still draws its title through the shared title band, which occupies the top 1.4 inches of the canvas, so a shape declared above `y=1.4` renders underneath the heading.
 
 ## Navigation
 
