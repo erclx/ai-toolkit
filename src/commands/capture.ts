@@ -17,10 +17,9 @@ import {
 } from '@/ui'
 
 /**
- * Kept rather than removed on the same call that dropped the selector's
- * default. A missing folder refuses loud with a `not found` message naming
- * the path, unlike the selector's silent wrong-crop failure, and this
- * repository's own bare `canon capture` invocation depends on it resolving.
+ * Kept rather than removed, unlike the selector's default that came out for
+ * silently cropping the wrong region: a missing folder still refuses loud,
+ * naming the argument that failed to resolve.
  */
 const DEFAULT_SOURCE = 'assets'
 
