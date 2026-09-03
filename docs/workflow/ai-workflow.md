@@ -78,7 +78,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 
 - Create a worktree per feature, then start a Claude Code session in each
 - Invoke `canon:claude-feature` in each session. Plans land at the main worktree root as `.canon/plans/feature-<slug>.md`, one per feature, no collisions. Small features stay in chat and skip the file.
-- Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files at the main worktree root (`review/branch/review-<slug>.md`, `review/ui-checklist-<slug>.md`), so parallel sessions do not overwrite each other. The slug is the branch name with any leading type segment dropped, so `feat/jwt-expiration` and the plan at `feature-jwt-expiration.md` meet on one name
+- Implement, verify, and review each feature independently. `claude-review` writes a per-branch report at the main worktree root (`review/branch/review-<slug>.md`), and `claude-ui-test` writes a per-branch checklist handoff there too (`tmp/ui-checklist/<slug>.md`) that `git-pr` posts to the pull request and removes, so parallel sessions do not overwrite each other. The slug is the branch name with any leading type segment dropped, so `feat/jwt-expiration` and the plan at `feature-jwt-expiration.md` meet on one name
 - Ship each worktree separately with `canon:git-ship`
 - For full autonomy per worktree, invoke `canon:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to a pull request the chain marked as a draft and then read the flag back on. The mark says the work has had no review yet, and it holds no window, since readying a pull request to merge lifts it and is the operator's act.
 

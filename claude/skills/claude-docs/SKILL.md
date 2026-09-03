@@ -235,7 +235,7 @@ For each receipt, count the H2 items still marked 📝 pending:
 
 That standard owns what a fold writes and which entry types take one. `claude-memory-review` collects a receipt on the same rule, so neither body restates it.
 
-Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables). Those sit at `.canon/review/` itself rather than under a producer folder, so the two globs above never reach them.
+Do not sweep `ux-audit-*.md` or `ux-measure-*.md` (standalone deliverables). Those sit at `.canon/review/` itself rather than under a producer folder, so the two globs above never reach them.
 
 Output one line per file swept:
 
