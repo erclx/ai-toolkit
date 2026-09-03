@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.36.0](https://github.com/erclx/canon/compare/v4.35.0...v4.36.0) (2026-09-03)
+
+
+### Features
+
+* **slides:** add a freeform layout for explicit shape placement ([#1438](https://github.com/erclx/canon/issues/1438)) ([3469d05](https://github.com/erclx/canon/commit/3469d05c1bed7d8e2c64f49a880d9dc8c701a4d0))
+
 ## [4.35.0](https://github.com/erclx/canon/compare/v4.34.1...v4.35.0) (2026-09-03)
 
 
