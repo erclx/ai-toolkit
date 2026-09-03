@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.34.0](https://github.com/erclx/canon/compare/v4.33.0...v4.34.0) (2026-09-03)
+
+
+### Features
+
+* **ci:** seed the phase-label-gate workflow to base ([#1439](https://github.com/erclx/canon/issues/1439)) ([609d136](https://github.com/erclx/canon/commit/609d136a6d22fe9cefe7fca597b22058999a949a))
+
 ## [4.33.0](https://github.com/erclx/canon/compare/v4.32.1...v4.33.0) (2026-09-03)
 
 
