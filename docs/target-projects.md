@@ -157,6 +157,19 @@ This is a separate step rather than a fourth line in the block above because the
 
 Read the report before `--write` here more carefully than above. The record tree is untracked, so a wrong rewrite has no git undo, and the report names every citation with its line number and the line text for exactly that reason. The same `canon-keep-record-root` marker protects a line that has to keep the old spelling.
 
+### Move rules off the flat layout, once
+
+Installed rules moved from a flat `.claude/rules/<subdir>/` layout to `.claude/rules/canon/<subdir>/`. A project that installed governance before that release still holds the flat layout, and neither of the two governance verbs below notices: `canon gov sync` reports `No governance surfaces found in target` and exits 0, and `canon gov install` lands a second, wrapped copy beside the stale one rather than replacing it.
+
+Run `canon upgrade` first if you have not, then run this from inside the project:
+
+```bash
+canon migrate rule-layout --json
+canon migrate rule-layout --write --json
+```
+
+The first line reports the plan and the second applies it, relocating each rule and carrying an edited one's recorded hash forward so it still reports as edited on the next sync rather than reading clean. Run it once, ahead of `canon gov sync` or `canon gov install`, on any project scaffolded before this move landed.
+
 ### Check first
 
 `canon sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.

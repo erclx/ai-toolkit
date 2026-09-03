@@ -254,6 +254,16 @@ describe('applyRuleLayout', () => {
     expect(hashes['.claude/rules/core/010-testing.md']).toBeUndefined()
   })
 
+  it('should leave a catalog-matched file with no stamp entry unstamped at its new key rather than hashing it fresh', async () => {
+    const result = await plan()
+    await applyRuleLayout(root, result, root)
+
+    const hashes = stampedHashes(readStamp(root), 'governance')
+    expect(
+      hashes['.claude/rules/canon/core/040-catalog-only.md'],
+    ).toBeUndefined()
+  })
+
   it('should delete a byte-identical duplicate and leave the canon/ copy untouched', async () => {
     const result = await plan()
     await applyRuleLayout(root, result, root)

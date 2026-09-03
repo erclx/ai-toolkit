@@ -210,6 +210,15 @@ export function planRuleLayout(
  * otherwise carried forward only where the file they name still exists. A
  * key surviving neither test is dropped, so the stamp does not accumulate
  * entries for rules that no longer exist.
+ *
+ * A file that moved on the catalog or renumber-table fallback carries no old
+ * key to re-key, since `classifyRule` never required a stamp entry to call it
+ * `clean`, so it lands under `canon/` still absent from the map. Hashing it
+ * here to fill the gap would record an assumption the stamp never verified as
+ * though a sync had confirmed it. That is no regression: the same file was
+ * outside the walked root and invisible to `canon gov sync` before this move,
+ * so it goes from unattributed to unattributed rather than from attributed to
+ * not.
  */
 function nextHashes(
   root: string,
