@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.33.0](https://github.com/erclx/canon/compare/v4.32.1...v4.33.0) (2026-09-03)
+
+
+### Features
+
+* **hooks:** report a turn that wrote files and named none of them ([#1436](https://github.com/erclx/canon/issues/1436)) ([bb7c6a4](https://github.com/erclx/canon/commit/bb7c6a4228ce592141d1eb41ede2d305a9701e84))
+* **teach:** embed the course stylesheet and its fonts per lesson ([#1434](https://github.com/erclx/canon/issues/1434)) ([c31bbd2](https://github.com/erclx/canon/commit/c31bbd226f23f5d865cf55941eb936d9e238e052))
+
 ## [4.32.1](https://github.com/erclx/canon/compare/v4.32.0...v4.32.1) (2026-09-03)
 
 
