@@ -1,6 +1,7 @@
 import { relative } from 'node:path'
 import type { Command } from 'commander'
 import { type LessonOutcome, planLesson } from '@/teach/lesson'
+import { type NavOutcome, generateNav } from '@/teach/nav'
 import {
   defineTerms,
   type ListOutcome,
@@ -72,6 +73,11 @@ interface GlossaryCommandOptions {
   readonly json?: boolean
   readonly root?: string
   readonly term?: readonly string[]
+}
+
+interface NavCommandOptions {
+  readonly json?: boolean
+  readonly root?: string
 }
 
 export function register(program: Command): void {
@@ -309,6 +315,41 @@ export function register(program: Command): void {
     )
     .action(async (topic: string, opts: StylesheetCommandOptions) => {
       process.exitCode = await runStylesheet(topic, opts)
+    })
+
+  teach
+    .command('nav')
+    .description('Rewrite the teach root, contents pages, and lesson chrome')
+    .argument('[topic]', 'Workspace folder or topic, scoping the run to one')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the root, the contents page(s), and every found lesson chrome were written',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'Rewrites the teach-root listing, the contents page of every workspace',
+        "or of the one topic named, and each of its lessons' chrome: the",
+        'embedded stylesheet, the header with its breadcrumb and jump menus,',
+        'the prev/next footer nav, and the behavior scripts. The authored',
+        '<h1>, lede, body, and quiz are left untouched.',
+        '',
+        'A lesson missing one of the four chrome markers is refused rather',
+        "than rewritten, reported by name in the JSON record's skipped list",
+        'and on stderr, while every other lesson still rewrites.',
+        '',
+        'Examples:',
+        '  canon teach nav',
+        '  canon teach nav regular-expressions --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string | undefined, opts: NavCommandOptions) => {
+      process.exitCode = await runNav(topic, opts)
     })
 }
 
@@ -587,6 +628,56 @@ async function runLesson(
     emitJson,
     root,
   )
+}
+
+async function runNav(
+  topic: string | undefined,
+  opts: NavCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const root = await rootFor(opts.root)
+
+  return reportNav(await generateNav(root, topic), emitJson, root)
+}
+
+function reportNav(
+  outcome: NavOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok)
+    return reportRefusal('canon teach nav', outcome, emitJson, root)
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root: outcome.root,
+        contents: outcome.contents,
+        lessons: outcome.lessons,
+        skipped: outcome.skipped,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('canon teach nav')
+  logStep('Root')
+  logInfo(outcome.root)
+  logStep('Contents')
+  for (const path of outcome.contents) logInfo(path)
+  logStep('Lessons rewritten')
+  logInfo(String(outcome.lessons))
+
+  if (outcome.skipped.length > 0) {
+    logStep('Refused, missing a chrome marker')
+    for (const skip of outcome.skipped) {
+      logWarn(`${skip.file}: no ${skip.missing}`)
+    }
+  }
+
+  outro()
+  return 0
 }
 
 function reportRefusal(

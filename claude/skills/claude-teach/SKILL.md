@@ -93,14 +93,21 @@ canon teach lesson <topic> --json \
   --options <how many options each question carries>
 ```
 
-It writes nothing and reports four things:
+It writes nothing and reports three things:
 
 - `lesson`, the numbered path the lesson takes. Write it there.
-- `stylesheet` with `stylesheetExists`. Read it and embed its content into a `<style>` block in `<head>`, seeding it through the verb below when `stylesheetExists` is false, which is the first lesson in the workspace. Every lesson after that embeds the file's current content and adds to it rather than replacing it, since overwriting discards what the last lesson put there.
 - `success`, the mission's success lines, carried here so Step 5 needs no second read.
 - `quiz`, one entry per question, carrying `order` and `answer`.
 
 Write the correct option first, then present the options in the order `order` reports, reading it as authored indices where `0` is the correct one. Take the order as given. Position drawn here rather than chosen is the whole reason the verb exists, and a lesson that reorders on its own judgment puts the answer back in the first slot.
+
+Write the chrome as four empty marker pairs rather than composing it by hand: `<!-- canon:teach:style -->`/`<!-- /canon:teach:style -->` inside `<head>`, and `<!-- canon:teach:header -->`, `<!-- canon:teach:footnav -->`, and `<!-- canon:teach:scripts -->` each with its own close marker, in that order in `<body>`. Write the authored `<h1>`, lede, body, and quiz between the header's close marker and the footnav's open marker, and nothing else anywhere in the file. Then run:
+
+```bash
+canon teach nav <topic> --json
+```
+
+It fills every marker pair from what the workspace holds on disk: the embedded stylesheet, the header with its breadcrumb and jump menus, the prev/next footer nav, and the behavior scripts, and it rewrites the workspace's contents page and the teach-root listing in the same run. It refuses a lesson missing one of the four marker pairs by name rather than guessing at the boundary, so a marker dropped while writing the lesson is caught here rather than read back later as a lesson nothing links to. Report it rather than proceeding silently when the verb does not resolve, which is an installed CLI predating it, and never compose the chrome by hand as a fallback.
 
 Seed the stylesheet through the verb rather than authoring a palette, on the first lesson in a workspace:
 

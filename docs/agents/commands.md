@@ -41,6 +41,7 @@ Full help: `canon <command> --help`. Behavior notes for the install and sync ver
 | `canon teach resource`        | Record sources and leads in a workspace, repeating `--read` or `--lead` as `<title>=<url>` (`--json`)                                                                                                                              |
 | `canon teach glossary`        | Add terms to a workspace glossary alphabetically, repeating `--term <term>=<definition>` (`--json`)                                                                                                                                |
 | `canon teach stylesheet`      | Seed a workspace stylesheet from the design source, leaving an existing one alone without `--force` (`--json`)                                                                                                                     |
+| `canon teach nav`             | Rewrite the teach-root listing, a workspace's contents page, and each lesson's chrome from its four marker regions (`--json`)                                                                                                      |
 | `canon records validate`      | Report a session record or a standard against the standard governing it, per kind (`--json`)                                                                                                                                       |
 | `canon records migrate`       | Rewrite the records a validate finding names a recoverable transform for (`--write`, `--json`)                                                                                                                                     |
 | `canon records size`          | Report what each record folder holds and how much of it is recent, heaviest first (`--json`)                                                                                                                                       |
@@ -126,7 +127,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `slides`    | `render`, `list`                                                                                                                      |
 | `tasks`     | `archive`, `validate`                                                                                                                 |
 | `intake`    | `list`, `answer`                                                                                                                      |
-| `teach`     | `list`, `open`, `resource`, `glossary`, `lesson`, `stylesheet`                                                                        |
+| `teach`     | `list`, `open`, `resource`, `glossary`, `lesson`, `stylesheet`, `nav`                                                                 |
 | `comments`  | `scan`                                                                                                                                |
 | `context`   | `audit`                                                                                                                               |
 | `markdown`  | `audit`                                                                                                                               |
