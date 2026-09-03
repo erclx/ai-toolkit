@@ -15,6 +15,8 @@ describe('buildIssueArgs', () => {
       'A bug',
       '--body',
       'It broke',
+      '--repo',
+      'erclx/canon',
     ])
   })
 
@@ -35,6 +37,8 @@ describe('buildIssueArgs', () => {
       'bug',
       '--label',
       'enhancement',
+      '--repo',
+      'erclx/canon',
     ])
   })
 
@@ -65,6 +69,7 @@ describe('issueFailureMessage', () => {
 
     expect(message).toContain('gh could not file the issue')
     expect(message).toContain('gh: Not Found (HTTP 404)')
+    expect(message).toContain('https://github.com/erclx/canon/issues/new')
   })
 
   it('should separate an absent binary from a failed call', () => {

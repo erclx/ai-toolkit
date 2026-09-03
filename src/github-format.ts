@@ -25,13 +25,15 @@ export interface IssueSuccess {
 
 export type CreateIssueResult = IssueSuccess | IssueFailure
 
-const ISSUE_URL = 'https://github.com/erclx/canon/issues/new'
+const REPO = 'erclx/canon'
+const ISSUE_URL = `https://github.com/${REPO}/issues/new`
 
 export function buildIssueArgs(opts: CreateIssueOptions): string[] {
   const args = ['issue', 'create', '--title', opts.title, '--body', opts.body]
   for (const label of opts.labels ?? []) {
     args.push('--label', label)
   }
+  args.push('--repo', REPO)
   return args
 }
 
@@ -71,5 +73,5 @@ export function issueFailureMessage(failure: IssueFailure): string {
   if (failure.reason === 'missing-binary') {
     return `gh is not installed, so no issue was filed. Install gh, or file it at ${ISSUE_URL}`
   }
-  return `gh could not file the issue: ${failure.detail ?? 'no diagnostic on stderr'}`
+  return `gh could not file the issue: ${failure.detail ?? 'no diagnostic on stderr'}. File it manually at ${ISSUE_URL} instead.`
 }
