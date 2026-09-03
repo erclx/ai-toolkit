@@ -11,6 +11,7 @@ import {
   MOVED_ENTRIES,
   planFolderMoves,
   planRecordsMove,
+  referencesExcluded,
   rewriteText,
   scanText,
   sourcePath,
@@ -176,6 +177,26 @@ describe('isExcludedPath', () => {
 
   it('should sweep an ordinary shipped body', () => {
     expect(isExcludedPath('claude/skills/claude-autoship/SKILL.md')).toBe(false)
+  })
+})
+
+describe('referencesExcluded', () => {
+  it('should read a literal excluded prefix inside the text', () => {
+    expect(referencesExcluded('see .claude/hooks/standards-audit.sh')).toBe(
+      true,
+    )
+  })
+
+  it('should read a literal excluded path inside the text', () => {
+    expect(referencesExcluded('shipped in CHANGELOG.md already')).toBe(true)
+  })
+
+  it('should not read a live citation alone as excluded', () => {
+    expect(referencesExcluded('see .claude/tasks/x.md')).toBe(false)
+  })
+
+  it('should not read an excluded test suffix, which it does not check', () => {
+    expect(referencesExcluded('see src/tasks/archive.test.ts')).toBe(false)
   })
 })
 
@@ -411,6 +432,25 @@ describe('planRecordsMove', () => {
       '.claude/rules/core/035-tasks.md',
     ])
     expect(plan.rewritten).toBe(1)
+  })
+
+  it('should report a rewritten file that also names an excluded path', () => {
+    const plan = planRecordsMove(root, [
+      {
+        path: 'scripts/shell/test-hooks.sh',
+        text: 'EXPECTED_EXEMPTIONS checks .claude/tasks/ and .claude/hooks/x.sh',
+      },
+    ])
+
+    expect(plan.coupled).toEqual(['scripts/shell/test-hooks.sh'])
+  })
+
+  it('should not report a rewritten file carrying only a live citation', () => {
+    const plan = planRecordsMove(root, [
+      { path: 'docs/a.md', text: 'see .claude/tasks/x.md' },
+    ])
+
+    expect(plan.coupled).toEqual([])
   })
 
   it('should read the folder moves off disk beside the citations', () => {

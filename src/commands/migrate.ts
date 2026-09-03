@@ -263,6 +263,15 @@ function reportRecords(plan: RecordsPlan, records: number): void {
   if (plan.excluded.length > 0) {
     logInfo(`${plural(plan.excluded.length, 'file')} excluded from the sweep.`)
   }
+
+  // A list rather than a count. A coupled file is the handful an operator has
+  // to open by hand, and a bare count gives them nothing to act on.
+  if (plan.coupled.length > 0) {
+    logInfo(
+      `${plural(plan.coupled.length, 'file')} couple to an excluded path:`,
+    )
+    for (const path of plan.coupled) logInfo(`  ${path}`)
+  }
 }
 
 function toRecordsRecord(
@@ -279,6 +288,7 @@ function toRecordsRecord(
     rewritten: plan.rewritten,
     kept: plan.kept,
     excluded: plan.excluded.length,
+    coupled: plan.coupled,
     records,
     paths: plan.entries.map((entry) => ({
       path: entry.path,
