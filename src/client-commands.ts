@@ -31,8 +31,15 @@ export const CLIENT_COMMAND_MARKER = 'canon-allow-client-command'
  * naming the command with no bracketed argument carries no placeholder at all
  * and never matches, which is deliberate: the defect this closes is a wrong
  * argument shown as an invocation, not a sentence that never showed one.
+ *
+ * The interpolation half admits a dotted path, since a property access is the
+ * ordinary shape a real call site interpolates, such as `${session.id}`, and a
+ * bare `${id}` is the rarer one that only a fixture writes. A capture stopping
+ * at the first `.` matched the command literal and missed the property access
+ * beside it entirely, which is how the check went unable to read the one call
+ * form this repository's own worktree listing writes.
  */
-const PLACEHOLDER = `'?(?:<([\\w-]+)>|\\$\\{(\\w+)\\})'?`
+const PLACEHOLDER = `'?(?:<([\\w-]+)>|\\$\\{(\\w+(?:\\.\\w+)*)\\})'?`
 
 export interface ClientCommandCitation {
   readonly file: string
@@ -70,7 +77,11 @@ export function clientCommandCitationsIn(
       if (isMarked(lines, index, CLIENT_COMMAND_MARKER)) continue
 
       for (const match of line.matchAll(pattern)) {
-        const argument = match[1] ?? match[2] ?? ''
+        const dotted = match[2]
+        const argument =
+          dotted !== undefined
+            ? (dotted.split('.').at(-1) ?? dotted)
+            : (match[1] ?? '')
         if (argument === canonicalArgument) continue
 
         citations.push({

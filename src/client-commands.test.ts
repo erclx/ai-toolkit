@@ -63,6 +63,32 @@ describe('clientCommandCitationsIn', () => {
     expect(citations).toEqual([])
   })
 
+  it('should pass a property access ending in the canonical argument', () => {
+    const citations = clientCommandCitationsIn(
+      'src/commands/worktrees.ts',
+      "goes through: claude rm '${session.id}'\n",
+      [RM],
+    )
+
+    expect(citations).toEqual([])
+  })
+
+  it('should flag a property access ending in the wrong argument', () => {
+    const citations = clientCommandCitationsIn(
+      'src/commands/worktrees.ts',
+      // canon-allow-client-command: fixture for a wrong argument, not a real citation
+      "goes through: claude rm '${session.name}'\n",
+      [RM],
+    )
+
+    expect(citations).toHaveLength(1)
+    expect(citations[0]).toMatchObject({
+      argument: 'name',
+      // canon-allow-client-command: fixture for a wrong argument, not a real citation
+      text: "claude rm '${session.name}'",
+    })
+  })
+
   it('should leave a sentence with no bracketed argument unchecked', () => {
     const citations = clientCommandCitationsIn(
       'src/worktrees/reclaim.ts',
