@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.38.0](https://github.com/erclx/canon/compare/v4.37.1...v4.38.0) (2026-09-03)
+
+
+### Features
+
+* **migrate:** report a citation rewrite coupled to an excluded path ([#1452](https://github.com/erclx/canon/issues/1452)) ([724d4a7](https://github.com/erclx/canon/commit/724d4a7dbbb387594bef87dce29df7518ed8c182))
+
 ## [4.37.1](https://github.com/erclx/canon/compare/v4.37.0...v4.37.1) (2026-09-03)
 
 
