@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.32.0](https://github.com/erclx/canon/compare/v4.31.1...v4.32.0) (2026-09-03)
+
+
+### Features
+
+* **worktrees:** check a quoted client command and resolve its id ([#1424](https://github.com/erclx/canon/issues/1424)) ([392c03c](https://github.com/erclx/canon/commit/392c03cd10a6044a3562c0f9258d72eb21254e13))
+
 ## [4.31.1](https://github.com/erclx/canon/compare/v4.31.0...v4.31.1) (2026-09-03)
 
 
