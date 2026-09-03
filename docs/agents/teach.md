@@ -1,6 +1,6 @@
 ---
 title: Teach
-description: Listing learning workspaces and the ordinal a new one takes, opening one with its required files, recording sources and glossary terms, resolving what the next lesson needs before it is written, the refusal reasons, and why every write here runs through a verb
+description: Listing learning workspaces and the ordinal a new one takes, opening one with its required files, recording sources and glossary terms, resolving what the next lesson needs before it is written, rewriting the root listing, a contents page, and each lesson's chrome from its marker regions, the refusal reasons, and why every write here runs through a verb
 ---
 
 # Teach
@@ -121,15 +121,36 @@ canon teach lesson regular-expressions \
 | `--json`          | Emit a machine-readable record on stdout                  |
 | `--root <path>`   | Teach root, defaulting to the main worktree               |
 
-It reports four things. `lesson` is the numbered path the lesson takes, derived from the highest ordinal already in `lessons/` the way an open derives a workspace ordinal. `stylesheet` names the one file every lesson in the workspace embeds, with `stylesheetExists` saying whether it is on disk yet. `success` carries the mission's success lines, so a session reports progress against the exit criteria without a second read of `MISSION.md`. `quiz` carries one entry per question.
+It reports three things. `lesson` is the numbered path the lesson takes, derived from the highest ordinal already in `lessons/` the way an open derives a workspace ordinal. `success` carries the mission's success lines, so a session reports progress against the exit criteria without a second read of `MISSION.md`. `quiz` carries one entry per question.
 
-The stylesheet is reported rather than written. A verb that wrote it on every lesson would discard whatever the last lesson added, and the second lesson in a workspace is the one that needs the file the first one left.
+A lesson written against this record carries its chrome as four empty marker pairs rather than hand-composed markup: `canon:teach:style`, `canon:teach:header`, `canon:teach:footnav`, and `canon:teach:scripts`. `canon teach nav`, below, fills them from what the workspace holds on disk.
 
-`canon teach stylesheet <topic>` is what writes it, seeded from the design source so a workspace renders in the system every other surface does. It refuses to overwrite, reporting `written` as false where the workspace already carries one, and `--force` takes the seed back over it. Each workspace used to carry a hand-authored palette, which is how the course styling forked once per workspace, so a lesson adds its own rules under the seed and reaches a value through its custom property rather than restating the hex.
+`canon teach stylesheet <topic>` writes the one file every lesson in the workspace embeds, seeded from the design source so a workspace renders in the system every other surface does. It refuses to overwrite, reporting `written` as false where the workspace already carries one, and `--force` takes the seed back over it. Each workspace used to carry a hand-authored palette, which is how the course styling forked once per workspace, so a lesson adds its own rules under the seed and reaches a value through its custom property rather than restating the hex.
 
 Each `quiz` entry carries `order`, the authored option indices in presentation order where index `0` is the correct answer, and `answer`, the one-based position that answer lands in. Both travel together because a caller deriving the position itself is a caller that can derive it wrongly.
 
 The order is drawn here rather than instructed, and that is the point of the verb. An author told to vary the position still varies it by judgment, and the judgment settles on the first slot, which is the defect this design departs from. The draw is uniform over the options, so the position carries no information about which answer is correct.
+
+## Nav
+
+`canon teach nav` rewrites the teach-root listing, a workspace's contents page, and each of its lessons' chrome, from what the workspace holds on disk.
+
+```bash
+canon teach nav
+canon teach nav regular-expressions --json
+```
+
+| Option          | Behavior                                          |
+| --------------- | ------------------------------------------------- |
+| `[topic]`       | Workspace folder or topic, scoping the run to one |
+| `--json`        | Emit a machine-readable record on stdout          |
+| `--root <path>` | Teach root, defaulting to the main worktree       |
+
+With no topic it rewrites every workspace. The teach-root listing is always rewritten regardless, since it reports on every workspace and a scoped run leaving it stale would be a second kind of drift this verb exists to end.
+
+A lesson carries its chrome as four marker pairs the authoring skill writes empty: `canon:teach:style`, `canon:teach:header`, `canon:teach:footnav`, and `canon:teach:scripts`. This verb splices each one from the current workspace state, embedding the shared stylesheet, rebuilding the breadcrumb and jump menus, the prev/next footer nav, and the behavior scripts, and leaves the authored `<h1>`, lede, body, and quiz between the header and the footnav untouched.
+
+A lesson missing one of the four marker pairs is refused by name rather than rewritten, and every other lesson in the run still rewrites. The record's `skipped` list carries the refused files and which marker each is missing.
 
 ## Opening a workspace
 
