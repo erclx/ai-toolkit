@@ -330,6 +330,10 @@ Marking a pull request a draft and reading the flag back are two separate calls,
 
 Two pull requests anchor the expansion-route findings `orchestrator-dispatch.md` states without a number. `claude-autoship` first carried `disable-model-invocation` in `#365`, and the trial's Observation B shipped as `#1382`. The dispatch-to-address-a-review case is `#1251`, narrated in full under `.claude/context/claude-plugin/skill-review.md`'s channel section.
 
+### A plan's Files to touch can assume an answer its own Questions section has not given yet
+
+`## Files to touch` is drafted alongside `## Questions` rather than after it, so a Files-to-touch line can already write the design a Question below it is still asking about, with no cross-reference between the two. One plan's Files-to-touch entry for a renamed CLI field stated returning the stylesheet's file content in the field, while its own unanswered Question 2 suggested returning the path alone and dropping the field instead, and the plan's Constraints section gave no priority between the two. Where a `- Suggested:` answer conflicts with a Files-to-touch line for the same file, take the Suggested answer as the more specific, more recently considered decision and adjust the conflicting line to match, then report the reconciliation to the reader rather than silently picking a side.
+
 ### A peer's merge claim needs the commits, not the net diff
 
 A pull request's net file diff can read as untouched for a file a peer session correctly described as changed, when an earlier commit in the same PR added content and a later commit removed it before merge. A peer session told a worker mid-build that `#1398` had routed four lines into a context entry and then cut them on review. The worker's first check read the merged file list, found the entry absent from it, and read the claim as false.

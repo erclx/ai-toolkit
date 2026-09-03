@@ -131,8 +131,8 @@ describe('planLesson', () => {
         'assets',
         'course.css',
       ),
-      stylesheetHref: '../assets/course.css',
     })
+    expect(outcome).not.toHaveProperty('stylesheetHref')
   })
 
   it('should report the stylesheet as present once it is on disk', async () => {

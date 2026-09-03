@@ -71,7 +71,7 @@ Date the workspace once rather than every file. A per-file date leaves every oth
 
 - Number a lesson and a learning record `0001` upward, as `<nnnn>-<slug>.html` and `<nnnn>-<slug>.md`. The number is read order and never changes.
 - Name a reference page for its subject alone, with no number. A reference page is looked up rather than worked through, so an ordinal on one implies an order no reader follows.
-- Keep one shared stylesheet under `assets/` and link it from every lesson. A lesson restating its own styles makes a workspace read as a pile of one-offs rather than as one course.
+- Keep one shared stylesheet under `assets/` and embed it in every lesson. A lesson restating its own styles makes a workspace read as a pile of one-offs rather than as one course.
 
 ## MISSION.md
 

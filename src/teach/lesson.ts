@@ -39,9 +39,8 @@ export interface LessonPlanned {
   /** Relative to the root, so a caller prints a path a reader can open. */
   readonly path: string
   readonly lesson: string
+  /** Read this and embed its content in the lesson's `<style>` block. */
   readonly stylesheet: string
-  /** What the lesson's own `link` element carries, resolved from `lessons/`. */
-  readonly stylesheetHref: string
   /** False on the first lesson in a workspace, which writes the stylesheet. */
   readonly stylesheetExists: boolean
   /** The mission's success lines, reported as the exit criteria they are. */
@@ -123,7 +122,7 @@ function nextLesson(files: readonly string[]): string {
 
 /**
  * Everything a lesson needs resolved before it is written: where it goes, which
- * stylesheet it links and whether that file is already on disk, the mission's
+ * stylesheet it embeds and whether that file is already on disk, the mission's
  * exit criteria, and the order each quiz presents its options in.
  *
  * The stylesheet is reported rather than written. Every lesson after the first
@@ -172,7 +171,6 @@ export async function planLesson(
     path: workspace.path,
     lesson,
     stylesheet,
-    stylesheetHref: `../${TEACH_ASSETS}/${TEACH_STYLESHEET}`,
     stylesheetExists: existsSync(join(root, stylesheet)),
     success: workspace.success,
     quiz: orderQuiz(request.questions, request.options, request.random),
