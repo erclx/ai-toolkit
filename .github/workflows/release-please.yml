@@ -1,4 +1,5 @@
 name: Release
+# canon-no-seed: publishes this package to the registry as @erclx/canon and writes this checkout's own plugin.json version through extra-files. Seeding it as-is would have a target publish itself under this package's name.
 
 on:
   push:

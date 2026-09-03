@@ -1,4 +1,5 @@
 name: Phase Label Gate
+# canon-no-seed: runs bun src/cli.ts labels scan against this checkout's own src/, which a target does not have. Portable form needs a runner step installing the published canon CLI globally, queued as a follow-up rather than folded in here.
 
 on:
   pull_request:
