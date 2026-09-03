@@ -280,6 +280,18 @@ The same test answers the staleness question, so the two folders read as one pol
 
 Measured at `80038b95` on 2026-09-03.
 
+### The application-code non-goal turns on proof rather than on a project boundary
+
+`.claude/REQUIREMENTS.md`'s non-goal against shipping application code now admits code proven to leave the production build, checked two ways: stripped by a build-time flag such as `import.meta.env.DEV` and confirmed absent from the built output, or never reached from any production entry point. `tooling/astro/configs/src/components/dev/scenarios.astro` is the first component to ship under it, a query-parameter-selected switcher between candidate treatments of one decision, ported from the one project that had already built it.
+
+Leaving the wrapper in that one project was the alternative, and it is what the non-goal as written already forced: a decision about how something feels to cause cannot be settled from a capture or a recording, both passive, so five decisions there were each served by a hand-written parameter-and-switcher pair, none resembling the last, because the toolkit had nowhere to hold the generic version once built. The wrapper carries no project-specific naming, an `Arm`/`Props` pair and nothing else, so confining it to one checkout cost every other project the same five rewrites rather than one import.
+
+The wording does not reopen generally, since a carve-out checked by build proof is checked the same way regardless of what a component's own intent claims for itself. Four files already crossed the boundary the old wording forgot to name: an e2e spec at `tooling/web/configs/e2e/home.spec.ts`, a Playwright script at `tooling/web/configs/e2e/screenshot.ts`, a Vitest setup file at `tooling/web/configs/src/test/setup.ts`, and a Python test seed at `tooling/python/seeds/tests/test_smoke.py`. None of the four ships in a target's production build, and none was reasoned about as an instance of anything before this amendment gave the condition a name.
+
+The component ships from `tooling/astro/configs/` alone, never from `tooling/web/`. `vite-react` extends the same `web` parent and cannot parse `.astro` syntax, so a file placed there would reach a target that cannot compile it. `vite-react` gets no equivalent until a real decision on that stack demands one, on the same ground the astro version left five hand-written rewrites behind before it existed.
+
+Measured at `bbe03127` on 2026-09-03.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects that call.

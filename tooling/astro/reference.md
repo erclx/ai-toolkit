@@ -58,3 +58,10 @@ Append to the `## Scripts` table:
 ## CI docs (extend)
 
 In `.claude/context/ci.md`, the Typecheck row's assertion reads: `` `astro check` passes ``. The Build row's assertion reads: `` `astro build` succeeds ``.
+
+## Scenario switcher
+
+- `src/components/dev/scenarios.astro` ships as a golden config, always overwritten on sync, since it is toolkit-authored infrastructure rather than a file a project hand-edits.
+- Import it into a page under test to drive candidate treatments of one decision by hand, selected by a query parameter, with a switcher for moving between them.
+- Guarded by `import.meta.env.DEV`, so it renders nothing and ships nothing in a production build.
+- Astro-only. It uses `is:inline`, `define:vars`, and `set:html`, which only the `.astro` file format parses. `vite-react` gets no equivalent until a real decision drives one.
