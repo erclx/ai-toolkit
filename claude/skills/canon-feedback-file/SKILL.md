@@ -71,7 +71,7 @@ command -v canon >/dev/null 2>&1
 
 Before either pipe below, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the composed block. `.canon/review/` is gitignored, so no hook reaches either write, and this scan is the only gate. The banned-character half runs on both branches, including the local write. The phase-label half applies only on the `--github` branch, where the block reaches a remote.
 
-Local scratch only writes from a toolkit checkout, since `canon feedback` resolves the destination against the toolkit's own `.claude/` folder and a target project never carries one. Pipe the block to `canon feedback --github` first, unless the session already sits in the toolkit checkout.
+Local scratch only writes from a toolkit checkout, since `canon feedback` resolves the destination against the toolkit's own `.claude/` folder and a target project never carries one. Pipe the block to `canon feedback --github` first.
 
 ```bash
 cat <<'EOF' | canon feedback --github
@@ -104,7 +104,7 @@ The command exits 1 and writes nothing on a report it refuses, so a non-zero run
 - A named missing field. Add that heading with a real value or its stated fallback, then re-run. Do not report the defect as filed.
 - `gh` absent or its call failed. The stderr names which, since installing `gh` and fixing an authenticated call are different repairs. Fall back to printing the block in chat.
 
-A `--github` run from a toolkit checkout warns and writes local scratch instead, which is a report filed on the other route rather than a failure.
+A `--github` run from a toolkit checkout whose GitHub call fails warns and writes local scratch instead, which is a report filed on the other route rather than a failure.
 
 ## Notes
 
