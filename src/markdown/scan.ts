@@ -20,7 +20,17 @@ const FRONTMATTER = /^---\n[\s\S]*?\n---\n?/
  * rewrite of the sentence can remove.
  */
 const CODE_SPAN = /(`+)(?:(?!\1).)*\1/g
-const LINK_DESTINATION = /\]\([^)]*\)/g
+
+/**
+ * A destination body, reaching one level of balanced parentheses so
+ * `file(1).md` is not truncated at its first close paren. A plain `[^)]*`
+ * ends the whole match there, which reads a legitimate destination as
+ * unterminated and, in `src/markdown/links.ts`, reports it broken. CommonMark
+ * permits an unescaped destination to carry matched parentheses, and one
+ * level is what every destination measured in this corpus needs.
+ */
+const LINK_TARGET = String.raw`(?:[^()]|\([^()]*\))*`
+const LINK_DESTINATION = new RegExp(String.raw`\]\(${LINK_TARGET}\)`, 'g')
 const AUTOLINK = /<[^>\s]+>/g
 
 /**
@@ -31,8 +41,14 @@ const AUTOLINK = /<[^>\s]+>/g
  * the destination. The narrower pattern still runs after this one, since a link
  * wrapped across two source lines puts its opening bracket on a line this one
  * never matches.
+ *
+ * Exported so `src/markdown/links.ts` matches a destination against the same
+ * pattern rather than a second definition of the same shape. Take it through
+ * `replace` or `matchAll` alone. Both clone the pattern before reading
+ * `lastIndex`, where `test` or `exec` would mutate the shared instance and
+ * leave the other module's next match starting from a nonzero offset.
  */
-const LINK = /\[([^\]]*)\]\([^)]*\)/g
+export const LINK = new RegExp(String.raw`\[([^\]]*)\]\(${LINK_TARGET}\)`, 'g')
 
 export interface BodyLine {
   readonly number: number

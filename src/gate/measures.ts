@@ -297,7 +297,7 @@ export const markdownBans: Measure = async (ctx) => {
     return {
       emissions: [output(frame.all)],
       failure:
-        'Markdown prose carries a banned character, word, or spelling. Rewrite the sentence, and reach for a code span only where the token is genuinely an identifier under discussion.',
+        'Markdown prose carries a banned character, word, or spelling, or a relative link resolves to nothing on disk. Rewrite the sentence or fix the link, and reach for a code span only where the token is genuinely an identifier under discussion.',
     }
   }
 
