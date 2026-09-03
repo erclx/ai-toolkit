@@ -95,4 +95,4 @@ Motion is not used. No transition, animation, or keyframe declaration appears on
 
 ## Iconography
 
-No icon library is installed. `assets/brand/mark.svg` is the one authored icon, embedded inline in the hero topbar, and the surfaces otherwise draw literal glyph characters: `│ ├ ✓ ! ✗ + - ◆ ◇ ❯` for the terminal framing.
+No icon library is installed. `assets/brand/mark.svg` is the one authored icon, embedded inline in the hero topbar, and the surfaces otherwise draw literal glyph characters: `│ ├ ✓ ! ✗ + - ◆ ◇ ❯` for the terminal framing. The same mark also ships as a favicon on every rendered surface, as three independently-maintained copies: `regen-hero.sh` derives one from the live SVG and accent token, `src/design/render.ts` carries the path data as a hardcoded literal, and `claude-teach`'s `SKILL.md` names one in prose.

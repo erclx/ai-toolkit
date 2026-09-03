@@ -33,7 +33,7 @@ Sample content committed at its real filename gets rewritten by every repo-wide 
 
 ## Hero
 
-The Hero stage runs `scripts/core/regen-hero.sh`, which fills every `assets/*.html.tmpl` and writes the `.html` beside it, then asserts no drift over `assets/*.html`. Two inputs reach the templates: five catalogs supply the counts, so no figure on a README frame is maintained by hand, and `canon design css --no-components` supplies the palette, so no frame carries its own copy of a hex value.
+The Hero stage runs `scripts/core/regen-hero.sh`, which fills every `assets/*.html.tmpl` and writes the `.html` beside it, then asserts no drift over `assets/*.html`. Two inputs reach the templates: five catalogs supply the counts, so no figure on a README frame is maintained by hand, and `canon design css --no-components` supplies the palette, so no frame carries its own copy of a hex value. A sixth value, `{{FAVICON}}`, fills the same map, derived from the live `assets/brand/mark.svg` colored with the accent hex parsed out of the same palette output.
 
 One shared value map reaches every template, so a frame resolving only the placeholders that already exist costs a template file and nothing else. A frame needing data the map does not carry costs one row builder beside the others, and the script refuses when a builder renders empty, the same way it refuses a zeroed count.
 

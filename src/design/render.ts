@@ -9,6 +9,16 @@ export interface RenderResult {
   cssPath: string
 }
 
+/**
+ * The same path data as `assets/brand/mark.svg`, colored via `colorValue`
+ * since a data URI has no CSS context to resolve `currentColor` against and
+ * this page renders on the light chrome `previewChrome()` sets up.
+ */
+const FAVICON_COLOR = colorValue('light-accent') ?? '#a4471c'
+const FAVICON_HREF = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80"><path d="M34,20 L15,28 L15,72 L34,80 Z M66,20 L85,28 L85,72 L66,80 Z" fill="${FAVICON_COLOR}" /><rect x="44" y="15" width="12" height="70" rx="2" fill="${FAVICON_COLOR}" /></svg>`,
+)}`
+
 export function renderDesignDoc(
   sourcePath: string,
   outDir: string,
@@ -190,6 +200,7 @@ function buildHtml(doc: DesignDoc): string {
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="${FAVICON_HREF}">
 <title>Design tokens</title>
 <link rel="stylesheet" href="design.css">
 <style>
