@@ -9,7 +9,7 @@ export interface BacktickSpan {
 }
 
 /**
- * Every code span in a bullet, pairing a run of backticks only with the next
+ * Every code span in the text, pairing a run of backticks only with the next
  * run of the same length.
  *
  * A single-backtick regex reads a doubled delimiter, such as
