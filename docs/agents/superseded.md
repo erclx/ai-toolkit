@@ -38,7 +38,7 @@ Pass an empty replacement to retire a value outright, as in `canon gov supersede
 
 ## The templated citation
 
-A citation naming a family as a pattern carries neither value. `canon-*` and `internal-<X>` are the two forms this corpus writes, and a literal comparison matches neither, so a rename running the verb once per name reports clean while the family citations stay stale. Two of those on `erclx/canon#1250` had inverted, stating the old prefix as a guard, which left a rule instructing the next session to flag the correct naming as a mismatch.
+A citation naming a family as a pattern carries neither value. `canon-*` and `internal-<X>` are the two forms this corpus writes, and a literal comparison matches neither, so a rename running the verb once per name reports clean while the family citations stay stale. Two such citations have inverted this way, stating the old prefix as a guard, which left a rule instructing the next session to flag the correct naming as a mismatch.
 
 Beside the literal comparison the run matches a family stem, derived from the segment the two values actually differ on, with everything they share carried ahead of it. `toolkit-operator` to `canon-operator` derives `toolkit`, and `canon-cli` to `canon-shell` derives `canon-cli` rather than `canon`, which is what keeps a rename of one folder off every sibling in its family.
 

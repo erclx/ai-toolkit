@@ -620,6 +620,10 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - What it leaves unmeasured is a prefix reaching no path, so a row left behind by a deleted folder stays forever. That is the map going stale from the other side and a second measure.
 - Replaying `3a0fd695..190af80b` reports 53 wholly declined commits, every one a release, matching what the map's comment records. The 54th carrying no label is the commit that edited the map at its former path, which the `repo` row stopped reaching when the file moved into `.claude/canon/`.
 
+## The key-changes bijection
+
+`canon pr key-changes` reads a pull request's file list off one `gh pr view` call, which caps at 100 rows and says nothing about having done so. That surfaced on `#1250`, a 101-file pull request the view reported as 100, so a pull request at the cap takes a second read through the paginated endpoint and refuses as `gh-truncated` on a failure there rather than comparing against a set silently one file short.
+
 ## The state-scoped checks
 
 `canon secrets scan` and `canon deps audit` are the first two members whose subject is what is already committed rather than what is arriving. Every review surface a session can reach is scoped to a range, so a risk that predates that range is invisible to all of them by construction, and these two close that by scope rather than by subject. Neither re-reads a diff anywhere, which is what keeps them complementary to the review surfaces instead of competing with them.

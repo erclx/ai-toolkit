@@ -103,15 +103,14 @@ The client expands a slash command at position zero of a launch prompt as a
 user invocation, which is the route `disable-model-invocation: true` permits
 and gates. Everything that reaches the session as prose instead falls to the
 model, which invokes it through the `Skill` tool, and that route answers a
-flagged skill inconsistently. `claude-autoship` has carried the flag since
-`erclx/canon#365` and seven other shipped skills carry it too.
+flagged skill inconsistently. `claude-autoship` has carried the flag since early in its life, and seven other
+shipped skills carry it too.
 
 Three launches on 2026-08-31 and 2026-09-02 bound what makes a command take
 that route. Observation A is the first refused worker, launched as `Run
 /canon:claude-worktree ..., then /canon:claude-autoship ...`, which expanded
 nothing. Observation B is a re-dispatch launched as `/canon:claude-autoship
-<plan>` with a space before the path, which expanded and shipped
-`erclx/canon#1382`.
+<plan>` with a space before the path, which expanded and shipped.
 
 Observation C is a planning dispatch launched as `/canon:claude-planner, then
 /canon:claude-feature <task>` with a comma glued to the command name at
@@ -178,7 +177,7 @@ Report the dispatch as loudly as the human-launch line it replaces: name the bra
 
 `claude-address-review` is a single pass, not a chain, so a launch naming it
 alone reaches no `claude-worker` and takes no role, which owes no message
-either. `erclx/canon#1251`'s replacement session was launched that way, onto the branch a
+either. A replacement session was launched that way once, onto the branch a
 review had already posted findings against, and it answered by posting a
 thread reply and telling its controller nothing. Reach the role directly on
 this launch instead of wrapping a second chain around one skill that has none
