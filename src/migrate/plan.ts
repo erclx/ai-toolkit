@@ -43,6 +43,7 @@ export interface RenamePlan {
 const TOOLKIT_OWNED: readonly string[] = [
   '.claude/aitk/',
   '.claude/canon/',
+  '.claude/hooks/',
   '.claude/rules/',
   '.claude/tooling/',
 ]
