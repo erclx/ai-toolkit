@@ -297,6 +297,43 @@ beforeAll(() => {
           tool_name: 'Write',
         }),
     },
+    'silent-turn.sh': {
+      code: 2,
+      expect: 'did not name:',
+      payload: (nonce) => {
+        const key = nonce.replace(/[^A-Za-z0-9_.-]/g, '_')
+        const transcriptPath = join(fixture, `transcript-${key}.jsonl`)
+        const promptId = `prompt-${key}`
+        const writtenPath = join(fixture, `silent-turn-written-${key}.txt`)
+        const lines = [
+          { promptId, type: 'user' },
+          {
+            message: {
+              content: [
+                {
+                  input: { file_path: writtenPath },
+                  name: 'Write',
+                  type: 'tool_use',
+                },
+              ],
+            },
+            type: 'assistant',
+          },
+        ]
+        writeFileSync(
+          transcriptPath,
+          lines.map((line) => JSON.stringify(line)).join('\n') + '\n',
+        )
+        return payloadFor({
+          hook_event_name: 'Stop',
+          last_assistant_message: 'Done.',
+          prompt_id: promptId,
+          stop_hook_active: false,
+          transcript_path: transcriptPath,
+        })
+      },
+      stream: 'stderr',
+    },
     'standards-audit.sh': {
       expect: join(project, 'doc.md'),
       path: [join(fixture, 'bin'), hookPath].join(delimiter),
@@ -457,6 +494,74 @@ describe('pr-create-log.sh root resolution', () => {
       ).toContain('pr=https://github.com/example/repo/pull/99')
     },
   )
+})
+
+// A bare basename match reads as covering both when two written paths share
+// one, since a single mention of the shared name would otherwise clear the
+// pair. The acting case above never exercises this, since its fixture writes
+// one path.
+describe('silent-turn.sh basename collision', () => {
+  for (const tree of TREES) {
+    const hook = join(tree.dir, 'silent-turn.sh')
+
+    it.concurrent(
+      `should block on ${tree.label} when two written paths share a basename and neither full path is named`,
+      async ({ expect }) => {
+        const key = `collision-${tree.label.replace(/[^A-Za-z0-9_.-]/g, '_')}`
+        const transcriptPath = join(fixture, `transcript-${key}.jsonl`)
+        const promptId = `prompt-${key}`
+        const first = join(fixture, `docs/${key}/index.md`)
+        const second = join(fixture, `wiki/${key}/index.md`)
+        const lines = [
+          { promptId, type: 'user' },
+          {
+            message: {
+              content: [
+                {
+                  input: { content: 'a', file_path: first },
+                  name: 'Write',
+                  type: 'tool_use',
+                },
+              ],
+            },
+            type: 'assistant',
+          },
+          {
+            message: {
+              content: [
+                {
+                  input: { content: 'b', file_path: second },
+                  name: 'Write',
+                  type: 'tool_use',
+                },
+              ],
+            },
+            type: 'assistant',
+          },
+        ]
+        writeFileSync(
+          transcriptPath,
+          lines.map((line) => JSON.stringify(line)).join('\n') + '\n',
+        )
+
+        const result = await run(
+          hook,
+          payloadFor({
+            hook_event_name: 'Stop',
+            last_assistant_message: 'Wrote index.md with the new content.',
+            prompt_id: promptId,
+            stop_hook_active: false,
+            transcript_path: transcriptPath,
+          }),
+        )
+
+        expect(result.stderr).toContain('did not name:')
+        expect(result.stderr).toContain(first)
+        expect(result.stderr).toContain(second)
+        expect(result.code).toBe(2)
+      },
+    )
+  }
 })
 
 // Both copies shell out to the audit verb, and this one resolves two runners

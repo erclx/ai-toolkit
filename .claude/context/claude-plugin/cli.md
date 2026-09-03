@@ -30,7 +30,7 @@ The `.claude/context/` folder ships only its `index.md` discovery anchor. The en
 
 ### PostToolUse hooks
 
-The seed `settings.json` ships six hook scripts across three blocks. All six open with the bounded stdin read covered in `development.md`, so a hook run by hand refuses instead of blocking, and four stay byte-identical to their counterparts under `.claude/hooks/`.
+The seed `settings.json` ships eight hook scripts across four blocks. All eight open with the bounded stdin read covered in `development.md`, so a hook run by hand refuses instead of blocking, and seven stay byte-identical to their counterparts under `.claude/hooks/`.
 
 A PostToolUse hook pairs with `.claude/hooks/standards-audit.sh`, which calls `canon markdown audit` against the edited file, reads the hits out of the `--json` record, and emits `additionalContext` so the agent self-corrects on the next turn. A checkout's own `src/cli.ts` wins over an installed binary, so the hook and the push stage read one build. Scratch dirs `.canon/tmp/`, `.canon/memory/`, `.canon/review/`, and `.canon/plans/` are skipped.
 
