@@ -113,11 +113,11 @@ Two helpers in `scripts/manage-sandbox.sh` commit, and the flag reaches only the
 
 The order is what lets an arm stage a deliberately dirty tree. Work that `stage_setup` leaves staged, unstaged, or untracked survives provisioning under the flag, because the unconditional commit already ran before `stage_setup` was called. `claude:review` depends on that, staging one bug in each of four halves so the selection rule has all four to read. Reading the two helpers as one makes such a fixture look impossible, which is the misreading to avoid rather than a constraint on the arm.
 
-`inject_changed_skills` runs inside that window and copies each changed skill body to `.claude/skills/<name>/SKILL.md`, so under the flag those copies stay untracked in the sandbox. An arm whose skill reads untracked files therefore reviews its own injected body.
+`inject_changed_skills` runs inside that window and copies each changed skill body to `.claude/skills/<name>/SKILL.md`. Under the flag, those copies would stay untracked in the sandbox and reach an arm whose skill reads untracked files, so each one is also appended to `$SANDBOX/.git/info/exclude` right after the copy, keeping it off `git ls-files --others --exclude-standard` while leaving it in place for `.claude/skills/` resolution to load.
 
-### `inject_changed_skills` resolves against bare local `main`
+### `inject_changed_skills` resolves against a merge base
 
-Its changed set comes from `git -C "$PROJECT_ROOT" diff main --name-only`, which reads the local ref rather than a merge base against `origin/main`. This is the defect the diff-baseline port corrected across five skill bodies, still live in the harness, so a checkout whose local `main` trails the remote injects skill bodies that other merged branches changed rather than only the ones the branch under test touched. The extra copies land untracked and stay, since the flag skips the commit that would have absorbed them.
+Its changed set comes from `resolve_sandbox_skill_diff_base` in `scripts/lib/sandbox-git.sh`, the same `git merge-base HEAD origin/main` form the diff-baseline port carries across five skill bodies, falling back to `merge-base HEAD main` and then to bare `main` if both reads come back empty. A checkout whose local `main` trails the remote therefore still diffs against the branches that actually merged, rather than injecting skill bodies from commits the branch under test never touched.
 
 ## use_anchor
 

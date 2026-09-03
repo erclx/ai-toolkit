@@ -283,8 +283,12 @@ tag_sandbox_baseline() {
 }
 
 inject_changed_skills() {
+  local base
+  base=$(resolve_sandbox_skill_diff_base)
+  base="${base:-main}"
+
   local changed untracked
-  changed=$(git -C "$PROJECT_ROOT" diff main --name-only -- 'claude/skills/**/SKILL.md' 2>/dev/null)
+  changed=$(git -C "$PROJECT_ROOT" diff "$base" --name-only -- 'claude/skills/**/SKILL.md' 2>/dev/null)
   untracked=$(git -C "$PROJECT_ROOT" ls-files --others --exclude-standard -- 'claude/skills/**/SKILL.md' 2>/dev/null)
 
   local combined
@@ -293,8 +297,8 @@ inject_changed_skills() {
   [ -z "$combined" ] && return
 
   while IFS= read -r skill_path; do
-    # The diff against main lists a deleted skill alongside a changed one, and
-    # there is nothing left to inject for a name this branch removed.
+    # The diff against the base lists a deleted skill alongside a changed one,
+    # and there is nothing left to inject for a name this branch removed.
     [ -f "$PROJECT_ROOT/$skill_path" ] || continue
 
     local skill_name
@@ -302,6 +306,9 @@ inject_changed_skills() {
     local target_dir="$SANDBOX/.claude/skills/$skill_name"
     mkdir -p "$target_dir"
     cp "$PROJECT_ROOT/$skill_path" "$target_dir/SKILL.md"
+    if [ -n "$SANDBOX_SKIP_AUTO_COMMIT" ]; then
+      echo ".claude/skills/$skill_name/SKILL.md" >>"$SANDBOX/.git/info/exclude"
+    fi
     log_info "Injected dev skill: $skill_name"
   done <<<"$combined"
 }
