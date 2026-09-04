@@ -17,4 +17,4 @@
 # loops over whatever templates the folder holds and a frame added later would
 # otherwise arrive with two writers and no sign of it until their output first
 # disagreed.
-/assets/*.html
+/assets/captures/*.html

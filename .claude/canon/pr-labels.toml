@@ -118,12 +118,12 @@ generated = [
   "assets/hero.stamp",
   "assets/install.png",
   "assets/install.stamp",
-  "assets/showcase-governance.png",
-  "assets/showcase-governance.stamp",
-  "assets/showcase-install-surface.png",
-  "assets/showcase-install-surface.stamp",
-  "assets/showcase-task-board.png",
-  "assets/showcase-task-board.stamp",
+  "assets/governance.png",
+  "assets/governance.stamp",
+  "assets/install-surface.png",
+  "assets/install-surface.stamp",
+  "assets/task-board.png",
+  "assets/task-board.stamp",
   ".claude/canon/baseline.json",
 ]
 # Each is a reason of its own rather than another generated file, since a reader
@@ -132,11 +132,11 @@ generated = [
 # alongside an unrelated surface. The match is a prefix, so each entry covers
 # the `.tmpl` beside it, which travels in the same commit for the same reason.
 rides-with-generated = [
-  "assets/hero.html",
-  "assets/install.html",
-  "assets/showcase-governance.html",
-  "assets/showcase-install-surface.html",
-  "assets/showcase-task-board.html",
+  "assets/captures/hero.html",
+  "assets/captures/install.html",
+  "assets/captures/governance.html",
+  "assets/captures/install-surface.html",
+  "assets/captures/task-board.html",
 ]
 # Formatting configuration nobody reviews for behavior, and no row above owns
 # its subject.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Fills every assets/*.html.tmpl from the CLI catalogs and the design source,
-# writing the .html beside each one.
+# Fills every assets/captures/*.html.tmpl from the CLI catalogs and the design
+# source, writing the .html beside each one.
 #
 # The name says hero because the hero was the only template when it was written
 # and every citation of it across docs/, .claude/context/, and src/ spells that
@@ -18,10 +18,12 @@
 # Only the HTML regenerates here. The PNG beside it is a chromium render whose
 # bytes move with the browser version, so asserting it in verify.sh would fail
 # on a machine whose chromium differs rather than on a stale count. Rebuild the
-# images with `canon capture assets --selector .window` after this script
-# reports a change. The selector has no default, since the element a capture
-# crops to belongs to the page rather than to the command, and `.window` is the
-# class this repository's own two sources declare.
+# images with `canon capture assets/captures --selector .window --out assets`
+# after this script reports a change. The markup and the image sit in two
+# folders, so that run reads the sources here and sends every PNG and stamp back
+# up to assets/, where the documents point. The selector has no default, since
+# the element a capture crops to belongs to the page rather than to the command,
+# and `.window` is the class this repository's own sources declare.
 # That capture also writes a .stamp beside each PNG, which records the digest of
 # the markup it rendered and is what the Hero stage compares, so a frame's three
 # files commit together. The frame carries no version. `package.json` is bumped on main by the release
@@ -36,7 +38,7 @@ set -o pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
-ASSET_DIR="$PROJECT_ROOT/assets"
+ASSET_DIR="$PROJECT_ROOT/assets/captures"
 LISTED=10
 
 # `bun src/cli.ts` rather than `canon`, since a globally linked binary resolves to
