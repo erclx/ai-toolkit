@@ -55,6 +55,7 @@ Print one grouped proposal block. Omit empty groups.
 ## Extract to a context entry
 
 - `## <heading>` → `.claude/context/<domain>.md` (<reason>)
+- `## <heading>` → `.claude/context/<domain>/<sub-area>.md`, appending to the domain's existing sibling file (<reason>)
 
 ## Needs manual split
 
