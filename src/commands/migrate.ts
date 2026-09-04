@@ -295,6 +295,31 @@ function reportRecords(plan: RecordsPlan, records: number): void {
       }
     }
   }
+
+  // Named individually, same reasoning as the glob report above: an ownership
+  // boundary and a tense judgment stop being visible the moment either is
+  // rewritten, so the reader gets the file and line rather than a count.
+  if (plan.crossRepoCitations.length > 0) {
+    logInfo(
+      `${plural(plan.crossRepoCitations.length, 'file')} carry a citation into another repository, left alone:`,
+    )
+    for (const entry of plan.crossRepoCitations) {
+      for (const line of entry.lines) {
+        logInfo(`  ${entry.path}:${line.line}  ${excerpt(line.text)}`)
+      }
+    }
+  }
+
+  if (plan.datedCitations.length > 0) {
+    logInfo(
+      `${plural(plan.datedCitations.length, 'file')} carry a dated citation, left alone:`,
+    )
+    for (const entry of plan.datedCitations) {
+      for (const line of entry.lines) {
+        logInfo(`  ${entry.path}:${line.line}  ${excerpt(line.text)}`)
+      }
+    }
+  }
 }
 
 function toRecordsRecord(
@@ -313,7 +338,11 @@ function toRecordsRecord(
     excluded: plan.excluded.length,
     coupled: plan.coupled,
     frontmatterGlobs: plan.frontmatterGlobs,
+    crossRepoCitations: plan.crossRepoCitations,
+    datedCitations: plan.datedCitations,
     globs: plan.globs,
+    crossRepo: plan.crossRepo,
+    dated: plan.dated,
     records,
     paths: plan.entries.map((entry) => ({
       path: entry.path,
@@ -574,6 +603,11 @@ export function register(program: Command): void {
         'A rule frontmatter paths: glob naming a moved root is reported and left',
         'alone rather than rewritten, since a rewritten glob stops matching',
         'silently. No marker is needed; the YAML shape is enough.',
+        '',
+        'A citation shaped like a path into another repository, or one sitting',
+        'inside a dated paragraph, is reported and left alone rather than',
+        'rewritten. The first is an ownership judgment and the second a tense',
+        'one, neither of which a regular expression makes reliably.',
         '',
         'The records themselves are never swept. Everything under .canon/ and',
         'every .claude/ record folder is left alone and reported as a count, so',

@@ -177,6 +177,57 @@ describe('rewriteText', () => {
       ].join('\n'),
     )
   })
+
+  it('should leave a citation prefixed by a domain-shaped path segment alone', () => {
+    const text = 'clone at erclx.dev/.claude/tasks/x.md'
+    expect(rewriteText(text)).toBe(text)
+  })
+
+  it('should leave a citation two path segments deep alone', () => {
+    const text = 'see public/erclx.dev/.claude/tasks/x.md'
+    expect(rewriteText(text)).toBe(text)
+  })
+
+  it('should rewrite a citation prefixed by a shell-glob segment', () => {
+    const text = 'case */.claude/tasks/*) rm -rf "$1" ;;'
+    expect(rewriteText(text)).toBe('case */.canon/tasks/*) rm -rf "$1" ;;')
+  })
+
+  it('should rewrite a citation prefixed by a variable-substitution segment', () => {
+    const text = 'rm -rf $project/.claude/.tmp/x'
+    expect(rewriteText(text)).toBe('rm -rf $project/.canon/tmp/x')
+  })
+
+  it('should leave a citation sharing a paragraph with a Measured at sentence alone', () => {
+    const text = [
+      'A `.claude/tasks/x.md` line explains the move.',
+      'Measured at `abc123` on 2026-08-20.',
+    ].join('\n')
+    expect(rewriteText(text)).toBe(text)
+  })
+
+  it('should leave a citation sharing a paragraph with a plain journal date alone', () => {
+    const text = [
+      'A 2026-05-31 journal entry now points a reply draft at',
+      '`.claude/memory/x.md`.',
+    ].join('\n')
+    expect(rewriteText(text)).toBe(text)
+  })
+
+  it('should rewrite a citation once a blank line separates it from the dated sentence', () => {
+    const text = [
+      'Measured at `abc123` on 2026-08-20.',
+      '',
+      'A `.claude/tasks/x.md` line explains the move.',
+    ].join('\n')
+    expect(rewriteText(text)).toBe(
+      [
+        'Measured at `abc123` on 2026-08-20.',
+        '',
+        'A `.canon/tasks/x.md` line explains the move.',
+      ].join('\n'),
+    )
+  })
 })
 
 describe('scanText', () => {
@@ -186,14 +237,26 @@ describe('scanText', () => {
 
   it('should count a marked citation as kept rather than rewritten', () => {
     const counts = scanText('.claude/memory/a.md canon-keep-record-root')
-    expect(counts).toEqual({ rewritten: 0, kept: 1, globs: 0 })
+    expect(counts).toEqual({
+      rewritten: 0,
+      kept: 1,
+      globs: 0,
+      crossRepo: 0,
+      dated: 0,
+    })
   })
 
   it('should count a citation kept across a blank line as kept', () => {
     const counts = scanText(
       '<!-- canon-keep-record-root -->\n\n.claude/memory/x.md',
     )
-    expect(counts).toEqual({ rewritten: 0, kept: 1, globs: 0 })
+    expect(counts).toEqual({
+      rewritten: 0,
+      kept: 1,
+      globs: 0,
+      crossRepo: 0,
+      dated: 0,
+    })
   })
 
   it('should count nothing in prose naming no moved entry', () => {
@@ -201,6 +264,8 @@ describe('scanText', () => {
       rewritten: 0,
       kept: 0,
       globs: 0,
+      crossRepo: 0,
+      dated: 0,
     })
   })
 
@@ -214,7 +279,35 @@ describe('scanText', () => {
       'See .claude/tasks/ for the board.',
     ].join('\n')
 
-    expect(scanText(text)).toEqual({ rewritten: 1, kept: 0, globs: 1 })
+    expect(scanText(text)).toEqual({
+      rewritten: 1,
+      kept: 0,
+      globs: 1,
+      crossRepo: 0,
+      dated: 0,
+    })
+  })
+
+  it('should count a cross-repo-shaped citation apart from a rewrite', () => {
+    expect(scanText('clone at erclx.dev/.claude/tasks/x.md')).toEqual({
+      rewritten: 0,
+      kept: 0,
+      globs: 0,
+      crossRepo: 1,
+      dated: 0,
+    })
+  })
+
+  it('should count a dated-paragraph citation apart from a rewrite', () => {
+    const text =
+      'A `.claude/tasks/x.md` line.\nMeasured at `abc` on 2026-08-20.'
+    expect(scanText(text)).toEqual({
+      rewritten: 0,
+      kept: 0,
+      globs: 0,
+      crossRepo: 0,
+      dated: 1,
+    })
   })
 })
 
@@ -578,5 +671,101 @@ describe('planRecordsMove', () => {
       },
     ])
     expect(plan.entries).toEqual([])
+  })
+
+  it('should report a file whose only citation is cross-repo-shaped with no entries row', () => {
+    const plan = planRecordsMove(root, [
+      { path: 'docs/a.md', text: 'clone at erclx.dev/.claude/tasks/x.md' },
+    ])
+
+    expect(plan.crossRepoCitations).toEqual([
+      {
+        path: 'docs/a.md',
+        lines: [{ line: 1, text: 'clone at erclx.dev/.claude/tasks/x.md' }],
+      },
+    ])
+    expect(plan.crossRepo).toBe(1)
+    expect(plan.entries).toEqual([])
+  })
+
+  it('should report a file whose only citation is dated with no entries row', () => {
+    const text = [
+      'A `.claude/tasks/x.md` line explains the move.',
+      'Measured at `abc123` on 2026-08-20.',
+    ].join('\n')
+
+    const plan = planRecordsMove(root, [{ path: 'docs/a.md', text }])
+
+    expect(plan.datedCitations).toEqual([
+      {
+        path: 'docs/a.md',
+        lines: [
+          { line: 1, text: 'A `.claude/tasks/x.md` line explains the move.' },
+        ],
+      },
+    ])
+    expect(plan.dated).toBe(1)
+    expect(plan.entries).toEqual([])
+  })
+
+  it('should report a file mixing a live citation with a foreign one in both places', () => {
+    const text = [
+      'clone at erclx.dev/.claude/tasks/x.md',
+      'see .claude/tasks/y.md as well',
+    ].join('\n')
+
+    const plan = planRecordsMove(root, [{ path: 'docs/a.md', text }])
+
+    expect(plan.crossRepoCitations).toEqual([
+      {
+        path: 'docs/a.md',
+        lines: [{ line: 1, text: 'clone at erclx.dev/.claude/tasks/x.md' }],
+      },
+    ])
+    expect(plan.entries).toEqual([
+      {
+        path: 'docs/a.md',
+        text: [
+          'clone at erclx.dev/.claude/tasks/x.md',
+          'see .canon/tasks/y.md as well',
+        ].join('\n'),
+        rewritten: 1,
+        kept: 0,
+      },
+    ])
+  })
+
+  it('should report a file mixing a live citation with a dated one in both places', () => {
+    const text = [
+      'Measured at `abc123` on 2026-08-20 for `.claude/tasks/x.md`.',
+      '',
+      'See .claude/memory/y.md for details.',
+    ].join('\n')
+
+    const plan = planRecordsMove(root, [{ path: 'docs/a.md', text }])
+
+    expect(plan.datedCitations).toEqual([
+      {
+        path: 'docs/a.md',
+        lines: [
+          {
+            line: 1,
+            text: 'Measured at `abc123` on 2026-08-20 for `.claude/tasks/x.md`.',
+          },
+        ],
+      },
+    ])
+    expect(plan.entries).toEqual([
+      {
+        path: 'docs/a.md',
+        text: [
+          'Measured at `abc123` on 2026-08-20 for `.claude/tasks/x.md`.',
+          '',
+          'See .canon/memory/y.md for details.',
+        ].join('\n'),
+        rewritten: 1,
+        kept: 0,
+      },
+    ])
   })
 })
