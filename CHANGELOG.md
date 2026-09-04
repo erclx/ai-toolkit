@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.45.0](https://github.com/erclx/canon/compare/v4.44.0...v4.45.0) (2026-09-04)
+
+
+### Features
+
+* **wireframes:** transcribe the three teach page layouts ([#1472](https://github.com/erclx/canon/issues/1472)) ([09310d4](https://github.com/erclx/canon/commit/09310d4392aa037baf0e2aabeaf14ad86422fc57))
+
 ## [4.44.0](https://github.com/erclx/canon/compare/v4.43.0...v4.44.0) (2026-09-04)
 
 
