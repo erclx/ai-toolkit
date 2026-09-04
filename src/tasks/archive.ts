@@ -496,6 +496,22 @@ async function resolveStem(
 
   if (selector.kind === 'stem') {
     if (!stems.includes(selector.stem)) {
+      const prefixed = stems.filter((stem) => stem.startsWith(selector.stem))
+      if (prefixed.length === 1) {
+        const [match] = prefixed
+        return refuse(
+          'no-match',
+          `${selector.stem} does not name a task by itself. One task starts with it: ${match}. Pass the full name to archive it.`,
+          [match],
+        )
+      }
+      if (prefixed.length > 1) {
+        return refuse(
+          'ambiguous',
+          `${selector.stem} does not name a task by itself. ${prefixed.length} tasks start with it. Pass the full name to archive one.`,
+          prefixed,
+        )
+      }
       return refuse(
         'no-match',
         `No task named ${selector.stem} on the board.`,
