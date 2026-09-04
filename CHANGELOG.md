@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.48.0](https://github.com/erclx/canon/compare/v4.47.0...v4.48.0) (2026-09-04)
+
+
+### Features
+
+* **inventory:** declare routes and the focus subject for this repo ([#1482](https://github.com/erclx/canon/issues/1482)) ([d5ed5c2](https://github.com/erclx/canon/commit/d5ed5c2236c5bddf7ef6c76d5ca9a9d86ade52b6))
+
+
+### Bug Fixes
+
+* **claude:** fold address-review's closing confirmation into the reply ([#1483](https://github.com/erclx/canon/issues/1483)) ([4d052df](https://github.com/erclx/canon/commit/4d052dfc6c4303f1a51e05c8bce93ddf9d5ee396))
+
 ## [4.47.0](https://github.com/erclx/canon/compare/v4.46.0...v4.47.0) (2026-09-04)
 
 
