@@ -30,6 +30,14 @@ A wireframe works when someone can rebuild the surface from it without opening t
 
 A wireframe that fails these is non-conforming regardless of whether it satisfies every section rule below. The fences are the means. These three questions are the test.
 
+## Transcription wireframes
+
+A wireframe regenerated from an already-built surface's own render code may carry what the sections below forbid: the source file and function, the class or token names driving each region, and pixel-exact geometry. Open the file by naming the source and stating plainly that the block transcribes rather than approximates. That declaration is what separates a transcription wireframe from one that merely broke the rules below.
+
+A drafted-ahead wireframe states intent in role terms because nothing exists yet to check it against. A regenerated one is checkable against the code it mirrors, and a role label standing in for the real class name would throw that check away. The two documents answer different questions, so one set of rules cannot govern both.
+
+Route detail the source citation does not already carry to `.claude/context/` as usual: algorithms, event-handler code, workarounds, and rejected approaches stay out of the wireframe regardless of which mode it is written in.
+
 ## Frontmatter
 
 - `title` (required): sentence case, names the surface (`Header`, `Section nav`, `Footer`).
@@ -41,7 +49,7 @@ Both fields feed `.claude/wireframes/index.md` when regenerated.
 
 - Draw each surface as an ASCII block inside a `plaintext` fence. One fence per distinct layout.
 - Label regions with `←` annotations. Never use `#` for annotations.
-- Show a region's role, not its styling. `← status pill` reads better than a class name or hex value.
+- Show a region's role, not its styling. `← status pill` reads better than a class name or hex value. A transcription wireframe is the exception: see `## Transcription wireframes`.
 - Keep the grid honest. The ASCII proportions should match the intended widths, since conveying proportion is the wireframe's job.
 
 ## Variants
@@ -63,7 +71,7 @@ Both fields feed `.claude/wireframes/index.md` when regenerated.
 
 ## What moves to .claude/context/
 
-Implementation detail that answers how the surface is built belongs in a `.claude/context/` entry, not the wireframe:
+This section does not govern a transcription wireframe's citation of its own source. See `## Transcription wireframes`. Implementation detail that answers how the surface is built belongs in a `.claude/context/` entry, not the wireframe:
 
 - Algorithms, event-handler code, and lifecycle ordering
 - Framework component names, props, and CSS class or token names

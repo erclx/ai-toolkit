@@ -1,6 +1,6 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, how a constraint declares its expiry, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, and the cross-reference form split by destination
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, how a constraint declares its expiry, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, the cross-reference form split by destination, and the wireframe standard's transcription carve-out
 ---
 
 # Per-standard decisions
@@ -181,3 +181,13 @@ The format came from the external source the teaching surface was built against 
 ## The Mermaid standard's aspect rule is a label-width problem
 
 The taller-than-wide rule in `standards/mermaid.md` is decided by the widest rank's label text and column count, so a wide render is fixed by trimming node labels to three or four words and stacking independent siblings with a `~~~` invisible link, not by removing nodes. Five of six entries in the catalog expansion rendered wider than tall on the first pass at 1.10 to 2.03 and every fix came from label width or column count: `internal ~~~ domains` inside a subgraph moved `components.md` from 1.10 to 0.84 with every node and edge unchanged, and folding two bash nodes into one label took `components-cli.md` from 1.42 to 0.76. Read the ratio mechanically out of bytes 16 to 24 of a PNG header after rendering through `bunx -y @mermaid-js/mermaid-cli`. A fan-in the standard bans is a separate problem, and a vertical timeline with the trigger on each edge label clears both at once.
+
+## The wireframe standard's transcription carve-out
+
+The standard's `## What moves to .claude/context/` sent class or token names and pixel-exact spacing out of a wireframe, and `## Layout` told an author a role label reads better than a class name. Both wireframes this repository has ever shipped do the opposite on purpose. `.claude/wireframes/slides.md` names `src/slides/layouts.ts`'s `MX` and `BODY_Y` constants and states outright that each block transcribes its render function's placement rather than approximating it, and the four `.claude/wireframes/teach/` files carry `.mast`, `.track`, `--chrome`, and a 4.4rem bar height on the same pattern.
+
+Both branches were reviewed against the standard, and neither review compared the wireframe it was reading against the one already in the folder. The standard and its own artifacts disagreed from the first shipped file onward, and nothing caught the disagreement until `v83.6` read the two side by side.
+
+The carve-out states the mode rather than repealing the rule. `## Transcription wireframes` permits a source citation, class or token names, and exact geometry only where the wireframe is regenerated from an already-built surface's own render code, and it requires the file to open by saying so. A wireframe drafted ahead of any build keeps the original rule, since there is no source yet to check it against.
+
+Moving the class names and pixel values into a `.claude/context/` entry instead was the rejected alternative. Nothing else in the repository documents `src/slides/layouts.ts`'s constants or `course.css`'s teach variables, so the move would have created a second source for facts the render code already carries, rather than removing the contradiction between the standard and the two files.
