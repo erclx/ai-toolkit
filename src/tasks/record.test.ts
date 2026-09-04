@@ -3,11 +3,14 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { recordDir } from '@/record-root'
 import { tasksDir } from '@/tasks/archive'
 import {
   closeOutcomeLines,
   closeOutcomes,
+  recordPlan,
   recordPullRequest,
+  writePlanLine,
   writePullRequestLine,
 } from '@/tasks/record'
 
@@ -77,6 +80,13 @@ function readTask(stem: string): Promise<string> {
   return readFile(join(tasksDir(ROOT), `${stem}.md`), 'utf8')
 }
 
+async function seedPlan(slug: string): Promise<void> {
+  const dir = recordDir(ROOT, 'plans')
+
+  mkdirSync(dir, { recursive: true })
+  await writeFile(join(dir, `feature-${slug}.md`), `# Feature: ${slug}\n`)
+}
+
 beforeEach(() => {
   ROOT = mkdtempSync(join(tmpdir(), 'canon-tasks-record-'))
 })
@@ -119,6 +129,42 @@ describe('writePullRequestLine', () => {
     const { text } = writePullRequestLine('# A task\n\n## Outcomes\n', 673)
 
     expect(text).toBe('# A task\n\nPull request: #673\n\n## Outcomes\n')
+  })
+})
+
+describe('writePlanLine', () => {
+  it('should add the line right after the H1', () => {
+    const { text, action } = writePlanLine(
+      '# A task\n\n## Outcomes\n',
+      '../plans/feature-x.md',
+    )
+
+    expect(action).toBe('added')
+    expect(text).toBe(
+      '# A task\n\nPlan: [feature-x](../plans/feature-x.md)\n\n## Outcomes\n',
+    )
+  })
+
+  it('should correct the target when the line already exists', () => {
+    const text = '# A task\n\nPlan: [feature-old](../plans/feature-old.md)\n'
+
+    const { text: written, action } = writePlanLine(
+      text,
+      '../plans/feature-new.md',
+    )
+
+    expect(action).toBe('corrected')
+    expect(written).toContain('Plan: [feature-new](../plans/feature-new.md)')
+    expect(written).not.toContain('feature-old')
+  })
+
+  it('should report no change when the target already matches', () => {
+    const text = '# A task\n\nPlan: [feature-x](../plans/feature-x.md)\n'
+
+    expect(writePlanLine(text, '../plans/feature-x.md')).toEqual({
+      text,
+      action: 'unchanged',
+    })
   })
 })
 
@@ -240,6 +286,37 @@ describe('recordPullRequest', () => {
     )
 
     expect(outcome).toMatchObject({ ok: false, reason: 'no-board' })
+  })
+})
+
+describe('recordPlan', () => {
+  it('should write the Plan: line onto the named task', async () => {
+    const stem = await seedTask()
+    await seedPlan('worktree-scratch-routing')
+
+    const outcome = await recordPlan(ROOT, stem, 'worktree-scratch-routing')
+
+    expect(outcome).toMatchObject({ ok: true, stem, action: 'added' })
+    await expect(readTask(stem)).resolves.toContain(
+      'Plan: [feature-worktree-scratch-routing](../plans/feature-worktree-scratch-routing.md)',
+    )
+  })
+
+  it('should refuse when the task does not exist', async () => {
+    await seedTask()
+    await seedPlan('worktree-scratch-routing')
+
+    const outcome = await recordPlan(ROOT, 'nope', 'worktree-scratch-routing')
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'no-match' })
+  })
+
+  it('should refuse when the plan reference resolves to no file', async () => {
+    const stem = await seedTask()
+
+    const outcome = await recordPlan(ROOT, stem, 'does-not-exist')
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'no-plan' })
   })
 })
 

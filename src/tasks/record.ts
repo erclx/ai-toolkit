@@ -1,10 +1,13 @@
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { basename, join, relative } from 'node:path'
+import { planCandidates } from '@/tasks/answers'
 import {
   fenceMask,
+  linkTo,
   listTaskStems,
   OUTCOME_PATTERN,
+  planLine,
   readPlanTarget,
   tasksDir,
 } from '@/tasks/archive'
@@ -28,6 +31,7 @@ export const RECORD_REFUSALS = [
   'ambiguous',
   'no-outcomes',
   'out-of-range',
+  'no-plan',
   'bad-input',
 ] as const
 
@@ -55,6 +59,16 @@ export interface PullRequestRecorded {
 }
 
 export type PullRequestOutcome = PullRequestRecorded | RecordRefused
+
+export interface PlanRecorded {
+  readonly ok: true
+  readonly stem: string
+  readonly path: string
+  readonly plan: string
+  readonly action: LineAction
+}
+
+export type PlanOutcome = PlanRecorded | RecordRefused
 
 export interface OutcomesClosed {
   readonly ok: true
@@ -125,6 +139,33 @@ function lastOriginLine(lines: readonly string[]): number | undefined {
   }
 
   return found
+}
+
+/**
+ * Places the `Plan:` line right after the H1, mirroring
+ * `writePullRequestLine`'s add/correct/unchanged shape. `Plan:` is the first
+ * origin line a task carries, so it anchors on the heading itself rather than
+ * on the last origin line above it.
+ */
+export function writePlanLine(
+  text: string,
+  target: string,
+): { readonly text: string; readonly action: LineAction } {
+  const line = planLine(target)
+  const lines = text.split('\n')
+  const existing = lines.findIndex((entry) => entry.startsWith('Plan:'))
+
+  if (existing !== -1) {
+    if (lines[existing] === line) return { text, action: 'unchanged' }
+    lines[existing] = line
+    return { text: lines.join('\n'), action: 'corrected' }
+  }
+
+  const heading = lines.findIndex((entry) => entry.startsWith('# '))
+  if (heading === -1) return { text: `${line}\n${text}`, action: 'added' }
+
+  lines.splice(heading + 1, 0, '', line)
+  return { text: lines.join('\n'), action: 'added' }
 }
 
 /**
@@ -265,6 +306,42 @@ export async function recordPullRequest(
   if (action !== 'unchanged') await writeFile(path, text)
 
   return { ok: true, stem, path, number, action }
+}
+
+/**
+ * Records a plan's path on the task it belongs to, as the task's `Plan:` line.
+ * `claude-feature` runs this right after the plan file lands, resolving the
+ * reference the same two ways `canon tasks plan-answers` does, through
+ * `planCandidates`, so a bare slug and a board-relative path both resolve.
+ *
+ * The task is named directly rather than through `RecordSelector`'s `plan`
+ * kind: every caller already holds the stem, since resolving the task is what
+ * put it in a position to write the plan's path in the first place.
+ */
+export async function recordPlan(
+  root: string,
+  stem: string,
+  reference: string,
+): Promise<PlanOutcome> {
+  const opened = await openTask(root, { kind: 'stem', stem })
+  if ('ok' in opened) return opened
+
+  const { path } = opened
+  const dir = tasksDir(root)
+  const candidates = planCandidates(root, reference)
+  const plan = candidates.find((candidate) => existsSync(candidate))
+
+  if (!plan) {
+    const looked = candidates.map((entry) => relative(root, entry)).join(' or ')
+    return refuse('no-plan', `No plan at ${looked}.`, [reference])
+  }
+
+  const target = linkTo(dir, plan)
+  const { text, action } = writePlanLine(await readFile(path, 'utf8'), target)
+
+  if (action !== 'unchanged') await writeFile(path, text)
+
+  return { ok: true, stem: opened.stem, path, plan: target, action }
 }
 
 /**

@@ -11,7 +11,9 @@ import {
 import {
   type CloseOutcome,
   closeOutcomes,
+  type PlanOutcome,
   type PullRequestOutcome,
+  recordPlan,
   type RecordRefused,
   type RecordSelector,
   recordPullRequest,
@@ -63,6 +65,11 @@ interface AnswersCommandOptions {
 interface PullRequestCommandOptions {
   readonly json?: boolean
   readonly plan?: string
+  readonly root?: string
+}
+
+interface PlanLinkCommandOptions {
+  readonly json?: boolean
   readonly root?: string
 }
 
@@ -259,6 +266,40 @@ export function register(program: Command): void {
     )
 
   tasks
+    .command('plan-link')
+    .description("Write or correct a task's Plan: line to point at a plan")
+    .argument('<task>', 'Task filename stem, as in v28.1-trigger-escalation')
+    .argument('<plan>', 'Plan path or its slug, as in dispatch-answer-gate')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the line was added, corrected, or already correct',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'It writes Plan: [<label>](<target>) right after the H1, the same',
+        'add/correct/unchanged shape canon tasks pull-request writes with, and',
+        'resolves both a bare slug and a board-relative path the way',
+        'canon tasks plan-answers does. Safe from a linked worktree, since it',
+        'resolves the board root in-process.',
+        '',
+        'Examples:',
+        '  canon tasks plan-link v28.1-trigger-escalation dispatch-answer-gate',
+        '  canon tasks plan-link v28.1-trigger-escalation .canon/plans/feature-dispatch-answer-gate.md --json',
+        '',
+      ].join('\n'),
+    )
+    .action(
+      async (task: string, plan: string, opts: PlanLinkCommandOptions) => {
+        process.exitCode = await runPlanLink(task, plan, opts)
+      },
+    )
+
+  tasks
     .command('outcome')
     .description('Mark outcomes closed on a task by their position')
     .argument('[task]', 'Task filename stem, as in v28.1-trigger-escalation')
@@ -364,6 +405,18 @@ async function runPullRequest(
   const outcome = await recordPullRequest(root, selector, Number(number))
 
   return reportPullRequest(outcome, emitJson, root)
+}
+
+async function runPlanLink(
+  task: string,
+  plan: string,
+  opts: PlanLinkCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await recordPlan(root, task, plan)
+
+  return reportPlanLink(outcome, emitJson, root)
 }
 
 async function runOutcome(
@@ -478,6 +531,38 @@ function reportPullRequest(
   intro('canon tasks pull-request')
   logStep(outcome.action === 'unchanged' ? 'Already recorded' : 'Recorded')
   logInfo(`${outcome.stem} names pull request #${outcome.number}`)
+  if (outcome.action !== 'unchanged') logAdd(relative(root, outcome.path))
+  outro()
+
+  return 0
+}
+
+function reportPlanLink(
+  outcome: PlanOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    return reportRecord('canon tasks plan-link', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        task: outcome.stem,
+        path: relative(root, outcome.path),
+        plan: outcome.plan,
+        action: outcome.action,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('canon tasks plan-link')
+  logStep(outcome.action === 'unchanged' ? 'Already recorded' : 'Recorded')
+  logInfo(`${outcome.stem} names plan ${outcome.plan}`)
   if (outcome.action !== 'unchanged') logAdd(relative(root, outcome.path))
   outro()
 

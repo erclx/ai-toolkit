@@ -101,6 +101,8 @@ Run `canon records validate plans` after writing the file when the CLI is on PAT
 
 Run `canon markdown audit .canon/plans/feature-<slug>.md` beside it, naming the file. `.canon/plans/` is gitignored and the audit's default path set is what git lists, so no other gate ever opens a plan, and six ban hits landed across four plans written without this call. Rewrite the sentence carrying a hit rather than swapping the token for a near-synonym.
 
+When Step 1 resolved an existing task for this feature, run `canon tasks plan-link <task> .canon/plans/feature-<slug>.md` right after the file lands, naming the stem Step 1 read. Skip the call when Step 1 found no task, since there is nothing to link yet. Report a refusal rather than stopping on it. The plan file is already written, and `canon tasks validate` still catches an unlinked task through `plan-uncited` if this call cannot run.
+
 Then output in chat:
 
 ```markdown

@@ -104,6 +104,28 @@ The orchestrator dispatch runbook calls this before it checks the branch or the 
 canon tasks plan-answers dispatch-answer-gate --json | jq -r '.launchable'
 ```
 
+## Plan link
+
+`canon tasks plan-link <task> <plan>` writes or corrects a task's `Plan:` line, as `Plan: [<label>](<target>)` right after the H1. `claude-feature` calls it right after a plan file lands, when Step 1 resolved an existing task for the feature, so the line is a mechanical write rather than hand-edited markdown.
+
+Name the task by its filename stem, and the plan by its path or its slug, the same two forms `canon tasks plan-answers` accepts:
+
+```bash
+canon tasks plan-link v28.1-trigger-escalation dispatch-answer-gate # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
+canon tasks plan-link v28.1-trigger-escalation .canon/plans/feature-dispatch-answer-gate.md --json
+```
+
+| Option          | Behavior                                    |
+| --------------- | ------------------------------------------- |
+| `--json`        | Emit a machine-readable record on stdout    |
+| `--root <path>` | Board root, defaulting to the main worktree |
+
+The plan resolves the same way `canon tasks plan-answers` resolves one, against the project root first and `.canon/tasks/` second, so a bare slug and a board-relative path both work. A reference resolving to no file refuses as `no-plan`, naming every base it looked under.
+
+The write mirrors `canon tasks pull-request`'s add/correct/unchanged shape, anchored on the H1 rather than on the last origin line, since `Plan:` is the first origin line a task carries rather than the last. The `action` field reports `added`, `corrected`, or `unchanged`, which makes a rerun against the same plan safe.
+
+Exit codes: `0` recorded, `1` refused. The `reason` field carries `no-board`, `no-match`, `no-plan`, or `bad-input`.
+
 ## Pull request
 
 `canon tasks pull-request` records the number a branch's pull request carries onto the task that branch closes. It adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already holds, and corrects the number in place when the line exists.

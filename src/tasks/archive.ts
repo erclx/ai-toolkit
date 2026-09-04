@@ -211,10 +211,23 @@ export function readPlanTarget(text: string): string | undefined {
 }
 
 /**
- * Points the task's `Plan:` line at the plan's new home, as a markdown link
- * whose text and target stay in step. The line is matched with the pattern the
- * read above uses, so the archive rewrites exactly the line it parsed and never
- * a second `Plan:` a task displays inside a fenced sample.
+ * Builds a `Plan:` line as a markdown link whose text and target stay in step,
+ * the label taken from the target's filename with its extension dropped.
+ * `record.ts` reuses this so a plan-link write and an archive retarget produce
+ * one line shape rather than two.
+ */
+export function planLine(target: string): string {
+  const name = basename(target)
+  const label = name.endsWith('.md') ? name.slice(0, -'.md'.length) : name
+
+  return `Plan: [${label}](${target})`
+}
+
+/**
+ * Points the task's `Plan:` line at the plan's new home. The line is matched
+ * with the pattern the read above uses, so the archive rewrites exactly the
+ * line it parsed and never a second `Plan:` a task displays inside a fenced
+ * sample.
  *
  * The replacement is built by a function rather than passed as a string,
  * because `$&` and its siblings are substitution sequences inside a replacement
@@ -222,10 +235,7 @@ export function readPlanTarget(text: string): string | undefined {
  * `.canon/plans/` is gitignored, so nothing recovers the pointer it replaced.
  */
 export function retargetPlanLine(text: string, target: string): string {
-  const name = basename(target)
-  const label = name.endsWith('.md') ? name.slice(0, -'.md'.length) : name
-
-  return text.replace(PLAN_PATTERN, () => `Plan: [${label}](${target})`)
+  return text.replace(PLAN_PATTERN, () => planLine(target))
 }
 
 /**
@@ -624,7 +634,7 @@ async function planToArchive(
  * deeper than the live pair, so the link is measured between the two
  * destinations rather than written as the `../plans/` the live task carried.
  */
-function linkTo(taskDir: string, plan: string): string {
+export function linkTo(taskDir: string, plan: string): string {
   return relative(taskDir, plan).split(sep).join('/')
 }
 
