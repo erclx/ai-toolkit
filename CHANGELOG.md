@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.52.0](https://github.com/erclx/canon/compare/v4.51.0...v4.52.0) (2026-09-04)
+
+
+### Features
+
+* **web:** build the canon landing page ([#1505](https://github.com/erclx/canon/issues/1505)) ([621b56c](https://github.com/erclx/canon/commit/621b56c0a69621a57eb6b4c759f4fd01ec41d672))
+
 ## [4.51.0](https://github.com/erclx/canon/compare/v4.50.0...v4.51.0) (2026-09-04)
 
 
