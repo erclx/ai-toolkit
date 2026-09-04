@@ -134,11 +134,13 @@ async function runGate(opts: RunCommandOptions): Promise<number> {
         scoped: changed.scoped,
         changed: changed.files.length,
         summary,
-        stages: results.map(({ id, label, status, failure }) => ({
+        ms: results.reduce((total, result) => total + result.ms, 0),
+        stages: results.map(({ id, label, status, failure, ms }) => ({
           id,
           label,
           status,
           failure,
+          ms,
         })),
       })}\n`,
     )

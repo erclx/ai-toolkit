@@ -100,6 +100,8 @@ export interface AuditResult {
   readonly counts?: Record<string, number>
   /** Why the audit did not report, present only on `unmeasured`. */
   readonly reason?: string
+  /** Wall time the spawn took, from the aggregate's own clock. */
+  readonly ms: number
 }
 
 /** The exit code every command here sets when it refuses. */
@@ -816,6 +818,7 @@ export function classify(
   spec: AuditSpec,
   exitCode: number,
   stdout: string,
+  ms = 0,
 ): AuditResult {
   const base = {
     id: spec.id,
@@ -823,6 +826,7 @@ export function classify(
     tracked: isTracked(spec),
     corpus: spec.corpus,
     exitCode,
+    ms,
   }
 
   let record: unknown
