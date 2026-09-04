@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.44.0](https://github.com/erclx/canon/compare/v4.43.0...v4.44.0) (2026-09-04)
+
+
+### Features
+
+* **migrate:** give the records sweep a frontmatter glob boundary ([#1476](https://github.com/erclx/canon/issues/1476)) ([2e66984](https://github.com/erclx/canon/commit/2e669848bd76e300a071b0cd5ce98f3456a7b921))
+
 ## [4.43.0](https://github.com/erclx/canon/compare/v4.42.0...v4.43.0) (2026-09-03)
 
 
