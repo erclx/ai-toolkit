@@ -38,7 +38,7 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 ## Guards
 
 - Detached HEAD: stop, no slug resolves
-- No approved plan at the branch's plan path: stop and route to the planning skill
+- No approved plan at the branch-derived plan path: stop, name the branch the slug came from, and say the invocation carried no argument, so a plan or a task path may be passed
 - Uncommitted changes unrelated to the plan: stop
 - No diff baseline against main: stop
 - Empty changed-file list: stop, and never advise removing the output from `.gitignore` to get past it
