@@ -321,7 +321,7 @@ describe('recordPlan', () => {
       expect.objectContaining({
         ok: false,
         reason: 'no-match',
-        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to name it.`,
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name instead.`,
         detail: [stem],
       }),
     )

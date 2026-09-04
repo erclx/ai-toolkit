@@ -362,7 +362,7 @@ describe('archiveTask', () => {
       expect.objectContaining({
         ok: false,
         reason: 'no-match',
-        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to name it.`,
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name instead.`,
         detail: [stem],
       }),
     )
@@ -377,7 +377,7 @@ describe('archiveTask', () => {
         ok: false,
         reason: 'ambiguous',
         message:
-          'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name to name one.',
+          'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name instead.',
         detail: [first, second],
       }),
     )
@@ -552,7 +552,7 @@ describe('describeUnmatchedStem', () => {
     ).toEqual({
       reason: 'no-match',
       message:
-        'v28.1 does not name a task by itself. One task starts with it: v28.1-trigger-escalation. Pass the full name to name it.',
+        'v28.1 does not name a task by itself. One task starts with it: v28.1-trigger-escalation. Pass the full name instead.',
       detail: ['v28.1-trigger-escalation'],
     })
   })
@@ -563,7 +563,7 @@ describe('describeUnmatchedStem', () => {
     ).toEqual({
       reason: 'ambiguous',
       message:
-        'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name to name one.',
+        'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name instead.',
       detail: ['v28.1-alpha', 'v28.1-beta'],
     })
   })
@@ -577,7 +577,7 @@ describe('planCitations', () => {
       expect.objectContaining({
         ok: false,
         reason: 'no-match',
-        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to name it.`,
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name instead.`,
         detail: [stem],
       }),
     )

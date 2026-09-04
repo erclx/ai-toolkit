@@ -510,14 +510,14 @@ export function describeUnmatchedStem(
     const [match] = prefixed
     return {
       reason: 'no-match',
-      message: `${name} does not name a task by itself. One task starts with it: ${match}. Pass the full name to name it.`,
+      message: `${name} does not name a task by itself. One task starts with it: ${match}. Pass the full name instead.`,
       detail: [match],
     }
   }
   if (prefixed.length > 1) {
     return {
       reason: 'ambiguous',
-      message: `${name} does not name a task by itself. ${prefixed.length} tasks start with it. Pass the full name to name one.`,
+      message: `${name} does not name a task by itself. ${prefixed.length} tasks start with it. Pass the full name instead.`,
       detail: prefixed,
     }
   }
