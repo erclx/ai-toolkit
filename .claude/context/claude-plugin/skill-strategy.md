@@ -231,6 +231,16 @@ A second measurement came out of the same probe and reached the body rather than
 
 The measured run reached the body a third time, through what a fixture is allowed to permit. It wrote the design note as well as the page, which the close never directed, and admitting that path left `write_scope` bounding one surface while its own comment claimed two. Dropping the path was the other repair and it calls the run's own instinct a departure, so step 6 gained the write instead: a close records the decision wherever it was stated as open. What decided it is that the losing arms are deleted by the next step, so a pick that records nothing about why leaves the next reader re-deriving it from a diff.
 
+## The draft surface is the sixty-ninth skill, recombining docs-sync's domain with create-standard's confirm-before-write shape
+
+`docs-draft` covers a page under `docs/` that does not exist yet, and it is the gap `docs-sync` was never built to close: that skill classifies and rewrites existing sections against a diff since main, and a page with no prior version has no diff to classify. Reaching for it on a brand-new topic reports the page as unrelated to any change, which reads as a clean pass over a request nobody served.
+
+Widening `docs-sync` to cover both was the alternative the operator declined in conversation on 2026-09-02, keeping the two separate rather than adding a drafting branch to a skill whose contract already reads as a rewrite. The split is by whether a diff exists to classify, the same axis `standards/docs.md` already sits behind `standards/context.md` and `standards/readme.md` on, so a third skill answering a third reader was never the question.
+
+What it borrows from `create-standard` rather than from its nearer neighbor is the confirm step. `docs-sync` writes immediately after its preview, since the tool permission dialog is confirmation enough over a rewrite bounded by a diff. A new page carries no such bound, since placement is a judgment call weighed against the catalog's existing shelves rather than a change the branch already made, so the skill confirms the resolved path and the full content with the user before writing, the way `create-standard` confirms a slug and a body against no diff of its own.
+
+Placement reads the catalog rather than assuming a folder. A `category` value already carried by a sibling page is reused verbatim, since a near-miss spelling opens a second shelf holding one page, and a topic matching no shelf lands at the `docs/` root, since a subfolder earns itself only once a shelf of pages already sits there. The guard against redrafting a covered topic runs the derived slug through `canon docs <slug>` and points at `docs-sync` on a hit, which is a heuristic gate rather than an exhaustive one, since the slug is guessed from the topic phrase rather than confirmed against every page's frontmatter.
+
 ## Whether a skill earns its place
 
 The redundancy audit below runs outward, against community counterparts. Nothing ran inward, against the catalog's own two zero-cost tells, until this section: a folder wrapping something already reachable, and a folder nobody calls. `create-skill` now asks the first two before a folder exists, and `570-skill.md` carries the same check for whatever creates a `SKILL.md` some other way.
