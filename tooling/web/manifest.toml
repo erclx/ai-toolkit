@@ -16,7 +16,7 @@ packages = [
   "globals",
   "typescript-eslint",
   "@eslint/js",
-  "typescript",
+  "typescript@^6",
   "react",
   "react-dom",
   "@types/react",

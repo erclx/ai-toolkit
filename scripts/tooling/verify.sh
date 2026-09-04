@@ -83,6 +83,8 @@ main() {
 
   [ -z "$stack" ] && log_error "Stack required. See --help."
 
+  export CI=1
+
   if is_tooling_stack_excluded "$stack"; then
     log_error "Stack '$stack' is excluded from tooling."
   fi

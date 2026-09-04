@@ -79,6 +79,8 @@ nullglob
 numpy
 nvmrc
 ollama
+oxlint
+oxlintrc
 packument
 parametrize
 pathlib
@@ -134,6 +136,7 @@ topbar
 tostring
 toupper
 tsconfig
+tsgolint
 unpushed
 uv
 uvicorn

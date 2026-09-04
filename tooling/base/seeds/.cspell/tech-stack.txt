@@ -5,11 +5,14 @@ commitlint
 dbaeumer
 dotfolders
 erclx
+errexit
+esac
 esbenp
 frontmatter
 lintstagedrc
 mkhl
 parallelizable
+regen
 scannability
 shellcheck
 shfmt
