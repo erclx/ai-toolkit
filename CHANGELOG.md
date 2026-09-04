@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.50.0](https://github.com/erclx/canon/compare/v4.49.0...v4.50.0) (2026-09-04)
+
+
+### Features
+
+* **design:** add a proportional hero role and emit every family ([#1500](https://github.com/erclx/canon/issues/1500)) ([46409ba](https://github.com/erclx/canon/commit/46409ba38e1416419df685ac3448bd59817a9309))
+
+
+### Bug Fixes
+
+* **tasks:** share prefix-match refusal wording across stem lookups ([#1498](https://github.com/erclx/canon/issues/1498)) ([c8f4f6b](https://github.com/erclx/canon/commit/c8f4f6b96a1c2d2c13b07397fc9a380d3b691341))
+* **tooling:** keep astro's preview server foregrounded for playwright ([#1499](https://github.com/erclx/canon/issues/1499)) ([b43a094](https://github.com/erclx/canon/commit/b43a094afdb39da73bed16ff0df0f39dbaf62817))
+
 ## [4.49.0](https://github.com/erclx/canon/compare/v4.48.1...v4.49.0) (2026-09-04)
 
 
