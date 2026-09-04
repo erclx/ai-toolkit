@@ -367,6 +367,21 @@ describe('archiveTask', () => {
     )
   })
 
+  it('should name the count when a prefix resolves to several tasks', async () => {
+    const first = await seedTask({ stem: 'v28.1-alpha' })
+    const second = await seedTask({ stem: 'v28.1-beta' })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem: 'v28.1' })).toEqual(
+      expect.objectContaining({
+        ok: false,
+        reason: 'ambiguous',
+        message:
+          'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name to archive one.',
+        detail: [first, second],
+      }),
+    )
+  })
+
   it('should refuse when the board does not exist', async () => {
     expect(
       await archiveTask(ROOT, { kind: 'stem', stem: 'v28.1-anything' }),

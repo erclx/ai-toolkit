@@ -505,6 +505,13 @@ async function resolveStem(
           [match],
         )
       }
+      if (prefixed.length > 1) {
+        return refuse(
+          'ambiguous',
+          `${selector.stem} does not name a task by itself. ${prefixed.length} tasks start with it. Pass the full name to archive one.`,
+          prefixed,
+        )
+      }
       return refuse(
         'no-match',
         `No task named ${selector.stem} on the board.`,
