@@ -53,7 +53,7 @@ The scan reads a title and a body with every fenced block dropped and every inli
 
 `#1208` is the corpus case that forced the code-span exclusion: a backticked span quoting a test fixture's own version-shaped name, found by driving the scan against all 48 merged feature pull requests rather than reading them.
 
-`#1311` is the counterexample the carve-out's assumption missed: a real phase label folded into a longer quoted phrase inside a review comment read as clean end to end, the same shape `#1208`'s fixture name took. A label quoted alone in its own span is a different shape and still trips the board-identifier check, since that check reads a span whose whole content is a version token as a hit and only a token folded into longer content clears it.
+`#1311` is the counterexample the carve-out's assumption missed: a real phase label quoted alone in its own span, in a review comment, cleared the phase-label check while the board-identifier check caught it, which is the one-of-four reading this row exists to record. Its first review comment carries two backticked labels this way, and neither reads as `#1208`'s shape, since that check reads a span whose whole content is a version token as a hit and only a token folded into longer content, the fixture-name shape, clears both checks.
 
 The operator measured both shapes against the installed binary and decided on 2026-09-01 to keep the carve-out and leave authors responsible, rather than narrow it to fenced blocks alone or drop it and give up every leak written with no backticks at all, the common case the check was built for. `standards/versioning.md` now states the same three-way split.
 
