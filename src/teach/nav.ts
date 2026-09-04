@@ -58,6 +58,13 @@ const CLOSE_OUTSIDE_CLICK_SCRIPT = `<script>
  * `:has()` rather than on a script keeps the page working with nothing to bind,
  * and the radio input is what records an answer with no handler in the loop.
  *
+ * The general sibling combinator is what keeps the gate from depending on the
+ * markup contract holding. It selects the same questions as `+` for a quiz
+ * written correctly, and it goes on gating when anything sits between two of
+ * them, where `+` matches nothing and shows every later question at once. That
+ * is the leak this block exists to close, arriving through a shape nothing
+ * rejects.
+ *
  * The two hide rules select the unanswered state alone, so a workspace's own
  * `display` for a question survives being stepped through. Feedback has to be
  * shown by a rule naming a value, because every stylesheet grown under the
@@ -74,7 +81,7 @@ const CLOSE_OUTSIDE_CLICK_SCRIPT = `<script>
  * still drives.
  */
 const QUIZ_CSS = `@supports selector(:has(*)) {
-  .quiz .q:not(:has(input[type="radio"]:checked)) + .q { display: none; }
+  .quiz .q:not(:has(input[type="radio"]:checked)) ~ .q { display: none; }
   .quiz .q:not(:has(input[type="radio"]:checked)) .fb { display: none; }
   .quiz .q:has(input[type="radio"]:checked) > .fb { display: block; }
 }`

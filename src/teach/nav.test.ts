@@ -280,6 +280,37 @@ describe('generateNav', () => {
     expect(stepper).toBeLessThan(lesson.indexOf('</style>'))
   })
 
+  it('should gate on every later question rather than the next one alone', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+      RADIO_QUIZ,
+    )
+
+    await generateNav(ROOT)
+
+    const lesson = await readFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'lessons',
+        '0001-anchors.html',
+      ),
+      'utf8',
+    )
+
+    // The general sibling combinator keeps gating when something sits between
+    // two questions, where the adjacent one matches nothing and shows them all.
+    expect(lesson).toContain(
+      '.quiz .q:not(:has(input[type="radio"]:checked)) ~ .q',
+    )
+    expect(lesson).not.toContain(
+      '.quiz .q:not(:has(input[type="radio"]:checked)) + .q',
+    )
+  })
+
   it('should carry the stepper on a lesson holding no quiz at all', async () => {
     await openWorkspace(ROOT, REQUEST)
     await writeStylesheet(ROOT, 'regular-expressions')
