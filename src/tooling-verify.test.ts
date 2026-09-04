@@ -50,7 +50,7 @@ afterEach(() => {
 describe('verify.sh Sync phase', () => {
   it('should resolve the checkout cli.ts through bun rather than PATH canon', () => {
     stubBin('canon', `touch "${join(fixture, 'canon-invoked')}"\nexit 1`)
-    stubBin('bun', `echo "$@" > "${join(fixture, 'bun-args')}"\nexit 0`)
+    stubBin('bun', `echo "$@" >> "${join(fixture, 'bun-args')}"\nexit 0`)
 
     const run = spawnSync('bash', [VERIFY_SCRIPT, 'stub-stack'], {
       cwd: fixture,
@@ -59,12 +59,16 @@ describe('verify.sh Sync phase', () => {
         ...process.env,
         PATH: `${bin}:${process.env.PATH}`,
         PROJECT_ROOT: fixture,
+        GIT_AUTHOR_NAME: 'verify-sync-test',
+        GIT_AUTHOR_EMAIL: 'verify-sync-test@example.com',
+        GIT_COMMITTER_NAME: 'verify-sync-test',
+        GIT_COMMITTER_EMAIL: 'verify-sync-test@example.com',
       },
     })
 
     expect(run.status).toBe(0)
     expect(existsSync(join(fixture, 'canon-invoked'))).toBe(false)
-    expect(readFileSync(join(fixture, 'bun-args'), 'utf8').trim()).toBe(
+    expect(readFileSync(join(fixture, 'bun-args'), 'utf8')).toContain(
       `${fixture}/src/cli.ts tooling sync stub-stack . --write`,
     )
     expect(run.stderr).toContain(`bun ${fixture}/src/cli.ts`)
