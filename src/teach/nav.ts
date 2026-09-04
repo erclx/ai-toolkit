@@ -50,6 +50,48 @@ const CLOSE_OUTSIDE_CLICK_SCRIPT = `<script>
 })();
 </script>`
 
+/**
+ * The stepper, as CSS over the radio inputs a lesson's quiz is written from.
+ *
+ * A quiz showing every question at once lets a later stem answer an earlier
+ * question, which is a leak no wording of the questions closes. Gating on
+ * `:has()` rather than on a script keeps the page working with nothing to bind,
+ * and the radio input is what records an answer with no handler in the loop.
+ *
+ * The two hide rules select the unanswered state alone, so a workspace's own
+ * `display` for a question survives being stepped through. Feedback has to be
+ * shown by a rule naming a value, because every stylesheet grown under the
+ * retired script carries `.fb { display: none }` and nothing adds the class
+ * that revealed it. Appearance stays the workspace's: this block hides and
+ * shows and sets nothing else.
+ *
+ * `@supports` wraps every rule, so an engine without `:has()` renders every
+ * question rather than a stepper showing nothing. Feedback there follows the
+ * workspace: a fresh stylesheet shows it and one grown under the retired script
+ * keeps it hidden. Showing it unconditionally outside the wrapper was measured
+ * and reverted, since that rule outranks `.fb { display: none }` on every
+ * engine and would reveal the feedback in the button-shape lessons the script
+ * still drives.
+ */
+const QUIZ_CSS = `@supports selector(:has(*)) {
+  .quiz .q:not(:has(input[type="radio"]:checked)) + .q { display: none; }
+  .quiz .q:not(:has(input[type="radio"]:checked)) .fb { display: none; }
+  .quiz .q:has(input[type="radio"]:checked) > .fb { display: block; }
+}`
+
+/**
+ * The button shape a lesson written before the stepper carries. It is a
+ * detector rather than a mode: a lesson has one shape or the other, and which
+ * one it has decides both the style and the scripts region.
+ */
+const LEGACY_OPTION = '<button class="opt"'
+
+/**
+ * What reveals feedback in a lesson written against `LEGACY_OPTION`. The radio
+ * shape needs none of it, so a lesson carrying no button option gets no script,
+ * and removing this outright would leave the lessons already written showing no
+ * feedback at all.
+ */
 const QUIZ_SCRIPT =
   '<script>document.querySelectorAll(".q").forEach(function(q){var f=q.querySelector(".fb");q.querySelectorAll(".opt").forEach(function(b){b.addEventListener("click",function(){if(f.classList.contains("show"))return;q.querySelectorAll(".opt").forEach(function(o){o.dataset.state=o.dataset.a==="1"?"right":(o===b?"chosen":"wrong");});f.classList.add("show");});});});</script>'
 
@@ -662,11 +704,20 @@ async function rewriteLesson(
     metas.map<TrackState>((_, i) => (i === index ? 'here' : 'done')),
   )
 
+  // One detector decides both mechanisms, because a lesson carries one quiz
+  // shape or the other and the two cannot share a page. The stepper's rules
+  // match a button question that can never hold a checked radio, so a lesson
+  // given both would hide every question past the first for good and outrank
+  // the class the script reveals feedback with.
+  const legacy = html.includes(LEGACY_OPTION)
+
   const regions: ReadonlyArray<readonly [Region, string]> = [
-    ['style', `<style>\n${css}\n</style>`],
+    // The stepper follows the workspace stylesheet so it wins the cascade at
+    // equal specificity, which is what reaches a workspace seeded before it.
+    ['style', `<style>\n${legacy ? css : `${css}\n${QUIZ_CSS}`}\n</style>`],
     ['header', header],
     ['footnav', renderFootNav(metas, index)],
-    ['scripts', renderScripts(html.includes('class="quiz"'), false)],
+    ['scripts', renderScripts(legacy, false)],
   ]
 
   for (const [region, content] of regions) {

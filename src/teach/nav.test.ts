@@ -21,6 +21,22 @@ function workspaceDir(slug: string): string {
   return join(teachDir(ROOT), slug)
 }
 
+/** The shape the stepper gates, which the skill body now states in full. */
+const RADIO_QUIZ = `<div class="quiz">
+<div class="q"><p class="q-stem">1. What does a caret anchor?</p>
+<label class="opt" data-k="A"><input type="radio" name="q1"><span>The end of the subject</span></label>
+<label class="opt" data-k="B"><input type="radio" name="q1" data-a="1"><span>The start of the subject</span></label>
+<div class="fb"><b>Correct: the start.</b> The dollar anchors the end.</div></div>
+</div>`
+
+/** The shape the four lessons already written carry, kept working by a script. */
+const BUTTON_QUIZ = `<div class="quiz">
+<div class="q"><p class="q-stem">1. What does a caret anchor?</p>
+<button class="opt" data-k="A" data-a="0">The end of the subject</button>
+<button class="opt" data-k="B" data-a="1">The start of the subject</button>
+<div class="fb"><b>Correct: the start.</b> The dollar anchors the end.</div></div>
+</div>`
+
 function lessonSkeleton(h1: string, lede: string, body = ''): string {
   return `<!doctype html>
 <html lang="en">
@@ -236,6 +252,126 @@ describe('generateNav', () => {
     expect(lesson).toContain('.added-later { color: red; }')
   })
 
+  it('should place the quiz stepper after the embedded stylesheet', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await writeStylesheet(ROOT, 'regular-expressions')
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+      RADIO_QUIZ,
+    )
+
+    await generateNav(ROOT)
+
+    const lesson = await readFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'lessons',
+        '0001-anchors.html',
+      ),
+      'utf8',
+    )
+
+    const stepper = lesson.indexOf('@supports selector(:has(*))')
+    expect(stepper).toBeGreaterThan(-1)
+    expect(stepper).toBeGreaterThan(lesson.indexOf('--ink'))
+    expect(stepper).toBeLessThan(lesson.indexOf('</style>'))
+  })
+
+  it('should carry the stepper on a lesson holding no quiz at all', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await writeStylesheet(ROOT, 'regular-expressions')
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+    )
+
+    await generateNav(ROOT)
+
+    const lesson = await readFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'lessons',
+        '0001-anchors.html',
+      ),
+      'utf8',
+    )
+    expect(lesson).toContain('@supports selector(:has(*))')
+  })
+
+  it('should give a radio quiz no script, since the stepper needs none', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+      RADIO_QUIZ,
+    )
+
+    await generateNav(ROOT)
+
+    const lesson = await readFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'lessons',
+        '0001-anchors.html',
+      ),
+      'utf8',
+    )
+    expect(lesson).not.toContain('classList.add("show")')
+  })
+
+  it('should still script a lesson written against the button shape', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+      BUTTON_QUIZ,
+    )
+
+    await generateNav(ROOT)
+
+    const lesson = await readFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'lessons',
+        '0001-anchors.html',
+      ),
+      'utf8',
+    )
+    expect(lesson).toContain('classList.add("show")')
+  })
+
+  it('should keep the stepper off a lesson written against the button shape', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+      BUTTON_QUIZ,
+    )
+
+    await generateNav(ROOT)
+
+    const lesson = await readFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'lessons',
+        '0001-anchors.html',
+      ),
+      'utf8',
+    )
+    expect(lesson).not.toContain('@supports selector(:has(*))')
+  })
+
   it('should be byte-identical on a second run against unchanged sources', async () => {
     await openWorkspace(ROOT, REQUEST)
     await writeStylesheet(ROOT, 'regular-expressions')
@@ -250,6 +386,7 @@ describe('generateNav', () => {
       '0002-groups.html',
       'Capture groups',
       'A parenthesised part of a pattern whose match is kept.',
+      RADIO_QUIZ,
     )
 
     await generateNav(ROOT)

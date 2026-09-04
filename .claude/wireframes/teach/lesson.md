@@ -5,7 +5,7 @@ description: A single lesson's article view, with its chrome, panels, callouts, 
 
 # Teach lesson
 
-One page per written lesson, at `<workspace>/lessons/NNNN-<slug>.html`. `rewriteLesson` in `src/teach/nav.ts:627-680` splices the header, the foot nav, and the embedded stylesheet into four marker comments on every `canon teach nav` run, leaving the `<h1>`, lede, body, and quiz hand-authored between them. Primary source for the body: `lessons/0001-scoping-before-solving.html`, the richest of the three fde lessons and the only one carrying `.road` and `.no`.
+One page per written lesson, at `<workspace>/lessons/NNNN-<slug>.html`. `rewriteLesson` in `src/teach/nav.ts:669-731` splices the header, the foot nav, and the embedded stylesheet into four marker comments on every `canon teach nav` run, leaving the `<h1>`, lede, body, and quiz hand-authored between them. Primary source for the body: `lessons/0001-scoping-before-solving.html`, the richest of the three fde lessons and the only one carrying `.road` and `.no`.
 
 The chrome shown here comes from `nav.ts`'s current render functions rather than from that file. This workspace's lessons predate the marker-splice convention, and re-running `canon teach nav` for this plan refused to rewrite any of them, each reported `skipped` for a missing `canon:teach:style` marker. The authored body sits outside that gap and is read straight off disk.
 
@@ -131,7 +131,7 @@ Every column but the first is right-aligned.
 
 - The outline lists every `<h2>` on the page, skipped outright under three headings. Clicking a link scrolls to that heading and marks it active.
 - Scrolling the page also marks the nearest heading passed, against a line that starts near the top of the viewport and ramps down to the viewport's own bottom edge as the page runs out of scroll, so the last heading stays reachable even with little content trailing it.
-- Clicking a quiz option locks that question: every option in it gets a state, right, wrong, or chosen, and the feedback panel opens beneath. A second click in the same question does nothing further.
+- Clicking a quiz option locks that question: every option in it gets a state, right, wrong, or chosen, and the feedback panel opens beneath. A second click in the same question does nothing further. That is the button shape, which the three lessons this page is drawn from carry and which an injected script drives. A lesson written since carries radio options instead and behaves differently: only the first question is on screen, selecting an option opens that question's feedback and reveals the next one, and no script is in the loop.
 - This workspace's quiz options carry no visible letter badge. The stylesheet reserves the space for one, keyed off an attribute the authored markup here does not set, so the badge area renders empty rather than missing.
 - The foot nav is asymmetric at both ends: the first lesson gets no previous slot at all, not even a placeholder, and the last lesson swaps its next slot for the end-of-lessons message. A lesson in the middle gets a live link on both sides.
 - A figure always breaks the measure out to the wider column. There is no narrower variant of one.
