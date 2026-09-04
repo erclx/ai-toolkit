@@ -49,6 +49,7 @@ packages = [
 "check:full" = "./scripts/verify.sh && bun run test:e2e"
 
 [scripts.override]
+"lint" = "eslint . --max-warnings 0"
 "screenshot" = "PREVIEW_PORT=$(bash scripts/worktree-port.sh 4173) && export PREVIEW_PORT && bash scripts/screenshot.sh"
 
 [gitignore]
