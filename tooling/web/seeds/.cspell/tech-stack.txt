@@ -1,4 +1,5 @@
 axios
+cksum
 evenodd
 iconify
 jsdom
@@ -14,5 +15,6 @@ ntvs
 serviceworker
 sidepanel
 tabindex
+toplevel
 vitest
 xlink
