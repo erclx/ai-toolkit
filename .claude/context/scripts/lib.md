@@ -68,3 +68,9 @@ A lib function whose refusal path shells out to `gh` is testable without provisi
 ### Read a helper's body before porting its call
 
 Porting a call to a bash helper means reading the helper's body rather than what its name advertises, because shell idioms validate as a side effect of resolving. `wiki init` called `guard_root "$target"`, which reads as a toolkit-root check while its body is `cd "$target" && pwd`, so it also rejected a target that did not exist. The port kept only the root comparison, and `mkdir -p` downstream then scaffolded a typo'd path into a whole new tree, or exited on an unhandled `ENOTDIR` when the target was a file. `cd`, `realpath`, and `readlink -f` all fail on a missing path and are the usual carriers.
+
+### Test a binary-resolving entry point through a full fixture root
+
+A `scripts/` entry point that shells to an external binary is testable through a full fixture `PROJECT_ROOT` rather than by sourcing its functions directly. Copy `scripts/lib/` into a `mkdtempSync` fixture, add a stub manifest and binaries under a fixture `bin/`, then drive the real script with `spawnSync('bash', [scriptPath, ...args])` under `PROJECT_ROOT=<fixture>` and that `bin/` prepended to `PATH`. This isolates the manifest and the scaffold while still exercising the real sourcing chain.
+
+A scaffold producing an empty directory breaks this under `set -e`, since git does not track an empty directory and the following `git add . && git commit` reports nothing to commit and aborts the script before the phase under test runs. Give a stub scaffold at least one file to commit.
