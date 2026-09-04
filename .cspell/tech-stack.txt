@@ -48,6 +48,7 @@ heredoc
 httpx
 ibeam
 inplace
+issuecomment
 kwargs
 labelledby
 lavfi

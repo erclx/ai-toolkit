@@ -25,15 +25,15 @@ A declined finding fails on a third axis, which is where its reason ends up. A w
 - Push before replying, so the comment never runs ahead of the code it describes
 - Map every finding to what changed, or to a one-line reason when it is a question or a conscious accept
 - Carry the fact behind a declined finding into the posted reply rather than into the message that answered the dispatch, since both sessions end and the thread is what the next reader opens
-- Post the terminal comment only when the findings are addressed and every check passes
-- Say what the run actually did on a rebase-only pass, since a reply mapping findings and a terminal comment claiming they were addressed are both false on a pull request carrying none
+- Append the closing confirmation to the reply only when the findings are addressed and every check passes
+- Say what the run actually did on a rebase-only pass, since a reply mapping findings and a closing confirmation claiming they were addressed are both false on a pull request carrying none
 - Scan the reply for banned characters and internal phase labels before posting, since the comment leaves for the remote unchecked
 
 ## Must not
 
-- Merge, or read the closing comment as an approval. The author cannot approve their own pull request.
+- Merge, or read the closing confirmation as an approval. The author cannot approve their own pull request.
 - Write a review. This skill consumes findings and does not produce them.
-- Post the closing comment while a check is failing
+- Append the closing confirmation while a check is failing
 - Reimplement the follow-up push or the doc refresh. Both have owners, and a second copy here drifts from them.
 - Edit silently. A finding answered without a reply leaves the reviewer re-deriving the change from the diff.
 - Answer a finding in the channel alone. A reply that changes what the review concluded is the one the thread has to carry.

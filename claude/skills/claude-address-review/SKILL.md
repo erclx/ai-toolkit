@@ -153,34 +153,57 @@ matches it.
 Before posting, run the scan in
 `${CLAUDE_SKILL_DIR}/../../standards/publish.md`
 against the reply. The hook skips `.canon/tmp/`, so this scan is the
-only gate on the published reply. Post it to the PR:
+only gate on the published reply. Post it to the PR and capture the posted
+comment's id, since Step 7 edits this exact comment rather than trusting
+whichever one `gh` considers last:
 
 ```bash
-gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md
+comment_url=$(gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md)
+echo "${comment_url##*issuecomment-}" > .canon/tmp/address-review/reply-<number>.id
 ```
 
 ## Step 7: confirm resolution
 
 After the follow-up push, watch CI on the PR. Poll
 `canon pr checks <number> --json` until the record's `state` leaves `pending`,
-then read it. When every finding is addressed and the state is `passing`, post
-one closing comment so the thread has a clear terminal state:
+then read it. When every finding is addressed and the state is `passing`, append
+the closing confirmation to the reply file Step 6 already posted, so the thread
+carries one terminal state rather than a second comment under no heading:
 
 ```bash
-gh pr comment <number> --body "✅ All review findings addressed, CI green."
+printf '\n✅ All review findings addressed, CI green.\n' >> .canon/tmp/address-review/reply-<number>.md
 ```
 
-A rebase-only run addressed no finding, so it takes its own terminal comment
-rather than that one. Claiming findings were addressed on a pull request that
+A rebase-only run addressed no finding, so it appends its own confirmation
+instead of that one. Claiming findings were addressed on a pull request that
 carries none is false on a surface nothing else checks:
 
 ```bash
-gh pr comment <number> --body "✅ Rebased onto origin/main, CI green. No review findings were open."
+printf '\n✅ Rebased onto origin/main, CI green. No review findings were open.\n' >> .canon/tmp/address-review/reply-<number>.md
 ```
 
-If any check fails, do not post the closing comment. Report the failing check
-so it can be fixed first. This is a resolution signal, not a formal approval,
-since the PR author cannot approve their own PR.
+Re-run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan against the
+updated file, since the appended line is new content the Step 6 scan never saw.
+Then edit the exact comment Step 6 posted, read back from the id it saved,
+rather than posting a second comment:
+
+```bash
+gh api -X PATCH "repos/{owner}/{repo}/issues/comments/$(cat .canon/tmp/address-review/reply-<number>.id)" \
+  -F body=@.canon/tmp/address-review/reply-<number>.md
+```
+
+`--edit-last` was the first shape and it targets the wrong object here.
+It edits the last comment posted by the authenticated user, not the last
+comment this run posted, and every session here authenticates as the one
+account the operator also comments from. A comment the operator leaves on
+their own pull request during the minutes Step 7 spends waiting on CI becomes
+that last comment, so `--edit-last` would overwrite it with the reply and the
+confirmation, silently. Targeting the id Step 6 captured closes that whether
+or not anyone commented in between.
+
+If any check fails, skip the edit. Report the failing check so it can be fixed
+first. This is a resolution signal, not a formal approval, since the PR author
+cannot approve their own PR.
 
 ## Step 8: output
 

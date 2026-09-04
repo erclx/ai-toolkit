@@ -97,6 +97,14 @@ The fix names `## Post-review findings` as a fifth heading rather than leaving i
 
 A comment posted under a heading outside the five is reported as unmatched rather than passed over. Silence and a match read alike otherwise, which is the shape of the miss this closes, so the poll now surfaces an invented heading as a state a person reads rather than absorbing it the way the fifth one was absorbed before it had a name.
 
+### The closing comment folds into the reply, not a sixth heading
+
+`claude-address-review` Step 7 posted its CI confirmation as a sixth comment shape, carrying no heading at all, and a task was filed reading that comment as reaching the poll's `UNMATCHED` state. It does not: `JQ_UNMATCHED_STATE` opens with `select(startswith("## "))`, so only a comment whose first line already carries a heading prefix reaches the five-way test at all. Driven against both posted confirmation strings, the filter returns `0 none`, and a control case carrying an unknown `## ` heading returns `1` and names it. The heading-free confirmation passes over exactly the way ordinary human chatter does, which is the filter working as built rather than the defect the task was filed against.
+
+What survives is smaller. The confirmation states nothing the `## Review response` reply posted moments earlier does not already carry, so the write reaches no reader on either side of the channel. Step 7 now appends the confirmation to that reply and edits it in place rather than posting a second comment, which is the same call the corpus already made once against a sixth heading, above.
+
+Measured 2026-09-04.
+
 ### One threshold under the heading and the dispatch
 
 The threshold moved four times on 2026-08-14, and the defect this section records is the cost of each move rather than any one value it took. It ran as a heading on any finding with a dispatch floored at should-fix, then both at should-fix, then a heading at should-fix with a dispatch on any finding, and it now sits with both on any finding.
@@ -135,7 +143,7 @@ The stage sits after the fixes rather than before them so one force-push carries
 
 The test runs ahead of the no-findings guard rather than inside the fix path. Placing it at step 5 alone put it behind a guard that stops with a pass when the pull request carries no comments, and a branch goes stale from `main` moving rather than from anything the review said, so the case the stage exists for was the one shape it could not reach. The guard now decides on the test rather than on the finding count, and a run carrying no findings skips to the rebase.
 
-Opening that path meant the three steps behind it stopped being true. The reply maps each finding to what changed, the terminal comment says every finding was addressed, and the output line counts them, all against a pull request carrying none. Each gets a rebase-only form rather than an empty list, and the reply takes a `## Rebase` heading rather than `## Review response`, since the second claims a review the run never read and would sit under a `## Review` that does not exist. The heading also stays outside that family so the close-out's first-line equality test cannot match it.
+Opening that path meant the three steps behind it stopped being true. The reply maps each finding to what changed, the terminal confirmation says every finding was addressed, and the output line counts them, all against a pull request carrying none. Each gets a rebase-only form rather than an empty list, and the reply takes a `## Rebase` heading rather than `## Review response`, since the second claims a review the run never read and would sit under a `## Review` that does not exist. The heading also stays outside that family so the close-out's first-line equality test cannot match it.
 
 ### Two runs of the test
 
