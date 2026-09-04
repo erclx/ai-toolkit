@@ -68,8 +68,20 @@ export interface DesignTokens {
   readonly preamble: string
 }
 
-/** The one monospace stack every surface that renders text declares. */
+/** The monospace stack every surface but the landing page hero declares. */
 const MONO = 'Noto Sans Mono, DejaVu Sans Mono, monospace'
+
+/**
+ * The proportional stack the landing page hero declares and nothing else does.
+ * Noto Sans is the proportional sibling of the mono above rather than a face
+ * picked for taste, so the pairing is one superfamily rather than two systems.
+ *
+ * The stack stops at two names and a generic because `src/design/base.css` is
+ * written by `canon design regen` and formatted by prettier, and a declaration
+ * past 80 columns is wrapped by the second and flattened by the first. Every
+ * emitted line stays inside the width so the two writers never disagree.
+ */
+const SANS = 'Noto Sans, DejaVu Sans, sans-serif'
 
 const DARK_GROUNDS = ['background', 'surface'] as const
 const LIGHT_GROUNDS = ['light-background', 'light-surface'] as const
@@ -87,6 +99,8 @@ export const TOKENS: DesignTokens = {
 
   personality: [
     'Warm neutrals carry the frame under a single rust accent, rendered in the same monospace the terminal uses. The subject picks the register rather than taste: a toolkit whose primary surface is a shell has no proportional voice available, so the rendered surfaces match the terminal instead of the reverse. One accent carries every count, link, and primary action. Promoting a second and third into structural roles is what reads as a generated interface, so the palette stays at one.',
+    '',
+    'One surface is carved out of the sentence above, and it is the landing page hero. A rendered surface here shows a reader what the terminal did, so matching the terminal is what makes it legible. A public page addresses somebody who has never opened the terminal at all, and the shell has no voice available for that, which is the reverse of the case the rule was written for. The `page-display` role below is the whole of the carve-out. Every other role on that page stays monospace, including its body, its controls, and every frame it embeds, so the page reads as two families rather than as a second design system.',
   ].join('\n'),
 
   colorNote: [
@@ -193,7 +207,9 @@ export const TOKENS: DesignTokens = {
   ],
 
   typographyNote: [
-    'One family covers every role. The size scale runs from 11.5 to 34 pixels across ten values, and five of them map onto a role. The other five are adjustments inside a single component and get no role here, since a scale with five invented steps reads as a system the surfaces do not implement. They are 11.5, 12.5, 13, 14, and 15 pixels.',
+    'One family covers every role but `page-display`, which is the landing page hero and takes the proportional sibling of the same superfamily. The size scale runs from 11.5 to 52 pixels, and six values map onto a role. Five further values are adjustments inside a single component and get no role here, since a scale with five invented steps reads as a system the surfaces do not implement. They are 11.5, 12.5, 13, 14, and 15 pixels.',
+    '',
+    'The 52 pixel step sits above the 34 the rest of the scale tops out at, and it is the one size no other surface reaches. A hero headline set at the display cap reads as a section heading rather than an opening, which four rendered arms measured on 2026-09-04 before the step was added.',
     '',
     'A tagged cell is one no rendering surface exercises yet, which is a declaration the system has not tested rather than one it has.',
     '',
@@ -207,6 +223,14 @@ export const TOKENS: DesignTokens = {
       weight: '700',
       size: '34px',
       lineHeight: '1.3',
+    },
+    {
+      role: 'page-display',
+      family: SANS,
+      weight: '700',
+      size: '52px',
+      lineHeight: '1.1',
+      verify: ['family', 'size', 'lineHeight'],
     },
     {
       role: 'heading',

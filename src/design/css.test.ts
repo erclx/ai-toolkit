@@ -51,6 +51,12 @@ describe('buildDesignCss', () => {
 
     expect(css).toContain('--space-md: 18px;')
     expect(css).toContain('--type-body-lh: 1.65;')
+    expect(css).toContain(
+      '--type-body-family: Noto Sans Mono, DejaVu Sans Mono, monospace;',
+    )
+    expect(css).toContain(
+      '--type-page-display-family: Noto Sans, DejaVu Sans, sans-serif;',
+    )
     expect(css).toContain('--radius-marker: 999px;')
   })
 
