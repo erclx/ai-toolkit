@@ -163,6 +163,10 @@ The third is the chrome itself. `canon teach nav` splices the header, breadcrumb
 
 What the split cannot close is that the body is still free to reorder what the verb reports. The sandbox arm for this layer asserts the ordinal, the link, and the stylesheet, and the ordering is a property over many runs that one arm cannot see, so it is recorded as manual rather than claimed.
 
+Three gaps between what the pedagogy reference prefers and what the surface offered closed together, and each cost a different thing. The reference prefers a produced answer over a selected one and the lesson carried only a quiz, so a teach-back block joined it, which costs nothing mechanical since a `<details>` needs no styles the workspace does not already give one. The reference asks for a schedule and every record named a revisit note nothing read, so `## Revisit` gained a fixed shape and `canon teach list <topic> --json` gained `due`, which costs a listing one read per learning record and puts the spacing ladder in code where an author told to widen a gap would have picked the number by judgment. The quiz showed every question at once, so a later stem could answer an earlier question, which the stepper closes by gating on `:has()` at the price of a markup contract a lesson author now writes by hand with nothing checking it until a quiz in the wrong shape renders flat.
+
+The teach-back miss lands under what the learner got wrong rather than under a heading of its own, since a produced answer and a selected one are both retrieval failures the next session places from, and two headings split one placement input.
+
 ## The writing surface is a skill because nothing reads a standard nobody opens
 
 `write-human` carries voice, rhythm, sentence construction, and information density, and it is the sixty-first skill. Those rules sat in `standards/prose.md` beside the word bans, where the bans were read by a command and the voice half was read by whoever opened the file, which was nobody. The standard is retired: the bans, the spellings, and the frontmatter wording joined `markdown.md`, and this skill took the half no check settles.

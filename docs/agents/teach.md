@@ -1,6 +1,6 @@
 ---
 title: Teach
-description: Listing learning workspaces and the ordinal a new one takes, opening one with its required files, recording sources and glossary terms, resolving what the next lesson needs before it is written, rewriting the root listing, a contents page, and each lesson's chrome from its marker regions, the refusal reasons, and why every write here runs through a verb
+description: Listing learning workspaces with what their records schedule next, opening one with its required files, recording sources and glossary terms, resolving what the next lesson needs before it is written, rewriting the root listing, a contents page, and each lesson's chrome and quiz stepper from its marker regions, the refusal reasons, and why every write here runs through a verb
 ---
 
 # Teach
@@ -28,6 +28,12 @@ With no topic it reports one line per workspace, carrying the lesson, learning-r
 A folder not named `NN-<topic>` is still listed rather than dropped, since dropping it hides the one folder that needs a fix. Its ordinal reads as absent, it sorts last, and it moves no ordinal, so a malformed name cannot push a new workspace into a number a reader already cites.
 
 The listing also names the required files a workspace does not carry, which is `MISSION.md`, `RESOURCES.md`, and `GLOSSARY.md`. That is a report rather than a refusal, because a workspace missing one is still a workspace a session can resume.
+
+Every record carries `due`, read from the `## Revisit` sections of the workspace's learning records and sorted soonest first. Each entry names the `item`, its `date`, the `rung` it has reached on the spacing ladder, `overdue` once that date has arrived or passed, and the `record` the surviving entry was written in. A later record supersedes an earlier entry for the same item, matched without regard to case, since the schedule is the state of one topic rather than a log of every time it was set.
+
+Each entry also carries `hit` and `miss`, the two dates the next record could write. The ladder is 1, 3, 7, 16, and 35 days, a retrieval the learner passed unaided moving up a rung and a miss dropping back one, both held inside the ladder at either end. Reporting both dates is what lets a session copy one rather than compute it, on the same reasoning that put quiz option order in `canon teach lesson`.
+
+The field rides on the listing rather than on `canon teach lesson`, because a session needs the schedule before it has chosen what to teach and that verb takes a `--slug` naming a choice already made. An entry not written in the shape the standard fixes is skipped rather than reported, since a note carrying no date has no date to schedule.
 
 ## Open
 
@@ -151,6 +157,14 @@ With no topic it rewrites every workspace. The teach-root listing is always rewr
 A lesson carries its chrome as four marker pairs the authoring skill writes empty: `canon:teach:style`, `canon:teach:header`, `canon:teach:footnav`, and `canon:teach:scripts`. This verb splices each one from the current workspace state, embedding the shared stylesheet, rebuilding the breadcrumb and jump menus, the prev/next footer nav, and the behavior scripts, and leaves the authored `<h1>`, lede, body, and quiz between the header and the footnav untouched.
 
 A lesson missing one of the four marker pairs is refused by name rather than rewritten, and every other lesson in the run still rewrites. The record's `skipped` list carries the refused files and which marker each is missing.
+
+The `style` region carries the quiz stepper after the workspace stylesheet, for every lesson but the one shape named three paragraphs down, so it wins the cascade at equal specificity and reaches a workspace seeded before it existed. The stepper is CSS over the radio inputs a quiz is written from: it hides every question that follows one holding no checked input, and hides a question's feedback until that question does. The general sibling combinator is what keeps that from depending on the markup contract holding, since it selects the same questions as the adjacent one for a quiz written correctly and goes on gating when anything sits between two of them, where the adjacent one matches nothing and shows them all at once. Gating there rather than in a script is what keeps a later stem from answering an earlier question with nothing to bind, and the whole block sits inside `@supports selector(:has(*))`, so an engine without `:has()` renders every question rather than a stepper showing nothing. Feedback there follows the workspace stylesheet, shown by one that says nothing about `.fb` and hidden by one grown under the retired script.
+
+The block hides and shows and sets nothing else, which leaves a workspace's own layout for a question and its own appearance for an option and a feedback panel. The one value it names is `display: block` on revealed feedback, since every stylesheet grown under the retired script carries `.fb { display: none }` and nothing adds the class that used to reveal it.
+
+One detector decides both regions. A lesson carrying `<button class="opt"`, the shape written before the stepper, takes the feedback script and no stepper, and every other lesson takes the stepper and no script. That is a detector rather than a mode, since a lesson has one shape or the other, and removing the script outright would leave the lessons already written showing no feedback at all.
+
+Splicing the stepper into a lesson of either shape was measured against a browser and reverted. Its rules match a button question, which can never hold a checked radio, so a lesson given both hides every question past the first for good and outranks the class the script reveals feedback with. Nothing else caught that: the markup is valid, the splice succeeds, and the page renders.
 
 ## Opening a workspace
 

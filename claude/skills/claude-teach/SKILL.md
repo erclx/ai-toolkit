@@ -43,6 +43,8 @@ A topic the listing already carries is a resume, and anything else is a new work
 
 On a resume, run `canon teach list <topic> --json` for the files behind each count, then read the highest-numbered learning record and `GLOSSARY.md`. Those carry where the learner stopped and what they got wrong. The listing record carries `success`, the mission's success lines, which are the exit criteria this workspace is finished against. Report them with what is already met before teaching anything.
 
+It also carries `due`, what the learning records schedule, soonest first. Each entry names the item, its date, the rung it has reached, whether it is `overdue`, and the two dates the next record could write. Read it here rather than later: it is the input to what this session opens on, and `canon teach lesson` takes a `--slug` naming a choice already made. Report what is overdue before proposing a lesson. An empty `due` on a workspace holding records means no record scheduled anything, which is a gap in the records rather than a clear schedule.
+
 On a new workspace, settle the starting point first, by asking rather than by assuming. Difficulty with no floor under it teaches nobody, and the mission cannot be written without it.
 
 Then open the workspace, which derives the ordinal and writes all three required files:
@@ -75,13 +77,15 @@ A claim nothing was read for is the failure this step exists against. Where no s
 
 Pick the next lesson from the learning records rather than from the subject's own order. The target is the band immediately past what the learner can already do unaided, which `${CLAUDE_SKILL_DIR}/references/pedagogy.md` states in full.
 
-Open with retrieval on what the last session got wrong, before anything new. A learner who cannot retrieve the previous lesson is not ready for the next one, and moving on anyway buys fluency that decays.
+Open on what `due` reports as overdue, oldest date first, before anything new. Where nothing is overdue, open on retrieval of what the last session got wrong. A learner who cannot retrieve the previous lesson is not ready for the next one, and moving on anyway buys fluency that decays.
+
+Reading the last record alone is what the schedule replaces. A topic missed three sessions ago and never revisited is invisible to that read and sits in `due` with a date already past, which is the whole reason the field exists.
 
 ## Step 4: write the lesson and the reference
 
 Two outputs with two lifetimes, and the split decides the format.
 
-- A lesson is a self-contained page carrying its own quiz and the feedback for each answer. It embeds one shared stylesheet rather than restating styles, and it is disposable and never promoted.
+- A lesson is a self-contained page carrying its own quiz, a teach-back block, and the feedback for each question. It embeds one shared stylesheet rather than restating styles, and it is disposable and never promoted.
 - A reference page goes to `reference/<slug>.md`, written for a reader with no learner in it. This is the half that survives the workspace, so it is written in markdown to pass the authoring gates a promotion would put it through.
 
 Resolve the lesson before writing it, rather than composing its name or its quiz order by hand:
@@ -100,6 +104,14 @@ It writes nothing and reports three things:
 - `quiz`, one entry per question, carrying `order` and `answer`.
 
 Write the correct option first, then present the options in the order `order` reports, reading it as authored indices where `0` is the correct one. Take the order as given. Position drawn here rather than chosen is the whole reason the verb exists, and a lesson that reorders on its own judgment puts the answer back in the first slot.
+
+### The quiz and the teach-back block
+
+The quiz markup is a contract rather than a convention. `canon teach nav` splices a stepper into the lesson that gates on exactly the class names and nesting `${CLAUDE_SKILL_DIR}/references/lesson-craft.md` states under `## Quiz construction`, so a quiz in any other shape shows every question at once and nothing reports it. That is the leak this shape closes: a later stem naming what an earlier question asked for answers it while both sit on screen.
+
+Write each option as a `<label class="opt" data-k="<letter>">` holding a radio `<input>` and a `<span>`, every option in one question sharing a `name` and each question taking a different one, the correct option carrying `data-a="1"`, and one `.fb` block as the last child of the `.q`. Never write a `<button class="opt">` in a new lesson. That is the shape written before the stepper, kept working by an injected script the button itself still triggers, and a lesson mixing the two gets both mechanisms.
+
+Then carry a teach-back block beside the quiz. A quiz is recognition and the pedagogy prefers production, so a lesson offering only a quiz tests the weak form. Ask for an explanation to a named audience, and carry a `<details>` listing what a complete explanation covers, closed by default, so a learner reading with no session in the room can grade themselves. The reference states both shapes in full.
 
 Write the chrome as four empty marker pairs rather than composing it by hand: `<!-- canon:teach:style -->`/`<!-- /canon:teach:style -->` inside `<head>`, and `<!-- canon:teach:header -->`, `<!-- canon:teach:footnav -->`, and `<!-- canon:teach:scripts -->` each with its own close marker, in that order in `<body>`. Write the authored `<h1>`, lede, body, and quiz between the header's close marker and the footnav's open marker, and nothing else anywhere in the file. Then run:
 
@@ -145,9 +157,25 @@ Do this on every run that opens or resumes a workspace, including one that write
 
 ## Step 5: record what happened
 
-Write `learning-records/<nnnn>-<slug>.md` before the session ends, carrying the lessons covered, what the learner retrieved unaided, what they got wrong with the wrong answer itself, and what to revisit.
+Write `learning-records/<nnnn>-<slug>.md` before the session ends, carrying the lessons covered, what the learner retrieved unaided, what they got wrong with the wrong answer itself, and a `## Revisit` section.
 
 Record the wrong answer rather than the count. The next session places the learner from this file, and a tally carries no misconception to work against.
+
+Record what the teach-back left out under what the learner got wrong, naming the concept and where the explanation broke. A produced answer and a selected one are both retrieval failures the next session places from, so a second heading would split one input across two sections.
+
+Then write `## Revisit`, one bullet per item, in the shape `${CLAUDE_SKILL_DIR}/../../standards/teach.md` fixes:
+
+```markdown
+## Revisit
+
+- **<what comes back up>**: due <YYYY-MM-DD>, rung <n>
+```
+
+Take both the date and the rung from the `due` entry Step 1 already read, copying `hit` for an item the learner retrieved unaided and `miss` for one they did not, with the rung stepped the same way. Do not compute a date from the ladder. A session told to widen a gap still picks the number by judgment, which is the reason the verb reports both dates at all.
+
+An item the records have never scheduled has no `due` entry to copy from. Open it at rung 1, dated the day after this session, which is the ladder's floor and the one number this body states. Every later date for it comes from the verb.
+
+An entry outside this shape schedules nothing and nothing reports that it was skipped, so write the shape exactly. A later record naming the same item supersedes an earlier entry, so revise a schedule by writing the new bullet rather than editing the record it was set in.
 
 Then restate the mission's success lines with what is now met, reading them from the `success` the lesson verb already reported rather than from `MISSION.md` by eye. Report each line as met or not met, and name what the learner did that meets it. A mission whose lines are all met is finished, and saying so is what closes a workspace.
 

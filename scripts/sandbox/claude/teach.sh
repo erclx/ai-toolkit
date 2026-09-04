@@ -293,8 +293,10 @@ stage_setup() {
     log_info "         last ab."
     log_info "Expect:  declared in fixtures/claude/teach/lesson/expect.toml"
     log_info "         Check it with: canon sandbox check claude:teach lesson"
-    log_info "         A lesson at lessons/0002-*.html linking ../assets/course.css,"
-    log_info "         and a stylesheet at assets/course.css that the run wrote."
+    log_info "         A lesson at lessons/0002-*.html carrying the four marker"
+    log_info "         pairs with the stylesheet and the stepper spliced into the"
+    log_info "         style one, a quiz written as radio inputs, and a stylesheet"
+    log_info "         at assets/course.css that the run wrote."
     log_info "         The reply reports progress against the mission success lines."
     ;;
   *)

@@ -4,9 +4,9 @@
 
 # The seeded workspace matches the resume arm's with one difference: `assets/` is
 # empty. This arm is about the rendered layer rather than the placement, so the
-# assertions sit on the lesson file, the stylesheet it links, and the ordinal it
-# lands on, and the placement behavior stays where the resume arm already covers
-# it.
+# assertions sit on the lesson file, the stylesheet embedded into it, and the
+# ordinal it lands on, and the placement behavior stays where the resume arm
+# already covers it.
 
 # Every top-level key sits above the first `[[content]]` block. A bare key below
 # one belongs to that table in TOML, so a `manual` array written at the bottom
@@ -62,21 +62,46 @@ write_scope = [".canon/teach/01-regex/**"]
 reply = [".canon/teach/01-regex/", "0002"]
 
 manual = [
-  "The lesson restates no styles of its own beside the link. Semantic: an assertion can say the link is there and cannot say a style block is not, since a regex asserting absence over a whole file has no anchor to sit at. A run that links the shared file and also restates its styles inline passes every assertion above.",
+  "The lesson restates no styles of its own beside the spliced marker pair. Semantic: an assertion can say the marker is there and cannot say a second style block is not, since a regex asserting absence over a whole file has no anchor to sit at. A run that leaves the marker pair for the verb to fill and also writes styles of its own passes every assertion above.",
   "The stylesheet carries the values the lesson needs rather than a host project's tokens. Unwired: the seeded project carries no design record at all, so there is nothing here for a lesson to inherit and the inheriting path cannot be reached by this arm.",
   "The quiz option order came from `canon teach lesson` rather than from the run's own judgment. Unwired: the claim is about which commands were invoked, which the envelope does not carry, and the order the verb draws is uniform, so no single run's output separates a taken order from a chosen one. Position bias is a property over many runs and this arm sees one.",
   "Every option in a question is the same length. Semantic: length is a property of the prose in each option, and a pattern over the markup counts no characters.",
   "Each wrong option names a misconception someone holds rather than an obviously wrong answer. Semantic: both are options in the same markup, and the difference is whether the distractor is believable.",
-  "Feedback arrives after the attempt rather than beside the question. Unwired: the ordering is a property of the page's own behavior when a learner clicks, and the checker reads the file rather than running it.",
   "The lesson opens on the two recorded wrong answers before anything new. Semantic: the resume arm carries this as manual for the same reason, and it is the placement behavior rather than the rendered layer this arm is about.",
 ]
 
-# The link to the shared stylesheet, which is the whole rule for this layer. A
-# lesson that restated its styles carries no such element, and one that composed
-# its own filename carries a different href.
+# The stylesheet reaches the lesson embedded rather than linked. The link this
+# entry used to assert has been dead since `c31bbd22`, which moved the shared
+# stylesheet into the `canon:teach:style` marker pair, so every run since has
+# passed the assertion by writing a file nothing linked. The marker is what
+# `canon teach nav` splices into, so a lesson carrying it is one the verb wrote
+# the chrome for.
 [[content]]
 path = ".canon/teach/01-regex/lessons/0002-*.html"
-pattern = 'href="\.\./assets/course\.css"'
+pattern = '<!-- canon:teach:style -->'
+
+# The embedded half is the stylesheet's own values rather than an empty marker
+# pair. A custom property is what every rule under the seed reaches a value
+# through, so a lesson carrying none embedded nothing.
+[[content]]
+path = ".canon/teach/01-regex/lessons/0002-*.html"
+pattern = '--ink'
+
+# The quiz is written in the radio shape the stepper gates. A lesson written as
+# buttons renders every question at once and takes the injected script instead,
+# which is the shape this format replaced.
+[[content]]
+path = ".canon/teach/01-regex/lessons/0002-*.html"
+pattern = '<input type="radio"'
+
+# Feedback arrives after the attempt, which moved off `manual` when the
+# mechanism moved into the document. The gate is a rule in the file rather than
+# a handler the checker would have to run, so reading the file answers it: a
+# lesson carrying the stepper hides every feedback block until its own question
+# holds a checked input.
+[[content]]
+path = ".canon/teach/01-regex/lessons/0002-*.html"
+pattern = ':not\(:has\(input\[type="radio"\]:checked\)\) \.fb \{ display: none'
 
 # The lesson is markup that stands on its own rather than a fragment. A page
 # with no document type is one a browser renders in quirks mode, which is the

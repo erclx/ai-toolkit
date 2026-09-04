@@ -11,6 +11,7 @@ import {
   type ReadOutcome,
   readWorkspace,
   recordSources,
+  type RevisitItem,
   type Source,
   type SourceOutcome,
   type TeachRefused,
@@ -103,6 +104,11 @@ export function register(program: Command): void {
         '',
         'With no topic it reports one line per workspace and the ordinal an',
         'open would take. With one it reports the files behind each count.',
+        '',
+        'Every record carries due, what the learning records schedule, each',
+        'entry with its date, its rung, and the date to write on a hit and',
+        'on a miss, so a session picks the next lesson from the schedule',
+        'rather than from the last session alone.',
         '',
         'A workspace not named NN-<topic> is still listed. It sorts last and',
         'moves no ordinal, since dropping it hides the folder needing a fix.',
@@ -711,6 +717,17 @@ function reportRefusal(
   return 1
 }
 
+/**
+ * One scheduled revisit, carrying both ladder dates rather than the rung alone.
+ * A session copies the date the outcome names instead of computing one from a
+ * ladder stated in prose.
+ */
+function describeRevisit(item: RevisitItem): string {
+  const when = item.overdue ? `due ${item.date}` : item.date
+
+  return `${item.item}: ${when}, rung ${item.rung} (hit ${item.hit}, miss ${item.miss}), from ${item.record}`
+}
+
 function describe(workspace: WorkspaceSummary): string {
   return `${workspace.slug}: ${workspace.lessons} lesson(s), ${workspace.records} record(s), ${workspace.reference} reference page(s), ${workspace.terms} term(s)`
 }
@@ -794,6 +811,9 @@ function reportWorkspace(
     workspace.success.length > 0 ? 'Exit criteria' : 'Exit criteria (none)',
   )
   for (const line of workspace.success) logInfo(line)
+
+  logStep(workspace.due.length > 0 ? 'Revisit' : 'Revisit (nothing scheduled)')
+  for (const item of workspace.due) logInfo(describeRevisit(item))
 
   if (workspace.missing.length > 0) {
     logStep('Missing a required file')
