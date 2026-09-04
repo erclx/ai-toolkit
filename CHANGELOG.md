@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.49.0](https://github.com/erclx/canon/compare/v4.48.1...v4.49.0) (2026-09-04)
+
+
+### Features
+
+* **teach:** close three pedagogy gaps in the lesson format ([#1496](https://github.com/erclx/canon/issues/1496)) ([751b117](https://github.com/erclx/canon/commit/751b117ca28900e0f2f29cd8bbd935bae22f01d0))
+
 ## [4.48.1](https://github.com/erclx/canon/compare/v4.48.0...v4.48.1) (2026-09-04)
 
 
