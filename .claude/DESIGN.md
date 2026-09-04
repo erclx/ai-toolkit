@@ -14,6 +14,8 @@ The terminal framing is the one surface left holding its own values, and that is
 
 Warm neutrals carry the frame under a single rust accent, rendered in the same monospace the terminal uses. The subject picks the register rather than taste: a toolkit whose primary surface is a shell has no proportional voice available, so the rendered surfaces match the terminal instead of the reverse. One accent carries every count, link, and primary action. Promoting a second and third into structural roles is what reads as a generated interface, so the palette stays at one.
 
+One surface is carved out of the sentence above, and it is the landing page hero. A rendered surface here shows a reader what the terminal did, so matching the terminal is what makes it legible. A public page addresses somebody who has never opened the terminal at all, and the shell has no voice available for that, which is the reverse of the case the rule was written for. The `page-display` role below is the whole of the carve-out. Every other role on that page stays monospace, including its body, its controls, and every frame it embeds, so the page reads as two families rather than as a second design system.
+
 ## Color
 
 Every role clears WCAG AA at 4.5:1 against each ground it declares, asserted in `src/design/contrast.test.ts`. Two corrections landed with this record becoming the source. The light `muted` step moved from `#7A736A`, which read 4.38 and 4.09 against the two light grounds, and the dark `accent` moved off the `#C8602E` the slide theme carried, which read 4.36 and 3.99 against the two dark ones. Both now sit on the values below.
@@ -45,19 +47,22 @@ Success is the one of the three that does have a rendered equivalent, which is w
 
 ## Typography
 
-One family covers every role. The size scale runs from 11.5 to 34 pixels across ten values, and five of them map onto a role. The other five are adjustments inside a single component and get no role here, since a scale with five invented steps reads as a system the surfaces do not implement. They are 11.5, 12.5, 13, 14, and 15 pixels.
+One family covers every role but `page-display`, which is the landing page hero and takes the proportional sibling of the same superfamily. The size scale runs from 11.5 to 52 pixels, and six values map onto a role. Five further values are adjustments inside a single component and get no role here, since a scale with five invented steps reads as a system the surfaces do not implement. They are 11.5, 12.5, 13, 14, and 15 pixels.
+
+The 52 pixel step sits above the 34 the rest of the scale tops out at, and it is the one size no other surface reaches. A hero headline set at the display cap reads as a section heading rather than an opening, which four rendered arms measured on 2026-09-04 before the step was added.
 
 A tagged cell is one no rendering surface exercises yet, which is a declaration the system has not tested rather than one it has.
 
 Two rules set tracking and no others touch it. The label role carries `0.05em`, and the display role tightens to `-0.01em`.
 
-| Role    | Family                                      | Weight       | Size   | Line height   |
-| ------- | ------------------------------------------- | ------------ | ------ | ------------- |
-| display | Noto Sans Mono, DejaVu Sans Mono, monospace | 700          | 34px   | 1.3           |
-| heading | Noto Sans Mono, DejaVu Sans Mono, monospace | 700          | 19px   | 1.3 ? verify  |
-| body    | Noto Sans Mono, DejaVu Sans Mono, monospace | 400 ? verify | 16px   | 1.65          |
-| label   | Noto Sans Mono, DejaVu Sans Mono, monospace | 400 ? verify | 12px   | 1.45 ? verify |
-| code    | Noto Sans Mono, DejaVu Sans Mono, monospace | 700          | 14.5px | 1.3 ? verify  |
+| Role         | Family                                      | Weight       | Size          | Line height   |
+| ------------ | ------------------------------------------- | ------------ | ------------- | ------------- |
+| display      | Noto Sans Mono, DejaVu Sans Mono, monospace | 700          | 34px          | 1.3           |
+| page-display | Noto Sans, DejaVu Sans, sans-serif ? verify | 700          | 52px ? verify | 1.1 ? verify  |
+| heading      | Noto Sans Mono, DejaVu Sans Mono, monospace | 700          | 19px          | 1.3 ? verify  |
+| body         | Noto Sans Mono, DejaVu Sans Mono, monospace | 400 ? verify | 16px          | 1.65          |
+| label        | Noto Sans Mono, DejaVu Sans Mono, monospace | 400 ? verify | 12px          | 1.45 ? verify |
+| code         | Noto Sans Mono, DejaVu Sans Mono, monospace | 700          | 14.5px        | 1.3 ? verify  |
 
 ## Spacing
 
