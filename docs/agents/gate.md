@@ -77,8 +77,13 @@ One code for a failure, which is what a `bun run` caller and a git hook both rea
     "unmeasured": 0,
     "failed": 0
   },
-  "stages": [{ "id": "indexes", "label": "Indexes", "status": "passed" }]
+  "ms": 44453,
+  "stages": [
+    { "id": "indexes", "label": "Indexes", "status": "passed", "ms": 210 }
+  ]
 }
 ```
 
 A failing stage carries its remedy in `failure`, and the same line goes to stderr so a caller reading neither the record nor the frame is still told what to fix.
+
+`ms` carries the wall time each stage's checks took, including every process spawn, and the top-level `ms` sums them. Neither reading changes what a stage measures. Both exist so a slow run is attributable to a stage rather than read off a stopwatch held against the whole thing.

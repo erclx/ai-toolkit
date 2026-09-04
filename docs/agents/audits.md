@@ -11,20 +11,22 @@ description: Running every health check as one set, what the single verdict mean
 canon audits run
 canon audits run --json
 canon audits run --record
+canon audits run --corpus tracked --corpus per-machine
 canon audits list --json
 ```
 
-| Option          | Behavior                                                         |
-| --------------- | ---------------------------------------------------------------- |
-| `--json`        | Add a machine-readable record on stdout, keeping the frame       |
-| `--root <path>` | Measure this tree instead of the current worktree                |
-| `--record`      | Write this run's tracked counts to `.claude/canon/baseline.json` |
+| Option            | Behavior                                                                                                   |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--json`          | Add a machine-readable record on stdout, keeping the frame                                                 |
+| `--root <path>`   | Measure this tree instead of the current worktree                                                          |
+| `--record`        | Write this run's tracked counts to `.claude/canon/baseline.json`                                           |
+| `--corpus <name>` | Limit the run to one corpus (`tracked`, `per-machine`, `upstream`), repeatable, defaulting to every corpus |
 
 ## What it runs
 
 Nineteen verbs, listed by `canon audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
 
-The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `canon deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
+The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `canon deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's: three clean runs measured 44.7, 77.6, and 62.9 seconds, and a stalled lookup runs to an explicit 120-second timeout rather than to bun's own 299-second ceiling. `--corpus` is what keeps a caller from paying that cost when it wants only the corpora on this disk.
 
 Sixteen of the nineteen read a tree on this disk, the one added by `restated.md` and the one added by `census.md` among them, since the first reads four such trees against each other and the second counts every file in one. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction, and the one added by `label-coverage.md` reads a branch range against a map the project declares.
 
@@ -93,6 +95,8 @@ A hand-edited baseline that does not parse refuses the whole run. Reading a brok
 
 ## In the verify pipeline
 
-`bun run check` runs the set as a reporting stage after the three gating stages, and never fails on it. Those three stages keep their own specific remedies, so the aggregate reports the rest and the growth, and a fact still fails the push at the stage that names what to do about it.
+`bun run check` runs a reporting stage after the three gating stages, and never fails on it. Those three stages keep their own specific remedies, so the aggregate reports the rest and the growth, and a fact still fails the push at the stage that names what to do about it.
 
-The stage reads `summary`, a flat object of scalars published beside the nested arrays. Every key in it is unique across the whole record, so a shell stage greps one out without a JSON parser. The three verbs the gating stages already ran walk their trees a second time here, which is the 0.8 seconds measured above and the reason the whole set runs rather than only the part those stages skip: one verdict over every audit is the value, and a stage measuring a subset would report a health nobody took.
+The stage runs `--corpus tracked --corpus per-machine` rather than the full set, so `deps` and its network latency sit outside the gate entirely. A weekly job reads the advisory index instead, on a schedule rather than on every push. `summary.audited` in the gate's own record therefore reads 19 against the 20 `canon audits run` reaches with no filter.
+
+The stage reads `summary`, a flat object of scalars published beside the nested arrays. Every key in it is unique across the whole record, so a shell stage greps one out without a JSON parser. The three verbs the gating stages already ran walk their trees a second time here, which is the 0.8 seconds measured above and the reason the scoped set runs rather than only the part those stages skip: one verdict over the corpora describing this tree is the value, and a stage measuring a narrower subset would report a health nobody took.
