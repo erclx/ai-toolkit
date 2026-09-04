@@ -16,7 +16,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: project type and conventions
 - `.claude/DESIGN.md`: visual intent, tokens, typography, spacing rules
-- `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md`, these carry layout and intent, not implementation detail.
+- `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`, each a flat file or a grouped surface's own `.claude/wireframes/<surface>/index.md` and the siblings it lists: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md`, these carry layout and intent, not implementation detail.
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 
 ## Step 2: identify surfaces
@@ -32,7 +32,7 @@ For each surface, look for:
 3. **Inconsistencies**: spacing, tone of voice, interaction patterns, icon use, keyboard affordances
 4. **Roughness in daily use**: friction, redundant steps, unclear affordances, ambiguous labels
 
-Use `.claude/DESIGN.md` and the per-surface `.claude/wireframes/<surface>.md` files as ground truth for intent. For each implementation surface, read the matching wireframe file before flagging drift. Observations only, no implementation suggestions or fixes.
+Use `.claude/DESIGN.md` and the per-surface `.claude/wireframes/<surface>.md` files, each a flat file or a grouped surface's own `.claude/wireframes/<surface>/index.md` and the siblings it lists, as ground truth for intent. For each implementation surface, read the matching wireframe file before flagging drift. Observations only, no implementation suggestions or fixes.
 
 ## Step 4: report and persist
 
