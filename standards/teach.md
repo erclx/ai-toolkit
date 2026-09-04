@@ -90,10 +90,26 @@ One record per session the learner worked through, holding what happened rather 
 
 - The lessons covered, by number
 - What the learner retrieved correctly without help
-- What they got wrong, and what the wrong answer was
-- What to revisit, and roughly when
+- What they got wrong, and what the wrong answer was, including what an explanation the learner produced left out
+- A `## Revisit` section scheduling what comes back up
 
 Record the wrong answer rather than the fact of an error. A wrong answer names the misconception, and the count alone names nothing.
+
+A produced explanation and a selected option are both retrieval, so a gap in an explanation goes under what the learner got wrong rather than under a heading of its own. Name the concept and where the explanation broke. Splitting the two puts one input to the next session's placement across two sections, and the placement reads both or neither.
+
+### The revisit section
+
+Write one bullet per item, in this shape and no other:
+
+```markdown
+## Revisit
+
+- **<what comes back up>**: due <YYYY-MM-DD>, rung <n>
+```
+
+The rung is where the item sits on the spacing ladder, and it travels in the record rather than being counted from how many records name the item, since a miss drops it back and a count only climbs. A later record naming the same item supersedes an earlier one, so revise the schedule by writing the new entry rather than editing the old record.
+
+Take the date and the rung from what the surface driving the workspace reports rather than picking either. An entry outside this shape schedules nothing, and nothing reports that it was skipped.
 
 ## GLOSSARY.md
 
@@ -122,6 +138,7 @@ A source found and not read is listed as a lead because a link attached to a pag
 - **The mission with no test.** Success stated as understanding rather than as a task leaves nothing able to say the mission is finished.
 - **The lesson filed as reference.** A page written to be worked through once sits in `lessons/`, and putting it in `reference/` puts disposable output in the half that gets promoted.
 - **The record that counts errors.** A tally of how many were missed carries none of the misconception, which is the only part a later session can act on.
+- **The revisit note with no date.** A line naming what to come back to and not when is read by nothing and schedules nothing, so the next session picks from the last record alone, which is the state the section exists to end.
 - **The date left in the body.** A frontmatter field and a sentence both claiming the opening date resolve to whichever a reader happens to hit, and only one of them is readable by a walker.
 - **The renumbered folder.** Closing a gap in the ordinals moves every name a reader or a record already cited.
 

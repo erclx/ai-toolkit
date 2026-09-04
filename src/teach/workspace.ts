@@ -75,6 +75,44 @@ const ORDINAL_WIDTH = 2
 
 const DATE_LENGTH = 'YYYY-MM-DD'.length
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+
+/** The heading a learning record schedules its revisits under. */
+const REVISIT_HEADING = '## Revisit'
+
+/**
+ * The gaps a revisit item moves through, in days. A rung is a one-based index
+ * into this list, widening after a retrieval the learner passed unaided and
+ * narrowing after a miss, which is the spacing rule the pedagogy reference
+ * states. The values are here rather than in a skill body because a session
+ * told to widen a gap still picks the number by judgment.
+ */
+const REVISIT_LADDER = [1, 3, 7, 16, 35] as const
+
+/**
+ * One scheduled entry, as a learning record spells it. The rung is carried in
+ * the record rather than derived from how many records name the item, since a
+ * miss drops it back and a count only ever climbs.
+ */
+const REVISIT_ENTRY =
+  /^-\s+\*\*(.+?)\*\*:\s*due\s+(\d{4}-\d{2}-\d{2}),\s*rung\s+([1-9]\d*)\s*$/
+
+export interface RevisitItem {
+  /** What comes back up, as the record names it. */
+  readonly item: string
+  /** The day it comes back up, as `YYYY-MM-DD`. */
+  readonly date: string
+  readonly rung: number
+  /** True once that day has arrived or passed. */
+  readonly overdue: boolean
+  /** The date to schedule when the learner retrieves it unaided. */
+  readonly hit: string
+  /** The date to schedule when they miss it. */
+  readonly miss: string
+  /** The record the surviving entry was written in. */
+  readonly record: string
+}
+
 export interface WorkspaceSummary {
   readonly slug: string
   /** `NaN` when the folder name carries no ordinal, which a listing reports. */
@@ -99,6 +137,12 @@ export interface WorkspaceDetail extends WorkspaceSummary {
   readonly glossary: readonly string[]
   /** The mission's success lines, which a session reports progress against. */
   readonly success: readonly string[]
+  /**
+   * What the learning records schedule, soonest first. A session reads this
+   * before it has chosen what to teach, which is why it rides on the listing
+   * rather than on the verb that resolves a lesson already picked.
+   */
+  readonly due: readonly RevisitItem[]
 }
 
 export interface WorkspacesListed {
@@ -242,6 +286,103 @@ function successLines(text: string): string[] {
   )
 }
 
+/**
+ * Whether a `YYYY-MM-DD` string names a real day.
+ *
+ * The entry pattern admits `2026-13-45`, since it counts digits rather than
+ * reading a calendar, and `addDays` throws on a date that names no day, so a
+ * single mistyped record would take down every listing that reads the
+ * workspace. Every date reaching `addDays` passes here first.
+ */
+function isDay(date: string): boolean {
+  return !Number.isNaN(Date.parse(`${date}T00:00:00Z`))
+}
+
+/** A day offset from a real `YYYY-MM-DD` date, back out in the same form. */
+function addDays(date: string, days: number): string {
+  const start = Date.parse(`${date}T00:00:00Z`)
+  return new Date(start + days * MS_PER_DAY).toISOString().slice(0, DATE_LENGTH)
+}
+
+/** A rung moved by one step, held inside the ladder at both ends. */
+function stepRung(rung: number, step: number): number {
+  return Math.min(REVISIT_LADDER.length, Math.max(1, rung + step))
+}
+
+function gapFor(rung: number, step: number): number {
+  return REVISIT_LADDER[stepRung(rung, step) - 1]
+}
+
+export interface RecordText {
+  readonly file: string
+  readonly text: string
+}
+
+/**
+ * Every revisit a workspace's learning records schedule, soonest first.
+ *
+ * Records arrive in read order and a later one supersedes an earlier entry for
+ * the same item, since the schedule is the state of one topic rather than a log
+ * of every time it was set. Matching is case-insensitive on the item, so a
+ * session that capitalized differently in a later record still supersedes
+ * rather than opening a second schedule beside the first.
+ *
+ * An entry not in the recorded shape is skipped rather than reported. A note
+ * carrying no date schedules nothing, which is what the standard's anti-pattern
+ * names, and this reader has no date to put on it. A date naming no real day is
+ * skipped on the same footing, since a schedule nothing can order is a note.
+ */
+export function readRevisits(
+  records: readonly RecordText[],
+  today: string,
+): RevisitItem[] {
+  if (!isDay(today)) return []
+
+  const scheduled = new Map<
+    string,
+    { item: string; date: string; rung: number; record: string }
+  >()
+
+  for (const record of records) {
+    const lines = record.text.split('\n')
+    const section = sectionRange(
+      unfenced(record.text),
+      REVISIT_HEADING,
+      lines.length,
+    )
+
+    if (!section) continue
+
+    for (const block of bulletBlocks(lines.slice(section.start, section.end))) {
+      const match = REVISIT_ENTRY.exec(block.join(' ').replace(/\s+/g, ' '))
+      if (!match || !isDay(match[2])) continue
+
+      scheduled.set(match[1].toLowerCase(), {
+        item: match[1],
+        date: match[2],
+        rung: Number(match[3]),
+        record: record.file,
+      })
+    }
+  }
+
+  return [...scheduled.values()]
+    .map((entry) => ({
+      item: entry.item,
+      date: entry.date,
+      rung: entry.rung,
+      overdue: entry.date <= today,
+      hit: addDays(today, gapFor(entry.rung, 1)),
+      miss: addDays(today, gapFor(entry.rung, -1)),
+      record: entry.record,
+    }))
+    .sort(
+      (left, right) =>
+        left.date.localeCompare(right.date) ||
+        left.item.localeCompare(right.item),
+    )
+}
+
 /** The ordinal a folder name carries, or `NaN` when it carries none. */
 function ordinalOf(slug: string): number {
   const match = WORKSPACE_NAME.exec(slug)
@@ -272,6 +413,15 @@ async function summarize(
     filesIn(dir, TEACH_REFERENCE, '.md'),
   ])
 
+  // Read order is filename order, which is record order, so a later record
+  // supersedes an earlier schedule for the same item.
+  const records = await Promise.all(
+    recordFiles.map(async (file) => ({
+      file,
+      text: await readFile(join(dir, TEACH_RECORDS, file), 'utf8'),
+    })),
+  )
+
   return {
     slug,
     ordinal: match ? Number(match[1]) : Number.NaN,
@@ -291,6 +441,7 @@ async function summarize(
     referenceFiles,
     glossary,
     success: mission === undefined ? [] : successLines(mission),
+    due: readRevisits(records, today()),
   }
 }
 

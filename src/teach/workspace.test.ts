@@ -7,6 +7,7 @@ import {
   defineTerms,
   listWorkspaces,
   openWorkspace,
+  readRevisits,
   readWorkspace,
   recordSources,
   teachDir,
@@ -680,5 +681,180 @@ describe('writeStylesheet', () => {
 
     expect(outcome.ok).toBe(true)
     expect(existsSync(join(dir, 'assets'))).toBe(true)
+  })
+})
+
+describe('readRevisits', () => {
+  function record(file: string, ...entries: string[]) {
+    return {
+      file,
+      text: ['# Session', '', '## Revisit', '', ...entries, ''].join('\n'),
+    }
+  }
+
+  it('lets a later record supersede an earlier schedule for one item', () => {
+    const items = readRevisits(
+      [
+        record(
+          '0001-anchors.md',
+          '- **Lazy quantifiers**: due 2026-09-01, rung 1',
+        ),
+        record(
+          '0002-groups.md',
+          '- **Lazy quantifiers**: due 2026-09-20, rung 3',
+        ),
+      ],
+      '2026-09-04',
+    )
+
+    expect(items).toHaveLength(1)
+    expect(items[0]).toMatchObject({
+      item: 'Lazy quantifiers',
+      date: '2026-09-20',
+      rung: 3,
+      record: '0002-groups.md',
+    })
+  })
+
+  it('supersedes across a spelling the later record capitalized differently', () => {
+    const items = readRevisits(
+      [
+        record(
+          '0001-anchors.md',
+          '- **Lazy quantifiers**: due 2026-09-01, rung 1',
+        ),
+        record(
+          '0002-groups.md',
+          '- **lazy quantifiers**: due 2026-09-20, rung 2',
+        ),
+      ],
+      '2026-09-04',
+    )
+
+    expect(items).toHaveLength(1)
+    expect(items[0].rung).toBe(2)
+  })
+
+  it('reads an item due today and one already past as overdue', () => {
+    const items = readRevisits(
+      [
+        record(
+          '0001-anchors.md',
+          '- **Anchors**: due 2026-09-04, rung 2',
+          '- **Backreferences**: due 2026-08-30, rung 1',
+        ),
+      ],
+      '2026-09-04',
+    )
+
+    expect(items.map((item) => [item.item, item.overdue])).toEqual([
+      ['Backreferences', true],
+      ['Anchors', true],
+    ])
+  })
+
+  it('reports an item dated ahead without marking it overdue', () => {
+    const items = readRevisits(
+      [record('0001-anchors.md', '- **Anchors**: due 2026-09-11, rung 3')],
+      '2026-09-04',
+    )
+
+    expect(items[0].overdue).toBe(false)
+  })
+
+  it('reads nothing from a record carrying no revisit section', () => {
+    expect(
+      readRevisits(
+        [
+          {
+            file: '0001-anchors.md',
+            text: '# Session\n\nNothing scheduled.\n',
+          },
+        ],
+        '2026-09-04',
+      ),
+    ).toEqual([])
+  })
+
+  it('widens the gap on a hit and narrows it on a miss', () => {
+    const items = readRevisits(
+      [record('0001-anchors.md', '- **Anchors**: due 2026-09-04, rung 2')],
+      '2026-09-04',
+    )
+
+    expect(items[0].hit).toBe('2026-09-11')
+    expect(items[0].miss).toBe('2026-09-05')
+  })
+
+  it('holds both ladder dates inside the ladder at either end', () => {
+    const [bottom] = readRevisits(
+      [record('0001-anchors.md', '- **Anchors**: due 2026-09-04, rung 1')],
+      '2026-09-04',
+    )
+    const [top] = readRevisits(
+      [record('0001-anchors.md', '- **Anchors**: due 2026-09-04, rung 5')],
+      '2026-09-04',
+    )
+
+    expect([bottom.miss, bottom.hit]).toEqual(['2026-09-05', '2026-09-07'])
+    expect([top.miss, top.hit]).toEqual(['2026-09-20', '2026-10-09'])
+  })
+
+  it('skips an entry carrying no date, which schedules nothing', () => {
+    expect(
+      readRevisits(
+        [record('0001-anchors.md', '- **Anchors**: soon, rung 2')],
+        '2026-09-04',
+      ),
+    ).toEqual([])
+  })
+
+  it('skips a date naming no real day rather than throwing on it', () => {
+    expect(
+      readRevisits(
+        [record('0001-anchors.md', '- **Anchors**: due 2026-13-45, rung 2')],
+        '2026-09-04',
+      ),
+    ).toEqual([])
+  })
+
+  it('keeps a well-formed entry beside one carrying an impossible date', () => {
+    const items = readRevisits(
+      [
+        record(
+          '0001-anchors.md',
+          '- **Anchors**: due 2026-13-45, rung 2',
+          '- **Backreferences**: due 2026-09-02, rung 1',
+        ),
+      ],
+      '2026-09-04',
+    )
+
+    expect(items.map((item) => item.item)).toEqual(['Backreferences'])
+  })
+
+  it('carries the schedule onto the workspace a listing reports', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+    mkdirSync(
+      join(workspaceDir('01-regular-expressions'), 'learning-records'),
+      {
+        recursive: true,
+      },
+    )
+    await writeFile(
+      join(
+        workspaceDir('01-regular-expressions'),
+        'learning-records',
+        '0001-anchors.md',
+      ),
+      '# Session\n\n## Revisit\n\n- **Anchors**: due 2026-09-11, rung 3\n',
+    )
+
+    const outcome = await readWorkspace(ROOT, 'regular-expressions')
+
+    expect(outcome.ok).toBe(true)
+    if (!outcome.ok) return
+    expect(outcome.workspace.due).toHaveLength(1)
+    expect(outcome.workspace.due[0].item).toBe('Anchors')
   })
 })
