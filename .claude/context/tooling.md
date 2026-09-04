@@ -66,6 +66,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Commit golden config changes with `--no-verify`. Lint-staged runs against the template files themselves, not project source.
 - `canon capture` and `bun run screenshot` both produce PNGs and overlap nowhere else. `src/capture/render.ts` drives Chromium over static HTML files and never a running app. Both are available in a target now that `src/capture` ships, so the two are told apart by what they point at rather than by which one an install carries.
 - `bun run screenshot` is a web-stack config a target owns, and it builds that target, serves it, and captures the running application
+- The astro golden config's `@` alias resolves with `path.resolve('./src')`, which reads the invoking process's cwd rather than the config file's own directory. This is silently correct only when the consumer has its own `package.json` at the astro root and every script is invoked from there, which every stack the manifest assumes carries. A consumer running astro against `--root <subdir>` from elsewhere, with no `package.json` inside that subdir, gets the alias and every relative build path resolved against the wrong tree, with `dist/` and `.astro/` landing beside the wrong `package.json` and no error. Invoke astro with the shell's cwd already set to the project root instead of passing `--root` from elsewhere.
 
 ### Manifest syntax
 
