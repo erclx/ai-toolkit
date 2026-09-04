@@ -316,7 +316,7 @@ describe('the shipped stage table', () => {
 
     expect(hero?.checks[1]).toMatchObject({
       kind: 'drift',
-      pathspec: 'assets/*.html',
+      pathspec: 'assets/captures/*.html',
     })
   })
 
