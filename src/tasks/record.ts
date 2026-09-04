@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { basename, join, relative } from 'node:path'
 import { planCandidates } from '@/tasks/answers'
 import {
+  describeUnmatchedStem,
   fenceMask,
   linkTo,
   listTaskStems,
@@ -241,11 +242,11 @@ async function resolveStem(
 
   if (selector.kind === 'stem') {
     if (!stems.includes(selector.stem)) {
-      return refuse(
-        'no-match',
-        `No task named ${selector.stem} on the board.`,
+      const { reason, message, detail } = describeUnmatchedStem(
         stems,
+        selector.stem,
       )
+      return refuse(reason, message, detail)
     }
     return selector.stem
   }

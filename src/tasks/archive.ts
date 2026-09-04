@@ -400,7 +400,8 @@ export async function planCitations(
 
   const stems = await listTaskStems(dir)
   if (!stems.includes(stem)) {
-    return refuse('no-match', `No task named ${stem} on the board.`, stems)
+    const unmatched = describeUnmatchedStem(stems, stem)
+    return refuse(unmatched.reason, unmatched.message, unmatched.detail)
   }
 
   const target = readPlanTarget(await readFile(join(dir, `${stem}.md`), 'utf8'))
@@ -488,6 +489,45 @@ function refuse(
   return { ok: false, reason, message, detail }
 }
 
+export interface UnmatchedStem {
+  readonly reason: 'no-match' | 'ambiguous'
+  readonly message: string
+  readonly detail: readonly string[]
+}
+
+/**
+ * The three-way refusal a bare stem earns once it fails an exact match:
+ * exactly one task starts with it, several do, or none does. `archive.ts`'s
+ * own `resolveStem`, `planCitations`, and `record.ts`'s `resolveStem` all
+ * refuse a stem this way, so the wording lives once rather than three times.
+ */
+export function describeUnmatchedStem(
+  stems: readonly string[],
+  name: string,
+): UnmatchedStem {
+  const prefixed = stems.filter((stem) => stem.startsWith(name))
+  if (prefixed.length === 1) {
+    const [match] = prefixed
+    return {
+      reason: 'no-match',
+      message: `${name} does not name a task by itself. One task starts with it: ${match}. Pass the full name instead.`,
+      detail: [match],
+    }
+  }
+  if (prefixed.length > 1) {
+    return {
+      reason: 'ambiguous',
+      message: `${name} does not name a task by itself. ${prefixed.length} tasks start with it. Pass the full name instead.`,
+      detail: prefixed,
+    }
+  }
+  return {
+    reason: 'no-match',
+    message: `No task named ${name} on the board.`,
+    detail: stems,
+  }
+}
+
 async function resolveStem(
   dir: string,
   selector: TaskSelector,
@@ -496,27 +536,11 @@ async function resolveStem(
 
   if (selector.kind === 'stem') {
     if (!stems.includes(selector.stem)) {
-      const prefixed = stems.filter((stem) => stem.startsWith(selector.stem))
-      if (prefixed.length === 1) {
-        const [match] = prefixed
-        return refuse(
-          'no-match',
-          `${selector.stem} does not name a task by itself. One task starts with it: ${match}. Pass the full name to archive it.`,
-          [match],
-        )
-      }
-      if (prefixed.length > 1) {
-        return refuse(
-          'ambiguous',
-          `${selector.stem} does not name a task by itself. ${prefixed.length} tasks start with it. Pass the full name to archive one.`,
-          prefixed,
-        )
-      }
-      return refuse(
-        'no-match',
-        `No task named ${selector.stem} on the board.`,
+      const { reason, message, detail } = describeUnmatchedStem(
         stems,
+        selector.stem,
       )
+      return refuse(reason, message, detail)
     }
     return selector.stem
   }
