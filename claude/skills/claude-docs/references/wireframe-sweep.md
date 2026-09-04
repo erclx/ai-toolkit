@@ -9,7 +9,7 @@ Mechanics for Step 4 of `claude-docs`. The body owns the skip conditions and the
 
 ## Deriving a candidate slug
 
-For each UI-affecting path, derive a candidate surface slug from the file's basename and parent folder (e.g. `web/src/features/mock/MockDemoStrip.tsx` → `mock-demo-strip` or `mock`). Cross-reference against the surface files in `.claude/wireframes/`.
+For each UI-affecting path, derive a candidate surface slug from the file's basename and parent folder (e.g. `web/src/features/mock/MockDemoStrip.tsx` → `mock-demo-strip` or `mock`). Cross-reference against every surface file in `.claude/wireframes/`, including one nested inside a grouped surface's own subfolder (`.claude/wireframes/<group>/<surface>.md`), by walking the tree rather than globbing the top level alone.
 
 ## Findings
 
@@ -32,7 +32,7 @@ TODO: describe when and where this surface appears.
 - TODO
 ```
 
-Skip the write when the slug would collide with an existing file (different surface, same slug). Surface the collision in the report instead.
+Skip the write when the slug would collide with an existing file, flat or nested (different surface, same slug). Surface the collision in the report instead.
 
 ## Output
 
