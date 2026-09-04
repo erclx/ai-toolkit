@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.51.0](https://github.com/erclx/canon/compare/v4.50.0...v4.51.0) (2026-09-04)
+
+
+### Features
+
+* **skills:** add docs-draft for a brand-new docs page ([#1502](https://github.com/erclx/canon/issues/1502)) ([c22a1ab](https://github.com/erclx/canon/commit/c22a1abfe9ba6aabcb6346089652c1a6bba13b93))
+
+
+### Bug Fixes
+
+* **tooling:** force lint back to eslint over vite-react's oxlint ([#1503](https://github.com/erclx/canon/issues/1503)) ([ee48ebb](https://github.com/erclx/canon/commit/ee48ebbb2fcfee17e39fb2da506e1ae4dcc3ced9))
+
 ## [4.50.0](https://github.com/erclx/canon/compare/v4.49.0...v4.50.0) (2026-09-04)
 
 
