@@ -3,6 +3,7 @@ import type { AuditResult, AuditSpec } from '@/audits/catalog'
 import { AUDITS, auditFor } from '@/audits/catalog'
 import type { Delta } from '@/audits/baseline'
 import {
+  auditsFor,
   EXIT_FINDING,
   EXIT_UNMEASURED,
   exitCodeFor,
@@ -25,6 +26,7 @@ function result(id: string, status: AuditResult['status']): AuditResult {
     tracked: true,
     corpus: 'tracked',
     exitCode: 0,
+    ms: 0,
   }
 }
 
@@ -82,6 +84,35 @@ describe('running the audit set', () => {
 
     expect(results[0].status).toBe('unmeasured')
     expect(results[0].reason).toContain('spawn ENOENT')
+  })
+
+  it('should carry a duration on every result, whichever verb it waited on', async () => {
+    const results = await runAudits([specFor('markdown')], async () => ({
+      exitCode: 0,
+      stdout: '{}',
+    }))
+
+    expect(results[0].ms).toBeGreaterThanOrEqual(0)
+  })
+})
+
+describe('scoping the catalog to a corpus', () => {
+  it('should return the whole catalog when no corpus was requested', () => {
+    expect(auditsFor(AUDITS, [])).toEqual(AUDITS)
+  })
+
+  it('should keep only the specs whose corpus was named', () => {
+    const scoped = auditsFor(AUDITS, ['upstream'])
+
+    expect(scoped.every((audit) => audit.corpus === 'upstream')).toBe(true)
+    expect(scoped.map((audit) => audit.id)).toContain('deps')
+  })
+
+  it('should union more than one requested corpus', () => {
+    const scoped = auditsFor(AUDITS, ['tracked', 'per-machine'])
+
+    expect(scoped.some((audit) => audit.corpus === 'upstream')).toBe(false)
+    expect(scoped.length).toBe(AUDITS.length - 1)
   })
 })
 
