@@ -22,5 +22,6 @@ export default defineConfig({
     command: 'bun run build && bun run preview',
     url: baseURL,
     reuseExistingServer: false,
+    env: { ASTRO_PREVIEW_BACKGROUND: '0' },
   },
 })
