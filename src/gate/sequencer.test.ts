@@ -108,6 +108,12 @@ describe('stage ordering', () => {
 
     expect(results.map((entry) => entry.id)).toEqual(['checks'])
   })
+
+  it('should carry a duration on every stage result', async () => {
+    const outcome = await runStage(stage('timed'), contextWith())
+
+    expect(outcome.ms).toBeGreaterThanOrEqual(0)
+  })
 })
 
 describe('changed-file scoping', () => {

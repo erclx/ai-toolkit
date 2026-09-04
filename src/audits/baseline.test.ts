@@ -45,6 +45,7 @@ function result(
     corpus,
     exitCode: 0,
     counts,
+    ms: 0,
   }
 }
 

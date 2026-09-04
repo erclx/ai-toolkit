@@ -27,6 +27,8 @@ export interface StageResult {
   readonly emissions: readonly Emission[]
   /** The remedy line a failed stage prints, naming what to do about it. */
   readonly failure?: string
+  /** Wall time the stage's checks took, including every process spawn. */
+  readonly ms: number
 }
 
 export interface GateContext extends MeasureContext {
@@ -133,6 +135,17 @@ export async function runStage(
   stage: Stage,
   ctx: GateContext,
 ): Promise<StageResult> {
+  const startedAt = performance.now()
+  const result = await executeStage(stage, ctx)
+  return { ...result, ms: performance.now() - startedAt }
+}
+
+type StageOutcome = Omit<StageResult, 'ms'>
+
+async function executeStage(
+  stage: Stage,
+  ctx: GateContext,
+): Promise<StageOutcome> {
   if (stage.scope !== undefined && !hasChanged(stage.scope, ctx.changed)) {
     return {
       id: stage.id,

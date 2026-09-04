@@ -25,7 +25,7 @@ Three things differ from the local gate:
 
 The workflow calls one entry point instead of naming each stage as its own step. Named steps give better failure labels in the GitHub UI, but they had already drifted out of sync with the script once, leaving four stages enforced only by a pre-push hook that `git push --no-verify` skips. A single entry point cannot drift. The failing stage still appears in the step output, one click deeper.
 
-One job runs all of it, which is the carve-out `ci-workflow` states rather than an exemption this repository took. Recent runs land between 49 and 68 seconds, and each extra job would repay checkout, `bun install --frozen-lockfile`, and an apt install before reaching a stage, so a split buys three or four minutes of setup and no earlier signal. The skill conditions the carve-out on a gate under roughly two minutes, so this workflow splits when its own run log says to.
+One job runs all of it, which is the carve-out `ci-workflow` states rather than an exemption this repository took. Recent runs landed between 49 and 68 seconds until the gate's own audit-set stage started reading the upstream dependency-advisory corpus inline: five runs on 2026-09-04 put the Verify step at 229, 378, 379, 380, and 383 seconds, all of it the one network-bound lookup in `deps audit` running to bun's own 299-second ceiling on a stall. `auditSet` in `src/gate/measures.ts` now scopes `canon audits run` to the tracked and per-machine corpora, and `src/deps/audit.ts` bounds that lookup at a 120-second timeout of its own for the caller that still wants it. A local `canon gate run --all --no-write` measured after both landed came back at 41 seconds, in the same range CI ran before the regression, so each extra job still repays checkout, `bun install --frozen-lockfile`, and an apt install before reaching a stage, and a split still buys three or four minutes of setup and no earlier signal. The skill conditions the carve-out on a gate under roughly two minutes, so this workflow splits when its own run log says to.
 
 The job name stays `🛡️ Static Checks` even though the job now runs the test suite. Required status checks resolve against the job name, so renaming it would break branch protection until the rule is updated to match.
 
@@ -35,7 +35,9 @@ Scope selection goes through an `--all` argument, because it describes what to r
 
 ### Triggers and stage selection
 
-CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request`, on pushes to `main`, and on `workflow_dispatch`, so the backstop covers the merge as well as the pull request that preceded it. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Scoping still baselines on `origin/main`, so a branch is gated against what it will merge into rather than against its own tip.
+CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request`, on pushes to `main`, on a weekly `schedule`, and on `workflow_dispatch`, so the backstop covers the merge as well as the pull request that preceded it. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Scoping still baselines on `origin/main`, so a branch is gated against what it will merge into rather than against its own tip.
+
+The `static-checks` job carries `if: github.event_name != 'schedule'` and a second job, `dependency-advisories`, carries the opposite: `if: github.event_name == 'schedule'`. Both jobs sit in the one workflow file because they share the same `on:` block, and the `if:` guard is what keeps a weekly cron firing from re-running the whole gate over an unchanged tree, or a pull request from running an advisory lookup nothing in the diff asked for. `dependency-advisories` runs `bun src/cli.ts deps audit` alone, no `fetch-depth: 0` and no shell-tools install, since nothing it reads needs history or shellcheck.
 
 The `Checkout` step passes `fetch-depth: 0` for the same reason. `actions/checkout@v4` defaults to a shallow, single-ref fetch on a `pull_request` event, so `origin/main` never resolves and every stage reading a merge base refuses. The Standard success criteria stage was the first to reach that read, since every earlier stage scans the whole tree rather than a diff. Measured against run `33089443464`, which failed on `✗ No merge base against main resolved.` before the flag was added.
 
@@ -131,7 +133,7 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 ## Triggers
 
-- `verify.yml` on pull requests targeting `main`, on pushes to `main`, and on `workflow_dispatch`
+- `verify.yml` on pull requests targeting `main`, on pushes to `main`, on a weekly `schedule` that runs the `dependency-advisories` job alone, and on `workflow_dispatch`
 - `phase-label-gate.yml` on a pull request targeting `main` opened, edited, reopened, or synchronized, and on `workflow_dispatch`
 - `release-please.yml` on pushes to `main`, and on `workflow_dispatch` with an optional `tag` that publishes that tag alone
 
@@ -139,32 +141,32 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `canon gate run --all --no-write`, so the stage list lives in `src/gate/stages.ts` rather than in the workflow and every stage runs regardless of what the branch touched. Three rows can still report something other than a pass, and the table marks each.
 
-| Stage                     | Command                                                  | What it asserts                                                                                    |
-| ------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
-| Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
-| Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/rules` matches source                                                                     |
-| Hero                      | `scripts/core/regen-hero.sh`                             | every `assets/captures/*.html` carries current counts and tokens, and each stamp matches its pair  |
-| Tooling paths             | `scripts/core/regen-tooling-paths.sh`                    | the shipped overwrite contract names what the stacks hold                                          |
-| Ignore parity             | `scripts/core/check-ignore-parity.sh`                    | the ignore set a target receives matches this repository's own                                     |
-| Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
-| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
-| Seed independence         | `scripts/core/check-seed-independence.sh`                | no seed prose names the toolkit CLI                                                                |
-| Capability seeding        | `scripts/core/check-capability-seeding.sh`               | a hook, workflow, or husky script reaches its seed or config, or carries a `canon-no-seed:` reason |
-| Unreferenced rules        | `bun src/cli.ts gov list --json`                         | reports rules no stack reaches, and fails on none of them                                          |
-| Context citations         | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                                  |
-| Rule citations            | `bun src/cli.ts gov citations`                           | every path a rule cites and every internal frontmatter glob resolves                               |
-| Markdown bans             | `bun src/cli.ts markdown audit --json`                   | no markdown carries a banned character, word, or spelling                                          |
-| Seed standards            | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds                                          |
-| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                                      |
-| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`         | a standard new to the branch carries a `## Success criterion` section                              |
-| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `src/gate/measures.ts` pins                      |
-| Audit set                 | `bun src/cli.ts audits run --json`                       | reports the judgment half of every audit and its growth, and fails on none of it                   |
-| Plugin manifests          | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed                                               |
-| Spelling                  | `bun run check:spell`                                    | cspell passes against dictionaries                                                                 |
-| Shell                     | `bun run check:shell`                                    | shellcheck passes at warning level                                                                 |
-| Types                     | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                               |
-| Tests                     | `bun run test`                                           | the vitest suite passes                                                                            |
+| Stage                     | Command                                                                  | What it asserts                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Format check              | `bun run check:format`                                                   | prettier and shfmt are clean                                                                             |
+| Indexes                   | `scripts/core/regen-indexes.sh`                                          | no `index.md` was committed stale or left untracked                                                      |
+| Consumed copies           | `scripts/core/regen-claude-copies.sh`                                    | `.claude/rules` matches source                                                                           |
+| Hero                      | `scripts/core/regen-hero.sh`                                             | every `assets/captures/*.html` carries current counts and tokens, and each stamp matches its pair        |
+| Tooling paths             | `scripts/core/regen-tooling-paths.sh`                                    | the shipped overwrite contract names what the stacks hold                                                |
+| Ignore parity             | `scripts/core/check-ignore-parity.sh`                                    | the ignore set a target receives matches this repository's own                                           |
+| Skill paths               | `scripts/core/check-skill-paths.sh`                                      | no shipped skill cites a repo-local path                                                                 |
+| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                                  | nothing the plugin ships resolves under `internal/`                                                      |
+| Seed independence         | `scripts/core/check-seed-independence.sh`                                | no seed prose names the toolkit CLI                                                                      |
+| Capability seeding        | `scripts/core/check-capability-seeding.sh`                               | a hook, workflow, or husky script reaches its seed or config, or carries a `canon-no-seed:` reason       |
+| Unreferenced rules        | `bun src/cli.ts gov list --json`                                         | reports rules no stack reaches, and fails on none of them                                                |
+| Context citations         | `bun src/cli.ts context audit --citations-only`                          | every cited context path resolves                                                                        |
+| Rule citations            | `bun src/cli.ts gov citations`                                           | every path a rule cites and every internal frontmatter glob resolves                                     |
+| Markdown bans             | `bun src/cli.ts markdown audit --json`                                   | no markdown carries a banned character, word, or spelling                                                |
+| Seed standards            | `bun src/cli.ts context audit --gate` per root                           | no seed breaks the standard governing the folder it seeds                                                |
+| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only`                 | every skill folder carries a `REQUIREMENT.md`                                                            |
+| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`                         | a standard new to the branch carries a `## Success criterion` section                                    |
+| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                                 | undeclared scenarios stay at or under the ceiling `src/gate/measures.ts` pins                            |
+| Audit set                 | `bun src/cli.ts audits run --corpus tracked --corpus per-machine --json` | reports the judgment half of every tracked and per-machine audit and its growth, and fails on none of it |
+| Plugin manifests          | `claude plugin validate --strict`                                        | every plugin and marketplace manifest is well-formed                                                     |
+| Spelling                  | `bun run check:spell`                                                    | cspell passes against dictionaries                                                                       |
+| Shell                     | `bun run check:shell`                                                    | shellcheck passes at warning level                                                                       |
+| Types                     | `bun run check:types`                                                    | `tsc --noEmit` passes against `src/`                                                                     |
+| Tests                     | `bun run test`                                                           | the vitest suite passes                                                                                  |
 
 Two rows report rather than gate on their own reading, Unreferenced rules and Audit set, because every finding either carries is a judgment and a push failing on one teaches a contributor to route around the stage. Both still print what they found.
 

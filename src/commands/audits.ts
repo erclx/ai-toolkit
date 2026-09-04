@@ -9,8 +9,10 @@ import {
   readBaseline,
   writeBaseline,
 } from '@/audits/baseline'
-import { AUDITS, type AuditResult } from '@/audits/catalog'
+import { AUDITS, type AuditResult, type Corpus } from '@/audits/catalog'
 import {
+  auditsFor,
+  CORPORA,
   exitCodeFor,
   runAudits,
   spawnAudit,
@@ -25,6 +27,11 @@ interface RunCommandOptions {
   readonly json?: boolean
   readonly record?: boolean
   readonly root?: string
+  readonly corpus?: readonly string[]
+}
+
+function collectCorpus(value: string, previous: string[]): string[] {
+  return [...previous, value]
 }
 
 interface ListCommandOptions {
@@ -51,6 +58,12 @@ export function register(program: Command): void {
     .option(
       '--record',
       `Write this run's tracked counts to ${BASELINE_REL} as the new baseline`,
+    )
+    .option(
+      '--corpus <corpus>',
+      `Limit the run to one corpus (${CORPORA.join(', ')}), repeatable. Defaults to every corpus`,
+      collectCorpus,
+      [] as string[],
     )
     .addHelpText(
       'after',
@@ -81,6 +94,7 @@ export function register(program: Command): void {
         '  canon audits run',
         '  canon audits run --json',
         '  canon audits run --record',
+        '  canon audits run --corpus tracked --corpus per-machine',
         '',
       ].join('\n'),
     )
@@ -175,6 +189,28 @@ async function headCommit(root: string): Promise<string> {
 async function runAll(opts: RunCommandOptions): Promise<number> {
   const emitJson = opts.json ?? false
   const root = opts.root ?? (await currentWorktreeRoot())
+  const requested = opts.corpus ?? []
+
+  const invalid = requested.filter(
+    (corpus) => !CORPORA.includes(corpus as Corpus),
+  )
+  if (invalid.length > 0) {
+    const message = `Unknown corpus ${invalid.join(', ')}. Valid corpora: ${CORPORA.join(', ')}.`
+    if (emitJson) {
+      process.stderr.write(`${message}\n`)
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: 'bad-corpus', message })}\n`,
+      )
+      return 1
+    }
+    intro('canon audits run')
+    logStep('Refused')
+    logError(message)
+    outro()
+    return 1
+  }
+
+  const audits = auditsFor(AUDITS, requested)
 
   let baseline: Baseline | undefined
   try {
@@ -195,7 +231,7 @@ async function runAll(opts: RunCommandOptions): Promise<number> {
     return 1
   }
 
-  const results = await runAudits(AUDITS, spawnAudit(root))
+  const results = await runAudits(audits, spawnAudit(root))
   const deltas = compareBaseline(baseline, results)
   const summary = summarize(results, deltas)
 

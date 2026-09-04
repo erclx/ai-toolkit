@@ -7,12 +7,17 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # An advisory is published against the index rather than against a
+    # commit, so a weekly read reports what a per-push read never would.
+    - cron: '0 6 * * 1'
   workflow_dispatch:
 
 jobs:
   static-checks:
     name: 🛡️ Static Checks
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,3 +45,22 @@ jobs:
 
       - name: Verify install
         run: bun run check:install
+
+  dependency-advisories:
+    name: 📦 Dependency Advisories
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Audit dependencies
+        run: bun src/cli.ts deps audit

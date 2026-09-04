@@ -1,9 +1,31 @@
 import { join } from 'node:path'
 import { execa } from 'execa'
 import type { Delta } from '@/audits/baseline'
-import { type AuditResult, type AuditSpec, classify } from '@/audits/catalog'
+import {
+  type AuditResult,
+  type AuditSpec,
+  classify,
+  type Corpus,
+} from '@/audits/catalog'
 import { gitEnv } from '@/git-env'
 import { PROJECT_ROOT } from '@/project-root'
+
+/** Every value a corpus filter accepts, matching the `Corpus` union. */
+export const CORPORA: readonly Corpus[] = ['tracked', 'per-machine', 'upstream']
+
+/**
+ * The catalog scoped to the requested corpora, or the whole set when none
+ * were named. `--corpus` on `audits run` reads this, and so does `auditSet`
+ * in `src/gate/measures.ts`, which excludes the upstream corpus so the gate
+ * reads only what describes this tree.
+ */
+export function auditsFor(
+  specs: readonly AuditSpec[],
+  requested: readonly string[],
+): readonly AuditSpec[] {
+  if (requested.length === 0) return specs
+  return specs.filter((spec) => requested.includes(spec.corpus))
+}
 
 /** At least one audit reported a finding that is a fact. */
 export const EXIT_FINDING = 2
@@ -77,9 +99,10 @@ export async function runAudits(
 ): Promise<AuditResult[]> {
   return Promise.all(
     specs.map(async (spec) => {
+      const startedAt = performance.now()
       try {
         const { exitCode, stdout } = await spawn(spec)
-        return classify(spec, exitCode, stdout)
+        return classify(spec, exitCode, stdout, performance.now() - startedAt)
       } catch (error) {
         return {
           id: spec.id,
@@ -89,6 +112,7 @@ export async function runAudits(
           corpus: spec.corpus,
           exitCode: 1,
           reason: `could not be started: ${error instanceof Error ? error.message : String(error)}`,
+          ms: performance.now() - startedAt,
         }
       }
     }),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { countBySeverity, parseAdvisories } from '@/deps/audit'
+import { countBySeverity, noRecordMessage, parseAdvisories } from '@/deps/audit'
 
 const RECORD = JSON.stringify({
   astro: [
@@ -97,5 +97,38 @@ describe('countBySeverity', () => {
       low: 0,
       info: 0,
     })
+  })
+})
+
+describe('noRecordMessage', () => {
+  it('should name the stall rather than reporting an empty stream', () => {
+    const message = noRecordMessage({ timedOut: true, stderr: '' })
+
+    expect(message).toContain('timed out')
+  })
+
+  it('should take the timeout reading over stderr, even where both are present', () => {
+    const message = noRecordMessage({
+      timedOut: true,
+      stderr: 'ENOTFOUND registry.npmjs.org',
+    })
+
+    expect(message).toContain('timed out')
+    expect(message).not.toContain('ENOTFOUND')
+  })
+
+  it('should read the last stderr line for a refusal that was not a stall', () => {
+    const message = noRecordMessage({
+      timedOut: false,
+      stderr: 'warning: ignoring\nerror: request failed',
+    })
+
+    expect(message).toBe('error: request failed')
+  })
+
+  it('should say nothing was on stdout when a non-stall refusal carries no stderr', () => {
+    expect(noRecordMessage({ timedOut: false, stderr: '' })).toBe(
+      'no output on stdout',
+    )
   })
 })

@@ -141,7 +141,21 @@ The twenty-first was never authored as an exemption at all. `standards/publish.m
 
 ## Audit set
 
-The Audit set stage runs `canon audits run --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every audit and the growth against `.claude/canon/baseline.json`.
+The Audit set stage runs `canon audits run --corpus tracked --corpus per-machine --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every tracked and per-machine audit and the growth against `.claude/canon/baseline.json`.
+
+### The upstream corpus runs on its own schedule
+
+`deps`, the one audit reading `bun audit --json` against the upstream advisory index, carries `corpus: 'upstream'` in `src/audits/catalog.ts` and used to run inside this stage with the other nineteen. Its own wall time made it the gate's whole cost: three consecutive clean runs measured 44.7, 77.6, and 62.9 seconds each, against roughly 50 seconds for every other stage in the table combined, and a stalled lookup ran unbounded to bun's own 299-second ceiling. Gating a push on a network read that answers nothing about this tree's own health was the defect, not the audit itself.
+
+`canon audits run` takes a repeatable `--corpus <tracked|per-machine|upstream>`, defaulting to every corpus when none is named, and `auditsFor` in `src/audits/run.ts` reads it. `auditSet` in `src/gate/measures.ts` passes `tracked` and `per-machine` alone, so the gate now reads only the corpora describing this tree, and `summary.audited` in the gate's own record moved from 20 to 19 the day this landed. `canon audits run` with no filter still reads all twenty, including `deps`, for a caller who wants the whole set.
+
+`auditDependencies` in `src/deps/audit.ts` now passes an explicit `timeout` to its `execa` call, 120 seconds, bounding a stall well under bun's own ceiling while leaving margin over the slowest clean run measured. A timeout reports through the same `no-record` refusal a malformed record already takes, distinguished only by its message, which names the stall rather than folding it into an empty stderr line.
+
+A published advisory still needs a reader, since nothing else in the repository shells the runtime's own advisory command. `.github/workflows/verify.yml` carries a `dependency-advisories` job on a weekly `schedule` trigger, running `bun src/cli.ts deps audit` on its own, because an advisory is published against the index rather than against a commit and a per-push read tells a contributor nothing a weekly one does not.
+
+### Every stage carries its own wall time
+
+`StageResult` in `src/gate/sequencer.ts` carries `ms`, timed around each stage's checks in `runStage`, and `canon gate run --json` emits it per stage plus a summed `ms` beside `summary`. `AuditResult` in `src/audits/catalog.ts` carries the same field, timed around each spawn in `runAudits`, so `canon audits run --json` says which of its verbs a slow run actually waited on. Neither reading changes what a stage measures, and both exist so a slow gate is attributable to a stage rather than read off a stopwatch held against the whole run.
 
 Growth reports for the reason the ceiling above gates. The standards behind the largest counts set no hard cap, so a rising number is a fact about the corpus and a judgment about whether it matters, and a push failing on a judgment teaches a reader to route around the stage.
 

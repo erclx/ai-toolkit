@@ -77,6 +77,18 @@ describe('the audit catalog', () => {
     expect(isTracked(specFor('tasks'))).toBe(false)
     expect(isTracked(specFor('markdown'))).toBe(true)
   })
+
+  it('should carry the duration the caller measured the spawn at', () => {
+    const result = classify(specFor('markdown'), 0, '{}', 42)
+
+    expect(result.ms).toBe(42)
+  })
+
+  it('should default the duration to zero for a caller that measured nothing', () => {
+    const result = classify(specFor('markdown'), 0, '{}')
+
+    expect(result.ms).toBe(0)
+  })
 })
 
 describe('reading counts out of each record shape', () => {
