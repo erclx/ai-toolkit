@@ -25,7 +25,8 @@ Without this skill, a session drafting documentation for a surface that has no p
 ## Guards
 
 - No topic given: stop and ask what surface the page should cover.
-- The derived slug already resolves through `canon docs <slug>`: stop and point at `docs-sync` instead.
+- The derived slug already resolves through `canon docs <slug>`: stop and point at `docs-sync` instead. This catches an exact-name collision only.
+- A page in the catalog already covers the topic under a different name: stop the same way, checked against the titles and descriptions Placement already reads.
 
 ## Out of scope
 
