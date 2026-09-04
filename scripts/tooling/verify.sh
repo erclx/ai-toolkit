@@ -131,7 +131,8 @@ main() {
     run_phase "Prepare" bash -c "cd '$tmp_dir' && $prepare"
   fi
 
-  run_phase "Sync" bash -c "cd '$tmp_dir' && CANON_NON_INTERACTIVE=1 canon tooling sync $stack . --write"
+  log_info "Sync resolves via bun $PROJECT_ROOT/src/cli.ts, not PATH canon"
+  run_phase "Sync" bash -c "cd '$tmp_dir' && CANON_NON_INTERACTIVE=1 bun '$PROJECT_ROOT/src/cli.ts' tooling sync $stack . --write"
 
   if [ -f "$tmp_dir/package.json" ]; then
     run_phase "lint:fix" bash -c "cd '$tmp_dir' && bun run lint:fix"
@@ -178,4 +179,6 @@ main() {
   fi
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
