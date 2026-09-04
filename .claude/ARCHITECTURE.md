@@ -274,11 +274,11 @@ Advising was the alternative and it is what a scaffolded target would have recei
 
 ### `assets/` and `examples/` split on who the folder is talking to
 
-Both folders hold a hand-authored source, a render step, and output sitting beside it, so a source-versus-output rule cannot separate them. What separates them is the reader each is written for: `assets/` is this repository's self-portrait, rendered for a visitor who never opens the source, and `examples/` is sample input written for a reader about to copy and run it themselves. `README.md` depending on every `assets/*.png` staying current, against nothing outside `examples/` depending on its rendered output staying current, is the concrete instance the test resolves.
+Both folders hold a hand-authored source, a render step, and output, so a source-versus-output rule cannot separate one folder from the other. It sorts within a folder rather than between two, which `assets/` then went on to prove by applying it to itself: its markup and templates moved to `assets/captures/` while the five images `README.md` points at stayed at the root, and the reader test was untouched by that because both halves still talk to the same person. What separates the two folders is the reader each is written for: `assets/` is this repository's self-portrait, rendered for a visitor who never opens the source, and `examples/` is sample input written for a reader about to copy and run it themselves. `README.md` depending on every `assets/*.png` staying current, against nothing outside `examples/` depending on its rendered output staying current, is the concrete instance the test resolves.
 
 The same test answers the staleness question, so the two folders read as one policy rather than an arbitrary gate on one and a disclaimer on the other. A render gates when something else committed depends on it staying current, which is `assets/`'s case through `captureStamps`, and stays disclaimed when nothing does, which is `examples/`'s case. Widening the gate to cover `examples/slides/` was considered and declined on that ground: nothing outside `examples/` depends on its rendered output staying current, and building a mechanism for the one case that already has a gate does not generalize to the one that needs none.
 
-Measured at `80038b95` on 2026-09-03.
+Measured at `6899645b` on 2026-09-04, at five `assets/*.png` references in `README.md`, unchanged in count across the split that renamed three of them.
 
 ### The application-code non-goal turns on proof rather than on a project boundary
 

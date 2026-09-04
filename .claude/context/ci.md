@@ -140,7 +140,7 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
 | Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
 | Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/rules` matches source                                                                     |
-| Hero                      | `scripts/core/regen-hero.sh`                             | every `assets/*.html` carries current counts and tokens, and each stamp matches its pair           |
+| Hero                      | `scripts/core/regen-hero.sh`                             | every `assets/captures/*.html` carries current counts and tokens, and each stamp matches its pair  |
 | Tooling paths             | `scripts/core/regen-tooling-paths.sh`                    | the shipped overwrite contract names what the stacks hold                                          |
 | Ignore parity             | `scripts/core/check-ignore-parity.sh`                    | the ignore set a target receives matches this repository's own                                     |
 | Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |

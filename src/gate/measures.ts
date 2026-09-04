@@ -114,7 +114,7 @@ export const SANDBOX_UNDECLARED_CEILING = 47
 export const AUDITS_BASELINE = '.claude/canon/baseline.json'
 
 export const CAPTURE_STAMP_FAILURE =
-  'A capture set disagrees with the stamp written when its image was captured. Run canon capture assets --selector .window and commit each frame with its image and its stamp.'
+  'A capture set disagrees with the stamp written when its image was captured. Run canon capture assets/captures --selector .window --out assets and commit each frame with its image and its stamp.'
 
 function parseJson(payload: string): unknown {
   try {
@@ -861,19 +861,28 @@ async function collectPluginManifests(ctx: MeasureContext): Promise<string[]> {
   return [...seen].sort()
 }
 
-const CAPTURE_DIR = 'assets'
+/**
+ * A capture set spans two folders. The markup and the template beside it are
+ * the authored half and sit under `assets/captures/`, while the image a
+ * document points at and the stamp answering for it stay in `assets/`, which is
+ * where `--out assets` sends them.
+ */
+const CAPTURE_MARKUP_DIR = 'assets/captures'
+const CAPTURE_OUTPUT_DIR = 'assets'
 
 /**
- * Every capture under `assets/`, named by the base its three files share.
+ * Every capture under `assets/captures/`, named by the base its three files
+ * share.
  *
  * Read off the folder rather than listed, and off the markup specifically,
  * because that is how `resolveCaptureSources` decides what `canon capture
- * assets` renders. A list would fail open on the frame somebody adds next,
- * which is the one nobody thinks to add here, and driving off the PNGs instead
- * would report a missing set for any image in the folder that is not a capture.
+ * assets/captures` renders. A list would fail open on the frame somebody adds
+ * next, which is the one nobody thinks to add here, and driving off the PNGs
+ * instead would report a missing set for any image in `assets/` that is not a
+ * capture.
  */
 function captureBases(root: string): string[] {
-  const dir = join(root, CAPTURE_DIR)
+  const dir = join(root, CAPTURE_MARKUP_DIR)
   if (!existsSync(dir)) return []
 
   return readdirSync(dir)
@@ -898,7 +907,7 @@ function captureBases(root: string): string[] {
  * Both digests are checked because either file can move alone. The markup side
  * catches an edit committed with no capture, and the image side catches an
  * image replaced under markup that never changed. A tree carrying no markup
- * under `assets/` has no set to read and passes, which is correct.
+ * under `assets/captures/` has no set to read and passes, which is correct.
  */
 export const captureStamps: Measure = async (ctx) => {
   const lines = captureBases(ctx.root).flatMap((base) =>
@@ -912,11 +921,21 @@ export const captureStamps: Measure = async (ctx) => {
   }
 }
 
-/** One capture set, as the lines it has to report and none where it agrees. */
+/**
+ * One capture set, as the lines it has to report and none where it agrees.
+ *
+ * The markup resolves against the source folder and the two files a render
+ * writes resolve against the output folder, so the set spans both rather than
+ * hanging off one base directory. Sending any of the three to the wrong folder
+ * reports it as missing rather than failing loudly, since a missing file reads
+ * the same way whether the path is wrong or the file is.
+ */
 function readCaptureSet(root: string, base: string): string[] {
-  const set = (['html', 'png', 'stamp'] as const).map(
-    (extension) => `${CAPTURE_DIR}/${base}.${extension}`,
-  )
+  const set = [
+    `${CAPTURE_MARKUP_DIR}/${base}.html`,
+    `${CAPTURE_OUTPUT_DIR}/${base}.png`,
+    `${CAPTURE_OUTPUT_DIR}/${base}.stamp`,
+  ]
 
   const missing = set.filter((rel) => !existsSync(join(root, rel)))
   if (missing.length > 0) {

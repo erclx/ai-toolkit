@@ -97,7 +97,7 @@ Rank-one moved to 60 of 70 on the one case this row added, up from 59 of 69, and
 
 The verb now reads a target as well. `resolveSkillsCorpus` in `src/claude/skills-list.ts` answers which corpus a root carries, taking `claude/skills/` ahead of `.claude/skills/` in `CORPORA` order, so every reading taken in this repository is the one it always was and a project holding its own skills alone is measured for the first time. `--cases <path>` replaces the toolkit corpus with a JSON array of `{ prompt, expect }` objects in the shape `src/claude/cases/` already holds, because a project's own skills need its own prompts and a corpus written against a catalog it did not author scores vocabulary it never uses. No standard stands behind the file until a third project needs one, and an empty array refuses rather than scoring 0 of 0, which a reader takes for a clean pass.
 
-The resolver sits beside `listSkills` rather than inside it. `src/counts/catalogs.ts` counts the shipped catalog through that function, so widening the function itself would take the reported total from 62 to 70, falsify every sentence in the corpus stating what ships, and move `assets/hero.html` with it. A measure that reaches a target resolves its own corpus and the counter keeps reading the tree that installs.
+The resolver sits beside `listSkills` rather than inside it. `src/counts/catalogs.ts` counts the shipped catalog through that function, so widening the function itself would take the reported total from 62 to 70, falsify every sentence in the corpus stating what ships, and move `assets/captures/hero.html` with it. A measure that reaches a target resolves its own corpus and the counter keeps reading the tree that installs.
 
 ## The context audit
 

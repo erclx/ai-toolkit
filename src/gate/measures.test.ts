@@ -38,12 +38,15 @@ describe('captureStamps', () => {
 
   /**
    * A whole capture set whose stamp agrees with both files beside it, which is
-   * what a tree looks like directly after `canon capture` wrote all three.
+   * what a tree looks like directly after `canon capture assets/captures --out
+   * assets` wrote all three. The markup lands under `assets/captures/` and the
+   * image and stamp under `assets/`, so a set spans two folders here the way it
+   * does in the tree.
    */
   const writeSet = (base: string, markup: string): void => {
     const html = `<html>${markup}</html>`
     const png = `${base} image bytes`
-    writeFileSync(join(root, 'assets', `${base}.html`), html)
+    writeFileSync(join(root, 'assets', 'captures', `${base}.html`), html)
     writeFileSync(join(root, 'assets', `${base}.png`), png)
     writeFileSync(
       join(root, 'assets', `${base}.stamp`),
@@ -59,6 +62,7 @@ describe('captureStamps', () => {
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'canon-capture-stamps-'))
     mkdirSync(join(root, 'assets'))
+    mkdirSync(join(root, 'assets', 'captures'))
   })
 
   afterEach(() => {
@@ -82,12 +86,17 @@ describe('captureStamps', () => {
 
   it('catches markup edited after the capture that stamped it', async () => {
     writeSet('hero', 'hero')
-    writeFileSync(join(root, 'assets', 'hero.html'), '<html>moved</html>')
+    writeFileSync(
+      join(root, 'assets', 'captures', 'hero.html'),
+      '<html>moved</html>',
+    )
 
     const report = await captureStamps(context())
 
     expect(report.failure).toBeDefined()
-    expect(report.emissions[0]?.text).toContain('assets/hero.html hashes to')
+    expect(report.emissions[0]?.text).toContain(
+      'assets/captures/hero.html hashes to',
+    )
   })
 
   it('covers the install set as well as the hero one', async () => {
@@ -123,12 +132,17 @@ describe('captureStamps', () => {
   it('reads a frame added later, since the bases come off the folder', async () => {
     writeSet('hero', 'hero')
     writeSet('release', 'release')
-    writeFileSync(join(root, 'assets', 'release.html'), '<html>moved</html>')
+    writeFileSync(
+      join(root, 'assets', 'captures', 'release.html'),
+      '<html>moved</html>',
+    )
 
     const report = await captureStamps(context())
 
     expect(report.failure).toBeDefined()
-    expect(report.emissions[0]?.text).toContain('assets/release.html hashes to')
+    expect(report.emissions[0]?.text).toContain(
+      'assets/captures/release.html hashes to',
+    )
   })
 
   it('leaves an image that is not a capture source alone', async () => {
@@ -138,6 +152,25 @@ describe('captureStamps', () => {
     const report = await captureStamps(context())
 
     expect(report).toEqual({ emissions: [] })
+  })
+
+  it('reads bases from the markup folder rather than the output folder', async () => {
+    writeFileSync(join(root, 'assets', 'stray.html'), '<html>stray</html>')
+
+    const report = await captureStamps(context())
+
+    expect(report).toEqual({ emissions: [] })
+  })
+
+  it('names the markup under captures when a set is missing only its image', async () => {
+    writeSet('hero', 'hero')
+    rmSync(join(root, 'assets', 'hero.png'))
+
+    const report = await captureStamps(context())
+
+    expect(report.emissions[0]?.text).toBe(
+      'Missing from the hero set: assets/hero.png',
+    )
   })
 })
 

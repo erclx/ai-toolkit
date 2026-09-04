@@ -5,27 +5,29 @@ description: Rendering HTML sources to PNG, what the command asserts about fonts
 
 # Capture
 
-`canon capture [source] --selector <sel>` renders HTML sources to PNG, which is how a generated documentation image is rebuilt from the markup it was generated out of. The source defaults to `assets/`, where a directory expands to every `.html` directly inside it, so adding a capture means dropping a file beside the first one and running the same command. That default names this repository's own folder rather than a convention every target shares, and it stays because a missing one still refuses loud, naming the argument, rather than failing silently.
+`canon capture [source] --selector <sel>` renders HTML sources to PNG, which is how a generated documentation image is rebuilt from the markup it was generated out of. The source defaults to `assets/`, where a directory expands to every `.html` directly inside it, so adding a capture means dropping a file beside the first one and running the same command. That default is a generic starting point rather than a convention every target shares, and it stays because a missing folder still refuses loud, naming the argument, rather than failing silently. This repository no longer takes it: its own sources moved to `assets/captures/` and its images stayed in `assets/`, so a run here names the source explicitly and sends the output where that run wants it, `--out assets` to rebuild the committed images and somewhere disposable to preview them.
 
 ```bash
 canon capture --selector .window
-canon capture assets/install.html --selector .window
-canon capture assets --selector .window --out .canon/review/captures
+canon capture assets/captures/install.html --selector .window --out assets
+canon capture assets/captures --selector .window --out .canon/review/captures
 ```
 
 `--selector` is required and every example above passes it. The element a capture crops to belongs to the page, not to the command, so there is no value that could be right for an arbitrary project's markup. `.window` is what this repository's own five sources declare, and a project renders its own pages by naming whatever theirs declare.
 
 ## What this repository captures
 
-`assets/` here holds five sources, so one run over the folder rebuilds every one. None is edited by hand. `scripts/core/regen-hero.sh` writes each from a template beside it, filling one shared value map into all of them, and `bun run check` regenerates them and fails on the difference.
+A capture set here spans two folders. `assets/captures/` holds five sources and the template each is written from, and `assets/` holds the five images a document points at with the stamp answering for each. One run over the source folder rebuilds every image, and it takes `--out assets` to put each PNG where its document points rather than beside the markup it rendered. None of the five is edited by hand. `scripts/core/regen-hero.sh` writes each `.html` from the template beside it, filling one shared value map into all of them, and `bun run check` regenerates them and fails on the difference.
 
-Three of the five take catalog data, so a stack gaining a rule moves the frame on the next run. `install.html` and `showcase-task-board.html` are the two exceptions: the first holds terminal text from a real run and the second holds a hand-frozen snapshot of a gitignored board, each in its template rather than derived from a live catalog at build time.
+Three of the five take catalog data, so a stack gaining a rule moves the frame on the next run. `install.html` and `task-board.html` are the two exceptions: the first holds terminal text from a real run and the second holds a hand-frozen snapshot of a gitignored board, each in its template rather than derived from a live catalog at build time.
 
-The folder is read flat and never descends, by the regeneration script, by this command, and by the drift stage alike. A source in a subfolder is skipped by all three with nothing reported, so a new frame takes a name prefix rather than a folder of its own.
+`assets/captures/` is read flat and never descends, by the regeneration script, by this command, and by the drift stage alike. A source nested a further folder down is skipped by all three with nothing reported, so a new frame is a template dropped directly in rather than a folder of its own. The split is what retired the name prefix the flat layout used to need: a frame is named for itself now, since `assets/` no longer mixes markup in with the images.
 
-Only the HTML is asserted for drift. The PNG is a chromium render whose bytes move with the browser version, so rebuild it with `canon capture assets --selector .window` when the check reports the HTML changed.
+Only the HTML is asserted for drift. The PNG is a chromium render whose bytes move with the browser version, so rebuild it with `canon capture assets/captures --selector .window --out assets` when the check reports the HTML changed.
 
-Every render writes a stamp beside its PNG, `hero.png` next to `hero.stamp`, holding the source filename, a `source-sha256` over the markup bytes it read, and an `image-sha256` over the image bytes it wrote. Both digests are what `bun run check` compares, so a markup edit committed without a capture and a PNG swapped under unchanged markup each fail. The stamp is tracked and commits alongside the pair. Nothing hand-edits it, and a capture that cannot write it reports that source as failed and exits 1, so an image whose stamp never landed is reported rather than passed over.
+Every render writes a stamp beside its PNG, `hero.png` next to `hero.stamp`, holding the source filename, a `source-sha256` over the markup bytes it read, and an `image-sha256` over the image bytes it wrote. Both digests are what `bun run check` compares, so a markup edit committed without a capture and a PNG swapped under unchanged markup each fail. The stamp is tracked and commits alongside the pair. A capture that cannot write it reports that source as failed and exits 1, so an image whose stamp never landed is reported rather than passed over.
+
+Neither digest is ever written by hand. A digest is what the gate compares, so a hand-set one asserts agreement the tool never checked, and the way to move it is a capture. The `source:` line above them is the one field a rename may correct in place, since nothing reads it and the alternative is a stamp naming a file that no longer exists. Renaming a frame is the case that comes up, and the correction is the same basename the next capture would have written anyway.
 
 | Option             | Behavior                                          |
 | ------------------ | ------------------------------------------------- |
