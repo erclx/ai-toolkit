@@ -1,0 +1,20 @@
+---
+import { install } from '../content/copy'
+---
+
+<section id="install" class="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24">
+  <h2 class="text-[length:var(--type-heading-size)]">{install.heading}</h2>
+  <p>{install.lede}</p>
+  <pre
+    class="overflow-x-auto rounded-[var(--radius-panel)] bg-(--color-surface) p-4 text-(--color-text)"><code>{install.commands.join('\n')}</code></pre>
+  <img
+    src={install.image.src}
+    alt={install.image.alt}
+    class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
+    loading="lazy"
+  />
+  <p class="text-(--color-text-secondary)">{install.note}</p>
+  <p>{install.cliNote}</p>
+  <pre
+    class="overflow-x-auto rounded-[var(--radius-panel)] bg-(--color-surface) p-4 text-(--color-text)"><code>{install.cliCommand}</code></pre>
+</section>

@@ -1,0 +1,27 @@
+---
+import { targetReceives } from '../content/copy'
+---
+
+<section class="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-24">
+  <div class="flex flex-col gap-6">
+    <h2 class="text-[length:var(--type-heading-size)]">
+      {targetReceives.heading}
+    </h2>
+    <p>{targetReceives.body}</p>
+    <img
+      src={targetReceives.image.src}
+      alt={targetReceives.image.alt}
+      class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
+      loading="lazy"
+    />
+  </div>
+  <div class="flex flex-col gap-6">
+    <p>{targetReceives.governance.body}</p>
+    <img
+      src={targetReceives.governance.image.src}
+      alt={targetReceives.governance.image.alt}
+      class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
+      loading="lazy"
+    />
+  </div>
+</section>

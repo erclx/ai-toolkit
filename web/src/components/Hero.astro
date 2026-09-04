@@ -1,0 +1,36 @@
+---
+import { hero } from '../content/copy'
+
+/**
+ * The live-DOM agent view this hero defers to is scoped to a follow-up task
+ * (plan batch 4). This ships the problem-claim headline and subhead the
+ * groundwork operator picked, without the animated fixture.
+ */
+---
+
+<section
+  class="page-display flex min-h-[80vh] flex-col items-center justify-center gap-8 px-6 text-center"
+>
+  <h1
+    class="max-w-3xl text-[length:var(--type-page-display-size)] leading-[var(--type-page-display-lh)] font-bold tracking-[-0.01em] text-(--color-text)"
+  >
+    {hero.headline}
+  </h1>
+  <p
+    class="max-w-xl text-[length:var(--type-heading-size)] leading-[var(--type-heading-lh)] text-(--color-text-secondary)"
+  >
+    {hero.subhead}
+  </p>
+  <a
+    href="#install"
+    class="rounded-[var(--radius-action)] bg-(--color-accent) px-6 py-3 font-medium text-(--color-background) no-underline"
+  >
+    {hero.cta}
+  </a>
+</section>
+
+<style>
+  .page-display {
+    font-family: var(--type-page-display-family);
+  }
+</style>

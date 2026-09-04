@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/*
+ * Tailwind v4 generates its utility classes inside `@layer utilities`, and an
+ * unlayered rule always wins over a layered one regardless of specificity.
+ * These defaults have to sit in `@layer base` (Tailwind's own reset layer) so
+ * a `text-(--color-*)` utility on a link or heading can still override them.
+ */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-text-body);
+    font-family: var(--type-body-family);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-lh);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  a {
+    color: var(--color-accent);
+  }
+
+  code,
+  pre {
+    font-family: var(--type-code-family);
+    font-size: var(--type-code-size);
+  }
+}

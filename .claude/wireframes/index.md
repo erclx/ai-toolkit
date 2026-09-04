@@ -7,5 +7,6 @@ subtitle: Per-surface layout and interaction reference
 
 Per-surface layout and interaction reference
 
+- [Landing page](landing-page.md): TODO: describe the surface.
 - [Slides](slides.md): The nine slide layouts a .claude/SLIDES.md deck selects through its layout field
 - [Teach](teach/index.md): The teach root, contents, and lesson pages, plus the chrome they share
