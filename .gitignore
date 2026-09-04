@@ -10,6 +10,14 @@
 # Dependencies
 node_modules/
 
+# Web
+# The landing page's build output. tokens.css is generated too but stays
+# tracked, since nothing else gates web/ for drift.
+web/dist/
+web/.astro/
+web/playwright-report/
+web/test-results/
+
 # Claude
 # The root every gitignored session record sits under. One line covers the whole
 # tree, which is what the move bought: what is committed stays in .claude/ and

@@ -1,0 +1,19 @@
+---
+import { boardLifecycle } from '../content/copy'
+---
+
+<section class="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24">
+  <h2 class="text-[length:var(--type-heading-size)]">
+    {boardLifecycle.heading}
+  </h2>
+  <p>{boardLifecycle.body}</p>
+  <img
+    src={boardLifecycle.image.src}
+    alt={boardLifecycle.image.alt}
+    class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
+    loading="lazy"
+  />
+  <p class="text-[length:var(--type-label-size)] text-(--color-text-secondary)">
+    {boardLifecycle.note}
+  </p>
+</section>

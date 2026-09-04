@@ -1,0 +1,36 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { defineConfig, devices } from '@playwright/test'
+
+const isCI = !!process.env.CI
+const baseURL = `http://localhost:${4321 + (Number(process.env.WORKTREE_PORT_OFFSET) || 0)}`
+// No web/package.json (plan Q1), so bun run walks up to the repository root
+// to run web:build and web:preview, which pulls Playwright's own cwd-relative
+// output defaults up with it. Anchor both to this file's own directory.
+const here = fileURLToPath(new URL('.', import.meta.url))
+
+export default defineConfig({
+  testDir: 'e2e',
+  outputDir: path.join(here, 'test-results'),
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  reporter: isCI
+    ? 'list'
+    : [['html', { outputFolder: path.join(here, 'playwright-report') }]],
+  use: {
+    trace: 'on-first-retry',
+    baseURL,
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
+  webServer: {
+    command: 'bun run web:build && bun run web:preview',
+    url: baseURL,
+    reuseExistingServer: false,
+    env: { ASTRO_PREVIEW_BACKGROUND: '0' },
+  },
+})
