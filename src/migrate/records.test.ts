@@ -127,6 +127,56 @@ describe('rewriteText', () => {
     const once = rewriteText('.claude/plans/x.md and .claude/.tmp/y')
     expect(rewriteText(once)).toBe(once)
   })
+
+  it('should leave an inline-scalar frontmatter paths: value alone', () => {
+    const text = [
+      '---',
+      "paths: '.claude/tasks/**'",
+      '---',
+      '',
+      'See .claude/tasks/ for the board.',
+    ].join('\n')
+
+    expect(rewriteText(text)).toBe(
+      [
+        '---',
+        "paths: '.claude/tasks/**'",
+        '---',
+        '',
+        'See .canon/tasks/ for the board.',
+      ].join('\n'),
+    )
+  })
+
+  it('should leave a rule frontmatter paths: glob alone while rewriting prose beside it', () => {
+    const text = [
+      '---',
+      'description: covers the task board',
+      'paths:',
+      "  - '.claude/tasks/**'",
+      '---',
+      '',
+      '# Tasks standards',
+      '',
+      'See .claude/tasks/ for the board.',
+    ].join('\n')
+
+    const rewritten = rewriteText(text)
+
+    expect(rewritten).toBe(
+      [
+        '---',
+        'description: covers the task board',
+        'paths:',
+        "  - '.claude/tasks/**'",
+        '---',
+        '',
+        '# Tasks standards',
+        '',
+        'See .canon/tasks/ for the board.',
+      ].join('\n'),
+    )
+  })
 })
 
 describe('scanText', () => {
@@ -136,21 +186,35 @@ describe('scanText', () => {
 
   it('should count a marked citation as kept rather than rewritten', () => {
     const counts = scanText('.claude/memory/a.md canon-keep-record-root')
-    expect(counts).toEqual({ rewritten: 0, kept: 1 })
+    expect(counts).toEqual({ rewritten: 0, kept: 1, globs: 0 })
   })
 
   it('should count a citation kept across a blank line as kept', () => {
     const counts = scanText(
       '<!-- canon-keep-record-root -->\n\n.claude/memory/x.md',
     )
-    expect(counts).toEqual({ rewritten: 0, kept: 1 })
+    expect(counts).toEqual({ rewritten: 0, kept: 1, globs: 0 })
   })
 
   it('should count nothing in prose naming no moved entry', () => {
     expect(scanText('.claude/rules/core/005.md')).toEqual({
       rewritten: 0,
       kept: 0,
+      globs: 0,
     })
+  })
+
+  it('should count a frontmatter paths: glob citation as a glob rather than a rewrite', () => {
+    const text = [
+      '---',
+      'paths:',
+      "  - '.claude/tasks/**'",
+      '---',
+      '',
+      'See .claude/tasks/ for the board.',
+    ].join('\n')
+
+    expect(scanText(text)).toEqual({ rewritten: 1, kept: 0, globs: 1 })
   })
 })
 
@@ -460,5 +524,59 @@ describe('planRecordsMove', () => {
 
     expect(plan.moves).toEqual([{ from: '.claude/plans', to: '.canon/plans' }])
     expect(plan.collisions).toEqual([])
+  })
+
+  it('should report a frontmatter paths: glob while still rewriting the prose citation beside it', () => {
+    const text = [
+      '---',
+      'paths:',
+      "  - '.claude/tasks/**'",
+      '---',
+      '',
+      'See .claude/tasks/ for the board.',
+    ].join('\n')
+
+    const plan = planRecordsMove(root, [
+      { path: '.claude/rules/core/035-tasks.md', text },
+    ])
+
+    expect(plan.frontmatterGlobs).toEqual([
+      {
+        path: '.claude/rules/core/035-tasks.md',
+        lines: [{ line: 3, text: "- '.claude/tasks/**'" }],
+      },
+    ])
+    expect(plan.globs).toBe(1)
+    expect(plan.entries).toEqual([
+      {
+        path: '.claude/rules/core/035-tasks.md',
+        text: [
+          '---',
+          'paths:',
+          "  - '.claude/tasks/**'",
+          '---',
+          '',
+          'See .canon/tasks/ for the board.',
+        ].join('\n'),
+        rewritten: 1,
+        kept: 0,
+      },
+    ])
+  })
+
+  it('should report a frontmatter glob even when it is the only citation in the file', () => {
+    const text = ['---', 'paths:', "  - '.claude/tasks/**'", '---'].join('\n')
+
+    const plan = planRecordsMove(root, [
+      { path: '.claude/rules/core/035-tasks.md', text },
+    ])
+
+    expect(plan.frontmatterGlobs).toEqual([
+      {
+        path: '.claude/rules/core/035-tasks.md',
+        lines: [{ line: 3, text: "- '.claude/tasks/**'" }],
+      },
+    ])
+    expect(plan.entries).toEqual([])
   })
 })

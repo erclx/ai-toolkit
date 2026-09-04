@@ -15,7 +15,12 @@
 
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { RECORD_ONLY_ROOTS, rewriteText, scanText } from '@/migrate/records'
+import {
+  type CitationLine,
+  RECORD_ONLY_ROOTS,
+  rewriteText,
+  scanText,
+} from '@/migrate/records'
 
 /**
  * The folders inside the record root a session still follows a path into.
@@ -79,12 +84,6 @@ export interface RecordTreeWalk {
 /** One file the walk reached, carried with its text. */
 export interface RecordTreeSource {
   readonly path: string
-  readonly text: string
-}
-
-/** Where a citation sits, so a reader can judge it before `--write` runs. */
-export interface CitationLine {
-  readonly line: number
   readonly text: string
 }
 
