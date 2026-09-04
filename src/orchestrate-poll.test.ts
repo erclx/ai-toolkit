@@ -207,6 +207,26 @@ describe('poll', () => {
     expect(poll().stdout).toBe('No movement.')
   })
 
+  // The other unmatched case above still carries a `## ` prefix, just not one
+  // of the five. This is the shape none of them exercise: no prefix at all,
+  // which is what `claude-address-review`'s folded closing confirmation now
+  // depends on reaching neither `UNMATCHED` nor any other classification.
+  it('should report nothing when a comment carries no heading at all', () => {
+    writeThread([], [])
+    expect(poll().stdout).toContain('OPENED')
+
+    writeThread(
+      [],
+      [
+        {
+          createdAt: RESPONSE_AT,
+          heading: '✅ All review findings addressed, CI green.',
+        },
+      ],
+    )
+    expect(poll().stdout).toBe('No movement.')
+  })
+
   it('should route a post-review-findings comment the same as a review response', () => {
     writeThread([{ heading: '## Review', submittedAt: FIRST_PASS }], [])
     expect(poll().stdout).toContain('SEEN')

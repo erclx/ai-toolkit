@@ -147,6 +147,8 @@ stage_setup() {
     log_info "Expect:  reads the finding, adds the empty-title guard, verify passes"
     log_info "         refreshes the now-stale .claude/context/api.md validation line"
     log_info "         pushes a follow-up commit, then posts a summary reply comment, does NOT merge"
+    log_info "         once CI goes green, edits that reply in place for the closing confirmation"
+    log_info "         rather than posting it as a second comment"
     ;;
   "stale")
     start_feature_branch

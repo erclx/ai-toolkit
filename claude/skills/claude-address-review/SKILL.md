@@ -163,24 +163,33 @@ gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md
 
 After the follow-up push, watch CI on the PR. Poll
 `canon pr checks <number> --json` until the record's `state` leaves `pending`,
-then read it. When every finding is addressed and the state is `passing`, post
-one closing comment so the thread has a clear terminal state:
+then read it. When every finding is addressed and the state is `passing`, append
+the closing confirmation to the reply file Step 6 already posted, so the thread
+carries one terminal state rather than a second comment under no heading:
 
 ```bash
-gh pr comment <number> --body "✅ All review findings addressed, CI green."
+printf '\n✅ All review findings addressed, CI green.\n' >> .canon/tmp/address-review/reply-<number>.md
 ```
 
-A rebase-only run addressed no finding, so it takes its own terminal comment
-rather than that one. Claiming findings were addressed on a pull request that
+A rebase-only run addressed no finding, so it appends its own confirmation
+instead of that one. Claiming findings were addressed on a pull request that
 carries none is false on a surface nothing else checks:
 
 ```bash
-gh pr comment <number> --body "✅ Rebased onto origin/main, CI green. No review findings were open."
+printf '\n✅ Rebased onto origin/main, CI green. No review findings were open.\n' >> .canon/tmp/address-review/reply-<number>.md
 ```
 
-If any check fails, do not post the closing comment. Report the failing check
-so it can be fixed first. This is a resolution signal, not a formal approval,
-since the PR author cannot approve their own PR.
+Re-run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan against the
+updated file, since the appended line is new content the Step 6 scan never saw.
+Then edit the reply in place rather than posting a second comment:
+
+```bash
+gh pr comment <number> --edit-last --body-file .canon/tmp/address-review/reply-<number>.md
+```
+
+If any check fails, skip the edit. Report the failing check so it can be fixed
+first. This is a resolution signal, not a formal approval, since the PR author
+cannot approve their own PR.
 
 ## Step 8: output
 
