@@ -32,7 +32,7 @@ A wireframe that fails these is non-conforming regardless of whether it satisfie
 
 ## Transcription wireframes
 
-A wireframe regenerated from an already-built surface's own render code may carry what the sections below forbid: the source file and function, the class or token names driving each region, and pixel-exact geometry. Open the file by naming the source and stating plainly that the block transcribes rather than approximates. That declaration is what separates a transcription wireframe from one that merely broke the rules below.
+A wireframe regenerated from an already-built surface's own render code may carry what the sections below forbid: the source file and function, the class or token names driving each region, and pixel-exact geometry. Open the file by naming that source: the render function, the stylesheet rule, or the built file the block was read off. The citation is what separates a transcription wireframe from one that merely broke the rules below, since a role label with nothing behind it is unchecked and a class name traced to a real file and line is not.
 
 A drafted-ahead wireframe states intent in role terms because nothing exists yet to check it against. A regenerated one is checkable against the code it mirrors, and a role label standing in for the real class name would throw that check away. The two documents answer different questions, so one set of rules cannot govern both.
 
