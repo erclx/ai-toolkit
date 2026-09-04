@@ -153,10 +153,13 @@ matches it.
 Before posting, run the scan in
 `${CLAUDE_SKILL_DIR}/../../standards/publish.md`
 against the reply. The hook skips `.canon/tmp/`, so this scan is the
-only gate on the published reply. Post it to the PR:
+only gate on the published reply. Post it to the PR and capture the posted
+comment's id, since Step 7 edits this exact comment rather than trusting
+whichever one `gh` considers last:
 
 ```bash
-gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md
+comment_url=$(gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md)
+echo "${comment_url##*issuecomment-}" > .canon/tmp/address-review/reply-<number>.id
 ```
 
 ## Step 7: confirm resolution
@@ -181,11 +184,22 @@ printf '\n✅ Rebased onto origin/main, CI green. No review findings were open.\
 
 Re-run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan against the
 updated file, since the appended line is new content the Step 6 scan never saw.
-Then edit the reply in place rather than posting a second comment:
+Then edit the exact comment Step 6 posted, read back from the id it saved,
+rather than posting a second comment:
 
 ```bash
-gh pr comment <number> --edit-last --body-file .canon/tmp/address-review/reply-<number>.md
+gh api -X PATCH "repos/{owner}/{repo}/issues/comments/$(cat .canon/tmp/address-review/reply-<number>.id)" \
+  -F body=@.canon/tmp/address-review/reply-<number>.md
 ```
+
+`--edit-last` was the first shape and it targets the wrong object here.
+It edits the last comment posted by the authenticated user, not the last
+comment this run posted, and every session here authenticates as the one
+account the operator also comments from. A comment the operator leaves on
+their own pull request during the minutes Step 7 spends waiting on CI becomes
+that last comment, so `--edit-last` would overwrite it with the reply and the
+confirmation, silently. Targeting the id Step 6 captured closes that whether
+or not anyone commented in between.
 
 If any check fails, skip the edit. Report the failing check so it can be fixed
 first. This is a resolution signal, not a formal approval, since the PR author
