@@ -8,6 +8,7 @@ import { CLIENT_COMMAND_MARKER } from '@/client-commands'
 import { gitEnv } from '@/git-env'
 import type { CommandResult, MeasureContext } from '@/gate/measures'
 import {
+  auditSet,
   AUDITS_BASELINE,
   captureStamps,
   clientCommandCitations,
@@ -171,6 +172,43 @@ describe('captureStamps', () => {
     expect(report.emissions[0]?.text).toBe(
       'Missing from the hero set: assets/hero.png',
     )
+  })
+})
+
+describe('auditSet', () => {
+  it('should invoke audits run scoped to tracked and per-machine, excluding upstream', async () => {
+    const seen: string[][] = []
+
+    await auditSet({
+      root: '/nowhere',
+      ci: false,
+      run: async () => {
+        throw new Error('auditSet reads the CLI and nothing else')
+      },
+      cli: async (argv) => {
+        seen.push([...argv])
+        return {
+          exitCode: 0,
+          stdout: `${JSON.stringify({
+            summary: { grown: 0, facts: 0, unmeasured: 0 },
+          })}\n`,
+          stderr: '',
+          all: '',
+        }
+      },
+    })
+
+    expect(seen).toEqual([
+      [
+        'audits',
+        'run',
+        '--corpus',
+        'tracked',
+        '--corpus',
+        'per-machine',
+        '--json',
+      ],
+    ])
   })
 })
 

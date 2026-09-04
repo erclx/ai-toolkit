@@ -38,6 +38,15 @@ export interface Advisory {
  */
 export type AuditRefusal = 'no-manifest' | 'no-lockfile' | 'no-record'
 
+/**
+ * The ceiling on `bun audit --json`, which carries no timeout of its own and
+ * runs to bun's own 299-second ceiling on a stall. Three consecutive clean
+ * runs on this tree measured 44.7, 77.6, and 62.9 seconds, so 120 seconds
+ * leaves margin over the slowest observed pass while still bounding a stall
+ * well under bun's own ceiling.
+ */
+const AUDIT_TIMEOUT_MS = 120_000
+
 /** The lockfiles a resolved dependency set leaves behind, in any manager. */
 const LOCKFILES = [
   'bun.lock',
@@ -116,6 +125,22 @@ export function countBySeverity(
 }
 
 /**
+ * The message a caller reads for a refusal with no advisory record, naming a
+ * stall as its own cause rather than folding it into "no output on stdout",
+ * which is what an empty stdout reads as either way.
+ */
+export function noRecordMessage(result: {
+  readonly timedOut: boolean
+  readonly stderr: string
+}): string {
+  if (result.timedOut) {
+    return `timed out after ${AUDIT_TIMEOUT_MS}ms waiting on the advisory index`
+  }
+  const line = result.stderr.trim().split('\n').pop()
+  return line !== undefined && line !== '' ? line : 'no output on stdout'
+}
+
+/**
  * Shells the runtime's own advisory command rather than carrying an index.
  *
  * A vendored advisory database is a second corpus to keep current, and what
@@ -138,6 +163,7 @@ export async function auditDependencies(root: string): Promise<DepsAudit> {
   const result = await execa('bun', ['audit', '--json'], {
     cwd: root,
     reject: false,
+    timeout: AUDIT_TIMEOUT_MS,
   })
 
   const advisories = parseAdvisories(result.stdout)
@@ -145,7 +171,7 @@ export async function auditDependencies(root: string): Promise<DepsAudit> {
     return {
       kind: 'refused',
       reason: 'no-record',
-      message: result.stderr.trim().split('\n').pop() ?? 'no output on stdout',
+      message: noRecordMessage(result),
     }
   }
 

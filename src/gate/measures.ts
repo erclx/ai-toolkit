@@ -686,10 +686,15 @@ interface AuditSummary {
 
 /**
  * The three stages gating on the three findings here that are facts sit above,
- * and this stage reports the rest. It runs the whole set anyway rather than
- * only what those stages skip, because the aggregate's own value is one verdict
- * over every audit, and a stage measuring a subset would report a health this
- * repository never took.
+ * and this stage reports the rest. It runs every tracked and per-machine audit
+ * rather than only what those stages skip, because the aggregate's own value
+ * is one verdict over the corpora describing this tree, and a stage measuring
+ * a narrower subset would report a health this repository never took.
+ *
+ * The upstream corpus is excluded. `deps` reaches a network index rather than
+ * this tree, and its wall time dwarfs every other stage combined, so a push
+ * gated on it waits on a lookup this tree's own health never depended on. A
+ * scheduled `verify.yml` job reports the advisory instead.
  *
  * This reports and never fails. Growth in a judgment count is the thing the
  * baseline exists to make visible, and failing a push on one would teach a
@@ -697,7 +702,15 @@ interface AuditSummary {
  * specific stage above that names its own remedy.
  */
 export const auditSet: Measure = async (ctx) => {
-  const run = await ctx.cli(['audits', 'run', '--json'])
+  const run = await ctx.cli([
+    'audits',
+    'run',
+    '--corpus',
+    'tracked',
+    '--corpus',
+    'per-machine',
+    '--json',
+  ])
 
   if (run.stdout.trim() === '') {
     return {
