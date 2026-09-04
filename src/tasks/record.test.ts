@@ -311,6 +311,22 @@ describe('recordPlan', () => {
     expect(outcome).toMatchObject({ ok: false, reason: 'no-match' })
   })
 
+  it('should name the one task a prefix resolves to, distinct from absence', async () => {
+    const stem = await seedTask()
+    await seedPlan('worktree-scratch-routing')
+
+    const outcome = await recordPlan(ROOT, 'v28.1', 'worktree-scratch-routing')
+
+    expect(outcome).toEqual(
+      expect.objectContaining({
+        ok: false,
+        reason: 'no-match',
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to name it.`,
+        detail: [stem],
+      }),
+    )
+  })
+
   it('should refuse when the plan reference resolves to no file', async () => {
     const stem = await seedTask()
 

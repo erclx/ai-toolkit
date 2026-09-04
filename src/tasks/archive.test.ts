@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   archiveDir,
   archiveTask,
+  describeUnmatchedStem,
   planCitations,
   readOutcomes,
   readPlanTarget,
@@ -361,7 +362,7 @@ describe('archiveTask', () => {
       expect.objectContaining({
         ok: false,
         reason: 'no-match',
-        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to archive it.`,
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to name it.`,
         detail: [stem],
       }),
     )
@@ -376,7 +377,7 @@ describe('archiveTask', () => {
         ok: false,
         reason: 'ambiguous',
         message:
-          'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name to archive one.',
+          'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name to name one.',
         detail: [first, second],
       }),
     )
@@ -544,7 +545,44 @@ describe('archiveTask', () => {
   })
 })
 
+describe('describeUnmatchedStem', () => {
+  it('should name the one task a prefix resolves to', () => {
+    expect(
+      describeUnmatchedStem(['v28.1-trigger-escalation'], 'v28.1'),
+    ).toEqual({
+      reason: 'no-match',
+      message:
+        'v28.1 does not name a task by itself. One task starts with it: v28.1-trigger-escalation. Pass the full name to name it.',
+      detail: ['v28.1-trigger-escalation'],
+    })
+  })
+
+  it('should name the count when a prefix resolves to several tasks', () => {
+    expect(
+      describeUnmatchedStem(['v28.1-alpha', 'v28.1-beta'], 'v28.1'),
+    ).toEqual({
+      reason: 'ambiguous',
+      message:
+        'v28.1 does not name a task by itself. 2 tasks start with it. Pass the full name to name one.',
+      detail: ['v28.1-alpha', 'v28.1-beta'],
+    })
+  })
+})
+
 describe('planCitations', () => {
+  it('should name the one task a prefix resolves to, distinct from absence', async () => {
+    const stem = await seedTask()
+
+    expect(await planCitations(ROOT, 'v28.1')).toEqual(
+      expect.objectContaining({
+        ok: false,
+        reason: 'no-match',
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to name it.`,
+        detail: [stem],
+      }),
+    )
+  })
+
   it('should report a live plan no other task holds', async () => {
     const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
 
