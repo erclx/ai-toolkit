@@ -50,7 +50,7 @@ tooling = ["tooling/"]
 # uncovered-surface check names it.
 cli = ["src/", "scripts/lib/", "scripts/tooling/", "scripts/eval/"]
 sandbox = ["scripts/sandbox/", "scripts/manage-sandbox.sh"]
-docs = ["docs/", "wiki/", "README.md", "examples/"]
+docs = ["docs/", "wiki/", "README.md", "CONTRIBUTING.md", "examples/"]
 # `scripts/core/` reaches the whole folder, maintenance scripts included, and
 # the two hook families enforce what the verify gate cannot. `.claude/settings.json`
 # registers those hooks, so it rides the same row.
@@ -70,7 +70,10 @@ context = [
 ]
 # Repository configuration belonging to no domain, this map included. The
 # toolkit-owned folder takes a folder prefix rather than this file's own path,
-# so a second file landing beside it is labelled without another census.
+# so a second file landing beside it is labelled without another census. The
+# row also takes a project-root file authored by the project and consumed by
+# one CLI verb, not toolkit source, which is what `inventory.toml` is: read by
+# `src/inventory/config.ts` for one verb, same shape as this file's own.
 repo = [
   ".gitignore",
   ".vscode/",
@@ -79,6 +82,7 @@ repo = [
   ".claude/canon/",
   "vitest.config.ts",
   "vitest.setup.ts",
+  "inventory.toml",
 ]
 
 # Deliberately unlabelled, measured across the 138 commits between `3a0fd695`,
