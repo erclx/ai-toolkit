@@ -173,4 +173,19 @@ describe('applyScripts', () => {
 
     expect(applyScripts(pkg, chain).overridden).toEqual([])
   })
+
+  it('should replace a scaffold-authored key the stack overrides', () => {
+    const chain = [
+      makeManifest('web', {
+        scripts: { lint: 'eslint . --max-warnings 0' },
+        scriptOverrides: { lint: 'eslint . --max-warnings 0' },
+      }),
+    ]
+    const pkg = { scripts: { lint: 'oxlint' } }
+
+    const result = applyScripts(pkg, chain)
+
+    expect(result.pkg.scripts?.lint).toBe('eslint . --max-warnings 0')
+    expect(result.overridden).toContain('lint')
+  })
 })

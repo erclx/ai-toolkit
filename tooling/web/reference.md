@@ -53,6 +53,7 @@ Sticky negative knowledge. Do not relearn.
 
 - Do NOT use `tsc -b` in a Vite project. Composite mode emits `.js` next to `.ts` and ESLint lints the emitted files. Use `tsc --noEmit`.
 - Do NOT accept `eslint@^10` alongside `typescript-eslint@^8`. Chain breaks with `TypeError: Class extends value undefined` from `LegacyESLint`. Pin `eslint@^9` until `typescript-eslint@^9` with ESLint 10 support ships.
+- Do NOT trust `vite-react`'s scaffolded `lint` script. It ships its own `"lint": "oxlint"` under a bare `.oxlintrc.json`, which runs a different rule set from the stack's ESLint config and never gates on it. `[scripts.override]` forces the stack's own eslint invocation back over it.
 - Do NOT rely on bare-folder exclude globs like `exclude: ["e2e"]`. Use `"e2e/**/*"`.
 - Do NOT ship Vitest with no-tests-fail. Fresh scaffolds have zero tests. Use `passWithNoTests: true` or equivalent until the project has at least one test.
 - Do NOT put Playwright `trace` at the top level of `defineConfig`. It lives under `use`.
