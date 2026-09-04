@@ -257,7 +257,60 @@ function isFrontmatterPathsLine(
   return lines[top]?.trim().startsWith('paths:') ?? false
 }
 
-type LineClass = 'live' | 'kept' | 'glob'
+/**
+ * A path segment immediately before a citation match, shaped like another
+ * repository's own name: it carries a dot (a domain-shaped token, matching
+ * the measured `erclx.dev`) or it is itself preceded by a further `/` (two
+ * path segments deep, also matching the measured `public/erclx.dev/...`).
+ *
+ * Bounded by `[\w.-]`, which is what keeps a shell-glob prefix such as
+ * `*` before the slash and a variable-substitution prefix such as
+ * `$project` out: neither `*` nor `$` is in the class, so a segment built
+ * from either never reaches the dot or the second slash this looks for.
+ */
+const CROSS_REPO_PREFIX = /(?:[\w.-]+\.[\w.-]+|[\w.-]+\/[\w.-]+)\/$/
+
+/**
+ * Whether the line's citation sits right after a prefix `CROSS_REPO_PREFIX`
+ * reads as another repository's own path. Per-line rather than per-match,
+ * matching `isKept`'s and `isFrontmatterPathsLine`'s granularity: a line
+ * carrying more than one citation is judged by the first.
+ */
+function isCrossRepoPrefix(lines: readonly string[], index: number): boolean {
+  const line = lines[index] ?? ''
+  const match = [...line.matchAll(CITATION)][0]
+  if (match === undefined) return false
+
+  return CROSS_REPO_PREFIX.test(line.slice(0, match.index ?? 0))
+}
+
+/** An ISO date, marking a paragraph as recording what was true on that day. */
+const ISO_DATE = /\b\d{4}-\d{2}-\d{2}\b/
+
+/**
+ * Whether the line's citation sits inside a blank-line-delimited paragraph
+ * that also carries an ISO date, read as dated prose rather than a live path.
+ *
+ * Walks both directions from `index` to the paragraph's edges, unlike
+ * `isKept`'s upward-only walk to a marker: the date can close a paragraph the
+ * citation opens, as `.claude/ARCHITECTURE.md`'s own `Measured at ... on
+ * <date>` sentences do.
+ */
+function isDatedParagraph(lines: readonly string[], index: number): boolean {
+  let start = index
+  while (start > 0 && lines[start - 1]?.trim() !== '') start -= 1
+
+  let end = index
+  while (end < lines.length - 1 && lines[end + 1]?.trim() !== '') end += 1
+
+  for (let cursor = start; cursor <= end; cursor += 1) {
+    if (ISO_DATE.test(lines[cursor] ?? '')) return true
+  }
+
+  return false
+}
+
+type LineClass = 'live' | 'kept' | 'glob' | 'crossRepo' | 'dated'
 
 function classifyLine(
   lines: readonly string[],
@@ -266,6 +319,8 @@ function classifyLine(
 ): LineClass {
   if (isFrontmatterPathsLine(lines, index, frontmatterEndIndex)) return 'glob'
   if (isKept(lines, index)) return 'kept'
+  if (isCrossRepoPrefix(lines, index)) return 'crossRepo'
+  if (isDatedParagraph(lines, index)) return 'dated'
   return 'live'
 }
 
@@ -287,8 +342,9 @@ export function rewriteText(text: string): string {
 
 /**
  * How many citations `rewriteText` would rewrite, how many marked lines it
- * left alone, and how many sat inside a frontmatter `paths:` glob. The second
- * and third numbers are what say the markers and the glob boundary fired at
+ * left alone, how many sat inside a frontmatter `paths:` glob, how many sat
+ * behind a cross-repository-shaped prefix, and how many sat inside a dated
+ * paragraph. Every number past the first is what says its boundary fired at
  * all, which a diff cannot show because a protected line does not appear in
  * one.
  */
@@ -296,12 +352,16 @@ export function scanText(text: string): {
   readonly rewritten: number
   readonly kept: number
   readonly globs: number
+  readonly crossRepo: number
+  readonly dated: number
 } {
   const lines = text.split('\n')
   const frontmatterEndIndex = frontmatterEnd(lines)
   let rewritten = 0
   let kept = 0
   let globs = 0
+  let crossRepo = 0
+  let dated = 0
 
   for (const [index, line] of lines.entries()) {
     const matches = [...line.matchAll(CITATION)].length
@@ -310,10 +370,12 @@ export function scanText(text: string): {
     const kind = classifyLine(lines, index, frontmatterEndIndex)
     if (kind === 'glob') globs += matches
     else if (kind === 'kept') kept += matches
+    else if (kind === 'crossRepo') crossRepo += matches
+    else if (kind === 'dated') dated += matches
     else rewritten += matches
   }
 
-  return { rewritten, kept, globs }
+  return { rewritten, kept, globs, crossRepo, dated }
 }
 
 /** Where a citation sits, so a reader can judge it before `--write` runs. */
@@ -331,6 +393,45 @@ function frontmatterGlobLines(text: string): CitationLine[] {
   for (const [index, line] of lines.entries()) {
     if (!isFrontmatterPathsLine(lines, index, frontmatterEndIndex)) continue
     if ([...line.matchAll(CITATION)].length === 0) continue
+
+    held.push({ line: index + 1, text: line.trim() })
+  }
+
+  return held
+}
+
+/**
+ * Every line in `text` whose citation `classifyLine` reads as `crossRepo`.
+ *
+ * Reads through `classifyLine` rather than `isCrossRepoPrefix` alone, so a
+ * line a glob or a keep marker already claims is not reported twice under a
+ * second boundary.
+ */
+function crossRepoLines(text: string): CitationLine[] {
+  const lines = text.split('\n')
+  const frontmatterEndIndex = frontmatterEnd(lines)
+  const held: CitationLine[] = []
+
+  for (const [index, line] of lines.entries()) {
+    if ([...line.matchAll(CITATION)].length === 0) continue
+    if (classifyLine(lines, index, frontmatterEndIndex) !== 'crossRepo')
+      continue
+
+    held.push({ line: index + 1, text: line.trim() })
+  }
+
+  return held
+}
+
+/** Every line in `text` whose citation `classifyLine` reads as `dated`. */
+function datedLines(text: string): CitationLine[] {
+  const lines = text.split('\n')
+  const frontmatterEndIndex = frontmatterEnd(lines)
+  const held: CitationLine[] = []
+
+  for (const [index, line] of lines.entries()) {
+    if ([...line.matchAll(CITATION)].length === 0) continue
+    if (classifyLine(lines, index, frontmatterEndIndex) !== 'dated') continue
 
     held.push({ line: index + 1, text: line.trim() })
   }
@@ -402,6 +503,18 @@ export interface FrontmatterGlobEntry {
   readonly lines: readonly CitationLine[]
 }
 
+/** One file whose citation resolves outside this project, held rather than rewritten. */
+export interface CrossRepoCitationEntry {
+  readonly path: string
+  readonly lines: readonly CitationLine[]
+}
+
+/** One file whose citation sits inside a dated paragraph, held rather than rewritten. */
+export interface DatedCitationEntry {
+  readonly path: string
+  readonly lines: readonly CitationLine[]
+}
+
 export interface RecordsPlan {
   readonly moves: readonly FolderMove[]
   readonly collisions: readonly string[]
@@ -409,9 +522,13 @@ export interface RecordsPlan {
   readonly excluded: readonly string[]
   readonly coupled: readonly string[]
   readonly frontmatterGlobs: readonly FrontmatterGlobEntry[]
+  readonly crossRepoCitations: readonly CrossRepoCitationEntry[]
+  readonly datedCitations: readonly DatedCitationEntry[]
   readonly rewritten: number
   readonly kept: number
   readonly globs: number
+  readonly crossRepo: number
+  readonly dated: number
 }
 
 /**
@@ -431,8 +548,12 @@ export function planRecordsMove(
   const excluded: string[] = []
   const coupled: string[] = []
   const frontmatterGlobs: FrontmatterGlobEntry[] = []
+  const crossRepoCitations: CrossRepoCitationEntry[] = []
+  const datedCitations: DatedCitationEntry[] = []
   let kept = 0
   let globs = 0
+  let crossRepo = 0
+  let dated = 0
 
   for (const source of sources) {
     // Silently, and ahead of the exclusion test. The command boundary filters
@@ -452,12 +573,23 @@ export function planRecordsMove(
     const counts = scanText(source.text)
     kept += counts.kept
     globs += counts.globs
+    crossRepo += counts.crossRepo
+    dated += counts.dated
 
     // Ahead of the rewritten === 0 continue below: a file whose only citation
-    // sits in its paths: glob still needs to be reported.
+    // sits in its paths: glob, a cross-repo prefix, or a dated paragraph still
+    // needs to be reported.
     const held = frontmatterGlobLines(source.text)
     if (held.length > 0)
       frontmatterGlobs.push({ path: source.path, lines: held })
+
+    const foreign = crossRepoLines(source.text)
+    if (foreign.length > 0)
+      crossRepoCitations.push({ path: source.path, lines: foreign })
+
+    const dates = datedLines(source.text)
+    if (dates.length > 0)
+      datedCitations.push({ path: source.path, lines: dates })
 
     if (counts.rewritten === 0) continue
 
@@ -478,8 +610,12 @@ export function planRecordsMove(
     excluded,
     coupled,
     frontmatterGlobs,
+    crossRepoCitations,
+    datedCitations,
     rewritten: entries.reduce((sum, entry) => sum + entry.rewritten, 0),
     kept,
     globs,
+    crossRepo,
+    dated,
   }
 }
