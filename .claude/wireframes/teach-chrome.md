@@ -5,7 +5,7 @@ description: The masthead, breadcrumb, jump menu, theme toggle, and progress tra
 
 # Teach chrome
 
-Every teach page shares one header and one progress track. `renderHeader`, `renderBreadcrumb`, `renderJump`, and `renderTrack` in `src/teach/nav.ts:229-273` build both, and the `.bar`, `.mast`, `.jump`, and `.track` rules in `course.css` size them: a 52rem chrome measure (`--chrome`) and a 4.4rem bar height (`--mast-h`). The three page wireframes each point back here rather than redrawing it.
+Every teach page shares one header and one progress track. `renderHeader`, `renderBreadcrumb`, `renderJump`, and `renderTrack` in `src/teach/nav.ts:212-273` build both, and the `.bar`, `.mast`, `.jump`, and `.track` rules in `course.css` size them: a 52rem chrome measure (`--chrome`) and a 4.4rem bar height (`--mast-h`). The three page wireframes each point back here rather than redrawing it.
 
 ## Header
 
