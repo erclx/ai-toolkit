@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.45.1](https://github.com/erclx/canon/compare/v4.45.0...v4.45.1) (2026-09-04)
+
+
+### Bug Fixes
+
+* **tooling:** reach verify's end-to-end stage on both stacks ([#1475](https://github.com/erclx/canon/issues/1475)) ([5611918](https://github.com/erclx/canon/commit/56119187c68e531969e90d0fd24dff363a34fd1c))
+
 ## [4.45.0](https://github.com/erclx/canon/compare/v4.44.0...v4.45.0) (2026-09-04)
 
 
