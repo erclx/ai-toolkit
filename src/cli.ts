@@ -120,7 +120,7 @@ function showHelp(): void {
     `${GREY}│${NC}    canon design render`,
     `${GREY}│${NC}    canon slides render`,
     `${GREY}│${NC}    canon slides list --json`,
-    `${GREY}│${NC}    canon capture assets/install.html --selector .window`,
+    `${GREY}│${NC}    canon capture assets/captures/install.html --selector .window --out assets`,
     `${GREY}│${NC}    canon serve .canon/teach`,
     `${GREY}│${NC}    canon inventory focus --json`,
     `${GREY}│${NC}    canon drive http://localhost:4173 run.json --json`,
