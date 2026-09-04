@@ -14,7 +14,7 @@ The chrome shown here comes from `nav.ts`'s current render functions rather than
 ```plaintext
 ┌──────────────────────────────────────────────┐  ┌───────────────┐
 │  ← masthead, breadcrumb, jump menu, theme:    │  │ On this page  │← .outline, fixed to
-│    see teach-chrome.md                        │  │  First, a…    │  the viewport rather
+│    see chrome.md                              │  │  First, a…    │  the viewport rather
 ├────────────────────────────────────────────── ┤  │  The round…   │  than the scroll
 │ ▰▰▰(here)  ▰▰▰  ▰▰▰                             │  │  Why you…     │  position. Starts
 ├────────────────────────────────────────────── ┤  │  The procedure│  below the bar, sits

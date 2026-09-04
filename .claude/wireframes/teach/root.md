@@ -11,7 +11,7 @@ The entry page into every learning workspace. `renderRootPage` in `src/teach/nav
 
 ```plaintext
 ┌──────────────────────────────────────────────────────────────────────┐
-│  ← masthead, breadcrumb, jump menu, theme toggle: see teach-chrome.md │
+│  ← masthead, breadcrumb, jump menu, theme toggle: see chrome.md      │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                        │
 │  Learning workspaces                                                  │← h1
@@ -41,4 +41,4 @@ The entry page into every learning workspace. `renderRootPage` in `src/teach/nav
 
 - Every row links to that workspace's contents page, except a Stub row, which is disabled and points nowhere: there is nothing to open yet.
 - A row's ordinal is always padded to two digits, however many workspaces exist.
-- The header behaves as `teach-chrome.md` describes. The root page's own breadcrumb segment, `Workspaces`, is the current page and still opens a jump menu onto the same roster this list already shows.
+- The header behaves as `chrome.md` describes. The root page's own breadcrumb segment, `Workspaces`, is the current page and still opens a jump menu onto the same roster this list already shows.

@@ -11,7 +11,7 @@ One page per workspace, at `<workspace>/index.html`. `renderContentsPage` in `sr
 
 ```plaintext
 ┌──────────────────────────────────────────────────────────────────────┐
-│  ← masthead, breadcrumb, jump menu, theme toggle: see teach-chrome.md │
+│  ← masthead, breadcrumb, jump menu, theme toggle: see chrome.md      │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                        │
 │  Fde system design                                                    │← h1, the workspace title
