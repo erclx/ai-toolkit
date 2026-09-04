@@ -219,6 +219,8 @@ A project that archived plans before the folder nested under `.canon/plans/` hol
 
 One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
+`canon tasks plan-link <task> <plan>` writes or corrects the `Plan:` line, mirroring how `canon tasks pull-request` writes its own. `claude-feature` calls it right after the plan file lands, when an existing task names the feature, so the line is a mechanical write rather than hand-edited markdown.
+
 `Groundwork:` points at `../groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
 
 `Intake:` points at `../intake/<slug>/`, the folder an intake pass fills. Use it rather than `Groundwork:`, because a groundwork track measures one question in depth while an intake dispositions many across a tree, and one key covering both loses which kind of pass produced the task. The line names the folder rather than an item inside it. A task routinely promotes several items at once, so an anchored line would name one and drop the rest, and the item numbers belong in that task's `## Findings`.
