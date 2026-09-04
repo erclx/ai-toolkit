@@ -354,6 +354,19 @@ describe('archiveTask', () => {
     ).toMatchObject({ ok: false, reason: 'no-match' })
   })
 
+  it('should name the one task a prefix resolves to, distinct from absence', async () => {
+    const stem = await seedTask()
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem: 'v28.1' })).toEqual(
+      expect.objectContaining({
+        ok: false,
+        reason: 'no-match',
+        message: `v28.1 does not name a task by itself. One task starts with it: ${stem}. Pass the full name to archive it.`,
+        detail: [stem],
+      }),
+    )
+  })
+
   it('should refuse when the board does not exist', async () => {
     expect(
       await archiveTask(ROOT, { kind: 'stem', stem: 'v28.1-anything' }),
