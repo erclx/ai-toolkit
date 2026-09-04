@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.47.0](https://github.com/erclx/canon/compare/v4.46.0...v4.47.0) (2026-09-04)
+
+
+### Features
+
+* **migrate:** give the records sweep an ownership and tense boundary ([#1485](https://github.com/erclx/canon/issues/1485)) ([bd76104](https://github.com/erclx/canon/commit/bd761042480aef3c6f6358c212488abd8044a65e))
+
+
+### Bug Fixes
+
+* **skills:** widen claude-ux-audit's wireframe citations ([#1484](https://github.com/erclx/canon/issues/1484)) ([8bd8924](https://github.com/erclx/canon/commit/8bd89241ef00ee4ec81daaac71e05026885b1da9))
+
 ## [4.46.0](https://github.com/erclx/canon/compare/v4.45.1...v4.46.0) (2026-09-04)
 
 
