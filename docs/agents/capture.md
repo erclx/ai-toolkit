@@ -25,7 +25,9 @@ Three of the five take catalog data, so a stack gaining a rule moves the frame o
 
 Only the HTML is asserted for drift. The PNG is a chromium render whose bytes move with the browser version, so rebuild it with `canon capture assets/captures --selector .window --out assets` when the check reports the HTML changed.
 
-Every render writes a stamp beside its PNG, `hero.png` next to `hero.stamp`, holding the source filename, a `source-sha256` over the markup bytes it read, and an `image-sha256` over the image bytes it wrote. Both digests are what `bun run check` compares, so a markup edit committed without a capture and a PNG swapped under unchanged markup each fail. The stamp is tracked and commits alongside the pair. Nothing hand-edits it, and a capture that cannot write it reports that source as failed and exits 1, so an image whose stamp never landed is reported rather than passed over.
+Every render writes a stamp beside its PNG, `hero.png` next to `hero.stamp`, holding the source filename, a `source-sha256` over the markup bytes it read, and an `image-sha256` over the image bytes it wrote. Both digests are what `bun run check` compares, so a markup edit committed without a capture and a PNG swapped under unchanged markup each fail. The stamp is tracked and commits alongside the pair. A capture that cannot write it reports that source as failed and exits 1, so an image whose stamp never landed is reported rather than passed over.
+
+Neither digest is ever written by hand. A digest is what the gate compares, so a hand-set one asserts agreement the tool never checked, and the way to move it is a capture. The `source:` line above them is the one field a rename may correct in place, since nothing reads it and the alternative is a stamp naming a file that no longer exists. Renaming a frame is the case that comes up, and the correction is the same basename the next capture would have written anyway.
 
 | Option             | Behavior                                          |
 | ------------------ | ------------------------------------------------- |
