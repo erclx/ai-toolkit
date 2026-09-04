@@ -47,7 +47,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 - `.claude/REQUIREMENTS.md`
 - `.claude/ARCHITECTURE.md`
 - `.claude/DESIGN.md`
-- `.claude/wireframes/index.md` and every `.claude/wireframes/<surface>.md`
+- `.claude/wireframes/index.md` and every surface file it links to, following a grouped surface's own `index.md` and the siblings it lists rather than stopping at the top-level folder
 
 Read the task board from the main worktree root instead, resolving that root the way `claude-worktree` does. It is gitignored scratch and never commits with the branch:
 
@@ -61,7 +61,7 @@ Review the session for decisions that diverged from the original plan:
 
 - Requirements added, removed, or changed scope
 - Architecture or technical decisions made or revised
-- Design or UX decisions that differ from DESIGN.md or any `.claude/wireframes/<surface>.md`
+- Design or UX decisions that differ from DESIGN.md or any wireframe surface file, flat or nested under its own subfolder
 - Tasks blocked or newly identified
 
 Then resolve the diff baseline and match it against the board. From `.canon/tasks/index.md` at the main worktree root, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped.
@@ -104,7 +104,7 @@ The verb resolves the board at the main worktree root in-process, which is the r
 
 Read `ok` and `reason` out of that record rather than the exit. An operator's shell profile may wrap `canon` in a function that runs the binary and then a second command and takes the second status, which flattens every non-zero exit to zero. A refusal arriving as success leaves the outcome unmarked while the chain moves on, so the board reports shipped work as open and the next session re-plans it.
 
-**REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, `.claude/wireframes/<surface>.md`**
+**REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, a wireframe surface file (flat or nested)**
 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
