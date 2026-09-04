@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.46.0](https://github.com/erclx/canon/compare/v4.45.1...v4.46.0) (2026-09-04)
+
+
+### Features
+
+* **tasks:** add plan-link verb to write a task's Plan: line ([#1474](https://github.com/erclx/canon/issues/1474)) ([866167e](https://github.com/erclx/canon/commit/866167eae97f5ff266c53bc9d4f448aeb9aaa929))
+
 ## [4.45.1](https://github.com/erclx/canon/compare/v4.45.0...v4.45.1) (2026-09-04)
 
 
