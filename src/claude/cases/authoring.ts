@@ -38,6 +38,11 @@ export const AUTHORING_CASES: readonly SkillCase[] = [
     expect: 'docs-sync',
   },
   {
+    prompt:
+      'Write a brand-new docs page for the capture command, nothing under docs/ covers it yet.',
+    expect: 'docs-draft',
+  },
+  {
     prompt: 'Say what that dense answer actually means in plain terms.',
     expect: 'restate-plainly',
   },

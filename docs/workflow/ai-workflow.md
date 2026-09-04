@@ -290,6 +290,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:create-skill`       | For a new `SKILL.md`                                                  |
 | `canon:create-snippet`     | For a reusable prompt                                                 |
 | `canon:create-standard`    | For a new authoring convention                                        |
+| `canon:docs-draft`         | For a brand-new `docs/*.md` page, drafted against `standards/docs.md` |
 | `canon:bash-script`        | For an interactive, human-facing shell tool                           |
 | `canon:bash-cli-script`    | For a non-interactive automation, CI, or pipeline script              |
 | `canon:ci-workflow`        | For a GitHub Actions workflow file                                    |
