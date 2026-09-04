@@ -44,7 +44,7 @@ For each file, score against this rule order:
 
 For every file proposed for a move:
 
-- If `.claude/context/<filename>` already exists, mark as "conflict" and skip the move.
+- If `.claude/context/<filename>` already exists, or a same-named folder exists at `.claude/context/` with `<filename>`'s `.md` extension dropped, mark as "conflict" and skip the move. A folder of the same name is still a collision, since the domain already lives there split into siblings.
 - Run `git grep -n "docs/<filename>"` (or grep equivalent) to list inbound references in `CLAUDE.md`, `README.md`, and other markdown. Report each as a TODO line. Do not rewrite.
 
 ## Step 4: output

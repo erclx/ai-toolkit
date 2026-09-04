@@ -108,7 +108,7 @@ What the cap governs is a second copy of the structure inside a per-domain entry
 
 ## How entries get populated
 
-`claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing `.claude/context/<domain>.md` entries that reference those files, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
+`claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing entries that reference those files, flat `.claude/context/<domain>.md` or a nested domain's own `.claude/context/<domain>/index.md` and its siblings, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
 
 New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
 

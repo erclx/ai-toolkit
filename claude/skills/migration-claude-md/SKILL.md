@@ -37,7 +37,7 @@ Split `CLAUDE.md` by `##` heading. Score each section against this order:
 For each section proposed for a move:
 
 - Path-scoped: propose `.claude/rules/<subdir>/<n>-<slug>.md` with a `paths:` glob. Pick the subdir and a free number the way `create-rule` does. If `.claude/rules/<subdir>/` already holds a rule on the topic, mark as "conflict" and skip.
-- Domain narrative: propose `.claude/context/<domain>.md`. If the entry already exists, propose appending rather than creating.
+- Domain narrative: propose `.claude/context/<domain>.md`. If the entry already exists, flat or as a same-named `.claude/context/<domain>/` folder, propose appending to the file that owns it rather than creating a duplicate flat entry beside a domain already split.
 
 ## Step 4: output
 
@@ -55,6 +55,7 @@ Print one grouped proposal block. Omit empty groups.
 ## Extract to a context entry
 
 - `## <heading>` → `.claude/context/<domain>.md` (<reason>)
+- `## <heading>` → `.claude/context/<domain>/<sub-area>.md`, appending to the domain's existing sibling file (<reason>)
 
 ## Needs manual split
 

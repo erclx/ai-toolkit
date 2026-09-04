@@ -14,11 +14,11 @@ A reference page that reads like a lesson is a lesson wearing the wrong extensio
 
 Sort by who owns the subject, which is the test the wiki already runs. The reader's activity decided the workspace and decides nothing here.
 
-| The page's subject                                             | Destination                   |
-| -------------------------------------------------------------- | ----------------------------- |
-| Owned by someone outside the project, such as a tool or vendor | the project's wiki            |
-| How this project itself works, for the people who build it     | `.claude/context/<domain>.md` |
-| Written for someone consuming what this project ships          | the project's public docs     |
+| The page's subject                                             | Destination                                                                                                 |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Owned by someone outside the project, such as a tool or vendor | the project's wiki                                                                                          |
+| How this project itself works, for the people who build it     | `.claude/context/<domain>.md`, or the domain's own nested `index.md` when it is already split into a folder |
+| Written for someone consuming what this project ships          | the project's public docs                                                                                   |
 
 A page a reader cannot sort by that question is a page whose subject has not been settled. Say which two destinations it sits between and let the operator choose, rather than picking the nearer one.
 
