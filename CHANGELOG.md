@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.48.1](https://github.com/erclx/canon/compare/v4.48.0...v4.48.1) (2026-09-04)
+
+
+### Bug Fixes
+
+* **autoship:** name the branch in the missing-plan stop message ([#1488](https://github.com/erclx/canon/issues/1488)) ([2daeae9](https://github.com/erclx/canon/commit/2daeae91f7254449364e5e68e150419af03249f6))
+* **canon:** add CONTRIBUTING.md and inventory.toml to label map ([#1490](https://github.com/erclx/canon/issues/1490)) ([e9c2425](https://github.com/erclx/canon/commit/e9c2425e6f4a796b0f1e3e1381a46208992a3302))
+* **claude:** widen context citations to nested domains ([#1492](https://github.com/erclx/canon/issues/1492)) ([1a626fd](https://github.com/erclx/canon/commit/1a626fd32f226ad4f90ecad65dfe5cdd0bca6869))
+* **gate:** stop the deps audit from dominating wall time ([#1493](https://github.com/erclx/canon/issues/1493)) ([cbd722b](https://github.com/erclx/canon/commit/cbd722ba045186ed3c8bdd51808486d760b4dfb6))
+* **tasks:** say what a prefix resolves to on archive refusal ([#1491](https://github.com/erclx/canon/issues/1491)) ([3ee3260](https://github.com/erclx/canon/commit/3ee32602bab87129a1cf8640dcc3362d1de571ac))
+* **tooling:** resolve verify's Sync phase against the checkout ([#1494](https://github.com/erclx/canon/issues/1494)) ([8915434](https://github.com/erclx/canon/commit/8915434b550652104c52fc8418f8a5464ff026b3))
+
 ## [4.48.0](https://github.com/erclx/canon/compare/v4.47.0...v4.48.0) (2026-09-04)
 
 
