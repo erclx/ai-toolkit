@@ -281,6 +281,20 @@ function reportRecords(plan: RecordsPlan, records: number): void {
     )
     for (const path of plan.coupled) logInfo(`  ${path}`)
   }
+
+  // Named individually rather than counted. A rewritten glob stops matching
+  // silently, which is the failure this boundary exists to surface, so the
+  // report gives the reader the file and line to go and check by hand.
+  if (plan.frontmatterGlobs.length > 0) {
+    logInfo(
+      `${plural(plan.frontmatterGlobs.length, 'file')} carry a frontmatter paths: glob left alone:`,
+    )
+    for (const entry of plan.frontmatterGlobs) {
+      for (const line of entry.lines) {
+        logInfo(`  ${entry.path}:${line.line}  ${excerpt(line.text)}`)
+      }
+    }
+  }
 }
 
 function toRecordsRecord(
@@ -298,6 +312,8 @@ function toRecordsRecord(
     kept: plan.kept,
     excluded: plan.excluded.length,
     coupled: plan.coupled,
+    frontmatterGlobs: plan.frontmatterGlobs,
+    globs: plan.globs,
     records,
     paths: plan.entries.map((entry) => ({
       path: entry.path,
@@ -554,6 +570,10 @@ export function register(program: Command): void {
         'A line carrying canon-keep-record-root, or the nearest non-blank line',
         'below it, keeps the old root. Prose that dates a decision needs it; a',
         'live path does not.',
+        '',
+        'A rule frontmatter paths: glob naming a moved root is reported and left',
+        'alone rather than rewritten, since a rewritten glob stops matching',
+        'silently. No marker is needed; the YAML shape is enough.',
         '',
         'The records themselves are never swept. Everything under .canon/ and',
         'every .claude/ record folder is left alone and reported as a count, so',

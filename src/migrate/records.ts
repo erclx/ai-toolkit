@@ -223,43 +223,119 @@ function isKept(lines: readonly string[], index: number): boolean {
   return above >= 0 && (lines[above]?.includes(KEEP_MARKER) ?? false)
 }
 
-/** Rewrites every unmarked citation into a moved entry. */
+/**
+ * The line index where a leading YAML frontmatter block closes, or
+ * `undefined` when the file does not open with a bare `---` on line one.
+ */
+function frontmatterEnd(lines: readonly string[]): number | undefined {
+  if (lines[0] !== '---') return undefined
+  const end = lines.indexOf('---', 1)
+  return end === -1 ? undefined : end
+}
+
+/**
+ * Marks a line inside a rule's frontmatter `paths:` key: the key line itself,
+ * or an indented `- 'glob'` list item under it. Structural rather than
+ * marker-based, found by walking up to the nearest line starting at column 0
+ * and testing whether that line is the bare `paths:` key.
+ *
+ * Independent of `KEEP_MARKER`. A rewritten glob stops matching silently,
+ * where a rewritten sentence is at least visible to a reader, so this line is
+ * held whether or not anyone remembered the marker.
+ */
+function isFrontmatterPathsLine(
+  lines: readonly string[],
+  index: number,
+  frontmatterEndIndex: number | undefined,
+): boolean {
+  if (frontmatterEndIndex === undefined) return false
+  if (index <= 0 || index >= frontmatterEndIndex) return false
+
+  let top = index
+  while (top > 0 && /^\s/.test(lines[top] ?? '')) top -= 1
+
+  return lines[top]?.trim().startsWith('paths:') ?? false
+}
+
+type LineClass = 'live' | 'kept' | 'glob'
+
+function classifyLine(
+  lines: readonly string[],
+  index: number,
+  frontmatterEndIndex: number | undefined,
+): LineClass {
+  if (isFrontmatterPathsLine(lines, index, frontmatterEndIndex)) return 'glob'
+  if (isKept(lines, index)) return 'kept'
+  return 'live'
+}
+
+/** Rewrites every unmarked, non-glob citation into a moved entry. */
 export function rewriteText(text: string): string {
   const lines = text.split('\n')
+  const frontmatterEndIndex = frontmatterEnd(lines)
 
   return lines
     .map((line, index) =>
-      isKept(lines, index)
-        ? line
-        : line.replace(CITATION, (_match, entry: string) =>
+      classifyLine(lines, index, frontmatterEndIndex) === 'live'
+        ? line.replace(CITATION, (_match, entry: string) =>
             destinationPath(entry),
-          ),
+          )
+        : line,
     )
     .join('\n')
 }
 
 /**
- * How many citations `rewriteText` would rewrite, and how many marked lines it
- * left alone. The second number is what says the markers fired at all, which a
- * diff cannot show because a protected line does not appear in one.
+ * How many citations `rewriteText` would rewrite, how many marked lines it
+ * left alone, and how many sat inside a frontmatter `paths:` glob. The second
+ * and third numbers are what say the markers and the glob boundary fired at
+ * all, which a diff cannot show because a protected line does not appear in
+ * one.
  */
 export function scanText(text: string): {
   readonly rewritten: number
   readonly kept: number
+  readonly globs: number
 } {
   const lines = text.split('\n')
+  const frontmatterEndIndex = frontmatterEnd(lines)
   let rewritten = 0
   let kept = 0
+  let globs = 0
 
   for (const [index, line] of lines.entries()) {
     const matches = [...line.matchAll(CITATION)].length
     if (matches === 0) continue
 
-    if (isKept(lines, index)) kept += matches
+    const kind = classifyLine(lines, index, frontmatterEndIndex)
+    if (kind === 'glob') globs += matches
+    else if (kind === 'kept') kept += matches
     else rewritten += matches
   }
 
-  return { rewritten, kept }
+  return { rewritten, kept, globs }
+}
+
+/** Where a citation sits, so a reader can judge it before `--write` runs. */
+export interface CitationLine {
+  readonly line: number
+  readonly text: string
+}
+
+/** Every frontmatter `paths:` line in `text` carrying a citation. */
+function frontmatterGlobLines(text: string): CitationLine[] {
+  const lines = text.split('\n')
+  const frontmatterEndIndex = frontmatterEnd(lines)
+  const held: CitationLine[] = []
+
+  for (const [index, line] of lines.entries()) {
+    if (!isFrontmatterPathsLine(lines, index, frontmatterEndIndex)) continue
+    if ([...line.matchAll(CITATION)].length === 0) continue
+
+    held.push({ line: index + 1, text: line.trim() })
+  }
+
+  return held
 }
 
 export interface FolderMove {
@@ -320,14 +396,22 @@ export interface CitationEntry {
   readonly kept: number
 }
 
+/** One file whose frontmatter `paths:` glob names a moved root, held rather than rewritten. */
+export interface FrontmatterGlobEntry {
+  readonly path: string
+  readonly lines: readonly CitationLine[]
+}
+
 export interface RecordsPlan {
   readonly moves: readonly FolderMove[]
   readonly collisions: readonly string[]
   readonly entries: readonly CitationEntry[]
   readonly excluded: readonly string[]
   readonly coupled: readonly string[]
+  readonly frontmatterGlobs: readonly FrontmatterGlobEntry[]
   readonly rewritten: number
   readonly kept: number
+  readonly globs: number
 }
 
 /**
@@ -346,7 +430,9 @@ export function planRecordsMove(
   const entries: CitationEntry[] = []
   const excluded: string[] = []
   const coupled: string[] = []
+  const frontmatterGlobs: FrontmatterGlobEntry[] = []
   let kept = 0
+  let globs = 0
 
   for (const source of sources) {
     // Silently, and ahead of the exclusion test. The command boundary filters
@@ -365,6 +451,14 @@ export function planRecordsMove(
 
     const counts = scanText(source.text)
     kept += counts.kept
+    globs += counts.globs
+
+    // Ahead of the rewritten === 0 continue below: a file whose only citation
+    // sits in its paths: glob still needs to be reported.
+    const held = frontmatterGlobLines(source.text)
+    if (held.length > 0)
+      frontmatterGlobs.push({ path: source.path, lines: held })
+
     if (counts.rewritten === 0) continue
 
     if (referencesExcluded(source.text)) coupled.push(source.path)
@@ -383,7 +477,9 @@ export function planRecordsMove(
     entries,
     excluded,
     coupled,
+    frontmatterGlobs,
     rewritten: entries.reduce((sum, entry) => sum + entry.rewritten, 0),
     kept,
+    globs,
   }
 }
