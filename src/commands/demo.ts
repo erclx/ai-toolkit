@@ -4,7 +4,7 @@ import type { Command } from 'commander'
 import { INSTALL_BROWSER, isEngineMissing } from '@/browser/engine'
 import { parseDraft } from '@/demo/beats'
 import { compilePlan, parsePlan, unresolved } from '@/demo/compile'
-import { convertToMp4, INSTALL_CONVERTER } from '@/demo/container'
+import { convertToGif, convertToMp4, INSTALL_CONVERTER } from '@/demo/container'
 import { DEFAULT_CURSORS } from '@/demo/cursors'
 import { loadCursorTheme } from '@/demo/theme'
 import { intro, logError, logInfo, logStep, logWarn, outro, plural } from '@/ui'
@@ -30,6 +30,7 @@ interface RunOptions {
   readonly cursor?: string
   readonly video: boolean
   readonly still: boolean
+  readonly gif?: boolean
   readonly json?: boolean
 }
 
@@ -82,6 +83,7 @@ export function register(program: Command): void {
     )
     .option('--no-video', 'Skip the recording and write only the still')
     .option('--no-still', 'Skip the still and write only the recording')
+    .option('--gif', 'Also write a gif, for a host that strips video')
     .option('--json', 'Add a machine-readable record on stdout')
     .addHelpText(
       'after',
@@ -92,6 +94,9 @@ export function register(program: Command): void {
         '',
         'Writes mp4 beside the webm when ffmpeg is on PATH, and skips it',
         `otherwise without failing the run. Install it with: ${INSTALL_CONVERTER}`,
+        '',
+        'A gif is opt-in behind --gif, since it is far larger than the webm',
+        'and only a host that strips video needs one. GitHub is that host.',
         '',
         'Exit codes:',
         '  0  the recording and the still were written',
@@ -306,16 +311,35 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
     }
   }
 
+  let gifPath: string | undefined
+  let gifReason: string | undefined
+  if (result.videoPath && opts.gif) {
+    const converted = await convertToGif(result.videoPath)
+    if (converted.status === 'converted') {
+      gifPath = converted.gifPath
+      logInfo(display(gifPath))
+    } else if (converted.status === 'skipped') {
+      gifReason = converted.reason
+      logWarn('ffmpeg is not installed, so no gif was written.')
+      logWarn(`Install it with: ${INSTALL_CONVERTER}`)
+    } else {
+      gifReason = converted.reason
+      logWarn(`gif conversion failed: ${converted.reason}`)
+    }
+  }
+
   outro()
 
   emit(opts.json, {
     plan: source,
     video: result.videoPath ?? null,
     mp4: mp4Path ?? null,
+    gif: gifPath ?? null,
     still: result.stillPath ?? null,
     steps: result.steps,
     durationMs: result.durationMs,
     ...(mp4Reason ? { mp4Reason } : {}),
+    ...(gifReason ? { gifReason } : {}),
   })
   return 0
 }

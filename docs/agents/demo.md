@@ -38,13 +38,16 @@ A step's caption from the draft renders as an overlay while its hold plays, so t
 
 When `ffmpeg` is on PATH, the run also writes an mp4 beside the webm, since webm plays in a `<video>` tag but nothing else accepts it. A target without `ffmpeg` still gets the webm and a line naming what to install, and the run does not fail over the missing converter.
 
-| Option           | Behavior                                                    |
-| ---------------- | ----------------------------------------------------------- |
-| `--out <dir>`    | Directory to write into, overriding what the plan names     |
-| `--cursor <dir>` | Cursor theme folder to draw the pointer from                |
-| `--no-video`     | Write only the still                                        |
-| `--no-still`     | Write only the recording                                    |
-| `--json`         | Add a record on stdout carrying both paths and the duration |
+`--gif` adds a third file from the same converter, and it is opt-in where the mp4 is not. A gif runs several times the size of the webm it derives from, and the destination that needs one is a README on a host that strips `<video>`, which GitHub does. The filter generates a palette from the source and then applies it, rather than quantizing per frame, since a per-frame palette is what makes a recording of flat interface colors band and shimmer. A missing converter is reported the same way it is for the mp4, so an absent `ffmpeg` costs the gif and not the run.
+
+| Option           | Behavior                                                            |
+| ---------------- | ------------------------------------------------------------------- |
+| `--out <dir>`    | Directory to write into, overriding what the plan names             |
+| `--cursor <dir>` | Cursor theme folder to draw the pointer from                        |
+| `--no-video`     | Write only the still                                                |
+| `--no-still`     | Write only the recording                                            |
+| `--gif`          | Also write a gif, for a host that strips video                      |
+| `--json`         | Add a record on stdout carrying every path written and the duration |
 
 A step waits on its `waitFor` selector becoming visible and then holds for its own `holdMs`, which is what puts a finished state on screen long enough to read. `navigate` uses the plan's URL unless the step names its own.
 
