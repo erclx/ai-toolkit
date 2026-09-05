@@ -1,0 +1,65 @@
+name: Deploy Site
+# canon-no-seed: builds the landing page from this checkout's own catalogs and publishes it to this project's Cloudflare Pages site at canon.erclx.dev. Seeding it as-is would have a target deploy this repository's page under this repository's domain.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # A page whose numbers are read at build time goes stale when a catalog
+      # moves, not only when web/ is edited, so the catalogs it reads are on
+      # this list beside the page itself.
+      - 'web/**'
+      - 'assets/**'
+      - 'src/design/**'
+      - 'governance/rules/**'
+      - 'standards/**'
+      - 'snippets/**'
+      - 'claude/skills/**'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+# A second push while a deploy is in flight publishes the newer commit rather
+# than racing it, and the running job is left to finish so a half-uploaded site
+# is never what a reader lands on.
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: 🌐 Deploy Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      # The build runs inside this checkout rather than against a published
+      # package, because `web/src/lib/counts.ts` shells out to `canon gov
+      # counts --json` and the page refuses to build without it. Linking the
+      # local CLI is what makes that verb resolve on PATH, and it also means
+      # the counts on the deployed page are this commit's rather than the last
+      # release's.
+      - name: Link Local CLI
+        run: bun link
+
+      - name: Build
+        run: bun run web:build
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy web/dist --project-name=canon

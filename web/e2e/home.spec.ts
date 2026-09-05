@@ -1,10 +1,14 @@
 import { expect, test } from '@playwright/test'
 
 import { readCatalogCounts } from '../src/lib/counts'
+// The spec runs outside vite, which resolves a bare JSON import for the
+// component but not for this file, so the attribute is required here and not
+// in AgentView.astro.
+import fixture from '../src/fixtures/agent-view.json' with { type: 'json' }
 
-test('renders the seven sections', async ({ page }) => {
+test('renders the eight sections', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('section')).toHaveCount(7)
+  await expect(page.locator('section')).toHaveCount(8)
 })
 
 test('every section image resolves', async ({ page }) => {
@@ -29,6 +33,134 @@ test('the rule arrives once its stage scrolls into view', async ({ page }) => {
   await stage.scrollIntoViewIfNeeded()
   await expect(stage).toHaveClass(/is-visible/)
   await expect(card).toHaveCSS('opacity', '1')
+})
+
+test('the agent view renders all three bands at once', async ({ page }) => {
+  await page.goto('/')
+
+  // Every session plus the mover's second copy, which is what lets a row cross
+  // a heading that CSS cannot transition across.
+  await expect(page.locator('.agent-row')).toHaveCount(
+    fixture.sessions.length + 1,
+  )
+  await expect(page.locator('.agent-band')).toHaveCount(3)
+  await expect(page.locator('.agent-more')).toContainText(
+    `${fixture.summary.more} more`,
+  )
+  await expect(page.locator('.count-working')).toHaveText(
+    String(fixture.summary.working),
+  )
+})
+
+// The section is about a dispatch, so the session doing the dispatching has to
+// be in it. A branch filter in the generator excluded the orchestrator and
+// every planner, which no check here caught because the page matched its own
+// fixture the whole way through.
+test('the agent view pins the dispatching session', async ({ page }) => {
+  await page.goto('/')
+
+  const pinned = fixture.sessions.filter((s) => s.state === 'pinned')
+  expect(pinned.length).toBeGreaterThan(0)
+
+  const band = page.locator('.agent-band').first()
+  await expect(band).toHaveText('Pinned')
+  await expect(page.locator('.agent-row').first()).toContainText(pinned[0].name)
+})
+
+test('the agent view carries planners beside workers', async ({ page }) => {
+  await page.goto('/')
+
+  const planners = fixture.sessions.filter((s) => s.name.startsWith('planner-'))
+  expect(planners.length).toBeGreaterThan(0)
+
+  for (const planner of planners) {
+    await expect(
+      page.locator('.agent-row').filter({ hasText: planner.name }).first(),
+    ).toBeVisible()
+  }
+})
+
+test('the agent view names each session with its own row', async ({ page }) => {
+  await page.goto('/')
+
+  for (const session of fixture.sessions) {
+    const row = page.locator(`.agent-row[data-session="${session.name}"]`)
+    await expect(row.first()).toContainText(session.name)
+    await expect(row.first()).toContainText(session.activity)
+  }
+})
+
+test('a working row moves into completed on scroll', async ({ page }) => {
+  await page.goto('/')
+  const stage = page.locator('.agent-stage')
+  const mover = stage.locator('.agent-row-mover')
+  const landed = stage.locator('.agent-row-landed')
+
+  await expect(mover).toBeVisible()
+  await expect(landed).toBeHidden()
+
+  await stage.scrollIntoViewIfNeeded()
+
+  // The row survives the scroll that reveals it. Moving it on the intersection
+  // itself showed a reader the finished state and never the one it finished
+  // from, so this asserts the dwell rather than only its outcome.
+  //
+  // The wait is the assertion rather than a settle. Reading the class straight
+  // after the scroll passes whether or not a dwell exists, since the observer
+  // callback has not necessarily run yet either way, so the check has to land
+  // inside the dwell window to mean anything.
+  await page.waitForTimeout(400)
+  await expect(stage).not.toHaveClass(/is-complete/)
+  await expect(mover).toBeVisible()
+
+  await expect(stage).toHaveClass(/is-complete/)
+  await expect(landed).toBeVisible()
+  await expect(mover).toBeHidden()
+
+  // The count moves with the row, so the summary never contradicts the list
+  // sitting under it.
+  await expect(stage.locator('.agent-summary-after')).toContainText(
+    `${fixture.summary.working - 1} working`,
+  )
+  await expect(stage.locator('.agent-summary-before')).toBeHidden()
+})
+
+test('both marker states are on screen together', async ({ page }) => {
+  await page.goto('/')
+
+  // The two bands stand at once, so a working marker and a finished one are
+  // visible in the same view rather than one replacing the other.
+  await expect(page.locator('.marker-working').first()).toBeVisible()
+  await expect(page.locator('.marker-done').last()).toBeVisible()
+})
+
+test('the agent view names an outcome for every session', async ({ page }) => {
+  await page.goto('/')
+
+  for (const session of fixture.sessions) {
+    if (session.pullRequest === null) continue
+    const row = page.locator(`.agent-row[data-session="${session.name}"]`)
+    await expect(row.first().locator('.agent-pr')).toHaveText(
+      `#${session.pullRequest}`,
+    )
+  }
+})
+
+test.describe('with motion turned down', () => {
+  test.use({ reducedMotion: 'reduce' })
+
+  // The move is carried by the class rather than by the motion, which is the
+  // property that lets the slide and the marker animation drop out without
+  // taking the state change with them.
+  test('the row still lands', async ({ page }) => {
+    await page.goto('/')
+    const stage = page.locator('.agent-stage')
+
+    await stage.scrollIntoViewIfNeeded()
+    await expect(stage).toHaveClass(/is-complete/)
+    await expect(stage.locator('.agent-row-landed')).toBeVisible()
+    await expect(stage.locator('.agent-row-mover')).toBeHidden()
+  })
 })
 
 test('the hero cta points at the install section', async ({ page }) => {

@@ -38,19 +38,22 @@ A step's caption from the draft renders as an overlay while its hold plays, so t
 
 When `ffmpeg` is on PATH, the run also writes an mp4 beside the webm, since webm plays in a `<video>` tag but nothing else accepts it. A target without `ffmpeg` still gets the webm and a line naming what to install, and the run does not fail over the missing converter.
 
-| Option           | Behavior                                                    |
-| ---------------- | ----------------------------------------------------------- |
-| `--out <dir>`    | Directory to write into, overriding what the plan names     |
-| `--cursor <dir>` | Cursor theme folder to draw the pointer from                |
-| `--no-video`     | Write only the still                                        |
-| `--no-still`     | Write only the recording                                    |
-| `--json`         | Add a record on stdout carrying both paths and the duration |
+`--gif` adds a third file from the same converter, and it is opt-in where the mp4 is not. A gif runs several times the size of the webm it derives from, and the destination that needs one is a README on a host that strips `<video>`, which GitHub does. The filter generates a palette from the source and then applies it, rather than quantizing per frame, since a per-frame palette is what makes a recording of flat interface colors band and shimmer. It applies that palette without dithering, because the command records applications rather than photographs and the dither writes noise the encoder then stores. One recording measured 3,193,715 bytes dithered against 2,701,941 without, with the same text region cropped from both and read as identical. A missing converter is reported the same way it is for the mp4, so an absent `ffmpeg` costs the gif and not the run.
+
+| Option           | Behavior                                                            |
+| ---------------- | ------------------------------------------------------------------- |
+| `--out <dir>`    | Directory to write into, overriding what the plan names             |
+| `--cursor <dir>` | Cursor theme folder to draw the pointer from                        |
+| `--no-video`     | Write only the still                                                |
+| `--no-still`     | Write only the recording                                            |
+| `--gif`          | Also write a gif, for a host that strips video                      |
+| `--json`         | Add a record on stdout carrying every path written and the duration |
 
 A step waits on its `waitFor` selector becoming visible and then holds for its own `holdMs`, which is what puts a finished state on screen long enough to read. `navigate` uses the plan's URL unless the step names its own.
 
 ## The pointer is painted inside the page
 
-The browser engine's own annotation draws a red dot at the moment of a click and an action label in a corner. It paints no cursor, so a run without more looks like the pointer teleports between targets.
+The browser engine offers an annotation of its own that draws a dot on the interacted element and a title naming the API call it made, and this recorder does not turn it on. It paints no cursor, so a run relying on it looks like the pointer teleports between targets, and the two overlays below supersede it: a real cursor where the dot is a marker, and the beat's narration where the title reads `Mouse move`. Running both put four overlays on the frame, and the two the engine drew were the two a viewer reads as noise.
 
 The recorder injects a pointer element before navigation and moves it through the engine's pointer with interpolated steps rather than through the element-clicking helper, which resolves a target and jumps to it. The step count is the whole difference between a cursor that travels and one that appears, and how many steps a move takes is derived from the machine's own round-trip cost rather than fixed, so the same plan glides at roughly the same pace on a loaded machine as an idle one. It also reads the element under it on every move and switches between an arrow, a hand, and a text beam, so it reflects the page the way a real cursor does.
 

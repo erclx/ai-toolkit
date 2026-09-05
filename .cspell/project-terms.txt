@@ -81,6 +81,7 @@ hotspots
 invokable
 jsdom
 korotovsky
+lanczos
 larr
 launchable
 lede
@@ -102,6 +103,8 @@ obra
 oneline
 overfitted
 overfitting
+palettegen
+paletteuse
 parallelizable
 pbakaus
 pentesting

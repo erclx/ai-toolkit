@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { convertToMp4 } from '@/demo/container'
+import { convertToGif, convertToMp4 } from '@/demo/container'
 
 async function ffmpegAvailable(): Promise<boolean> {
   const result = await execa('ffmpeg', ['-version'], { reject: false })
@@ -56,6 +56,27 @@ describe('convertToMp4', () => {
         expect(existsSync(result.mp4Path)).toBe(true)
         expect(statSync(result.mp4Path).size).toBeGreaterThan(0)
       })
+
+      it('should write a gif beside the webm rather than replacing it', async () => {
+        const result = await convertToGif(webmPath)
+
+        expect(result).toMatchObject({ status: 'converted' })
+        if (result.status !== 'converted') return
+        expect(existsSync(webmPath)).toBe(true)
+        expect(existsSync(result.gifPath)).toBe(true)
+        expect(statSync(result.gifPath).size).toBeGreaterThan(0)
+      })
     },
   )
+})
+
+describe('convertToGif', () => {
+  it('should report the converter missing without failing the run', async () => {
+    const result = await convertToGif(
+      '/nonexistent/clip.webm',
+      'definitely-not-a-real-ffmpeg-binary',
+    )
+
+    expect(result).toEqual({ status: 'skipped', reason: 'converter-missing' })
+  })
 })
