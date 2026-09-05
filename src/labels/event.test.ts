@@ -170,4 +170,62 @@ describe('resolveScanInput', () => {
       source: 'pull-request',
     })
   })
+
+  it('should resolve the body from --body-file', () => {
+    const path = join(dir, 'body.md')
+    writeFileSync(path, 'the file body')
+
+    const result = resolveScanInput({ bodyFile: path })
+
+    expect(result).toEqual({
+      kind: 'resolved',
+      title: '',
+      body: 'the file body',
+      headRefName: '',
+      source: 'pull-request',
+    })
+  })
+
+  it('should refuse unreadable-body-file when the path does not resolve', () => {
+    const result = resolveScanInput({ bodyFile: join(dir, 'missing.md') })
+
+    expect(result.kind).toBe('refused')
+    expect(result.kind === 'refused' && result.reason).toBe(
+      'unreadable-body-file',
+    )
+  })
+
+  it('should refuse conflicting-body-input when --body and --body-file are both given', () => {
+    const path = join(dir, 'body.md')
+    writeFileSync(path, 'the file body')
+
+    const result = resolveScanInput({ body: 'from the flag', bodyFile: path })
+
+    expect(result.kind).toBe('refused')
+    expect(result.kind === 'refused' && result.reason).toBe(
+      'conflicting-body-input',
+    )
+  })
+
+  it('should let --body-file override an event payload body the same way --body already does', () => {
+    const bodyPath = join(dir, 'body.md')
+    writeFileSync(bodyPath, 'from the file')
+    const eventPath = eventFile({
+      review: { body: 'from the event' },
+      pull_request: { head: { ref: 'feat/x' } },
+    })
+
+    const result = resolveScanInput({
+      event: eventPath,
+      bodyFile: bodyPath,
+    })
+
+    expect(result).toEqual({
+      kind: 'resolved',
+      title: '',
+      body: 'from the file',
+      headRefName: 'feat/x',
+      source: 'pull-request',
+    })
+  })
 })

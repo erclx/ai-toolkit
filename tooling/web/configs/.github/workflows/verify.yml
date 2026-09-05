@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   static-checks:
     name: 🔍 Static Checks
@@ -90,6 +94,13 @@ jobs:
       - name: Build
         run: bun run build
 
+      - name: Upload Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+          retention-days: 1
+
   e2e-tests:
     name: 🎭 E2E Tests
     runs-on: ubuntu-latest
@@ -111,18 +122,29 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
+      - name: Download Build Output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - name: Install Playwright System Dependencies
+        run: bunx playwright install-deps chromium
+
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/package.json') }}
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('**/package.json') }}
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: bunx playwright install chromium
 
       - name: Run E2E Tests
+        env:
+          DIST_PREBUILT: 'true'
         run: bun run test:e2e --project=chromium
 
       - name: Upload E2E Report

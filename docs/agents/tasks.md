@@ -92,7 +92,7 @@ A relative path resolves against the project root first and against `.canon/task
 
 The record carries `launchable` and `open`, the questions still waiting, each with the `label` that names it and the `why` its suggestion gave for needing a person. Exit codes: `0` launchable, `1` refused with `no-plan`, `archived`, or `bad-input`, `2` waiting on the operator.
 
-A blank `- Answer:` is not a waiting question. The plan standard fixes an empty slot as accepting the `- Suggested:` line above it, so the one shape this reads is `- Suggested: needs your call, <why>` over an empty slot, which is what that standard writes where the answer turns on preference rather than on a technical default. A verb reading every blank slot as open would report every plan in the folder.
+A blank `- Answer:` is not a waiting question. The plan standard fixes an empty slot as accepting the `- Suggested:` line above it, so the shapes this reads are `- Suggested: needs your call, <why>` and the two demonstrated paraphrases, `needs operator's call` and `needs the operator's call`, over an empty slot, which is what that standard writes where the answer turns on preference rather than on a technical default. A verb reading every blank slot as open would report every plan in the folder.
 
 The question block is read through the same parser `canon tasks validate` runs, so the gate and the conformance check cannot drift into disagreeing about what a question is. A question carrying no suggestion at all is that check's finding rather than this one's, and it goes unread here.
 
