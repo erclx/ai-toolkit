@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.55.0](https://github.com/erclx/canon/compare/v4.54.0...v4.55.0) (2026-09-05)
+
+
+### Features
+
+* **skills:** add context-draft and wireframe-draft skills ([#1518](https://github.com/erclx/canon/issues/1518)) ([f33eadb](https://github.com/erclx/canon/commit/f33eadb592de377d2dd0e9244c5f44bbfcaf20a2))
+* **skills:** add index-lookup for topic search over index catalogs ([#1521](https://github.com/erclx/canon/issues/1521)) ([c447552](https://github.com/erclx/canon/commit/c44755244aeb493cacae05d08640dd7095a29a64))
+* **skills:** review shipped-corpus edits for self-only references ([#1519](https://github.com/erclx/canon/issues/1519)) ([e57489b](https://github.com/erclx/canon/commit/e57489b340ae234303dffc92d4a308db6ffdaade))
+
 ## [4.54.0](https://github.com/erclx/canon/compare/v4.53.0...v4.54.0) (2026-09-05)
 
 
