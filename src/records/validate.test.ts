@@ -580,6 +580,41 @@ describe('checkPlan', () => {
       'entry-unreasoned',
     ])
   })
+
+  it('should report a blank-Answer Suggested line paraphrasing the operator call', () => {
+    const body = conformingPlan().replace(
+      '   - Suggested: a validate verb, since it reports without writing',
+      "   - Suggested: needs operator's call, the phrasing this task measured",
+    )
+
+    expect(kinds(checkPlan('feature-a-b.md', body))).toEqual([
+      'operator-call-phrasing',
+    ])
+  })
+
+  it('should not report the canonical phrase over a blank Answer', () => {
+    const body = conformingPlan().replace(
+      '   - Suggested: a validate verb, since it reports without writing',
+      '   - Suggested: needs your call, the phrasing already matches',
+    )
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should not report an ordinary suggestion naming neither operator nor call', () => {
+    expect(checkPlan('feature-a-b.md', conformingPlan())).toEqual([])
+  })
+
+  it('should not report a paraphrase once the Answer is filled', () => {
+    const body = conformingPlan()
+      .replace(
+        '   - Suggested: a validate verb, since it reports without writing',
+        "   - Suggested: needs operator's call, the phrasing this task measured",
+      )
+      .replace('   - Answer:\n', '   - Answer: Take the verb.\n')
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
 })
 
 describe('checkItems', () => {

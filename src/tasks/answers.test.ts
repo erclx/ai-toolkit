@@ -162,6 +162,35 @@ describe('planAnswers', () => {
     expect(outcome.launchable).toBe(false)
   })
 
+  it("should hold a plan carrying the operator's call paraphrase", async () => {
+    await writePlan('gate', [
+      {
+        suggested: "needs operator's call, the paraphrase this task measured.",
+      },
+    ])
+
+    const outcome = await planAnswers(ROOT, 'gate')
+
+    assertOk(outcome)
+    expect(outcome.launchable).toBe(false)
+    expect(outcome.open[0]?.why).toBe('the paraphrase this task measured.')
+  })
+
+  it("should hold a plan carrying the the-operator's-call paraphrase", async () => {
+    await writePlan('gate', [
+      {
+        suggested:
+          "needs the operator's call, the longer variant this task measured.",
+      },
+    ])
+
+    const outcome = await planAnswers(ROOT, 'gate')
+
+    assertOk(outcome)
+    expect(outcome.launchable).toBe(false)
+    expect(outcome.open[0]?.why).toBe('the longer variant this task measured.')
+  })
+
   it('should launch a plan carrying no questions section at all', async () => {
     await writeFile(
       join(ROOT, '.canon', 'plans', 'feature-bare.md'),
