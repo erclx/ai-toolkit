@@ -47,6 +47,7 @@ packages = [
 "test:e2e:ui" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && playwright test --ui"
 "test:e2e:report" = "playwright show-report"
 "check:full" = "./scripts/verify.sh && bun run test:e2e"
+"smoke:prod" = "bun e2e/screenshot.ts --check-console-clean --require-base-url"
 
 [scripts.override]
 "lint" = "eslint . --max-warnings 0"
@@ -55,5 +56,5 @@ packages = [
 [gitignore]
 "# Build" = ["dist/"]
 "# Coverage" = ["coverage/"]
-"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/", "screenshots/"]
+"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/"]
 "# VSCode" = [".vscode/*", "!.vscode/extensions.json", "!.vscode/settings.json"]
