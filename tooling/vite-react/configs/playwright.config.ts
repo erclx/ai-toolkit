@@ -6,6 +6,7 @@ const baseURL = `http://localhost:${5173 + (Number(process.env.WORKTREE_PORT_OFF
 export default defineConfig({
   testDir: 'e2e',
   forbidOnly: isCI,
+  // Absorbs shared-runner noise on a fresh scaffold with no flake history, at the cost of hiding a real defect until someone reads the run summary.
   retries: isCI ? 2 : 0,
   // No override here: Playwright's own CPU-derived default suits every CI runner
   reporter: isCI ? 'list' : 'html',
