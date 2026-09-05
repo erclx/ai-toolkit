@@ -20,7 +20,7 @@ The whole feature came out of `.canon/groundwork/38-demo-recorder/`, which measu
 - `src/demo/theme.ts`: reads a cursor theme folder for `--cursor`
 - `src/demo/drive.ts`: every browser reference the feature adds
 - `src/browser/engine.ts`: the install command, the two ways the engine can be absent, the unreachable-server test, and the keyboard-modality press, shared with `canon inventory` and `canon drive` as each became the next command needing them
-- `src/demo/container.ts`: converts the webm the driver wrote into mp4, as a post-step the compiler and the driver never see
+- `src/demo/container.ts`: converts the webm the driver wrote into mp4, and into a gif behind `--gif`, as post-steps the compiler and the driver never see
 - `src/commands/demo.ts`: wiring only, with the driver behind a dynamic import
 
 ## Decisions
@@ -34,6 +34,7 @@ The whole feature came out of `.canon/groundwork/38-demo-recorder/`, which measu
 - **Pointer travel is a duration, and the step count is derived rather than fixed.** A step is a round trip to the browser, so a fixed count set a message rate rather than a duration, and the same plan produced recordings 26 percent apart on byte-identical input. `compile.ts`'s `deriveSteps` divides the plan's `pointer.travelMs` by a round trip `drive.ts` measures on the first real move, not on a blank page, since layout, paint, and page script are what a step actually pays for.
 - **The caption is a DOM overlay next to the pointer's, not the engine's own annotation.** `showActions` names the Playwright call it made, never the beat's narration, so `drive.ts` installs a second `addInitScript` alongside the pointer's and updates it after each step's action runs, before the hold that follows.
 - **mp4 is a post-step, not a compiler or driver concern.** `container.ts` shells out to `ffmpeg` through `execa` once the driver has already written the webm, writes beside it rather than instead of it, and degrades a missing or failing converter to a warning rather than failing a run whose recording already succeeded.
+- **The gif is opt-in where the mp4 is not, and the split is destination rather than cost.** A gif runs several times the size of the webm it derives from and one destination needs one, a README on a host that strips a video tag, so `--gif` gates it while the mp4 stays unconditional for the opposite reason. The filter generates a palette from the source and applies it rather than quantizing per frame, since a per-frame palette is what makes a recording of flat interface colors band and shimmer.
 
 ## Gotchas
 
