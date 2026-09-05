@@ -38,6 +38,27 @@ const POINTER_SIZE = 32
  * first target. A corner keeps that first move out of the way of the content.
  */
 const START = { x: 8, y: 8 }
+
+/**
+ * Whether any step will move the pointer. The injected element installs on
+ * `DOMContentLoaded` and paints itself off-screen, so it costs nothing until
+ * something moves it, and seeding `START` is what first makes it visible.
+ *
+ * A plan that only navigates, scrolls and holds has nothing to point at, and
+ * seeding it anyway parked a cursor in the corner for the whole recording. That
+ * reads as a stuck artifact rather than a pointer, which is the same defect as
+ * resting it on a row of text, moved to a corner rather than fixed.
+ *
+ * `scroll` is absent deliberately. It is a targeted verb the compiler groups
+ * with the rest, and it stopped moving the pointer when a scroll step began
+ * leaving it where it was.
+ */
+function movesPointer(plan: DemoPlan): boolean {
+  return plan.steps.some(
+    (step) =>
+      step.kind === 'click' || step.kind === 'fill' || step.kind === 'hover',
+  )
+}
 const SETTLE_MS = 250
 /** Round trips sampled to price one, on the page a step is actually about to move across. */
 const CALIBRATION_STEPS = 8
@@ -106,9 +127,11 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
       // is a real cursor where the dot is a marker, and the caption bar carries
       // the beat's narration where the title carries `Mouse move`. Leaving it
       // on ran four overlays where two were wanted, and the two redundant ones
-      // were the two a viewer reads as noise. `plan.annotations` keeps its
-      // three fields as a dormant record of what that annotation was
-      // configured with, since a committed plan predating this carries them.
+      // were the two a viewer reads as noise. `plan.annotations` survives as a
+      // shape the type still carries and nothing now reads. It is not a record
+      // of what a committed plan configured, because `parsePlan` has always
+      // replaced it with the `ANNOTATIONS` constant rather than reading the
+      // file's own values, so that path never existed to preserve.
       ...(videoDir
         ? {
             recordVideo: {
@@ -141,7 +164,9 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     // step for the same URL and the second load is a visible reload.
     if (plan.steps[0]?.kind !== 'navigate') {
       await page.goto(plan.url)
-      await page.mouse.move(START.x, START.y, { steps: 2 })
+      if (movesPointer(plan)) {
+        await page.mouse.move(START.x, START.y, { steps: 2 })
+      }
     }
 
     for (const step of plan.steps) {
@@ -221,7 +246,9 @@ export async function runStep(
   switch (step.kind) {
     case 'navigate':
       await page.goto(step.target || plan.url)
-      await page.mouse.move(START.x, START.y, { steps: 2 })
+      if (movesPointer(plan)) {
+        await page.mouse.move(START.x, START.y, { steps: 2 })
+      }
       break
     case 'click':
       await moveTo(page, plan, step, pace)
@@ -248,14 +275,26 @@ export async function runStep(
         .locator(step.target)
         .first()
         .evaluate((node) =>
-          node.scrollIntoView({ block: 'center', inline: 'nearest' }),
+          node.scrollIntoView({
+            block: 'center',
+            inline: 'nearest',
+            // Explicit, because this runs in the page where
+            // `scrollIntoViewIfNeeded` ran through the debugging protocol and
+            // was always instant. An in-page scroll honours the document's own
+            // `scroll-behavior`, so a project setting it to `smooth` gets a
+            // call that returns before the scroll finishes, with only
+            // `SETTLE_MS` behind it. Nothing in this repository sets it, which
+            // is exactly why the recorder cannot catch this on its own pages.
+            behavior: 'instant',
+          }),
         )
       await page.waitForTimeout(SETTLE_MS)
       // The pointer stays where it was. A scroll is not a pointing action, so
       // gliding the cursor to the target's centre parks it on top of whatever
       // the scroll just revealed and covers a row of it. A real session scrolls
-      // with a wheel and leaves the cursor alone, which is also what keeps it in
-      // the corner `START` puts it in, out of the way of the content.
+      // with a wheel and leaves the cursor alone. On a plan that points at
+      // nothing, `movesPointer` then keeps it off-screen for the whole run
+      // rather than parked in a corner.
       break
     case 'wait':
     case 'hold':
