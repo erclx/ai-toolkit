@@ -183,9 +183,17 @@ const OPERATOR_CALL_PHRASES = [
  * author used. Case-insensitive, since the corpus capitalizes a suggestion's
  * first word, and it rewrites only the matched span so the reason text either
  * side of it survives untouched.
+ *
+ * Short-circuits on an already-canonical opening before scanning the rest of
+ * the text. Without that, a suggestion already opening with `needs your call`
+ * that goes on to mention a paraphrase inside its own reason, such as
+ * `needs your call, since the operator's call outranks a default`, has that
+ * later occurrence rewritten too, which garbles the reason the dispatcher
+ * reports rather than leaving it as the author wrote it.
  */
 export function normalizeOperatorCall(text: string): string {
   const lower = text.toLowerCase()
+  if (lower.startsWith(OPERATOR_CALL)) return text
 
   for (const phrase of OPERATOR_CALL_PHRASES) {
     const at = lower.indexOf(phrase)

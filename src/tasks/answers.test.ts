@@ -162,6 +162,22 @@ describe('planAnswers', () => {
     expect(outcome.launchable).toBe(false)
   })
 
+  it('should not garble a canonical reason mentioning the paraphrase itself', async () => {
+    await writePlan('gate', [
+      {
+        suggested:
+          "needs your call, since the operator's call outranks a default.",
+      },
+    ])
+
+    const outcome = await planAnswers(ROOT, 'gate')
+
+    assertOk(outcome)
+    expect(outcome.open[0]?.why).toBe(
+      "since the operator's call outranks a default.",
+    )
+  })
+
   it("should hold a plan carrying the operator's call paraphrase", async () => {
     await writePlan('gate', [
       {
