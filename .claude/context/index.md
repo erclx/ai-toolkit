@@ -25,3 +25,4 @@ Per-domain narrative loaded on demand
 - [Standards](standards/index.md): Authoring conventions synced to projects, the scope model every standard declares, the template and lifecycle rules, the per-standard decisions, and install and sync. Start with overview.
 - [Tooling](tooling.md): Stacks, configs, seeds, references, manifests
 - [Transcripts](transcripts.md): Fetch YouTube transcripts with metadata frontmatter into any repo
+- [Web](web.md): The canon.erclx.dev landing page, its Astro build, and the CI and layout gaps that follow from that
