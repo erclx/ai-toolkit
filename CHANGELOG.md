@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.53.0](https://github.com/erclx/canon/compare/v4.52.0...v4.53.0) (2026-09-05)
+
+
+### Features
+
+* **labels:** add --body-file input to labels scan ([#1508](https://github.com/erclx/canon/issues/1508)) ([7bc7a20](https://github.com/erclx/canon/commit/7bc7a208b075319e5bd7a476ea66823c0294e2c1))
+* **tooling:** key capture by hostname and fix the CI seed pipeline ([#1512](https://github.com/erclx/canon/issues/1512)) ([db3b1e6](https://github.com/erclx/canon/commit/db3b1e6072bb23223c0ad565b4dd477feb6ee50f))
+
+
+### Bug Fixes
+
+* **tasks:** widen operator-call phrasing in plan-answer gate ([#1509](https://github.com/erclx/canon/issues/1509)) ([b22b5de](https://github.com/erclx/canon/commit/b22b5defc15efad4989f44b4799c3b58015f2fcd))
+
 ## [4.52.0](https://github.com/erclx/canon/compare/v4.51.0...v4.52.0) (2026-09-04)
 
 
