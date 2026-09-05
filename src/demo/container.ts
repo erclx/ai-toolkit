@@ -79,6 +79,14 @@ export async function convertToMp4(
  * recording of flat UI colors band and shimmer, which is precisely the artifact
  * that would make a page look worse in the README than it does in a browser.
  *
+ * Dithering is off because this command records applications rather than
+ * photographs. A global palette already covers flat interface colors, so the
+ * dither only writes noise the encoder then has to store: measured at 3.19MB
+ * against 2.70MB on one recording, with the same text region cropped from both
+ * and read as visually identical. Width is the larger lever at 2.38MB for 800
+ * pixels, and it is not taken, since the terminal rows are what the recording
+ * exists to have read. Frame rate is almost no lever at all.
+ *
  * The missing-binary and failure handling matches `convertToMp4` exactly: the
  * recording already succeeded by the time this runs, so an optional step never
  * fails the run.
@@ -97,7 +105,7 @@ export async function convertToGif(
       '-i',
       webmPath,
       '-filter_complex',
-      '[0:v] fps=12,scale=960:-1:flags=lanczos,split [a][b];[a] palettegen [p];[b][p] paletteuse',
+      '[0:v] fps=12,scale=960:-1:flags=lanczos,split [a][b];[a] palettegen [p];[b][p] paletteuse=dither=none',
       gifPath,
     ],
     { reject: false },
