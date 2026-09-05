@@ -6,6 +6,8 @@ export type ScanInputRefusal =
   | 'unreadable-event'
   | 'not-a-pull-request'
   | 'unreadable-review'
+  | 'conflicting-body-input'
+  | 'unreadable-body-file'
 
 export type ResolvedScanInput =
   | {
@@ -26,6 +28,7 @@ export interface ScanInputOptions {
   readonly event?: string
   readonly title?: string
   readonly body?: string
+  readonly bodyFile?: string
   readonly head?: string
 }
 
@@ -45,6 +48,27 @@ export function resolveScanInput(opts: ScanInputOptions): ResolvedScanInput {
   let body = opts.body
   let headRefName = opts.head
   let source: 'pull-request' | 'review' = 'pull-request'
+
+  if (opts.bodyFile !== undefined) {
+    if (body !== undefined) {
+      return {
+        kind: 'refused',
+        reason: 'conflicting-body-input',
+        message:
+          '--body and --body-file cannot both be given, since only one text can be scanned.',
+      }
+    }
+
+    try {
+      body = readFileSync(opts.bodyFile, 'utf8')
+    } catch {
+      return {
+        kind: 'refused',
+        reason: 'unreadable-body-file',
+        message: `${opts.bodyFile} could not be read, so no body was there to scan.`,
+      }
+    }
+  }
 
   if (opts.event !== undefined) {
     let raw: string

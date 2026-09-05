@@ -17,6 +17,7 @@ interface ScanOptions {
   readonly event?: string
   readonly title?: string
   readonly body?: string
+  readonly bodyFile?: string
   readonly head?: string
   readonly json?: boolean
 }
@@ -100,6 +101,10 @@ export function register(program: Command): void {
     )
     .option('--title <text>', 'Title to scan, overriding the event payload')
     .option('--body <text>', 'Body to scan, overriding the event payload')
+    .option(
+      '--body-file <path>',
+      'Body to scan, read from a file, overriding the event payload',
+    )
     .option('--head <ref>', 'Head branch, overriding the event payload')
     .option('--json', 'Add a machine-readable record on stdout')
     .addHelpText(
@@ -146,6 +151,7 @@ export function register(program: Command): void {
         'Examples:',
         '  canon labels scan --event "$GITHUB_EVENT_PATH"',
         '  canon labels scan --title "feat: x" --body "planned under v68.5" --head feat/x',
+        '  canon labels scan --body-file reply.md',
         '',
       ].join('\n'),
     )
