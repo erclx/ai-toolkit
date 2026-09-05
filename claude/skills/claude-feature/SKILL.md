@@ -93,7 +93,7 @@ Omit empty sections. Do not print `None identified.` in chat.
 
 Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.canon/plans/feature-<slug>.md` at the main worktree root, not the current worktree. Resolve that root the way `claude-worktree` does. Create the directory if it does not exist.
 
-From a linked worktree the file-editing tools refuse that path, so the plan goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
+From a linked worktree, or from a background session sitting at the main root with none entered, the file-editing tools refuse that path, so the plan goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
 The file follows the template in `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every plan.
 
