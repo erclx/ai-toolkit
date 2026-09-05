@@ -304,6 +304,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | Skill                       | When to use                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------ |
 | `canon:canon-cli`           | Before a sync or install, to learn what it overwrites, merges, or leaves alone |
+| `canon:index-lookup`        | To find where a topic is documented across the tracked `index.md` catalogs     |
 | `canon:youtube-transcripts` | When a video transcript is wanted in the repo as context                       |
 | `canon:claude-teach`        | To learn a subject across sessions, in a workspace that holds the progress     |
 | `canon:write-human`         | Before drafting or revising prose, for voice, rhythm, and density              |
