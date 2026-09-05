@@ -1,42 +1,65 @@
 {
   "generatedBy": "scripts/core/regen-agent-fixture.sh",
-  "readAt": "2026-09-05T12:47:05Z",
+  "readAt": "2026-09-05T13:25:45Z",
   "source": {
     "command": "canon sessions list --json",
-    "live": ["name", "branch", "status"],
+    "live": [
+      "name",
+      "age",
+      "membership of the working band",
+      "the remainder count"
+    ],
     "transcribed": {
       "activity": "written by Claude Code into its own status line, which no verb here reports",
-      "pullRequest": "read off a task file by hand, since nothing joins a session record to one"
+      "pullRequest": "read off a task file by hand, since nothing joins a session record to one",
+      "state": "a completed session has already exited, so no listing carries the row at all"
     }
+  },
+  "summary": {
+    "working": 3,
+    "completed": 2,
+    "more": 17
   },
   "sessions": [
     {
       "name": "worker-canon-agent-view-and-deploy",
       "branch": "feat/agent-view-and-deploy",
-      "status": "busy",
-      "activity": "Building the live agent view",
-      "pullRequest": null
+      "state": "working",
+      "activity": "PR #1510 open (landing page)",
+      "pullRequest": 1510,
+      "age": "44m"
     },
     {
       "name": "worker-canon-answer-gate-phrasing",
       "branch": "feat/answer-gate-phrasing",
-      "status": "busy",
-      "activity": "Widening the plan answer gate",
-      "pullRequest": null
+      "state": "working",
+      "activity": "CI running on follow-up push",
+      "pullRequest": 1509,
+      "age": "44m"
+    },
+    {
+      "name": "worker-canon-capture-ci-seeds",
+      "branch": "feat/capture-ci-seeds",
+      "state": "working",
+      "activity": "Batch 3: playwright browsers",
+      "pullRequest": null,
+      "age": "32m"
     },
     {
       "name": "worker-canon-labels-scan-body-file",
       "branch": "feat/labels-scan-body-file",
-      "status": "busy",
-      "activity": "Scanning label bodies from a file",
-      "pullRequest": null
+      "state": "completed",
+      "activity": "address-review pass finished",
+      "pullRequest": 1508,
+      "age": null
     },
     {
       "name": "worker-canon-web-context-entry",
       "branch": "feat/web-context-entry",
-      "status": "busy",
-      "activity": "Writing the web context entry",
-      "pullRequest": null
+      "state": "completed",
+      "activity": "PR #1507 addressed with commit",
+      "pullRequest": 1507,
+      "age": null
     }
   ]
 }

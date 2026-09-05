@@ -33,16 +33,24 @@ OUT="$PROJECT_ROOT/web/src/fixtures/agent-view.json"
 # session name is derived from whatever the session turned out to be doing and
 # moves within the hour, where the branch outlives the session that cut it.
 #
-# Each row is `branch|activity|pullRequest`. An empty pull request field is a
-# branch whose task file recorded no number when the snapshot was taken, which
-# is the ordinary state of a worker that has not reached its ship step yet.
-# Re-transcribe this table against a fresh listing rather than editing the
-# generated file.
+# Each row is `branch|activity|pullRequest|state`. The state is `working` or
+# `completed`, and it is the band the row renders under. An empty pull request
+# field is a branch that had not reached its ship step when the snapshot was
+# taken. Re-transcribe this table against a fresh listing rather than editing
+# the generated file.
+#
+# A completed row names a session that has already exited, so no listing carries
+# it. Those rows are the reason this table holds a state at all: the live read
+# below answers for the working half and can say nothing about the other.
 TRANSCRIBED=(
-  "feat/agent-view-and-deploy|Building the live agent view|"
-  "feat/answer-gate-phrasing|Widening the plan answer gate|"
-  "feat/labels-scan-body-file|Scanning label bodies from a file|"
-  "feat/web-context-entry|Writing the web context entry|"
+  # The two rows carrying a bare number are transcriptions of what the surface
+  # displayed, so the unqualified form is the fact being recorded rather than a
+  # citation a reader is meant to follow.
+  "feat/agent-view-and-deploy|PR #1510 open (landing page)|1510|working" # canon-allow-reference: transcribed status text
+  "feat/answer-gate-phrasing|CI running on follow-up push|1509|working"
+  "feat/capture-ci-seeds|Batch 3: playwright browsers||working"
+  "feat/labels-scan-body-file|address-review pass finished|1508|completed"
+  "feat/web-context-entry|PR #1507 addressed with commit|1507|completed" # canon-allow-reference: transcribed status text
 )
 
 # The listing reports a session's repository as the main `.git` directory, which
@@ -89,13 +97,28 @@ const transcribed = new Map(
   TRANSCRIBED_ROWS.split("\n")
     .filter((line) => line.trim() !== "")
     .map((line) => {
-      const [branch, activity, pullRequest] = line.split("|")
+      const [branch, activity, pullRequest, state] = line.split("|")
       return [
         branch,
-        { activity, pullRequest: pullRequest ? Number(pullRequest) : null },
+        {
+          activity,
+          pullRequest: pullRequest ? Number(pullRequest) : null,
+          state,
+        },
       ]
     }),
 )
+
+// The real surface shows an age per row, so the fixture carries one. It is
+// frozen at the read rather than live, which the rendered provenance line dates
+// so a reader is never told a stale figure is current.
+const ageLabel = (startedAt) => {
+  const minutes = Math.round((Date.parse(READ_AT) - Date.parse(startedAt)) / 60000)
+  if (!Number.isFinite(minutes) || minutes < 1) return "now"
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.round(minutes / 60)
+  return hours < 24 ? `${hours}h` : `${Math.round(hours / 24)}d`
+}
 
 // A worker of this repository is what the page is about. Every other row in the
 // listing is another project on the same machine, and a page claiming them
@@ -124,18 +147,38 @@ if (missing.length > 0) {
   process.exit(1)
 }
 
-const sessions = workers
-  .map((session) => {
-    const hand = transcribed.get(session.branch)
-    return {
-      name: session.name,
-      branch: session.branch,
-      status: session.status,
-      activity: hand.activity,
-      pullRequest: hand.pullRequest,
-    }
-  })
-  .sort((a, b) => a.branch.localeCompare(b.branch))
+const live = new Map(workers.map((session) => [session.branch, session]))
+
+// The table drives the row order rather than the listing, because the two bands
+// have to render in the order a reader expects and a listing sorts by neither.
+// A working row still has to appear in the listing, which is what keeps the
+// live half honest: an invented working session fails here rather than
+// rendering.
+const sessions = [...transcribed.entries()].map(([branch, hand]) => {
+  const session = live.get(branch)
+  if (hand.state === "working" && !session) {
+    console.error(
+      `regen-agent-fixture: ${branch} is transcribed as working and no live session holds it, refusing to render a session that is not running`,
+    )
+    process.exit(1)
+  }
+  return {
+    name: session ? session.name : `worker-canon-${branch.split("/").pop()}`,
+    branch,
+    state: hand.state,
+    activity: hand.activity,
+    pullRequest: hand.pullRequest,
+    age: session ? ageLabel(session.startedAt) : null,
+  }
+})
+
+// What the real surface prints above its own list. The remainder is every other
+// session on the machine, which is a real count this page has no room to show.
+const summary = {
+  working: sessions.filter((entry) => entry.state === "working").length,
+  completed: sessions.filter((entry) => entry.state === "completed").length,
+  more: Math.max(0, listing.sessions.length - workers.length),
+}
 
 const fixture = {
   // Read by web/src/components/AgentView.astro. Every field below is either a
@@ -144,14 +187,22 @@ const fixture = {
   readAt: READ_AT,
   source: {
     command: "canon sessions list --json",
-    live: ["name", "branch", "status"],
+    live: [
+      "name",
+      "age",
+      "membership of the working band",
+      "the remainder count",
+    ],
     transcribed: {
       activity:
         "written by Claude Code into its own status line, which no verb here reports",
       pullRequest:
         "read off a task file by hand, since nothing joins a session record to one",
+      state:
+        "a completed session has already exited, so no listing carries the row at all",
     },
   },
+  summary,
   sessions,
 }
 

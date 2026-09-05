@@ -25,15 +25,15 @@ a rule rather than a note in a context entry.
 
 ## Three animations, and a fourth replaces one rather than joining it
 
-- The page carries three: the rule card arriving in `RuleArrival.astro`, and the working marker and the band transition in `AgentView.astro`.
+- The page carries three: the rule card arriving in `RuleArrival.astro`, and the working marker and the row moving from Working to Completed in `AgentView.astro`.
 - Replace one of the three when a section needs motion. A fourth turns a page that demonstrates into a page that decorates, and no build catches the difference.
 - Give every animation a `prefers-reduced-motion: reduce` branch that still lands the state change. A transition carried by a class survives the branch where one carried by the motion alone does not.
 
 ## One structural accent, and the action color is not it
 
 - `--color-accent` marks structure exactly once, on the rule card border in `RuleArrival.astro`. A second structural accent leaves a reader with two things claiming to be the one thing worth looking at.
-- A call-to-action button is not a structural accent. `Hero.astro` and `CallToAction.astro` both use the accent as an action color, and that is a separate budget.
-- Reach for `--color-success` or a surface and border token when a section needs to separate a state, which is what `AgentView.astro` does for its completed band.
+- Structure is the only budget this rule caps. An action color and a status color are separate uses and neither counts against it: `Hero.astro` and `CallToAction.astro` carry the accent as an action, and `AgentView.astro` carries it on the working marker as a status, which is the color the surface it re-creates actually shows.
+- Reach for `--color-success` or a surface and border token when a section separates a state that is not the live one, which is what `AgentView.astro` does for its completed rows.
 
 ## Before shipping
 

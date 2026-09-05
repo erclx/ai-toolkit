@@ -3,10 +3,14 @@ import { agentView } from '../content/copy'
 import fixture from '../fixtures/agent-view.json'
 
 /**
- * Live DOM rather than a screenshot, which is what lets the section animate at
- * all and is why the deferral in `65-showcase-assets` no longer applies: motion
- * in a README meant a committed video, and a page re-creates the surface
- * instead.
+ * A re-creation of Claude Code's own session list rather than a diagram of one.
+ * The layout is what that surface renders: two bands visible at once, a dense
+ * row per session carrying a marker, a name, its activity, its pull request and
+ * its age, and a remainder line for everything past the end.
+ *
+ * Both bands showing at once is the part a swapping label got wrong. Working
+ * and Completed are places a row sits, so a session finishing moves between
+ * them, and a label flipping in place described neither.
  *
  * The rows come from `web/src/fixtures/agent-view.json`, written by
  * `scripts/core/regen-agent-fixture.sh` off a real session listing. The
@@ -14,13 +18,24 @@ import fixture from '../fixtures/agent-view.json'
  * section makes about itself is the reader's only way to tell a re-creation
  * from a mockup.
  *
- * The working marker is the `✽` Claude Code shows, confirmed against the vendor
- * page. Its frame sequence is undocumented, so the cycle below is chosen rather
- * than reproduced, and nothing here re-checks it against a later Claude Code
- * release.
+ * The working marker is the glyph Claude Code shows, confirmed against the
+ * vendor page. Its frame sequence is undocumented, so the cycle below is chosen
+ * rather than reproduced, and nothing re-checks it against a later release.
  */
 
 const readOn = new Date(fixture.readAt).toISOString().slice(0, 10)
+
+const working = fixture.sessions.filter((s) => s.state === 'working')
+const completed = fixture.sessions.filter((s) => s.state === 'completed')
+
+/*
+ * The first working row is the one that lands while the reader watches. It
+ * renders in both bands with one side collapsed, because moving a node across a
+ * heading is not something CSS can transition, and a reader cannot tell a node
+ * that moved from one that gave way to its twin.
+ */
+const mover = working[0]
+const stayers = working.slice(1)
 ---
 
 <section
@@ -30,40 +45,90 @@ const readOn = new Date(fixture.readAt).toISOString().slice(0, 10)
   <h2 class="text-[length:var(--type-heading-size)]">{agentView.heading}</h2>
   <p>{agentView.body}</p>
 
-  <div class="agent-stage flex flex-col gap-3">
+  <div
+    class="agent-stage rounded-[var(--radius-panel)] bg-(--color-surface) p-5 text-[length:var(--type-label-size)] leading-[1.9]"
+  >
+    {
+      /*
+      The count moves with the row. Leaving one line to stand while a row
+      crosses beneath it puts a number on screen that the list under it
+      contradicts, which is the one thing a counted surface must not do.
+    */
+    }
     <p
-      class="band text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary) uppercase"
+      class="agent-summary agent-summary-before m-0 text-(--color-text-secondary)"
     >
-      <span class="band-working">{agentView.bands.working}</span>
-      <span class="band-completed">{agentView.bands.completed}</span>
+      <span class="count-working">{fixture.summary.working}</span> working
+      <span aria-hidden="true"> · </span>
+      <span class="count-completed">{fixture.summary.completed}</span> completed
+    </p>
+    <p
+      class="agent-summary agent-summary-after m-0 text-(--color-text-secondary)"
+    >
+      <span>{fixture.summary.working - 1}</span> working
+      <span aria-hidden="true"> · </span>
+      <span>{fixture.summary.completed + 1}</span> completed
     </p>
 
-    <ol class="m-0 flex list-none flex-col gap-2 p-0">
+    <p class="agent-band m-0 mt-4">{agentView.bands.working}</p>
+    <ol class="m-0 flex list-none flex-col p-0">
+      <li class="agent-row agent-row-mover" data-branch={mover.branch}>
+        <span class="marker marker-working" aria-hidden="true">✽</span>
+        <span class="agent-name">{mover.name}</span>
+        <span class="agent-activity">{mover.activity}</span>
+        <span class="agent-pr">
+          {mover.pullRequest && `#${mover.pullRequest}`}
+        </span>
+        <span class="agent-age">{mover.age}</span>
+      </li>
       {
-        fixture.sessions.map((session) => (
-          <li class="agent-row grid grid-cols-[1.25rem_1fr_auto] items-baseline gap-3 rounded-[var(--radius-panel)] bg-(--color-surface) p-4">
-            <span class="marker" aria-hidden="true">
-              <span class="marker-working">✽</span>
-              <span class="marker-done">✓</span>
+        stayers.map((session) => (
+          <li class="agent-row" data-branch={session.branch}>
+            <span class="marker marker-working" aria-hidden="true">
+              ✽
             </span>
-            <span class="flex flex-col gap-1">
-              <span class="font-semibold text-(--color-text)">
-                {session.name}
-              </span>
-              <span class="text-(--color-text-body)">{session.activity}</span>
-              <code class="text-[length:var(--type-label-size)] text-(--color-text-secondary)">
-                {session.branch}
-              </code>
+            <span class="agent-name">{session.name}</span>
+            <span class="agent-activity">{session.activity}</span>
+            <span class="agent-pr">
+              {session.pullRequest && `#${session.pullRequest}`}
             </span>
-            <span class="outcome text-[length:var(--type-label-size)] text-(--color-text-secondary)">
-              {session.pullRequest === null
-                ? agentView.pending
-                : `#${session.pullRequest}`}
-            </span>
+            <span class="agent-age">{session.age}</span>
           </li>
         ))
       }
     </ol>
+
+    <p class="agent-band m-0 mt-4">{agentView.bands.completed}</p>
+    <ol class="m-0 flex list-none flex-col p-0">
+      <li class="agent-row agent-row-landed" data-branch={mover.branch}>
+        <span class="marker marker-done" aria-hidden="true">✽</span>
+        <span class="agent-name">{mover.name}</span>
+        <span class="agent-activity">{agentView.landed}</span>
+        <span class="agent-pr">
+          {mover.pullRequest && `#${mover.pullRequest}`}
+        </span>
+        <span class="agent-age">{mover.age}</span>
+      </li>
+      {
+        completed.map((session) => (
+          <li class="agent-row" data-branch={session.branch}>
+            <span class="marker marker-done" aria-hidden="true">
+              ✽
+            </span>
+            <span class="agent-name">{session.name}</span>
+            <span class="agent-activity">{session.activity}</span>
+            <span class="agent-pr">
+              {session.pullRequest && `#${session.pullRequest}`}
+            </span>
+            <span class="agent-age">{session.age}</span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="agent-more m-0 mt-1 text-(--color-muted)">
+      … {fixture.summary.more} more
+    </p>
   </div>
 
   <p class="text-[length:var(--type-label-size)] text-(--color-text-secondary)">
@@ -73,6 +138,55 @@ const readOn = new Date(fixture.readAt).toISOString().slice(0, 10)
 </section>
 
 <style>
+  .agent-stage {
+    overflow-x: auto;
+    font-family: var(--type-code-family);
+  }
+
+  .agent-row {
+    display: grid;
+    grid-template-columns: 1.2rem minmax(16rem, auto) 1fr auto 2.5rem;
+    gap: 0 0.75rem;
+    align-items: baseline;
+    white-space: nowrap;
+  }
+
+  .agent-name {
+    color: var(--color-text);
+  }
+
+  .agent-activity {
+    overflow: hidden;
+    color: var(--color-text-body);
+    text-overflow: ellipsis;
+  }
+
+  .agent-pr {
+    color: var(--color-text-secondary);
+  }
+
+  .agent-age {
+    color: var(--color-muted);
+    text-align: right;
+  }
+
+  .agent-band {
+    color: var(--color-text-secondary);
+    letter-spacing: 0.04em;
+  }
+
+  .agent-summary-after {
+    display: none;
+  }
+
+  .agent-stage.is-complete .agent-summary-before {
+    display: none;
+  }
+
+  .agent-stage.is-complete .agent-summary-after {
+    display: block;
+  }
+
   /*
    * Two animations, which is what takes the page to three in total. A fourth is
    * what `internal/rules/claude/593-landing-page.md` refuses, so a later section
@@ -80,112 +194,92 @@ const readOn = new Date(fixture.readAt).toISOString().slice(0, 10)
    */
   .marker-working {
     display: inline-block;
-    color: var(--color-text-secondary);
-    animation: marker-cycle 1.2s steps(1, end) infinite;
+    color: var(--color-accent);
+    animation: marker-cycle 1s steps(1, end) infinite;
   }
 
   .marker-done {
-    display: none;
     color: var(--color-success);
   }
 
   @keyframes marker-cycle {
     0% {
       transform: rotate(0deg);
-      opacity: 1;
     }
-    50% {
-      transform: rotate(45deg);
-      opacity: 0.55;
+    33% {
+      transform: rotate(30deg);
+    }
+    66% {
+      transform: rotate(60deg);
     }
     100% {
       transform: rotate(90deg);
-      opacity: 1;
     }
   }
 
-  .band-completed {
-    display: none;
-  }
-
   /*
-   * The rows carry the visible half of the change. The band label and the
-   * marker swap on `display`, which cannot be transitioned and which the e2e
-   * suite reads through `toBeHidden`, so the motion a reader actually sees is
-   * the row settling rather than the glyph changing.
-   *
-   * The stagger is what makes four rows read as four sessions landing one after
-   * another instead of one block flipping. It is ordered rather than decorative:
-   * a dispatch does not complete all at once.
+   * The landed copy is what the row becomes, so it starts collapsed while the
+   * working copy starts open. A row slide needs a measurable box to animate,
+   * which is what the max-height carries.
    */
-  .agent-row {
+  .agent-row-mover,
+  .agent-row-landed {
+    overflow: hidden;
     transition:
-      opacity 0.35s ease,
-      transform 0.35s ease;
+      max-height 0.45s ease,
+      opacity 0.45s ease;
   }
 
-  .agent-row:nth-child(2) {
-    transition-delay: 0.12s;
+  .agent-row-mover {
+    max-height: 2rem;
+    opacity: 1;
   }
 
-  .agent-row:nth-child(3) {
-    transition-delay: 0.24s;
+  .agent-row-landed {
+    max-height: 0;
+    opacity: 0;
   }
 
-  .agent-row:nth-child(4) {
-    transition-delay: 0.36s;
+  .agent-stage.is-complete .agent-row-mover {
+    max-height: 0;
+    opacity: 0;
   }
 
-  .agent-stage.is-complete .band-working,
-  .agent-stage.is-complete .marker-working {
-    display: none;
-  }
-
-  .agent-stage.is-complete .band-completed,
-  .agent-stage.is-complete .marker-done {
-    display: inline-block;
-  }
-
-  .agent-stage.is-complete .agent-row {
-    transform: translateX(6px);
-    opacity: 0.92;
-  }
-
-  .agent-stage.is-complete .outcome {
-    color: var(--color-success);
+  .agent-stage.is-complete .agent-row-landed {
+    max-height: 2rem;
+    opacity: 1;
   }
 
   /*
    * A marker cycling forever is decoration to a reader who asked for less of
-   * it, and the band transition still lands because it is carried by the class
-   * rather than by the motion.
+   * it, and the move still lands because it is carried by the class rather than
+   * by the motion.
    */
   @media (prefers-reduced-motion: reduce) {
     .marker-working {
       animation: none;
     }
 
-    .agent-row {
+    .agent-row-mover,
+    .agent-row-landed {
       transition: none;
-      transition-delay: 0s;
     }
   }
 </style>
 
 <script>
   /*
-   * The dwell is the section. Flipping on the intersection itself put the
-   * completed band on screen in the same frame the scroll landed, so a reader
-   * arriving saw four finished rows and never saw the state they finished from,
-   * which is the one thing this section exists to show. A recording of it
-   * proved that: sampled at half-second intervals, no frame carried the
-   * Working band at all.
+   * The dwell is the section. Moving the row on the intersection itself put it
+   * in Completed in the frame the scroll landed, so a reader arriving saw the
+   * finished state and never the one it finished from, which is the whole thing
+   * this section shows. A recording proved it: sampled at half-second intervals,
+   * no frame carried the row still working.
    *
    * It is sequencing rather than decoration, so it holds under reduced motion
-   * too. What that branch drops is the row stagger, not the reader's chance to
-   * read the first state.
+   * too. What that branch drops is the slide, not the reader's chance to read
+   * the first state.
    */
-  const DWELL_MS = 1400
+  const DWELL_MS = 1600
 
   const stage = document.querySelector<HTMLElement>('.agent-stage')
   if (stage) {

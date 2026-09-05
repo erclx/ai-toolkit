@@ -24,10 +24,10 @@ export const agentView = {
     working: 'Working',
     completed: 'Completed',
   },
-  // A branch whose task file recorded no number when the fixture was taken.
-  // Saying so beats rendering a blank cell, which reads as a session that
-  // opened nothing rather than one that had not shipped yet.
-  pending: 'opens its own',
+  // What the row reads once it lands in the completed band. The activity text
+  // it replaces described the session mid-flight, so carrying that text down
+  // would have a finished row still claiming to be working.
+  landed: 'pull request opened',
   // The page states where its own rows came from, for the reason README.md:11
   // states it for the catalog counts. The date is filled from the fixture's
   // own readAt rather than written here, so it cannot drift from the read.

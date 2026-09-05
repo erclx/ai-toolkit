@@ -35,24 +35,46 @@ test('the rule arrives once its stage scrolls into view', async ({ page }) => {
   await expect(card).toHaveCSS('opacity', '1')
 })
 
-test('the agent view renders one row per fixture session', async ({ page }) => {
+test('the agent view renders both bands at once', async ({ page }) => {
   await page.goto('/')
-  const rows = page.locator('.agent-row')
-  await expect(rows).toHaveCount(fixture.sessions.length)
-  await expect(rows.first()).toContainText(fixture.sessions[0].branch)
+
+  // Every session plus the mover's second copy, which is what lets a row cross
+  // a heading that CSS cannot transition across.
+  await expect(page.locator('.agent-row')).toHaveCount(
+    fixture.sessions.length + 1,
+  )
+  await expect(page.locator('.agent-band')).toHaveCount(2)
+  await expect(page.locator('.agent-more')).toContainText(
+    `${fixture.summary.more} more`,
+  )
+  await expect(page.locator('.count-working')).toHaveText(
+    String(fixture.summary.working),
+  )
 })
 
-test('the agent view bands move to completed on scroll', async ({ page }) => {
+test('the agent view names each session with its own row', async ({ page }) => {
+  await page.goto('/')
+
+  for (const session of fixture.sessions) {
+    const row = page.locator(`.agent-row[data-branch="${session.branch}"]`)
+    await expect(row.first()).toContainText(session.name)
+    await expect(row.first()).toContainText(session.activity)
+  }
+})
+
+test('a working row moves into completed on scroll', async ({ page }) => {
   await page.goto('/')
   const stage = page.locator('.agent-stage')
+  const mover = stage.locator('.agent-row-mover')
+  const landed = stage.locator('.agent-row-landed')
 
-  await expect(stage.locator('.band-working')).toBeVisible()
-  await expect(stage.locator('.band-completed')).toBeHidden()
+  await expect(mover).toBeVisible()
+  await expect(landed).toBeHidden()
 
   await stage.scrollIntoViewIfNeeded()
 
-  // The band survives the scroll that reveals it. Flipping on the intersection
-  // itself showed a reader four finished rows and never the state they finished
+  // The row survives the scroll that reveals it. Moving it on the intersection
+  // itself showed a reader the finished state and never the one it finished
   // from, so this asserts the dwell rather than only its outcome.
   //
   // The wait is the assertion rather than a settle. Reading the class straight
@@ -61,51 +83,55 @@ test('the agent view bands move to completed on scroll', async ({ page }) => {
   // inside the dwell window to mean anything.
   await page.waitForTimeout(400)
   await expect(stage).not.toHaveClass(/is-complete/)
-  await expect(stage.locator('.band-working')).toBeVisible()
+  await expect(mover).toBeVisible()
 
   await expect(stage).toHaveClass(/is-complete/)
-  await expect(stage.locator('.band-completed').first()).toBeVisible()
-  await expect(stage.locator('.band-working')).toBeHidden()
+  await expect(landed).toBeVisible()
+  await expect(mover).toBeHidden()
+
+  // The count moves with the row, so the summary never contradicts the list
+  // sitting under it.
+  await expect(stage.locator('.agent-summary-after')).toContainText(
+    `${fixture.summary.working - 1} working`,
+  )
+  await expect(stage.locator('.agent-summary-before')).toBeHidden()
+})
+
+test('both marker states are on screen together', async ({ page }) => {
+  await page.goto('/')
+
+  // The two bands stand at once, so a working marker and a finished one are
+  // visible in the same view rather than one replacing the other.
+  await expect(page.locator('.marker-working').first()).toBeVisible()
+  await expect(page.locator('.marker-done').last()).toBeVisible()
 })
 
 test('the agent view names an outcome for every session', async ({ page }) => {
   await page.goto('/')
 
-  for (const [index, session] of fixture.sessions.entries()) {
-    const outcome = page.locator('.agent-row').nth(index).locator('.outcome')
-    await expect(outcome).toHaveText(
-      session.pullRequest === null
-        ? 'opens its own'
-        : `#${session.pullRequest}`,
+  for (const session of fixture.sessions) {
+    if (session.pullRequest === null) continue
+    const row = page.locator(`.agent-row[data-branch="${session.branch}"]`)
+    await expect(row.first().locator('.agent-pr')).toHaveText(
+      `#${session.pullRequest}`,
     )
   }
-})
-
-test('the working marker gives way to a check on scroll', async ({ page }) => {
-  await page.goto('/')
-  const row = page.locator('.agent-row').first()
-
-  await expect(row.locator('.marker-working')).toBeVisible()
-  await expect(row.locator('.marker-done')).toBeHidden()
-
-  await page.locator('.agent-stage').scrollIntoViewIfNeeded()
-  await expect(row.locator('.marker-done')).toBeVisible()
-  await expect(row.locator('.marker-working')).toBeHidden()
 })
 
 test.describe('with motion turned down', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  // The band is carried by the class rather than by the motion, which is the
-  // property that lets the marker animation drop out without taking the state
-  // change with it.
-  test('the band still lands', async ({ page }) => {
+  // The move is carried by the class rather than by the motion, which is the
+  // property that lets the slide and the marker animation drop out without
+  // taking the state change with them.
+  test('the row still lands', async ({ page }) => {
     await page.goto('/')
     const stage = page.locator('.agent-stage')
 
     await stage.scrollIntoViewIfNeeded()
     await expect(stage).toHaveClass(/is-complete/)
-    await expect(stage.locator('.band-completed').first()).toBeVisible()
+    await expect(stage.locator('.agent-row-landed')).toBeVisible()
+    await expect(stage.locator('.agent-row-mover')).toBeHidden()
   })
 })
 
