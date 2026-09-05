@@ -10,6 +10,14 @@ canon is a CLI and Claude Code plugin that stops your AI conventions drifting ap
 
 The counts above are read from the catalogs when the image is built, so they're what the repo actually ships today.
 
+## It runs on itself
+
+The workflow this toolkit ships is the workflow that built it. Several Claude Code sessions run at once, each in its own git worktree on its own branch, and each opens its own pull request.
+
+![Four worker sessions on the canon landing page, each with its branch and what it is working on, moving from a Working band to a Completed one](demos/agent-view.gif)
+
+That is the landing page's own agent view, recorded from a local build by `canon demo run`. The session rows behind it are a real `canon sessions list --json` read. The activity text and the pull request number are transcribed, because no verb here reports either.
+
 ## Why
 
 If you work across more than one repository and your AI setup has started to drift between them, this is for you. Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Once you have enough projects, your copies drift and your agents stop getting consistent signals.

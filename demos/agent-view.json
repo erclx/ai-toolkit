@@ -1,0 +1,57 @@
+{
+  "slug": "agent-view",
+  "title": "Four sessions, four branches",
+  "url": "http://localhost:4321/",
+  "viewport": {
+    "width": 1280,
+    "height": 860
+  },
+  "output": {
+    "video": "demos/agent-view.webm",
+    "still": "demos/agent-view.png"
+  },
+  "pointer": {
+    "travelMs": 400,
+    "typeDelayMs": 110
+  },
+  "annotations": {
+    "durationMs": 900,
+    "position": "bottom-right",
+    "fontSize": 22
+  },
+  "steps": [
+    {
+      "beat": 1,
+      "name": "The page opens",
+      "kind": "navigate",
+      "target": "",
+      "text": "",
+      "waitFor": "",
+      "holdMs": 600,
+      "caption": "canon's landing page",
+      "still": false
+    },
+    {
+      "beat": 2,
+      "name": "Four sessions in flight",
+      "kind": "scroll",
+      "target": "#agent-view",
+      "text": "",
+      "waitFor": "",
+      "holdMs": 2000,
+      "caption": "Four Claude Code sessions, four branches",
+      "still": false
+    },
+    {
+      "beat": 3,
+      "name": "Hero, the band lands",
+      "kind": "wait",
+      "target": "",
+      "text": "",
+      "waitFor": "",
+      "holdMs": 2500,
+      "caption": "Each one opens its own pull request",
+      "still": true
+    }
+  ]
+}
