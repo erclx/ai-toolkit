@@ -1,0 +1,208 @@
+---
+import { agentView } from '../content/copy'
+import fixture from '../fixtures/agent-view.json'
+
+/**
+ * Live DOM rather than a screenshot, which is what lets the section animate at
+ * all and is why the deferral in `65-showcase-assets` no longer applies: motion
+ * in a README meant a committed video, and a page re-creates the surface
+ * instead.
+ *
+ * The rows come from `web/src/fixtures/agent-view.json`, written by
+ * `scripts/core/regen-agent-fixture.sh` off a real session listing. The
+ * provenance line below is rendered rather than commented, because a claim this
+ * section makes about itself is the reader's only way to tell a re-creation
+ * from a mockup.
+ *
+ * The working marker is the `✽` Claude Code shows, confirmed against the vendor
+ * page. Its frame sequence is undocumented, so the cycle below is chosen rather
+ * than reproduced, and nothing here re-checks it against a later Claude Code
+ * release.
+ */
+
+const readOn = new Date(fixture.readAt).toISOString().slice(0, 10)
+---
+
+<section
+  class="agent-view mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24"
+  id="agent-view"
+>
+  <h2 class="text-[length:var(--type-heading-size)]">{agentView.heading}</h2>
+  <p>{agentView.body}</p>
+
+  <div class="agent-stage flex flex-col gap-3">
+    <p
+      class="band text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary) uppercase"
+    >
+      <span class="band-working">{agentView.bands.working}</span>
+      <span class="band-completed">{agentView.bands.completed}</span>
+    </p>
+
+    <ol class="m-0 flex list-none flex-col gap-2 p-0">
+      {
+        fixture.sessions.map((session) => (
+          <li class="agent-row grid grid-cols-[1.25rem_1fr_auto] items-baseline gap-3 rounded-[var(--radius-panel)] bg-(--color-surface) p-4">
+            <span class="marker" aria-hidden="true">
+              <span class="marker-working">✽</span>
+              <span class="marker-done">✓</span>
+            </span>
+            <span class="flex flex-col gap-1">
+              <span class="font-semibold text-(--color-text)">
+                {session.name}
+              </span>
+              <span class="text-(--color-text-body)">{session.activity}</span>
+              <code class="text-[length:var(--type-label-size)] text-(--color-text-secondary)">
+                {session.branch}
+              </code>
+            </span>
+            <span class="outcome text-[length:var(--type-label-size)] text-(--color-text-secondary)">
+              {session.pullRequest === null
+                ? agentView.pending
+                : `#${session.pullRequest}`}
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <p class="text-[length:var(--type-label-size)] text-(--color-text-secondary)">
+    {agentView.provenance.live}{' '}
+    <time datetime={readOn}>{readOn}</time>. {agentView.provenance.transcribed}
+  </p>
+</section>
+
+<style>
+  /*
+   * Two animations, which is what takes the page to three in total. A fourth is
+   * what `internal/rules/claude/593-landing-page.md` refuses, so a later section
+   * animating anything replaces one of these rather than joining them.
+   */
+  .marker-working {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    animation: marker-cycle 1.2s steps(1, end) infinite;
+  }
+
+  .marker-done {
+    display: none;
+    color: var(--color-success);
+  }
+
+  @keyframes marker-cycle {
+    0% {
+      transform: rotate(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: rotate(45deg);
+      opacity: 0.55;
+    }
+    100% {
+      transform: rotate(90deg);
+      opacity: 1;
+    }
+  }
+
+  .band-completed {
+    display: none;
+  }
+
+  /*
+   * The rows carry the visible half of the change. The band label and the
+   * marker swap on `display`, which cannot be transitioned and which the e2e
+   * suite reads through `toBeHidden`, so the motion a reader actually sees is
+   * the row settling rather than the glyph changing.
+   *
+   * The stagger is what makes four rows read as four sessions landing one after
+   * another instead of one block flipping. It is ordered rather than decorative:
+   * a dispatch does not complete all at once.
+   */
+  .agent-row {
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .agent-row:nth-child(2) {
+    transition-delay: 0.12s;
+  }
+
+  .agent-row:nth-child(3) {
+    transition-delay: 0.24s;
+  }
+
+  .agent-row:nth-child(4) {
+    transition-delay: 0.36s;
+  }
+
+  .agent-stage.is-complete .band-working,
+  .agent-stage.is-complete .marker-working {
+    display: none;
+  }
+
+  .agent-stage.is-complete .band-completed,
+  .agent-stage.is-complete .marker-done {
+    display: inline-block;
+  }
+
+  .agent-stage.is-complete .agent-row {
+    transform: translateX(6px);
+    opacity: 0.92;
+  }
+
+  .agent-stage.is-complete .outcome {
+    color: var(--color-success);
+  }
+
+  /*
+   * A marker cycling forever is decoration to a reader who asked for less of
+   * it, and the band transition still lands because it is carried by the class
+   * rather than by the motion.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .marker-working {
+      animation: none;
+    }
+
+    .agent-row {
+      transition: none;
+      transition-delay: 0s;
+    }
+  }
+</style>
+
+<script>
+  /*
+   * The dwell is the section. Flipping on the intersection itself put the
+   * completed band on screen in the same frame the scroll landed, so a reader
+   * arriving saw four finished rows and never saw the state they finished from,
+   * which is the one thing this section exists to show. A recording of it
+   * proved that: sampled at half-second intervals, no frame carried the
+   * Working band at all.
+   *
+   * It is sequencing rather than decoration, so it holds under reduced motion
+   * too. What that branch drops is the row stagger, not the reader's chance to
+   * read the first state.
+   */
+  const DWELL_MS = 1400
+
+  const stage = document.querySelector<HTMLElement>('.agent-stage')
+  if (stage) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            observer.disconnect()
+            window.setTimeout(
+              () => stage.classList.add('is-complete'),
+              DWELL_MS,
+            )
+          }
+        }
+      },
+      { threshold: 0.4 },
+    )
+    observer.observe(stage)
+  }
+</script>

@@ -1,0 +1,42 @@
+{
+  "generatedBy": "scripts/core/regen-agent-fixture.sh",
+  "readAt": "2026-09-05T12:47:05Z",
+  "source": {
+    "command": "canon sessions list --json",
+    "live": ["name", "branch", "status"],
+    "transcribed": {
+      "activity": "written by Claude Code into its own status line, which no verb here reports",
+      "pullRequest": "read off a task file by hand, since nothing joins a session record to one"
+    }
+  },
+  "sessions": [
+    {
+      "name": "worker-canon-agent-view-and-deploy",
+      "branch": "feat/agent-view-and-deploy",
+      "status": "busy",
+      "activity": "Building the live agent view",
+      "pullRequest": null
+    },
+    {
+      "name": "worker-canon-answer-gate-phrasing",
+      "branch": "feat/answer-gate-phrasing",
+      "status": "busy",
+      "activity": "Widening the plan answer gate",
+      "pullRequest": null
+    },
+    {
+      "name": "worker-canon-labels-scan-body-file",
+      "branch": "feat/labels-scan-body-file",
+      "status": "busy",
+      "activity": "Scanning label bodies from a file",
+      "pullRequest": null
+    },
+    {
+      "name": "worker-canon-web-context-entry",
+      "branch": "feat/web-context-entry",
+      "status": "busy",
+      "activity": "Writing the web context entry",
+      "pullRequest": null
+    }
+  ]
+}
