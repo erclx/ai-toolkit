@@ -227,6 +227,9 @@ build shape above reaches `claude-worker`.
 No branch and no worktree exist here and none is created. A planner writes one
 gitignored file at the main worktree root, so this shape names the row's task
 file rather than a branch and opens with the role instead of a worktree call.
+That write meets the isolation guard the same way a linked worktree's
+main-root write does, with no worktree here to redirect it to, so
+`claude-planner` sends it as a `Bash` heredoc rather than through `Write`.
 
 ```bash
 claude --bg --model <model> -n "planner-<project>-<slug>" "Run /canon:claude-planner, then /canon:claude-feature <task>. Your controller is the session whose sessionId is <dispatcher-id>. Resolve its current name from that id through canon sessions list --json, which carries sessionId per row, at the moment you send, and never resolve an addressee by name prefix. Message it when the plan lands, carrying the path and what the task file got wrong, and message it again if you stop on a question."
