@@ -150,12 +150,17 @@ the regen rebuilt, and close the same way. The heading stays outside the
 `## Review` family so the close-out's equality test on the first line never
 matches it.
 
-Before posting, run the scan in
-`${CLAUDE_SKILL_DIR}/../../standards/publish.md`
-against the reply. The hook skips `.canon/tmp/`, so this scan is the
-only gate on the published reply. Post it to the PR and capture the posted
-comment's id, since Step 7 edits this exact comment rather than trusting
-whichever one `gh` considers last:
+Before posting, follow `${CLAUDE_SKILL_DIR}/../../standards/publish.md`
+and run its scan against the reply:
+
+```bash
+canon labels scan --body-file .canon/tmp/address-review/reply-<number>.md
+```
+
+The hook skips `.canon/tmp/`, so this scan is the only gate on the published
+reply. Fix any hit the standard names, then post the reply to the PR and
+capture the posted comment's id, since Step 7 edits this exact comment rather
+than trusting whichever one `gh` considers last:
 
 ```bash
 comment_url=$(gh pr comment <number> --body-file .canon/tmp/address-review/reply-<number>.md)
@@ -182,13 +187,20 @@ carries none is false on a surface nothing else checks:
 printf '\n✅ Rebased onto origin/main, CI green. No review findings were open.\n' >> .canon/tmp/address-review/reply-<number>.md
 ```
 
-Re-run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan against the
-updated file, since the appended line is new content the Step 6 scan never saw.
-Then edit the exact comment Step 6 posted, read back from the id it saved,
-rather than posting a second comment:
+Re-run the scan against the updated file, since the appended line is new
+content the Step 6 scan never saw:
 
 ```bash
-gh api -X PATCH "repos/{owner}/{repo}/issues/comments/$(cat .canon/tmp/address-review/reply-<number>.id)" \
+canon labels scan --body-file .canon/tmp/address-review/reply-<number>.md
+```
+
+Then edit the exact comment Step 6 posted, read back from the id it saved,
+rather than posting a second comment. Read the id first, then pass it as a
+literal rather than substituting it inline:
+
+```bash
+comment_id=$(cat .canon/tmp/address-review/reply-<number>.id)
+gh api -X PATCH "repos/{owner}/{repo}/issues/comments/${comment_id}" \
   -F body=@.canon/tmp/address-review/reply-<number>.md
 ```
 
@@ -226,7 +238,7 @@ Do not merge. Hand back to the orchestrator for re-review.
 
 ## Post-review findings
 
-Not everything worth reaching the reviewing session surfaces inside the numbered flow above. A worker that settled a risk, filed a follow-up, or found something else worth reporting after Step 7 already closed the review posts it directly rather than waiting on a review pass that has nothing left to trigger it. Write the body the way Step 6 writes a reply: load `write-human` for voice, follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for the banned words, and run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan before posting.
+Not everything worth reaching the reviewing session surfaces inside the numbered flow above. A worker that settled a risk, filed a follow-up, or found something else worth reporting after Step 7 already closed the review posts it directly rather than waiting on a review pass that has nothing left to trigger it. Write the body the way Step 6 writes a reply: load `write-human` for voice, follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for the banned words, and run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan before posting with `canon labels scan --body-file .canon/tmp/address-review/reply-<number>.md`.
 
 Open with `## Post-review findings` rather than `## Review response`, since nothing on the thread is being answered. `claude-pr-review` states the full heading set this belongs to and routes it the same as a response: `claude-orchestrate`'s poll picks it up and sends the reviewing session back for a pass. Close the body with `🤖 Addressed by Claude Code` on its own line, matching the reply's footer.
 
