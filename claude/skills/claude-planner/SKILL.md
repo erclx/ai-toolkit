@@ -21,7 +21,7 @@ from here.
 
 ## Where the session stands
 
-- Write one file, the plan, at `.canon/plans/feature-<slug>.md` on the main worktree root. Everything else this session touches is a read. This session holds no worktree, so send the file as a plain `Bash` heredoc past the same main-root refusal a linked worktree meets. `.claude/context/development/scratch.md` names which hooks that route skips.
+- Write one file, the plan, at `.canon/plans/feature-<slug>.md` on the main worktree root. Everything else this session touches is a read. This session holds no worktree, so send the file as a plain `Bash` heredoc past the same main-root refusal a linked worktree meets. The route skips the write-matched hooks, and they are no-ops on a plan file.
 - Never enter a worktree, never create a branch, and never write a tracked file. A planner that builds has stopped being one, and the row loses the independent read the worker's own session was going to bring to it.
 - Resolve `.canon/plans/`, `.canon/tasks/`, and `.canon/review/` at the main worktree root. Those folders are gitignored, so a copy beside a linked worktree is absent rather than empty.
 - Plan the row the launch named. Report a second row met while reading rather than planning it, since which rows run is the controller's call.
