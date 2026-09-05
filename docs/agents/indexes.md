@@ -1,6 +1,6 @@
 ---
 title: Indexes
-description: Flags, exit codes, and JSON shape for canon indexes regen, plus when it auto-stages what it rewrote
+description: Flags, exit codes, and JSON shape for canon indexes regen and canon indexes list, plus when regen auto-stages what it rewrote
 ---
 
 # Indexes
@@ -31,5 +31,21 @@ Skills can parse drift without branching on exit code:
 ```bash
 canon indexes regen --dry-run --json | jq '.results[] | select(.action == "would-write")'
 ```
+
+## List
+
+`canon indexes list [path]` walks every folder index under `path` (default: cwd) and flattens each folder's own `title`/`subtitle` plus every sibling's `title`/`description` into one catalog, sorted by path relative to the walk root.
+
+| Option   | Behavior                                   |
+| -------- | ------------------------------------------ |
+| `--json` | Emit `{ root, entries, errors }` on stdout |
+
+Each entry is `{ path, title, description }`. `path` is relative to the resolved root, and an `index.md` file's own row uses its `subtitle` as `description`.
+
+A folder failing frontmatter validation lands its message in `errors` and drops out of `entries` rather than failing the whole walk, matching `regen`'s per-folder isolation. Every mode writes one `ERROR:` line per error to stderr.
+
+Exit codes: `0` no errors, `1` root not a directory, or a folder failed frontmatter validation.
+
+A git-ignored indexed folder, such as `.canon/tasks/` or `.canon/memory/`, never appears in the output. `listIndexes` filters candidates through `git check-ignore` the same way `regen`'s whole-repo walk does, which is the right default for a documentation lookup since those rows are session scratch, but it is a gap against `regen`'s positional-path mode, which bypasses that filter for those two folders.
 
 For the system rationale, frontmatter contract, when to adopt, and bootstrap path, see `.claude/context/indexes.md`.

@@ -2,6 +2,7 @@ import { stat } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { $ } from 'bun'
 import type { Command } from 'commander'
+import { buildIndexCatalog } from '@/indexes/list'
 import { exitCodeFor, type RegenResult, regenOne } from '@/indexes/regen'
 import { gitEnv } from '@/git-env'
 import { findIndexedAncestor, isIgnored, listIndexes } from '@/indexes/walk'
@@ -12,6 +13,10 @@ interface RegenCommandOptions {
   readonly json?: boolean
   readonly root?: string
   readonly stage?: boolean
+}
+
+interface ListCommandOptions {
+  readonly json?: boolean
 }
 
 export function register(program: Command): void {
@@ -50,6 +55,30 @@ export function register(program: Command): void {
     )
     .action(async (paths: string[], opts: RegenCommandOptions) => {
       process.exitCode = await runRegen(paths, opts)
+    })
+
+  indexes
+    .command('list')
+    .description('Flatten every folder index under a path into one catalog')
+    .argument('[path]', 'Folder to walk (default: cwd)')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable catalog on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  no frontmatter errors',
+        '  1  root not a directory, or a folder failed frontmatter validation',
+        '',
+        'Examples:',
+        '  canon indexes list',
+        '  canon indexes list --json docs/',
+        '',
+      ].join('\n'),
+    )
+    .action(async (path: string | undefined, opts: ListCommandOptions) => {
+      process.exitCode = await runList(path, opts)
     })
 }
 
@@ -113,6 +142,44 @@ async function runRegen(
   }
 
   return exitCodeFor(results, { dryRun })
+}
+
+async function runList(
+  path: string | undefined,
+  opts: ListCommandOptions,
+): Promise<number> {
+  const root = resolve(path ?? process.cwd())
+  const emitJson = opts.json ?? false
+
+  if (!(await isDirectory(root))) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ error: `root not a directory: ${root}` })}\n`,
+      )
+      return 1
+    }
+    process.stderr.write(`Root is not a directory: ${root}\n`)
+    return 1
+  }
+
+  const catalog = await buildIndexCatalog(root)
+
+  for (const message of catalog.errors) {
+    process.stderr.write(`ERROR: ${message}\n`)
+  }
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ root, ...catalog })}\n`)
+  } else {
+    intro('canon indexes list')
+    logStep('Catalog')
+    for (const entry of catalog.entries) {
+      logInfo(`${entry.path}: ${entry.title} — ${entry.description}`)
+    }
+    outro()
+  }
+
+  return catalog.errors.length > 0 ? 1 : 0
 }
 
 function collectFromPaths(paths: string[], root: string): string[] {
