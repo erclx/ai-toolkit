@@ -20,7 +20,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Docs](docs.md): How canon docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
 - [Driver](driver.md): Walking a page through named interactions, the probe catalog and the false finding each one carries, why viewport heights are never defaulted, and what each refusal reports
 - [Merge gate](gate.md): Running the gate this repository verifies a branch with, what the stage table holds and what stays a script, how the changed set scopes three stages, and why a stage that cannot read its input reports rather than passing
-- [Indexes](indexes.md): Flags, exit codes, and JSON shape for canon indexes regen, plus when it auto-stages what it rewrote
+- [Indexes](indexes.md): Flags, exit codes, and JSON shape for canon indexes regen and canon indexes list, plus when regen auto-stages what it rewrote
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project
 - [Intake](intake.md): Reading intake folder counts and items, the three read states an item can be in, landing a batch of selections in one cluster, the refusal reasons, and why a call is scoped to one file
 - [Key Changes bijection](key-changes.md): Comparing the files a pull request body's Key Changes names against its own diff, the two directions and the split inside each that decides what is worth raising, the span rules the extractor was measured into, and the three refusals that separate a clean pass from a read that produced nothing

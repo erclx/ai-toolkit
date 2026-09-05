@@ -64,7 +64,7 @@ async function readIndexHead(
   return { ok: true, head: { raw: frontmatter.raw, title, subtitle } }
 }
 
-async function collectEntries(
+export async function collectEntries(
   dir: string,
 ): Promise<
   { ok: true; entries: IndexEntry[] } | { ok: false; errors: string[] }
