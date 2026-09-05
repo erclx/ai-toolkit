@@ -20,7 +20,11 @@ export const agentView = {
   heading: 'It runs on itself',
   // README.md:15
   body: 'The workflow this toolkit ships is the workflow that built it. Several Claude Code sessions run at once, each in its own git worktree on its own branch, and each opens its own pull request.',
+  // The three bands the surface being re-created renders, in its order. Pinned
+  // holds the session doing the dispatching, which an earlier version of this
+  // section left out entirely.
   bands: {
+    pinned: 'Pinned',
     working: 'Working',
     completed: 'Completed',
   },

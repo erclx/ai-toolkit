@@ -32,7 +32,7 @@ a rule rather than a note in a context entry.
 ## One structural accent, and the action color is not it
 
 - `--color-accent` marks structure exactly once, on the rule card border in `RuleArrival.astro`. A second structural accent leaves a reader with two things claiming to be the one thing worth looking at.
-- Structure is the only budget this rule caps. An action color and a status color are separate uses and neither counts against it: `Hero.astro` and `CallToAction.astro` carry the accent as an action, and `AgentView.astro` carries it on the working marker as a status, which is the color the surface it re-creates actually shows.
+- The accent has exactly three uses and the set is closed: structure, action, and status. Structure is capped at one, action is `Hero.astro` and `CallToAction.astro`, and status is the working marker in `AgentView.astro`, which is the color the surface it re-creates shows. A fourth use is not a fourth category. Argue it into one of the three or leave the accent out, because every new category arrives with a reason as good as these two and the cap holds only while the set cannot grow.
 - Reach for `--color-success` or a surface and border token when a section separates a state that is not the live one, which is what `AgentView.astro` does for its completed rows.
 
 ## Before shipping

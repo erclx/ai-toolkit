@@ -35,7 +35,7 @@ test('the rule arrives once its stage scrolls into view', async ({ page }) => {
   await expect(card).toHaveCSS('opacity', '1')
 })
 
-test('the agent view renders both bands at once', async ({ page }) => {
+test('the agent view renders all three bands at once', async ({ page }) => {
   await page.goto('/')
 
   // Every session plus the mover's second copy, which is what lets a row cross
@@ -43,7 +43,7 @@ test('the agent view renders both bands at once', async ({ page }) => {
   await expect(page.locator('.agent-row')).toHaveCount(
     fixture.sessions.length + 1,
   )
-  await expect(page.locator('.agent-band')).toHaveCount(2)
+  await expect(page.locator('.agent-band')).toHaveCount(3)
   await expect(page.locator('.agent-more')).toContainText(
     `${fixture.summary.more} more`,
   )
@@ -52,11 +52,39 @@ test('the agent view renders both bands at once', async ({ page }) => {
   )
 })
 
+// The section is about a dispatch, so the session doing the dispatching has to
+// be in it. A branch filter in the generator excluded the orchestrator and
+// every planner, which no check here caught because the page matched its own
+// fixture the whole way through.
+test('the agent view pins the dispatching session', async ({ page }) => {
+  await page.goto('/')
+
+  const pinned = fixture.sessions.filter((s) => s.state === 'pinned')
+  expect(pinned.length).toBeGreaterThan(0)
+
+  const band = page.locator('.agent-band').first()
+  await expect(band).toHaveText('Pinned')
+  await expect(page.locator('.agent-row').first()).toContainText(pinned[0].name)
+})
+
+test('the agent view carries planners beside workers', async ({ page }) => {
+  await page.goto('/')
+
+  const planners = fixture.sessions.filter((s) => s.name.startsWith('planner-'))
+  expect(planners.length).toBeGreaterThan(0)
+
+  for (const planner of planners) {
+    await expect(
+      page.locator('.agent-row').filter({ hasText: planner.name }).first(),
+    ).toBeVisible()
+  }
+})
+
 test('the agent view names each session with its own row', async ({ page }) => {
   await page.goto('/')
 
   for (const session of fixture.sessions) {
-    const row = page.locator(`.agent-row[data-branch="${session.branch}"]`)
+    const row = page.locator(`.agent-row[data-session="${session.name}"]`)
     await expect(row.first()).toContainText(session.name)
     await expect(row.first()).toContainText(session.activity)
   }
@@ -111,7 +139,7 @@ test('the agent view names an outcome for every session', async ({ page }) => {
 
   for (const session of fixture.sessions) {
     if (session.pullRequest === null) continue
-    const row = page.locator(`.agent-row[data-branch="${session.branch}"]`)
+    const row = page.locator(`.agent-row[data-session="${session.name}"]`)
     await expect(row.first().locator('.agent-pr')).toHaveText(
       `#${session.pullRequest}`,
     )

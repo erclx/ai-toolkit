@@ -1,12 +1,13 @@
 {
   "generatedBy": "scripts/core/regen-agent-fixture.sh",
-  "readAt": "2026-09-05T13:25:45Z",
+  "readAt": "2026-09-05T13:34:49Z",
   "source": {
     "command": "canon sessions list --json",
     "live": [
       "name",
+      "branch",
       "age",
-      "membership of the working band",
+      "that every pinned and working row is running",
       "the remainder count"
     ],
     "transcribed": {
@@ -17,17 +18,25 @@
   },
   "summary": {
     "working": 3,
-    "completed": 2,
-    "more": 17
+    "completed": 4,
+    "more": 20
   },
   "sessions": [
+    {
+      "name": "orchestrator-canon-lead",
+      "branch": "main",
+      "state": "pinned",
+      "activity": "okay lets start dispatching all four",
+      "pullRequest": null,
+      "age": "4d"
+    },
     {
       "name": "worker-canon-agent-view-and-deploy",
       "branch": "feat/agent-view-and-deploy",
       "state": "working",
       "activity": "PR #1510 open (landing page)",
       "pullRequest": 1510,
-      "age": "44m"
+      "age": "53m"
     },
     {
       "name": "worker-canon-answer-gate-phrasing",
@@ -35,7 +44,7 @@
       "state": "working",
       "activity": "CI running on follow-up push",
       "pullRequest": 1509,
-      "age": "44m"
+      "age": "53m"
     },
     {
       "name": "worker-canon-capture-ci-seeds",
@@ -43,23 +52,39 @@
       "state": "working",
       "activity": "Batch 3: playwright browsers",
       "pullRequest": null,
+      "age": "41m"
+    },
+    {
+      "name": "planner-canon-write-route-hook-bypass",
+      "branch": null,
+      "state": "completed",
+      "activity": "plan written; tested write probe",
+      "pullRequest": null,
       "age": "32m"
     },
     {
+      "name": "planner-canon-indexes-list-lookup",
+      "branch": null,
+      "state": "completed",
+      "activity": "plan and task board consistent",
+      "pullRequest": null,
+      "age": "13m"
+    },
+    {
       "name": "worker-canon-labels-scan-body-file",
-      "branch": "feat/labels-scan-body-file",
+      "branch": null,
       "state": "completed",
       "activity": "address-review pass finished",
       "pullRequest": 1508,
-      "age": null
+      "age": "21m"
     },
     {
       "name": "worker-canon-web-context-entry",
-      "branch": "feat/web-context-entry",
+      "branch": null,
       "state": "completed",
       "activity": "PR #1507 addressed with commit",
       "pullRequest": 1507,
-      "age": null
+      "age": "20m"
     }
   ]
 }

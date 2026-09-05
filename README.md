@@ -14,7 +14,7 @@ The counts above are read from the catalogs when the image is built, so they're 
 
 The workflow this toolkit ships is the workflow that built it. Several Claude Code sessions run at once, each in its own git worktree on its own branch, and each opens its own pull request.
 
-![The canon landing page's session list, with sessions under a Working band and a Completed one, each naming what it is doing and the pull request it opened, and one row moving from the first band to the second](demos/agent-view.gif)
+![The canon landing page's session list, with the orchestrator pinned above bands of working and completed sessions, workers and planners in both, each naming what it is doing and the pull request it opened, and one row moving from Working into Completed](demos/agent-view.gif)
 
 That is the landing page's own agent view, recorded from a local build by `canon demo run`. The session rows behind it are a real `canon sessions list --json` read. The activity text and the pull request number are transcribed, because no verb here reports either.
 

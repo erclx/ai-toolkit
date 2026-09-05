@@ -4,7 +4,7 @@
   "url": "http://localhost:4321/",
   "viewport": {
     "width": 1280,
-    "height": 860
+    "height": 940
   },
   "output": {
     "video": "demos/agent-view.webm",

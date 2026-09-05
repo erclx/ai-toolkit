@@ -25,6 +25,7 @@ import fixture from '../fixtures/agent-view.json'
 
 const readOn = new Date(fixture.readAt).toISOString().slice(0, 10)
 
+const pinned = fixture.sessions.filter((s) => s.state === 'pinned')
 const working = fixture.sessions.filter((s) => s.state === 'working')
 const completed = fixture.sessions.filter((s) => s.state === 'completed')
 
@@ -70,9 +71,26 @@ const stayers = working.slice(1)
       <span>{fixture.summary.completed + 1}</span> completed
     </p>
 
+    <p class="agent-band m-0 mt-4">{agentView.bands.pinned}</p>
+    <ol class="m-0 flex list-none flex-col p-0">
+      {
+        pinned.map((session) => (
+          <li class="agent-row" data-session={session.name}>
+            <span class="marker marker-working" aria-hidden="true">
+              ✽
+            </span>
+            <span class="agent-name">{session.name}</span>
+            <span class="agent-activity">{session.activity}</span>
+            <span class="agent-pr" />
+            <span class="agent-age">{session.age}</span>
+          </li>
+        ))
+      }
+    </ol>
+
     <p class="agent-band m-0 mt-4">{agentView.bands.working}</p>
     <ol class="m-0 flex list-none flex-col p-0">
-      <li class="agent-row agent-row-mover" data-branch={mover.branch}>
+      <li class="agent-row agent-row-mover" data-session={mover.name}>
         <span class="marker marker-working" aria-hidden="true">✽</span>
         <span class="agent-name">{mover.name}</span>
         <span class="agent-activity">{mover.activity}</span>
@@ -83,7 +101,7 @@ const stayers = working.slice(1)
       </li>
       {
         stayers.map((session) => (
-          <li class="agent-row" data-branch={session.branch}>
+          <li class="agent-row" data-session={session.name}>
             <span class="marker marker-working" aria-hidden="true">
               ✽
             </span>
@@ -100,7 +118,7 @@ const stayers = working.slice(1)
 
     <p class="agent-band m-0 mt-4">{agentView.bands.completed}</p>
     <ol class="m-0 flex list-none flex-col p-0">
-      <li class="agent-row agent-row-landed" data-branch={mover.branch}>
+      <li class="agent-row agent-row-landed" data-session={mover.name}>
         <span class="marker marker-done" aria-hidden="true">✽</span>
         <span class="agent-name">{mover.name}</span>
         <span class="agent-activity">{agentView.landed}</span>
@@ -111,7 +129,7 @@ const stayers = working.slice(1)
       </li>
       {
         completed.map((session) => (
-          <li class="agent-row" data-branch={session.branch}>
+          <li class="agent-row" data-session={session.name}>
             <span class="marker marker-done" aria-hidden="true">
               ✽
             </span>
