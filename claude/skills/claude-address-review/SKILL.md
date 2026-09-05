@@ -195,12 +195,17 @@ canon labels scan --body-file .canon/tmp/address-review/reply-<number>.md
 ```
 
 Then edit the exact comment Step 6 posted, read back from the id it saved,
-rather than posting a second comment. Read the id first, then pass it as a
-literal rather than substituting it inline:
+rather than posting a second comment. A shell variable assigned from `cat` and
+handed to `gh` still carries a runtime value the isolation rule cannot verify,
+so read the id as its own plain command and write the printed value as a
+literal in the `gh api` call rather than a substitution or a variable:
 
 ```bash
-comment_id=$(cat .canon/tmp/address-review/reply-<number>.id)
-gh api -X PATCH "repos/{owner}/{repo}/issues/comments/${comment_id}" \
+cat .canon/tmp/address-review/reply-<number>.id
+```
+
+```bash
+gh api -X PATCH "repos/{owner}/{repo}/issues/comments/<id printed above>" \
   -F body=@.canon/tmp/address-review/reply-<number>.md
 ```
 
