@@ -3,19 +3,16 @@ import { readFile } from 'node:fs/promises'
 import { isAbsolute, relative, resolve } from 'node:path'
 import { isUnder } from '@/paths'
 import { recordDir, recordDirs } from '@/record-root'
-import { readQuestions, splitPlanSections } from '@/records/validate'
+import {
+  normalizeOperatorCall,
+  OPERATOR_CALL,
+  readQuestions,
+  splitPlanSections,
+} from '@/records/validate'
 
 const PLANS = 'plans'
 const TASKS = 'tasks'
 const ARCHIVE = 'archive'
-
-/**
- * The suggestion the plan standard fixes for a question that turns on the
- * operator's preference rather than on a technical default. Every other
- * suggestion is accepted by a blank slot, so only this phrase over an empty
- * `- Answer:` is a stop.
- */
-const OPERATOR_CALL = 'needs your call'
 
 const SUGGESTED_PREFIX = '- Suggested:'
 const ANSWER_PREFIX = '- Answer:'
@@ -112,9 +109,15 @@ function isAnswered(body: readonly string[]): boolean {
  * behind a full stop, so both separators come off. Reporting the phrase with
  * whatever punctuation followed it hands the operator a stray mark where the
  * reason should start.
+ *
+ * Takes the normalized suggestion rather than the raw one, so the length
+ * stripped from the front is always `OPERATOR_CALL`'s own regardless of which
+ * recognized wording the author wrote. The `operator's call` and
+ * `the operator's call` variants read longer than `your call`, and slicing by
+ * the canonical length against the raw text would cut into the reason itself.
  */
-function reasonOf(suggested: string): string {
-  const rest = suggested.slice(OPERATOR_CALL.length).replace(/^[,.;:\s]+/, '')
+function reasonOf(normalized: string): string {
+  const rest = normalized.slice(OPERATOR_CALL.length).replace(/^[,.;:\s]+/, '')
 
   return rest.length > 0 ? rest : 'no reason stated'
 }
@@ -130,10 +133,13 @@ function openQuestions(lines: readonly string[]): OpenQuestion[] {
 
   for (const question of readQuestions(lines)) {
     const suggested = suggestionOf(question.body)
-    if (!suggested?.toLowerCase().startsWith(OPERATOR_CALL)) continue
+    if (!suggested) continue
+
+    const normalized = normalizeOperatorCall(suggested)
+    if (!normalized.toLowerCase().startsWith(OPERATOR_CALL)) continue
     if (isAnswered(question.body)) continue
 
-    open.push({ label: question.label, why: reasonOf(suggested) })
+    open.push({ label: question.label, why: reasonOf(normalized) })
   }
 
   return open

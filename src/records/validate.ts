@@ -72,6 +72,7 @@ export const FINDING_KINDS = [
   'closing-partial',
   'item-incomplete',
   'category-mismatch',
+  'operator-call-phrasing',
 ] as const
 
 export type FindingKind = (typeof FINDING_KINDS)[number]
@@ -156,6 +157,53 @@ export function isSharedScratch(kind: RecordKind): boolean {
 
 const NONE_IDENTIFIED = 'None identified.'
 const NUMBERED_FILE = /^\d{2}-[a-z0-9]+(-[a-z0-9]+)*\.md$/
+
+/**
+ * The suggestion the plan standard fixes for a question that turns on the
+ * operator's preference rather than on a technical default. `src/tasks/answers.ts`
+ * reads this alongside `normalizeOperatorCall` so the dispatch gate and this
+ * write-time check cannot drift into recognizing different spellings.
+ */
+export const OPERATOR_CALL = 'needs your call'
+
+/**
+ * The two demonstrated paraphrases of `OPERATOR_CALL`, longer variant first so
+ * it is not read as a shorter match sitting inside it: `operator's call` is a
+ * substring of `the operator's call`, and checking it first would rewrite the
+ * `the` into place with the wrong phrase on either side.
+ */
+const OPERATOR_CALL_PHRASES = [
+  "the operator's call",
+  "operator's call",
+] as const
+
+/**
+ * Reads a recognized paraphrase as the canonical phrase, so a caller testing
+ * `startsWith(OPERATOR_CALL)` sees one spelling regardless of which wording the
+ * author used. Case-insensitive, since the corpus capitalizes a suggestion's
+ * first word, and it rewrites only the matched span so the reason text either
+ * side of it survives untouched.
+ *
+ * Short-circuits on an already-canonical opening before scanning the rest of
+ * the text. Without that, a suggestion already opening with `needs your call`
+ * that goes on to mention a paraphrase inside its own reason, such as
+ * `needs your call, since the operator's call outranks a default`, has that
+ * later occurrence rewritten too, which garbles the reason the dispatcher
+ * reports rather than leaving it as the author wrote it.
+ */
+export function normalizeOperatorCall(text: string): string {
+  const lower = text.toLowerCase()
+  if (lower.startsWith(OPERATOR_CALL)) return text
+
+  for (const phrase of OPERATOR_CALL_PHRASES) {
+    const at = lower.indexOf(phrase)
+    if (at !== -1) {
+      return `${text.slice(0, at)}your call${text.slice(at + phrase.length)}`
+    }
+  }
+
+  return text
+}
 
 function finding(
   kind: FindingKind,
@@ -295,6 +343,9 @@ function shorten(label: string): string {
   return label.length > 60 ? `${label.slice(0, 57)}...` : label
 }
 
+const SUGGESTED_PREFIX = '- Suggested:'
+const ANSWER_PREFIX = '- Answer:'
+
 function checkQuestionContract(name: string, lines: string[]): Finding[] {
   if (lines.some((line) => line.trim() === NONE_IDENTIFIED)) return []
 
@@ -302,8 +353,12 @@ function checkQuestionContract(name: string, lines: string[]): Finding[] {
 
   for (const question of readQuestions(lines)) {
     const subject = shorten(question.label)
+    const suggested = question.body.find((line) =>
+      line.startsWith(SUGGESTED_PREFIX),
+    )
+    const answer = question.body.find((line) => line.startsWith(ANSWER_PREFIX))
 
-    if (!question.body.some((line) => line.startsWith('- Suggested:'))) {
+    if (!suggested) {
       findings.push(
         finding(
           'suggestion-missing',
@@ -314,7 +369,7 @@ function checkQuestionContract(name: string, lines: string[]): Finding[] {
       )
     }
 
-    if (!question.body.some((line) => line.startsWith('- Answer:'))) {
+    if (!answer) {
       findings.push(
         finding(
           'question-unanswerable',
@@ -323,6 +378,29 @@ function checkQuestionContract(name: string, lines: string[]): Finding[] {
           'carries no Answer slot, so the blank-answer default has nowhere to sit.',
         ),
       )
+    }
+
+    if (
+      suggested &&
+      answer &&
+      answer.slice(ANSWER_PREFIX.length).trim() === ''
+    ) {
+      const text = suggested.slice(SUGGESTED_PREFIX.length).trim()
+      const normalized = normalizeOperatorCall(text)
+
+      if (
+        normalized.toLowerCase().startsWith(OPERATOR_CALL) &&
+        !text.toLowerCase().startsWith(OPERATOR_CALL)
+      ) {
+        findings.push(
+          finding(
+            'operator-call-phrasing',
+            name,
+            subject,
+            'defers to the operator over a blank Answer without opening with the canonical needs your call, so a paraphrase reaches the corpus instead of the fixed spelling.',
+          ),
+        )
+      }
     }
   }
 
