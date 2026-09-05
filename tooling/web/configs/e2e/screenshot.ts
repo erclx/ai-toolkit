@@ -24,16 +24,45 @@ const CASES: CaptureCase[] = [
   },
 ]
 
+const args = process.argv.slice(2)
+const checkConsoleClean = args.includes('--check-console-clean')
+const requireBaseUrl = args.includes('--require-base-url')
+
+if (requireBaseUrl && !process.env.SCREENSHOT_BASE_URL) {
+  console.error('SCREENSHOT_BASE_URL is required with --require-base-url')
+  process.exit(1)
+}
+
 const BASE_URL = process.env.SCREENSHOT_BASE_URL ?? 'http://localhost:4173'
-const OUT_DIR = 'screenshots'
+
+let hostname: string
+try {
+  hostname = new URL(BASE_URL).hostname
+} catch {
+  console.error(`SCREENSHOT_BASE_URL is not a valid URL: ${BASE_URL}`)
+  process.exit(1)
+}
+
+const OUT_DIR = path.join('screenshots', hostname)
 
 const browser = await chromium.launch()
+const consoleErrors: string[] = []
 
 for (const captureCase of CASES) {
   const context = await browser.newContext({
     viewport: { width: captureCase.width, height: captureCase.height },
   })
   const page = await context.newPage()
+
+  if (checkConsoleClean) {
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(
+          `${captureCase.section}/${captureCase.theme}: ${msg.text()}`,
+        )
+      }
+    })
+  }
 
   if (captureCase.setup) await captureCase.setup(page)
 
@@ -51,3 +80,9 @@ for (const captureCase of CASES) {
 }
 
 await browser.close()
+
+if (checkConsoleClean && consoleErrors.length > 0) {
+  console.error('console errors detected:')
+  for (const error of consoleErrors) console.error(`  ${error}`)
+  process.exit(1)
+}

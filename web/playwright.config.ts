@@ -14,6 +14,7 @@ export default defineConfig({
   testDir: 'e2e',
   outputDir: path.join(here, 'test-results'),
   forbidOnly: isCI,
+  // Absorbs shared-runner noise on a fresh scaffold with no flake history, at the cost of hiding a real defect until someone reads the run summary.
   retries: isCI ? 2 : 0,
   reporter: isCI
     ? 'list'
