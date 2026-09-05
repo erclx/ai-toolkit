@@ -100,16 +100,20 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
       // Pointed the opposite way from a test. A recording wants the motion the
       // interface was designed with, where a test wants it suppressed.
       reducedMotion: 'no-preference',
+      // `showActions` is deliberately not passed. Playwright's annotation draws
+      // a dot on the interacted element and a title naming the API call it
+      // made, and this recorder already supersedes both: the injected pointer
+      // is a real cursor where the dot is a marker, and the caption bar carries
+      // the beat's narration where the title carries `Mouse move`. Leaving it
+      // on ran four overlays where two were wanted, and the two redundant ones
+      // were the two a viewer reads as noise. `plan.annotations` keeps its
+      // three fields as a dormant record of what that annotation was
+      // configured with, since a committed plan predating this carries them.
       ...(videoDir
         ? {
             recordVideo: {
               dir: videoDir,
               size: plan.viewport,
-              showActions: {
-                duration: plan.annotations.durationMs,
-                position: plan.annotations.position,
-                fontSize: plan.annotations.fontSize,
-              },
             },
           }
         : {}),
@@ -234,9 +238,24 @@ export async function runStep(
       await moveTo(page, plan, step, pace)
       break
     case 'scroll':
-      await page.locator(step.target).first().scrollIntoViewIfNeeded()
+      // Centred rather than `scrollIntoViewIfNeeded`, which scrolls the least
+      // it can and leaves a target taller than the remaining space flush
+      // against the bottom edge. Measured on this repository's own recording at
+      // 225 pixels of dead space above the content and 2 below, where centring
+      // splits it 114 and 113. A recording frames its subject, so the least
+      // scroll that technically reveals it is the wrong amount.
+      await page
+        .locator(step.target)
+        .first()
+        .evaluate((node) =>
+          node.scrollIntoView({ block: 'center', inline: 'nearest' }),
+        )
       await page.waitForTimeout(SETTLE_MS)
-      await moveTo(page, plan, step, pace)
+      // The pointer stays where it was. A scroll is not a pointing action, so
+      // gliding the cursor to the target's centre parks it on top of whatever
+      // the scroll just revealed and covers a row of it. A real session scrolls
+      // with a wheel and leaves the cursor alone, which is also what keeps it in
+      // the corner `START` puts it in, out of the way of the content.
       break
     case 'wait':
     case 'hold':

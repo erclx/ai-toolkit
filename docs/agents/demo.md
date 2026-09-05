@@ -53,7 +53,7 @@ A step waits on its `waitFor` selector becoming visible and then holds for its o
 
 ## The pointer is painted inside the page
 
-The browser engine's own annotation draws a red dot at the moment of a click and an action label in a corner. It paints no cursor, so a run without more looks like the pointer teleports between targets.
+The browser engine offers an annotation of its own that draws a dot on the interacted element and a title naming the API call it made, and this recorder does not turn it on. It paints no cursor, so a run relying on it looks like the pointer teleports between targets, and the two overlays below supersede it: a real cursor where the dot is a marker, and the beat's narration where the title reads `Mouse move`. Running both put four overlays on the frame, and the two the engine drew were the two a viewer reads as noise.
 
 The recorder injects a pointer element before navigation and moves it through the engine's pointer with interpolated steps rather than through the element-clicking helper, which resolves a target and jumps to it. The step count is the whole difference between a cursor that travels and one that appears, and how many steps a move takes is derived from the machine's own round-trip cost rather than fixed, so the same plan glides at roughly the same pace on a loaded machine as an idle one. It also reads the element under it on every move and switches between an arrow, a hand, and a text beam, so it reflects the page the way a real cursor does.
 

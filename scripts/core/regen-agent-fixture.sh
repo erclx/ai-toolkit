@@ -63,10 +63,11 @@ OUT="$PROJECT_ROOT/web/src/fixtures/agent-view.json"
 # script used to carry dropped every one of them permanently rather than
 # occasionally.
 ROWS=(
-  "orchestrator-canon-lead|okay lets start dispatching all four||pinned|"
+  "orchestrator-canon-lead|dispatching the planners that need a plan||pinned|"
   "worker-canon-agent-view-and-deploy|PR #1510 open (landing page)|1510|working|" # canon-allow-reference: transcribed status text
-  "worker-canon-answer-gate-phrasing|CI running on follow-up push|1509|working|"
-  "worker-canon-capture-ci-seeds|Batch 3: playwright browsers||working|"
+  "planner-canon-context-wireframe-draft|drafting the context and wireframe plan||working|"
+  "planner-canon-skill-coverage-pointers|reading the skill coverage pointers||working|"
+  "planner-canon-screenshot-trap-guard|planning the screenshot trap guard||working|"
   "planner-canon-write-route-hook-bypass|plan written; tested write probe||completed|32m"
   "planner-canon-indexes-list-lookup|plan and task board consistent||completed|13m"
   "worker-canon-labels-scan-body-file|address-review pass finished|1508|completed|21m"
@@ -124,9 +125,18 @@ const rows = TRANSCRIBED_ROWS.split("\n")
     }
   })
 
-// The listing is keyed by name for the reason the shell comment gives: a
-// session on the default branch has no other identity, and the orchestrator and
-// every planner sit there.
+// Narrowed to this repository, and the reason is disclosure rather than scope.
+// `canon sessions list` is machine-wide, so an unfiltered read carries the
+// session names and worktree paths of every other project on the machine, which
+// here includes paths under a folder named `private` and several client names.
+// This fixture renders on a public page, so the filter is what keeps them off
+// it. The cost is a fidelity gap stated plainly: the real surface is
+// machine-wide and the depiction is one repository, and that is a deliberate
+// narrowing rather than an oversight.
+//
+// Keyed by name for the reason the shell comment gives: a session on the
+// default branch has no other identity, and the orchestrator and every planner
+// sit there.
 const live = new Map(
   listing.sessions
     .filter((session) => session.repository === MAIN_GIT_DIR)

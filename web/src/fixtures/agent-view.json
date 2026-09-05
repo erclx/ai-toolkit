@@ -1,6 +1,6 @@
 {
   "generatedBy": "scripts/core/regen-agent-fixture.sh",
-  "readAt": "2026-09-05T13:34:49Z",
+  "readAt": "2026-09-05T17:28:38Z",
   "source": {
     "command": "canon sessions list --json",
     "live": [
@@ -17,16 +17,16 @@
     }
   },
   "summary": {
-    "working": 3,
+    "working": 4,
     "completed": 4,
-    "more": 20
+    "more": 16
   },
   "sessions": [
     {
       "name": "orchestrator-canon-lead",
       "branch": "main",
       "state": "pinned",
-      "activity": "okay lets start dispatching all four",
+      "activity": "dispatching the planners that need a plan",
       "pullRequest": null,
       "age": "4d"
     },
@@ -36,23 +36,31 @@
       "state": "working",
       "activity": "PR #1510 open (landing page)",
       "pullRequest": 1510,
-      "age": "53m"
+      "age": "5h"
     },
     {
-      "name": "worker-canon-answer-gate-phrasing",
-      "branch": "feat/answer-gate-phrasing",
+      "name": "planner-canon-context-wireframe-draft",
+      "branch": "main",
       "state": "working",
-      "activity": "CI running on follow-up push",
-      "pullRequest": 1509,
-      "age": "53m"
-    },
-    {
-      "name": "worker-canon-capture-ci-seeds",
-      "branch": "feat/capture-ci-seeds",
-      "state": "working",
-      "activity": "Batch 3: playwright browsers",
+      "activity": "drafting the context and wireframe plan",
       "pullRequest": null,
-      "age": "41m"
+      "age": "2m"
+    },
+    {
+      "name": "planner-canon-skill-coverage-pointers",
+      "branch": "main",
+      "state": "working",
+      "activity": "reading the skill coverage pointers",
+      "pullRequest": null,
+      "age": "1m"
+    },
+    {
+      "name": "planner-canon-screenshot-trap-guard",
+      "branch": "main",
+      "state": "working",
+      "activity": "planning the screenshot trap guard",
+      "pullRequest": null,
+      "age": "1m"
     },
     {
       "name": "planner-canon-write-route-hook-bypass",

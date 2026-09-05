@@ -39,7 +39,7 @@
       "text": "",
       "waitFor": "",
       "holdMs": 2000,
-      "caption": "Four Claude Code sessions, four branches",
+      "caption": "An orchestrator, its workers and its planners",
       "still": false
     },
     {
@@ -50,7 +50,7 @@
       "text": "",
       "waitFor": "",
       "holdMs": 2500,
-      "caption": "Each one opens its own pull request",
+      "caption": "Each worker opens its own pull request",
       "still": true
     }
   ]
