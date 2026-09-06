@@ -168,27 +168,6 @@ function applyRewrites(
   return { text: rewritten.join('\n'), count }
 }
 
-/**
- * Rewrites every unmarked citation of a folder in `folders` into its
- * destination under `.canon/review/evidence/`, absolute regardless of how the
- * source citation was spelled. A file naming no such folder returns
- * byte-identical, and a marked line is returned unchanged.
- */
-export function rewriteScratchEvidence(
-  text: string,
-  folders: readonly string[],
-): string {
-  return applyRewrites(text, buildRewrites(folders)).text
-}
-
-/** How many unmarked citations `rewriteScratchEvidence` would change. */
-export function countScratchEvidenceCitations(
-  text: string,
-  folders: readonly string[],
-): number {
-  return applyRewrites(text, buildRewrites(folders)).count
-}
-
 /** The files under every `BACKED_FOLDERS` entry, archives included. */
 export async function walkScratchEvidenceCorpus(
   root: string,

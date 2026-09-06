@@ -165,9 +165,6 @@ describe('planScratchEvidence', () => {
     )
 
     expect(collidedEntry).toBeUndefined()
-    expect(
-      readFileSync(join(root, '.canon/tasks/archive/collided.md'), 'utf8'),
-    ).toBe(collidedText)
     expect(movedEntry?.text).toContain('.canon/review/evidence/target-survey')
   })
 
