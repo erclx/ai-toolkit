@@ -193,16 +193,17 @@ This section is the corpus the coverage claim is measured against: every name `c
 
 ### Set up a project
 
-| Skill                         | When to use                                                                             |
-| ----------------------------- | --------------------------------------------------------------------------------------- |
-| `canon:setup-init`            | On a fresh scaffold, to detect the stack and run the whole install chain in one pass    |
-| `canon:canon-operator`        | On a project that already exists, to read what it carries before an install is picked   |
-| `canon:setup-gov`             | When the governance rules are wanted without the tooling chain                          |
-| `canon:setup-indexes`         | When a markdown-heavy folder needs an `index.md` a session can browse                   |
-| `canon:setup-plugins`         | On a new machine, to install the community and official plugins user-scoped             |
-| `canon:setup-verify`          | After the agent generates configs, to run the installed scripts and report pass or fail |
-| `canon:claude-design-extract` | Before the first UI feature, to draft `.claude/DESIGN.md`                               |
-| `canon:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.canon/diagrams/`    |
+| Skill                         | When to use                                                                                                     |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `canon:setup-init`            | On a fresh scaffold, to detect the stack and run the whole install chain in one pass                            |
+| `canon:canon-operator`        | On a project that already exists, to read what it carries before an install is picked                           |
+| `canon:setup-gov`             | When the governance rules are wanted without the tooling chain                                                  |
+| `canon:setup-indexes`         | When a markdown-heavy folder needs an `index.md` a session can browse                                           |
+| `canon:setup-plugins`         | On a new machine, to install the community and official plugins user-scoped                                     |
+| `canon:setup-verify`          | After the agent generates configs, to run the installed scripts and report pass or fail                         |
+| `canon:setup-smoke`           | After `setup-verify` passes, to check the dev and preview servers, end-to-end tests, and the screenshot harness |
+| `canon:claude-design-extract` | Before the first UI feature, to draft `.claude/DESIGN.md`                                                       |
+| `canon:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.canon/diagrams/`                            |
 
 ### Decide what to build
 

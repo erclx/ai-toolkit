@@ -46,6 +46,6 @@ End with a summary line:
 
 ## Out of scope
 
-- Dev server and preview server smoke tests. Too flaky for a scaffold check, where a slow start reads as a failure. Use `project-commands` to start one on request.
-- Playwright E2E tests. Require browser install and a running server.
-- CI workflow validation. Runs in GitHub Actions on PR, not locally.
+- Dev server and preview server smoke tests. Too flaky for a scaffold check, where a slow start reads as a failure. Use `project-commands` to start one on request, or `canon:setup-smoke` to check both automatically.
+- Playwright E2E tests. Require browser install and a running server. Use `canon:setup-smoke`.
+- CI workflow validation. Runs in GitHub Actions on PR, not locally. `canon:setup-smoke` runs the same end-to-end and screenshot stages locally, as the closest proxy.

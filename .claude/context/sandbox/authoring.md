@@ -211,3 +211,7 @@ A `log_info` line describing what a downstream skill in a chain does is a claim 
 ### A negative content pattern matches on any line rather than on the whole file
 
 `checkContent` compiles a `[[content]]` pattern with the `m` flag and calls `.test()` against the whole file once, so a pin meant to assert a substring is absent anywhere in the file, such as a negative lookahead anchored `^(?!.*foo).*$`, instead matches on the first line that lacks the substring and passes even when a different line in the same file carries it. There is no assertion primitive for content absence. The working substitute is a `manual` entry stating the limitation, relying on the corresponding positive-content pin over the one invocation a step takes to cover the same ground from the other direction.
+
+### A fixture modeling a timed heuristic has to outrun the window it is staged against
+
+A scenario staging a long-running process for an arm that judges it by waiting a fixed window and then checking whether the process is still alive races that window when the fixture sleeps the same duration. Two independently-scheduled sleeps of equal length finish in whichever order machine load happens to put them in, so the arm reads flaky on the one axis it exists to prove reliable. `claude:setup-smoke`'s `dev` and `preview` fixtures sleep three times the skill's five-second check window for this reason. Stage a timed fixture to outlast its check window by a wide margin rather than matching it.

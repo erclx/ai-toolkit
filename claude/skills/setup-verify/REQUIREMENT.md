@@ -11,7 +11,7 @@ Without this skill, a freshly scaffolded project is handed over on the strength 
 
 The naive check fails two ways. A session that assumes script names runs `test` against a stack that exposes `test:run`, or invents a fallback command when a script is absent, and either result reports on something the project never declared. A session that runs a composite script gets one failure covering several stages, so the output names the wrapper rather than the break.
 
-The stages left out are the ones that lie. A dev server or a preview reads as failed when it starts slowly, a browser test needs an install and a running server before it can even fail correctly, and a CI workflow cannot be judged locally at all. Including any of them turns a scaffold check into a flaky one, and a flaky check gets ignored.
+The stages left out are the ones that lie, and each now has an owner in `canon:setup-smoke` rather than nowhere at all. A dev server or a preview reads as failed when it starts slowly, a browser test needs an install and a running server before it can even fail correctly, and a CI workflow cannot be judged locally at all. Including any of them turns a scaffold check into a flaky one, and a flaky check gets ignored.
 
 ## Must
 
@@ -33,7 +33,7 @@ The stages left out are the ones that lie. A dev server or a preview reads as fa
 
 ## Out of scope
 
-- Dev and preview smoke tests, which `project-commands` starts on request
-- Browser end-to-end tests, which need a browser install and a running server
-- CI workflow validation, which runs on the pull request rather than locally
+- Dev and preview smoke tests, which `project-commands` starts on request and `canon:setup-smoke` checks automatically
+- Browser end-to-end tests, which need a browser install and a running server, covered by `canon:setup-smoke`
+- CI workflow validation, which runs on the pull request rather than locally. `canon:setup-smoke` runs the same stages locally as the closest proxy
 - Generating the configs it checks, which the tooling stack reference owns

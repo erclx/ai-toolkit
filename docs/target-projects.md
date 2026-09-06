@@ -63,6 +63,8 @@ The chain is:
 
 The chain stops at the project edge. `repo-metadata` and `git-commit` also ship, reaching a remote and the project's history respectively, and neither runs as part of it. The chain serves a fresh scaffold and names a destination for the three states it does not. An existing project goes to `canon:canon-operator`, which reads what the project already carries before naming a per-domain command. An install wanting the Claude layer without the tooling chain runs `canon claude init` for the seed docs and then `canon:setup-indexes` for the index system. A language the toolkit ships no stack for is the one of the three the chain still runs for, on `base`, with the fallback marked in the preview so it can be declined there.
 
+Run `canon:setup-smoke` by hand once `setup-verify` passes, for the heavier server smoke, end-to-end, and screenshot pass, since the same flakiness reasons that excluded those stages from `setup-verify` keep it out of this unattended chain too.
+
 Keep the `## Scripts` table in `.claude/context/development.md` current as scripts are added. Base tooling seeds that entry with the commands it installs, and each stack reference extends the table. `project-commands` reads it to start the app or run a check on request, so a command missing from the table cannot be run that way. A project whose entry outgrew one file and split into `.claude/context/development/` keeps the table in `overview.md`, which is where the skill looks next. <!-- audit-ignore-citations: .claude/context/development.md -->
 
 ### From scaffold to first feature

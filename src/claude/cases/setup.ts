@@ -32,6 +32,11 @@ export const SETUP_CASES: readonly SkillCase[] = [
   },
   {
     prompt:
+      'Check that the dev server actually starts and the end-to-end suite passes against the scaffold.',
+    expect: 'setup-smoke',
+  },
+  {
+    prompt:
       'This CLAUDE.md file has grown huge, break it apart into the tiered context model.',
     expect: 'migration-claude-md',
   },
