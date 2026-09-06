@@ -1,0 +1,27 @@
+# What `canon indexes regen --dry-run --json` leaves behind against a folder
+# that would change. Read by `canon sandbox check`. Captured to disk the same
+# way `infra:gov`'s test-order arm captures its own verb's stdout.
+#
+# The `path` field is an absolute path inside the sandbox tree, which differs
+# per run, so the pattern anchors on the `docs/index.md` suffix rather than the
+# full string.
+
+paths = ["json-record.json", "json-status.txt"]
+absent = []
+
+manual = []
+
+[[content]]
+path = "json-record.json"
+pattern = '"dryRun":true'
+
+# One `would-write` record naming the folder that would change. `action`
+# follows `path` with no `reason` key, since `regenOne` only attaches one on
+# an error.
+[[content]]
+path = "json-record.json"
+pattern = 'docs/index\.md","action":"would-write"'
+
+[[content]]
+path = "json-status.txt"
+pattern = '^2$'

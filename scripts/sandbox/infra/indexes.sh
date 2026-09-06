@@ -168,12 +168,29 @@ stage_setup() {
   "dry-run")
     seed_folder
     log_step "Running: canon indexes regen --dry-run"
-    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run
+    # Captured rather than exec'd, mirroring infra:gov's test-order arm: the
+    # status is held rather than left to set -e, since --dry-run exits 2 on
+    # drift by design and an abort here would kill the scenario on the outcome
+    # the arm exists to observe.
+    local dry_run_status=0
+    bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run \
+      >dry-run-output.log 2>dry-run-frame.log || dry_run_status=$?
+    printf '%s\n' "$dry_run_status" >dry-run-status.txt
+    cat dry-run-frame.log >&2
+    log_info "dry-run-status.txt carries the exit the run produced"
+    log_info "Expect: declared in fixtures/infra/indexes/dry-run/expect.toml"
     ;;
   "json")
     seed_folder
     log_step "Running: canon indexes regen --dry-run --json"
-    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run --json
+    local json_status=0
+    bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run --json \
+      >json-record.json 2>json-frame.log || json_status=$?
+    printf '%s\n' "$json_status" >json-status.txt
+    cat json-frame.log >&2
+    cat json-record.json >&2
+    log_info "json-record.json carries a machine-readable record per index"
+    log_info "Expect: declared in fixtures/infra/indexes/json/expect.toml"
     ;;
   "opt-out")
     seed_folder
@@ -192,9 +209,11 @@ stage_setup() {
     log_step "Running: canon indexes regen docs/alpha.md"
     bun "$PROJECT_ROOT/src/cli.ts" indexes regen docs/alpha.md
     log_step "git diff --cached --name-only"
-    git diff --cached --name-only | pipe_output
+    git diff --cached --name-only >lint-staged-diff.txt
+    cat lint-staged-diff.txt >&2
     log_step "git status --short"
     git status --short | pipe_output
+    log_info "lint-staged-diff.txt carries the cached diff name list"
     log_info "Expect: docs/index.md present in the cached diff (auto-staged)"
     ;;
   "no-stage")
@@ -202,9 +221,11 @@ stage_setup() {
     log_step "Running: canon indexes regen --no-stage docs/alpha.md"
     bun "$PROJECT_ROOT/src/cli.ts" indexes regen --no-stage docs/alpha.md
     log_step "git diff --cached --name-only"
-    git diff --cached --name-only | pipe_output
+    git diff --cached --name-only >no-stage-diff.txt
+    cat no-stage-diff.txt >&2
     log_step "git status --short"
     git status --short | pipe_output
+    log_info "no-stage-diff.txt carries the cached diff name list"
     log_info "Expect: docs/index.md modified in working tree but NOT in cached diff"
     ;;
   "bootstrap")
