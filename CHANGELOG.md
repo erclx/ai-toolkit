@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.59.0](https://github.com/erclx/canon/compare/v4.58.0...v4.59.0) (2026-09-06)
+
+
+### Features
+
+* **setup-init:** invoke setup-indexes and name the project edge ([#1539](https://github.com/erclx/canon/issues/1539)) ([737a791](https://github.com/erclx/canon/commit/737a79171428e635ae679486ce206b42ad2c9988))
+* **standards:** add wiki authoring standard ([#1537](https://github.com/erclx/canon/issues/1537)) ([c207efd](https://github.com/erclx/canon/commit/c207efdc79934e1132d1ee5cfb1d5a7e12a9537c))
+
+
+### Bug Fixes
+
+* **scratch:** resolve claude-pr-review's tmp write at main root ([#1541](https://github.com/erclx/canon/issues/1541)) ([c234e1e](https://github.com/erclx/canon/commit/c234e1e237e48b3dd38ac066d814cdaa4d06ca2b))
+
 ## [4.58.0](https://github.com/erclx/canon/compare/v4.57.0...v4.58.0) (2026-09-06)
 
 
