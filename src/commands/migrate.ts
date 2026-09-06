@@ -24,6 +24,13 @@ import {
   type RuleLayoutPlan,
   walkFlatRules,
 } from '@/migrate/rule-layout'
+import {
+  applyScratchEvidence,
+  planScratchEvidence,
+  readScratchEvidenceCorpus,
+  type ScratchEvidencePlan,
+  walkScratchEvidenceCorpus,
+} from '@/migrate/scratch-evidence'
 import { PROJECT_ROOT } from '@/project-root'
 import { readStamp, stampedHashes } from '@/sync/stamp'
 import { logError, logInfo, logStep, logWarn, pipeOutput, plural } from '@/ui'
@@ -470,6 +477,96 @@ function toRecordTreeRecord(
   }
 }
 
+interface ScratchEvidenceOptions {
+  readonly json?: boolean
+  readonly write?: boolean
+  readonly root?: string
+}
+
+/**
+ * Moves the nine cited-and-unwritten folders under `.canon/tmp/` to
+ * `.canon/review/evidence/`, and repoints the citations that name them,
+ * archives included.
+ */
+async function runScratchEvidence(
+  opts: ScratchEvidenceOptions,
+): Promise<number> {
+  const root = opts.root ?? process.cwd()
+
+  const files = await walkScratchEvidenceCorpus(root)
+  const sources = await readScratchEvidenceCorpus(files)
+  const plan = planScratchEvidence(root, sources)
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify(toScratchEvidenceRecord(plan, opts.write))}\n`,
+    )
+  }
+
+  reportScratchEvidence(plan)
+
+  if (plan.collisions.length > 0) {
+    logError(
+      `${plural(plan.collisions.length, 'destination')} already occupied. Neither side moved.`,
+    )
+    for (const collision of plan.collisions) logError(`  ${collision}`)
+  }
+
+  if (plan.moves.length === 0 && plan.entries.length === 0) {
+    return plan.collisions.length > 0 ? 1 : 0
+  }
+
+  if (!opts.write) {
+    logWarn('Nothing was written. Pass --write to apply this plan.')
+    return 2
+  }
+
+  const applied = await applyScratchEvidence(plan)
+  logStep(
+    `Moved ${plural(applied.moved, 'folder')} and rewrote ${plural(applied.written, 'file')}.`,
+  )
+
+  if (applied.failed.length > 0) {
+    logError(`Could not write ${plural(applied.failed.length, 'file')}.`)
+    for (const path of applied.failed) logError(`  ${path}`)
+    return 1
+  }
+
+  return plan.collisions.length > 0 ? 1 : 0
+}
+
+function reportScratchEvidence(plan: ScratchEvidencePlan): void {
+  logInfo(`${plural(plan.moves.length, 'folder')} to move.`)
+  for (const move of plan.moves) {
+    logInfo(`  ${move.from} -> ${move.to}`)
+  }
+
+  logInfo(
+    `${plural(plan.entries.length, 'file')} to change, ${plural(plan.rewritten, 'citation')} to rewrite.`,
+  )
+  for (const entry of plan.entries) {
+    logInfo(`  ${entry.path}: ${plural(entry.rewritten, 'citation')}`)
+  }
+}
+
+function toScratchEvidenceRecord(
+  plan: ScratchEvidencePlan,
+  wrote: boolean | undefined,
+): unknown {
+  return {
+    ok: true,
+    wrote: wrote === true,
+    moves: plan.moves,
+    collisions: plan.collisions,
+    files: plan.entries.length,
+    rewritten: plan.rewritten,
+    paths: plan.entries.map((entry) => ({
+      path: entry.path,
+      rewritten: entry.rewritten,
+    })),
+  }
+}
+
 interface RuleLayoutOptions {
   readonly json?: boolean
   readonly write?: boolean
@@ -671,6 +768,45 @@ export function register(program: Command): void {
     )
     .action(async (opts: RecordTreeOptions) => {
       process.exitCode = await runRecordTree(opts)
+    })
+
+  migrate
+    .command('scratch-evidence')
+    .description('Promote cited measurement folders out of tmp into review')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option('--write', 'Apply the plan rather than reporting it')
+    .option(
+      '--root <path>',
+      'Project root, defaulting to the working directory',
+    )
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Moves nine folders cited as measurement evidence from .canon/tmp/ to',
+        '.canon/review/evidence/, which canon records push already backs, and',
+        'repoints every citation that names one, live or archived.',
+        '',
+        'A promoted folder is one a durable record cites and no source file',
+        'under claude/, scripts/, src/, governance/, or standards/ names by',
+        'path. A folder a script still writes into stays in scratch, since',
+        'moving it needs a code change first.',
+        '',
+        'Exit codes:',
+        '  0  nothing to move, or --write applied the whole plan',
+        '  1  a write failed, or an unresolved collision remains',
+        '  2  a plan exists and --write was not passed',
+        '',
+        'Examples:',
+        '  canon migrate scratch-evidence',
+        '  canon migrate scratch-evidence --write',
+        '  canon migrate scratch-evidence --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: ScratchEvidenceOptions) => {
+      process.exitCode = await runScratchEvidence(opts)
     })
 
   migrate
