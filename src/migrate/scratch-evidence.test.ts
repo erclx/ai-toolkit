@@ -90,6 +90,31 @@ describe('planScratchEvidence', () => {
     expect(entry?.text).toContain('.canon/review/evidence/target-survey')
   })
 
+  it('should leave a citation carrying the keep marker on its own line unchanged', async () => {
+    const text =
+      'No target holds a `.claude/.tmp/system-map/` folder to move. <!-- canon-keep-record-root -->\n'
+    write('.canon/plans/feature-example.md', text)
+    write('.canon/tmp/system-map/how-it-works.md', 'the map\n')
+
+    const plan = await planFrom(root)
+
+    expect(plan.entries).toHaveLength(0)
+    expect(
+      readFileSync(join(root, '.canon/plans/feature-example.md'), 'utf8'),
+    ).toBe(text)
+  })
+
+  it('should leave a citation unchanged when the marker sits on the nearest non-blank line above it', async () => {
+    const text =
+      '<!-- canon-keep-record-root -->\nNo target holds a `.claude/.tmp/system-map/` folder to move.\n'
+    write('.canon/plans/feature-example.md', text)
+    write('.canon/tmp/system-map/how-it-works.md', 'the map\n')
+
+    const plan = await planFrom(root)
+
+    expect(plan.entries).toHaveLength(0)
+  })
+
   it('should leave a citation naming a folder outside the promotion map byte-identical', async () => {
     const text =
       'Evidence sits at `.claude/.tmp/eval-runs/run-01.md`, still on disk.\n'

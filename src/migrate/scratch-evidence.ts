@@ -17,6 +17,10 @@
  * `groundwork/` are where most of the citations broken here already sit, and
  * a folder promoted out from under them stays gone whether the citing record
  * is open or closed.
+ *
+ * Honors the same `canon-keep-record-root` marker `records.ts` reads, since a
+ * sentence describing what no target holds is not a live pointer this checkout
+ * has to keep resolving.
  */
 
 import { existsSync } from 'node:fs'
@@ -104,24 +108,57 @@ const REWRITES: readonly {
 }))
 
 /**
- * Rewrites every citation of a promoted folder into its destination under
- * `.canon/review/evidence/`, absolute regardless of how the source citation
- * was spelled. A file naming no promoted folder returns byte-identical.
+ * Marks a line naming a promoted folder's old path on purpose, the same
+ * marker `records.ts` reads: on the line itself or on the nearest non-blank
+ * line above it. A sentence describing what no target holds, rather than
+ * pointing a reader at this checkout's own evidence, needs the old spelling
+ * kept, and a mechanical rewrite cannot tell that apart from a live citation.
  */
-export function rewriteScratchEvidence(text: string): string {
+const KEEP_MARKER = 'canon-keep-record-root'
+
+function isKept(lines: readonly string[], index: number): boolean {
+  if (lines[index]?.includes(KEEP_MARKER)) return true
+
+  let above = index - 1
+  while (above >= 0 && lines[above]?.trim() === '') above -= 1
+
+  return above >= 0 && (lines[above]?.includes(KEEP_MARKER) ?? false)
+}
+
+function rewriteLine(line: string): string {
   return REWRITES.reduce(
     (current, { pattern, folder }) =>
       current.replace(pattern, `.canon/review/evidence/${folder}`),
-    text,
+    line,
   )
 }
 
-/** How many citations `rewriteScratchEvidence` would change. */
+/**
+ * Rewrites every unmarked citation of a promoted folder into its destination
+ * under `.canon/review/evidence/`, absolute regardless of how the source
+ * citation was spelled. A file naming no promoted folder returns
+ * byte-identical, and a marked line is returned unchanged.
+ */
+export function rewriteScratchEvidence(text: string): string {
+  const lines = text.split('\n')
+  return lines
+    .map((line, index) => (isKept(lines, index) ? line : rewriteLine(line)))
+    .join('\n')
+}
+
+/** How many unmarked citations `rewriteScratchEvidence` would change. */
 export function countScratchEvidenceCitations(text: string): number {
-  return REWRITES.reduce(
-    (total, { pattern }) => total + [...text.matchAll(pattern)].length,
-    0,
-  )
+  const lines = text.split('\n')
+  let count = 0
+
+  for (const [index, line] of lines.entries()) {
+    if (isKept(lines, index)) continue
+    for (const { pattern } of REWRITES) {
+      count += [...line.matchAll(pattern)].length
+    }
+  }
+
+  return count
 }
 
 /** The files under every `BACKED_FOLDERS` entry, archives included. */
