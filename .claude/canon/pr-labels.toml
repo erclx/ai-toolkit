@@ -88,6 +88,8 @@ repo = [
   ".claude/canon/",
   "vitest.config.ts",
   "vitest.setup.ts",
+  "commitlint.config.js",
+  "commitlint.config.test.ts",
   "inventory.toml",
 ]
 
