@@ -18,13 +18,14 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - `src/tooling/` owns the manifest walk, scan, injection engine, and the reference resolver, in TypeScript
 - `scripts/tooling/` owns the create and verify subcommands, still bash
 
-| Stack        | Extends | Ships                                                                   |
-| ------------ | ------- | ----------------------------------------------------------------------- |
-| `base`       | -       | Universal: prettier, cspell, commitlint, husky, shell                   |
-| `web`        | base    | Web-universal: ESLint, Vitest, Playwright, Tailwind, CI, screenshots    |
-| `vite-react` | web     | Framework glue: vite.config, vitest.config, playwright.config, tsconfig |
-| `astro`      | web     | Framework glue: astro.config, getViteConfig vitest, astro-aware eslint  |
-| `python`     | base    | `uv` runtime plus ruff, mypy, pytest, and coverage sidecars             |
+| Stack        | Extends | Ships                                                                     |
+| ------------ | ------- | ------------------------------------------------------------------------- |
+| `base`       | -       | Universal: prettier, cspell, commitlint, husky, shell                     |
+| `web`        | base    | Web-universal: ESLint, Vitest, Playwright, Tailwind, CI, screenshots      |
+| `vite-react` | web     | Framework glue: vite.config, vitest.config, playwright.config, tsconfig   |
+| `astro`      | web     | Framework glue: astro.config, getViteConfig vitest, astro-aware eslint    |
+| `nextjs`     | web     | Framework glue: next.config, plain-defineConfig vitest, App Router eslint |
+| `python`     | base    | `uv` runtime plus ruff, mypy, pytest, and coverage sidecars               |
 
 ## Decisions
 
@@ -206,6 +207,8 @@ Unit tests cover the manifest walk, the gitignore transforms, the package.json c
 Measured 2026-09-05: two `bun e2e/screenshot.ts` captures against the same built `astro` preview, with no code change between them, produced byte-identical PNGs for both cases in `screenshots/localhost/home/`, confirmed by SHA-256.
 
 `canon tooling verify <stack>` scaffolds fresh, so a stack whose manifest leaves a dependency unpinned resolves whatever is current at scaffold time. `web`'s `@playwright/test` carries no version, so a scaffold can resolve a newer release than this checkout's own pinned devDependency, and the two need different cached browser binaries. Install browsers from inside the scaffold, `.canon/tmp/verify-<stack>/node_modules/.bin/playwright install <browsers>`, rather than from this checkout's root, which targets the wrong version and fails E2E with `browserType.launch: Executable doesn't exist`. Measured 2026-09-05 against `astro`.
+
+Measured 2026-09-06 building `nextjs`: `create-next-app`'s current non-interactive flags are `--skip-install` and `--disable-git`, not the older `--no-install`/`--no-git`, and there is no `--turbopack` flag since Turbopack is the default bundler now. `--no-agents-md` suppresses the scaffold-time `AGENTS.md`/`CLAUDE.md` write entirely, a cleaner fix for the root-`CLAUDE.md` collision than deleting the files after the fact. `next typegen && tsc --noEmit` is required for the stack's `typecheck` script rather than bare `tsc --noEmit`, since the App Router's route-level types (`LayoutProps`, `PageProps`) generate into a gitignored `.next/types/` absent from a fresh checkout, caught by the Check phase. Running the scaffold in `/tmp` showed `create-next-app`'s default `.gitignore` already covers everything a plain single-app scaffold produces, so `nextjs` ships no `[gitignore]` group of its own. `eslint-plugin-check-file`'s `folder-naming-convention` does not flag the App Router's special folder syntax (`[id]`, `(group)`, `@slot`), confirmed by linting all three against a scratch install, so the config needs no `src/app/**` exemption the way astro's `pages/**` needed one.
 
 ## Adding a new stack
 
