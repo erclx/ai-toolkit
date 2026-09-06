@@ -9,17 +9,26 @@ interface CaptureCase {
   route: string
   width: number
   height: number
+  evidence?: boolean
   setup?: (page: Page) => Promise<void>
 }
 
 const CASES: CaptureCase[] = [
-  { section: 'home', theme: 'default', route: '/', width: 1280, height: 800 },
+  {
+    section: 'home',
+    theme: 'default',
+    route: '/',
+    width: 1280,
+    height: 800,
+    evidence: true,
+  },
   {
     section: 'home',
     theme: 'dark',
     route: '/',
     width: 1280,
     height: 800,
+    evidence: true,
     setup: (page) => page.emulateMedia({ colorScheme: 'dark' }),
   },
 ]
@@ -49,6 +58,8 @@ const browser = await chromium.launch()
 const consoleErrors: string[] = []
 
 for (const captureCase of CASES) {
+  if (captureCase.evidence && requireBaseUrl) continue
+
   const context = await browser.newContext({
     viewport: { width: captureCase.width, height: captureCase.height },
   })
@@ -75,6 +86,14 @@ for (const captureCase of CASES) {
   const file = path.join(sectionDir, `${captureCase.theme}.png`)
   await page.screenshot({ path: file, fullPage: true })
   console.log(`captured ${file}`)
+
+  if (captureCase.evidence) {
+    const evidenceDir = path.join('evidence', captureCase.section)
+    await mkdir(evidenceDir, { recursive: true })
+    const evidenceFile = path.join(evidenceDir, `${captureCase.theme}.png`)
+    await page.screenshot({ path: evidenceFile, fullPage: true })
+    console.log(`captured ${evidenceFile}`)
+  }
 
   await context.close()
 }
