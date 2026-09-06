@@ -26,6 +26,7 @@ running and re-invoking it would restart the build.
 - Report a plan that fails to resolve as unreadable from here, naming the main-root path. Reporting the task as having no plan is true where this session stands and wrong about the world, and a reader with no second tree to check cannot separate the two.
 - Build the plan the launch named. Do not write a second one when the path fails to resolve, since a row that cites a plan already has one and drafting another produces two plans for one row.
 - Report a draft flag reading ready once, and leave it cleared. The ship chain marks the pull request a draft and no step anywhere un-marks, so a flag reading ready afterwards was lifted by a person readying it to merge, which GitHub requires and is theirs to take. Re-drafting fights them, which four sessions did on 2026-08-31 on a belief no surface in the tree states.
+- Rewrite a plan question's `- Suggested:` line as `overridden at execution to <pick>,` plus the measurement when this build decides against an unanswered one, leaving the `- Answer:` slot blank, and put the same deviation in one line under the open task's `## Findings`, per `${CLAUDE_SKILL_DIR}/../../standards/plan.md`.
 
 ## The board is read-only
 
