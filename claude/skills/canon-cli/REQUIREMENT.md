@@ -25,7 +25,7 @@ A third gap sits beside the first two, aimed at a different question. `canon --h
 - Warn about a destructive run before it happens, naming the surface that will be lost
 - Name the section-preserving path for a standard or seed the project has customized
 - Defer to the toolkit's own context docs when they and this summary disagree, since the summary is a copy and they are the source
-- Point to `canon docs agents` for the verb catalog and to `canon docs` for the reference corpus, rather than restating either.
+- Point to `canon docs agents` for the verb catalog and to `canon docs` for the reference corpus, rather than restating either
 
 ## Must not
 
@@ -42,4 +42,4 @@ A third gap sits beside the first two, aimed at a different question. `canon --h
 - Executing the sync, which the user runs or `canon-operator` routes
 - Reconciling a customized seed section by section: `claude-seed-sync`
 - Deciding which stack, rule, or standard a project should install, which the setup skills resolve from live catalogs
-- Diagnosing what a project is behind on, or executing the fix: canon-operator.
+- Diagnosing what a project is behind on, or executing the fix: `canon-operator`
