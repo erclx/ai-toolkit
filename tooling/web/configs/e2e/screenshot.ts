@@ -9,11 +9,19 @@ interface CaptureCase {
   route: string
   width: number
   height: number
+  evidence?: boolean
   setup?: (page: Page) => Promise<void>
 }
 
 const CASES: CaptureCase[] = [
-  { section: 'home', theme: 'default', route: '/', width: 1280, height: 800 },
+  {
+    section: 'home',
+    theme: 'default',
+    route: '/',
+    width: 1280,
+    height: 800,
+    evidence: true,
+  },
   {
     section: 'home',
     theme: 'dark',
@@ -47,8 +55,12 @@ const OUT_DIR = path.join('screenshots', hostname)
 
 const browser = await chromium.launch()
 const consoleErrors: string[] = []
+let ranCases = 0
 
 for (const captureCase of CASES) {
+  if (captureCase.evidence && requireBaseUrl) continue
+
+  ranCases++
   const context = await browser.newContext({
     viewport: { width: captureCase.width, height: captureCase.height },
   })
@@ -76,10 +88,25 @@ for (const captureCase of CASES) {
   await page.screenshot({ path: file, fullPage: true })
   console.log(`captured ${file}`)
 
+  if (captureCase.evidence) {
+    const evidenceDir = path.join('evidence', captureCase.section)
+    await mkdir(evidenceDir, { recursive: true })
+    const evidenceFile = path.join(evidenceDir, `${captureCase.theme}.png`)
+    await page.screenshot({ path: evidenceFile, fullPage: true })
+    console.log(`captured ${evidenceFile}`)
+  }
+
   await context.close()
 }
 
 await browser.close()
+
+if (requireBaseUrl && ranCases === 0) {
+  console.error(
+    'every CASES entry is flagged evidence: true, so --require-base-url skipped all of them and checked nothing',
+  )
+  process.exit(1)
+}
 
 if (checkConsoleClean && consoleErrors.length > 0) {
   console.error('console errors detected:')

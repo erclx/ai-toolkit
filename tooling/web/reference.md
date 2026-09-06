@@ -12,7 +12,7 @@ Golden config files live in `tooling/web/configs/` and are copied into the targe
 
 - `eslint.config.js`: flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
 - `src/test/setup.ts`: `@testing-library/jest-dom` import, `cleanup` after each test.
-- `e2e/screenshot.ts`: capture template. A single `CASES` record at the top carries one entry per output file, each naming a section, a theme, a route, and its own viewport, and the loop below writes `screenshots/<hostname>/<section>/<theme>.png`, keyed on `SCREENSHOT_BASE_URL`'s hostname so a local and a deployed run land in different folders. Per-project cases extend the one record. A route's themes sit together under its section folder, so the filename carries the theme alone. `--check-console-clean` collects `console`-level error messages per case and exits 1 with the list if any fired, turning the capture into a smoke check. `--require-base-url` exits 1 before launching a browser when `SCREENSHOT_BASE_URL` is unset, guarding a script meant to run against a real deployment from silently capturing `localhost`.
+- `e2e/screenshot.ts`: capture template. A single `CASES` record at the top carries one entry per output file, each naming a section, a theme, a route, and its own viewport, and the loop below writes `screenshots/<hostname>/<section>/<theme>.png`, keyed on `SCREENSHOT_BASE_URL`'s hostname so a local and a deployed run land in different folders. A case flagged `evidence: true` additionally writes `evidence/<section>/<theme>.png`, with no hostname segment. `--require-base-url` skips a flagged case entirely, so a production smoke run neither writes to the committed path nor counts an evidence route in its console-clean check, and exits 1 when that leaves zero cases run, so flagging every case cannot silence the production check without saying so. Per-project cases extend the one record. A route's themes sit together under its section folder, so the filename carries the theme alone. `--check-console-clean` collects `console`-level error messages per case and exits 1 with the list if any fired, turning the capture into a smoke check. `--require-base-url` exits 1 before launching a browser when `SCREENSHOT_BASE_URL` is unset, guarding a script meant to run against a real deployment from silently capturing `localhost`.
 - `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for ESLint, Tailwind, Playwright, Vitest.
 - `.github/workflows/verify.yml`: `static-checks`, `unit-tests`, `build-verify`, and `e2e-tests` jobs.
 - `scripts/verify.sh`: extends base verify with typecheck, lint, unit tests, and build in the full order.
@@ -112,13 +112,14 @@ Append rows:
 
 `governance/rules/ui/440-surface-capture.md` is what asks a session to run the capture after a route changes. It fires on route and page files rather than on every component, so a shared component changing every screen fires nothing and the operator runs the capture by hand.
 
-The screenshot output now tracks in git rather than getting discarded, so the first capture a scaffolded target runs after this change is the baseline it commits.
+The sweep under `screenshots/` is ignored again, and only a flagged case's `evidence/` output tracks in git, so the first capture a scaffolded target runs after this change is the baseline it commits there.
 
 ## Gitignore (extend)
 
 `[gitignore]` groups this stack edits, restated here per the manifest-to-reference symmetry:
 
 - `"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/"]`
+- `"# Screenshots" = ["screenshots/"]`
 
 ## Verify script
 
