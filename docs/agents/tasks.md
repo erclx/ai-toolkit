@@ -5,6 +5,32 @@ description: Selecting a shipped task by stem or pull request, recording a numbe
 
 # Tasks
 
+## Next label
+
+`canon tasks next-label` reports the next unused phase label, reading `.canon/tasks/` and its `archive/` sibling together. A scan confined to the live board is blind to every label the archive already spent, which is what let two sessions hand out the same label within minutes of each other. It reports and never writes.
+
+```bash
+canon tasks next-label
+canon tasks next-label --json
+```
+
+| Option          | Effect                                      |
+| --------------- | ------------------------------------------- |
+| `--json`        | Emit a machine-readable record on stdout    |
+| `--root <path>` | Board root, defaulting to the main worktree |
+
+The record carries `label`, the next free `vXX.Y`, and `highest`, the label it was derived from. `highest` is absent when neither folder carries a label yet, and `label` reads `v01.0` in that case, matching the zero-padded-major shape every other label already takes. <!-- canon-allow-reference: illustrates the verb's answer for a board holding no label yet, not a citation of a real task -->
+
+Exit codes: `0` derived, `1` refused with `no-board`.
+
+The minor digit rolls from 9 to 0 on the next major rather than growing a second digit, which is the single-digit-minor shape every phase label already takes. `canon tasks archive` moves a task's file from the live folder into the archive without renumbering it, so the same label counts toward the maximum wherever it currently sits, and a label claimed by two different files folds into the same scan without a dedicated check.
+
+It reports rather than gates. Two sessions calling it in the same second can still take the same answer, since the board is gitignored files rather than a store with a lock, and `standards/versioning.md` permits free renumbering, so a collision costs a rename rather than anything worse.
+
+```bash
+canon tasks next-label --json | jq -r '.label'
+```
+
 ## Archive
 
 `canon tasks archive` moves a shipped task from `.canon/tasks/` into `.canon/tasks/archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.

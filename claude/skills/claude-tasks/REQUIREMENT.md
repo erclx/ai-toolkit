@@ -7,7 +7,7 @@ description: Why creating and archiving a task file is one skill, the origin inv
 
 ## Gap
 
-Without this skill, a task file gets a filename and frontmatter invented on the spot, so the board sorts wrong and the regenerated index reads fields that are not there. A task arrives with no origin, which is either lost context or work nobody decided to do, and by the time anyone notices there is no way to recover which it was. The phase label gets derived from a version file rather than from what the board already means, and a single-digit phase sorts after a double-digit one because nobody padded it.
+Without this skill, a task file gets a filename and frontmatter invented on the spot, so the board sorts wrong and the regenerated index reads fields that are not there. A task arrives with no origin, which is either lost context or work nobody decided to do, and by the time anyone notices there is no way to recover which it was. The phase label gets derived from a version file rather than from what the board already means, and a single-digit phase sorts after a double-digit one because nobody padded it. A label picked off the live board alone repeats one the archive already spent, since the archive holds most of what has ever been allocated and a board-only scan cannot see it.
 
 Archiving fails in two ways that both lose work. Moving the file, editing the ordering file, and regenerating the index as three separate acts drifts from the one command the merge hook calls, so the attended and unattended paths stop agreeing. And an all-`[x]` task gets archived while its pull request is still open, because marking outcomes happens on the branch as the first step of shipping. The board is gitignored, so nothing restores a task archived early.
 
@@ -18,7 +18,7 @@ Placing a row without checking for another writer collides the same way. Two ses
 - Resolve the board at the main worktree root, since a linked worktree writing to `pwd` creates a second board nothing reads
 - Read the tasks standard before writing, rather than working the filename and frontmatter from memory
 - Require an origin at creation, because that is the only moment the invariant is enforceable
-- Propose the phase label from what is already on the board and pad it to two digits
+- Read the phase label from `canon tasks next-label` rather than proposing one by hand
 - Check the roster for a live orchestrator before writing a row, and hand off rather than write when one is found
 - Confirm the work reached the default branch before archiving
 - Run the archive command and route on the reason it refuses, since each reason has one resolution

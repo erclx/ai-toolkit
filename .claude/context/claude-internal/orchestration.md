@@ -290,7 +290,7 @@ The `sessions` field carries `{name, kind, id}` per holder rather than a bare na
 
 Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles or bodies, review comments, issues, commit messages, or git tags. What catches a leak on the way out is the scan in `standards/publish.md`, which reads the label rule from `standards/versioning.md` beside it. See that file for the rules and the why.
 
-A phase label absent from the live board can already belong to an archived task, since archiving moves the file to `.canon/tasks/archive/` under its own name. `claude-tasks` Step 2 lists the live folder and reads `index.md`, and neither reaches the archive, so the obvious next label after one shipped row was a duplicate held by an archived sibling. Treat the union of both folders as the taken set.
+A phase label absent from the live board can already belong to an archived task, since archiving moves the file to `.canon/tasks/archive/` under its own name. `canon tasks next-label` is what `claude-tasks` Step 2 calls for the next one: it reads the live board and the archive together and reports the true maximum, closing the gap a board-only scan left, where the obvious next label after one shipped row was a duplicate an archived sibling already held. It reports rather than gates, so two sessions calling it in the same second can still land on the same answer.
 
 ## Gotchas
 
