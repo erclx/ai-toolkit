@@ -26,7 +26,7 @@ A wireframe works when someone can rebuild the surface from it without opening t
 
 - What is on screen, and where does it sit relative to everything else?
 - Which states can a visitor reach, and what does each one look like?
-- What does it say, word for word?
+- What does its structural copy say, word for word, and where does its long-form content come from?
 
 A wireframe that fails these is non-conforming regardless of whether it satisfies every section rule below. The fences are the means. These three questions are the test.
 
@@ -60,7 +60,8 @@ Both fields feed `.claude/wireframes/index.md` when regenerated.
 
 ## Copy
 
-- Carry UI copy verbatim in the ASCII block or a short list below it. The wireframe is the source of truth for on-screen text.
+- Carry short structural text verbatim, in the ASCII block or a short list below it: labels, headings, empty-state strings, and nav or footer copy. The wireframe is the source of truth for this text.
+- Cite the source file for long-form or article-body content instead of duplicating it. A lede sentence or a body paragraph pulled into an ASCII figure drifts the moment its source changes, and nothing checks a fenced block against prose elsewhere.
 - Mark copy that is dynamic or templated so a reader does not treat a placeholder as final text.
 
 ## Behavior
@@ -113,6 +114,7 @@ description: <when and where the surface appears>
 
 - <on-screen text, word for word>
 - <text the surface templates>: <marked so a reader does not read it as final>
+- <long-form content>: cited at <its source file>, not duplicated here
 
 ## Behavior
 

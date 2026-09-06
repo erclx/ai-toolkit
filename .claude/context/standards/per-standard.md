@@ -1,6 +1,6 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, how a constraint declares its expiry, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, the cross-reference form split by destination, and the wireframe standard's transcription carve-out
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, how a constraint declares its expiry, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, the cross-reference form split by destination, the wireframe standard's transcription carve-out, and its copy rule narrowing to structural text
 ---
 
 # Per-standard decisions
@@ -203,3 +203,9 @@ Moving the class names and pixel values into a `.claude/context/` entry instead 
 The first draft of the carve-out asked for a source citation and a separate sentence stating plainly that the block transcribes rather than approximates. A review of the pull request read all five shipped wireframes against that bar. Only `slides.md` carried the second half: the four `teach/` files each name their source, through a `Source: ..., regenerated for this plan against <commit>` stamp on two of them and an inline citation on the other two, and none states the transcribes-rather-than-approximates claim outright.
 
 Requiring both would have reopened the same contradiction the carve-out exists to close, on a second axis, against the same corpus. The requirement narrowed to the source citation alone, since a class name and a line number traced to a real file already carry the signal a separate declaration sentence would only restate.
+
+## The wireframe standard's copy rule narrows to structural text
+
+`## Copy` required UI copy verbatim with no exemption for length or kind, and `.claude/wireframes/teach/lesson.md`, the first wireframe in the corpus carrying substantial body prose, showed the cost: its ASCII figure bakes in the lede sentence and the `.assumes` panel text, both duplicated from the live HTML source rather than structural chrome the figure exists to show. The rule narrowed to short structural text, being labels, headings, empty-state strings, and nav or footer copy, and routes long-form or article-body content to a citation of its source file instead.
+
+Citing every kind of on-screen text was the rejected alternative. A label has no source file to cite, being authored in the wireframe itself rather than pulled from a live document, so a citation requirement widened to cover it would ask for a reference that does not exist. The narrowing therefore runs one way: short structural text stays verbatim because it has nowhere else to live, and long-form content moves to a citation because duplicating it is what let `lesson.md` drift.
