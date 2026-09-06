@@ -248,7 +248,7 @@ function isPlaceholderPath(path: string): boolean {
  * still does the work of muting those. The placeholder check only catches
  * the bracketed illustrations existence alone would report as broken.
  */
-function isDocsPathResolvable(
+function isDocsPathReportable(
   file: string,
   path: string,
   root: string,
@@ -274,7 +274,7 @@ function isStandardsPathScope(file: string): boolean {
  * Whether a `STANDARDS_PATH` match should be reported: every match that is
  * not a placeholder, whether or not the named file exists.
  *
- * Existence used to gate this the same way `isDocsPathResolvable` gates its
+ * Existence used to gate this the same way `isDocsPathReportable` gates its
  * corpus, which conflated a deliberate placeholder with a genuinely broken,
  * real-looking citation: both fail existence and both passed muted. A bare
  * `standards/<name>.md` names no target-project tree the way a `docs/` path
@@ -348,7 +348,7 @@ export function referencesIn(
     }
 
     for (const match of line.matchAll(DOCS_PATH)) {
-      if (!isDocsPathResolvable(file, match[0], root)) continue
+      if (!isDocsPathReportable(file, match[0], root)) continue
       references.push({
         file,
         line: index + 1,
