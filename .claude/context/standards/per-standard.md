@@ -44,6 +44,14 @@ Reading the phrase also means reading the `Questions` section rather than the fi
 
 `558-plan` routes `.canon/plans/**` and joins `base`, following `556-groundwork` and `557-intake`. That one glob covers the archive as well, since a shipped plan moves into `.canon/plans/archive/` rather than to a folder of its own, so the second `paths` entry the rule used to carry came off with the move. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
 
+## The branch standard's description cap
+
+The cap reads 2 words as the target with 4 as the ceiling, widened from 3 on 2026-09-06 so that a branch derived from a plan filename is not renamed at ship. A rename there is a third derivation on top of the two `canon tasks plan-branch` exists to collapse, and it parts the branch slug from the plan slug that `claude-worktree` tier 1 and `git-pr`'s fallback plan lookup both read back to find the plan.
+
+The operator took it as a three-way call. Tightening `standards/plan.md` to three-word slugs was the second option and it moves the same problem onto 94 of 565 existing plans, 90 of them at four words. Changing neither and letting the verb flag a non-conforming description was the third, which leaves `git-branch` renaming a conforming slug anyway.
+
+What it costs is that nothing can tell a plan-derived name from a hand-picked one, so the wider ceiling holds for every branch in every target that installed the standard rather than for the case it was widened against. The standard says that plainly rather than scoping the sentence to a case no tool can detect.
+
 ## Where an execution-time deviation goes
 
 An executing session that reads the tree and picks other than the suggestion had two rules pointing opposite ways. `standards/plan.md` bars filling the answer slot and requires amending the plan in place when a decision changes, and `558-plan` carries the pair under separate headings, so the prohibition read as covering the whole question block. Twice the deviation went to a pull request description instead, and a review pass is what moved it onto a durable surface both times.
