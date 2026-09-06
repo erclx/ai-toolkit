@@ -155,9 +155,9 @@ export function register(program: Command): void {
         "It also grades the title alone against standards/pr.md's ## Title",
         'section: the `<type>(<scope>): <subject>` structure, lowercase casing',
         'for the type, the scope, and the first subject word, and a 72-',
-        'character length cap. A review carries no title of its own, so this',
-        'check is skipped there rather than graded against the forced empty',
-        'string.',
+        'character length cap. A scan given no title, whether from a review',
+        'or from a bare --body or --body-file invocation, skips this check',
+        'rather than grading an empty string.',
         '',
         'Exit codes:',
         '  0  none of the five found',
@@ -287,12 +287,10 @@ async function runScan(opts: ScanOptions): Promise<number> {
 
   const result = scanPhaseLabels(resolved)
   const spelling = await scanTitleSpelling(resolved.title, process.cwd())
-  // A review carries no title of its own, so `resolved.title` is forced
-  // empty and grading it would fail as `structure` for the wrong reason.
+  // A scan given no title, whatever produced that absence, has nothing to
+  // grade and would otherwise fail as `structure` for the wrong reason.
   const titleFormat =
-    resolved.source === 'pull-request'
-      ? checkTitleFormat(resolved.title)
-      : undefined
+    resolved.title !== '' ? checkTitleFormat(resolved.title) : undefined
 
   logStep(resolved.source === 'review' ? 'Review comment' : 'Pull request')
   logInfo(
@@ -373,7 +371,7 @@ async function runScan(opts: ScanOptions): Promise<number> {
         : 'Title format issue found',
   )
   if (titleFormat === undefined) {
-    logInfo('a review comment carries no title, so there is no format to grade')
+    logInfo('the scan carries no title, so there is no format to grade')
   } else if (titleFormat.conforms) {
     logInfo(
       'the title matches <type>(<scope>): <subject> and its casing and length rules',
