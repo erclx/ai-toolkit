@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.62.1](https://github.com/erclx/canon/compare/v4.62.0...v4.62.1) (2026-09-06)
+
+
+### Bug Fixes
+
+* **migrate:** exclude only collided folders from citation rewrites ([#1558](https://github.com/erclx/canon/issues/1558)) ([1c5aa2e](https://github.com/erclx/canon/commit/1c5aa2e422491bbec266c059c8ed885d9738f342))
+* **tooling:** reach .astro in the filename naming rule ([#1562](https://github.com/erclx/canon/issues/1562)) ([edb983d](https://github.com/erclx/canon/commit/edb983d1dfb8967864e7ed2dfada8c99a7be9e9b))
+* **wireframes:** trim lesson figure's duplicated lede and covers text ([#1559](https://github.com/erclx/canon/issues/1559)) ([2078954](https://github.com/erclx/canon/commit/207895482ab2aeb1f5babc66d7546877f3a85548))
+
 ## [4.62.0](https://github.com/erclx/canon/compare/v4.61.0...v4.62.0) (2026-09-06)
 
 
