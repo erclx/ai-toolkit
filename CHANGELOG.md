@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.56.0](https://github.com/erclx/canon/compare/v4.55.0...v4.56.0) (2026-09-06)
+
+
+### Features
+
+* **gate:** fail a push on a landing-page README citation that drifted ([#1526](https://github.com/erclx/canon/issues/1526)) ([0a52268](https://github.com/erclx/canon/commit/0a52268365ebd18fa8b920619d5f73ecb6e39a9f))
+* **labels:** add web domain to pull request label map ([#1522](https://github.com/erclx/canon/issues/1522)) ([f2d547a](https://github.com/erclx/canon/commit/f2d547a574c8f7f0f50d9c64b55da616aa63c216))
+* **tasks:** derive a branch name from a plan through one verb ([#1523](https://github.com/erclx/canon/issues/1523)) ([20c8191](https://github.com/erclx/canon/commit/20c8191c4d6989c7f67d59eb7643302a5fea0f78))
+* **tooling:** add nextjs stack extending web ([#1524](https://github.com/erclx/canon/issues/1524)) ([fbf34ea](https://github.com/erclx/canon/commit/fbf34eaf8ec631a45e922bd216c5463c33b56479))
+
 ## [4.55.0](https://github.com/erclx/canon/compare/v4.54.0...v4.55.0) (2026-09-05)
 
 
