@@ -89,11 +89,39 @@ describe('readmeCitationsIn', () => {
   it('should mute a citation when the marker sits on the line above', () => {
     const citations = readmeCitationsIn(
       'web/src/content/copy.ts',
-      `// ${README_PARAPHRASE_MARKER}: condensed from a bullet list\n// README.md: "some phrase"\n`,
+      `// ${README_PARAPHRASE_MARKER}: condensed from a bullet list\n// README.md: further explanation\n`,
     )
 
     expect(citations).toHaveLength(1)
     expect(citations[0]?.kind).toBe('paraphrase')
+  })
+
+  it('should still check a quoted phrase on a line that also carries the marker', () => {
+    const citations = readmeCitationsIn(
+      'web/src/content/copy.ts',
+      `// README.md: ${README_PARAPHRASE_MARKER}: "borrowed verbatim" the rest is synthesized\n`,
+    )
+
+    expect(citations).toEqual([
+      {
+        file: 'web/src/content/copy.ts',
+        line: 1,
+        kind: 'quoted',
+        text: `// README.md: ${README_PARAPHRASE_MARKER}: "borrowed verbatim" the rest is synthesized`,
+        phrases: ['borrowed verbatim'],
+      },
+    ])
+  })
+
+  it('should still check a quoted phrase when the marker sits on the line above', () => {
+    const citations = readmeCitationsIn(
+      'web/src/content/copy.ts',
+      `// ${README_PARAPHRASE_MARKER}: condensed from a bullet list\n// README.md: "some phrase"\n`,
+    )
+
+    expect(citations).toHaveLength(1)
+    expect(citations[0]?.kind).toBe('quoted')
+    expect(citations[0]?.phrases).toEqual(['some phrase'])
   })
 
   it('should read nothing from a line mentioning README.md with no colon', () => {

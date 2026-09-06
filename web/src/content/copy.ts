@@ -128,12 +128,12 @@ export const targetReceives = {
 
 export const boardLifecycle = {
   heading: 'Work tracked in files, archived by a merge',
-  // README.md: canon-allow-readme-paraphrase: "is gitignored session scratch"
-  // borrows the task-board paragraph's closing sentence, and "one row per
-  // task in flight, each naming the files it touches and the plan it runs
-  // under" borrows the task-board image's own alt text. "A merge is what
-  // closes it, not a checkbox someone remembers to tick" is a synthesized
-  // claim with no matching README text.
+  // README.md: canon-allow-readme-paraphrase: "is gitignored session scratch" "one row per task in flight, each naming the files it touches and the plan it runs under"
+  // The first phrase borrows the task-board paragraph's closing sentence and
+  // the second borrows the task-board image's own alt text two lines below.
+  // "A merge is what closes it, not a checkbox someone remembers to tick" is
+  // a synthesized claim with no matching README text, which is what the
+  // marker still covers once both borrows above are checked as quotes.
   body: '.canon/tasks/ is gitignored session scratch, one row per task in flight, each naming the files it touches and the plan it runs under. A merge is what closes it, not a checkbox someone remembers to tick.',
   image: {
     src: '/assets/task-board.png',

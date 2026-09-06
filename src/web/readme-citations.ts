@@ -23,11 +23,15 @@ const QUOTED_PHRASE = /"([^"]+)"/g
  *
  * `quoted` carries one or more verbatim phrases a caller checks against the
  * current `README.md` text, which is what replaces a line number that drifts
- * silently the moment the cited line moves. `paraphrase` is the escape for a
- * string that condenses or synthesizes a run of README lines rather than
- * quoting one, muted by `README_PARAPHRASE_MARKER` the way `isMarked` mutes
- * every other exemption in this repository. `bare` is the retired
- * `README.md:<n>` form, reported rather than accepted so the fragile
+ * silently the moment the cited line moves. A quote is checked whether or not
+ * the line also carries `README_PARAPHRASE_MARKER`, since a marker documents
+ * that part of a string is synthesized and asserts nothing about a phrase the
+ * same line puts in quotes: quoting a borrow verbatim and then never checking
+ * it would let the exact drift this file exists to catch survive inside its
+ * own escape hatch. `paraphrase` is what a marked line falls to only once it
+ * carries no quote of its own, muted by `README_PARAPHRASE_MARKER` the way
+ * `isMarked` mutes every other exemption in this repository. `bare` is the
+ * retired `README.md:<n>` form, reported rather than accepted so the fragile
  * convention this replaces cannot come back on a later edit.
  *
  * Modeled on `clientCommandCitationsIn` in `src/client-commands.ts`, including
@@ -46,17 +50,6 @@ export function readmeCitationsIn(
 
     const rest = (match[1] ?? '').trim()
 
-    if (isMarked(lines, index, README_PARAPHRASE_MARKER)) {
-      citations.push({
-        file,
-        line: index + 1,
-        kind: 'paraphrase',
-        text: line.trim(),
-        phrases: [],
-      })
-      continue
-    }
-
     const phrases = [...rest.matchAll(QUOTED_PHRASE)].map(
       (found) => found[1] ?? '',
     )
@@ -67,6 +60,17 @@ export function readmeCitationsIn(
         kind: 'quoted',
         text: line.trim(),
         phrases,
+      })
+      continue
+    }
+
+    if (isMarked(lines, index, README_PARAPHRASE_MARKER)) {
+      citations.push({
+        file,
+        line: index + 1,
+        kind: 'paraphrase',
+        text: line.trim(),
+        phrases: [],
       })
       continue
     }

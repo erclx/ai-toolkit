@@ -40,6 +40,7 @@ a rule rather than a note in a context entry.
 - Anchor a string in `copy.ts` to `README.md` with `// README.md: "<phrase>"`, a phrase copied verbatim from the current `README.md` text. A line number drifts silently the moment the cited line moves, where a quoted phrase fails loudly instead, which is what `readmeCitations` gates on in `src/gate/measures.ts`.
 - Mark a string that condenses or paraphrases a run of `README.md` lines rather than quoting one with `canon-allow-readme-paraphrase: <reason>` instead of forcing a distorted quote.
 - Write a citation with more than one phrase as `// README.md: "<phrase>" "<phrase>"`, space-separated on the one anchor line, rather than splitting it across two comments.
+- Put a quote on the same line as `canon-allow-readme-paraphrase` when the marked string also borrows a phrase verbatim. The marker exempts only the part of the string that isn't in quotes, so `readmeCitations` still checks the quoted part against the current `README.md` text.
 
 ## Before shipping
 
