@@ -28,7 +28,6 @@ const CASES: CaptureCase[] = [
     route: '/',
     width: 1280,
     height: 800,
-    evidence: true,
     setup: (page) => page.emulateMedia({ colorScheme: 'dark' }),
   },
 ]
@@ -56,10 +55,12 @@ const OUT_DIR = path.join('screenshots', hostname)
 
 const browser = await chromium.launch()
 const consoleErrors: string[] = []
+let ranCases = 0
 
 for (const captureCase of CASES) {
   if (captureCase.evidence && requireBaseUrl) continue
 
+  ranCases++
   const context = await browser.newContext({
     viewport: { width: captureCase.width, height: captureCase.height },
   })
@@ -99,6 +100,13 @@ for (const captureCase of CASES) {
 }
 
 await browser.close()
+
+if (requireBaseUrl && ranCases === 0) {
+  console.error(
+    'every CASES entry is flagged evidence: true, so --require-base-url skipped all of them and checked nothing',
+  )
+  process.exit(1)
+}
 
 if (checkConsoleClean && consoleErrors.length > 0) {
   console.error('console errors detected:')

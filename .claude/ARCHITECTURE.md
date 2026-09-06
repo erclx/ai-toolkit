@@ -290,7 +290,7 @@ The wording does not reopen generally, since a carve-out checked by build proof 
 
 The component ships from `tooling/astro/configs/` alone, never from `tooling/web/`. `vite-react` extends the same `web` parent and cannot parse `.astro` syntax, so a file placed there would reach a target that cannot compile it. `vite-react` gets no equivalent until a real decision on that stack demands one, on the same ground the astro version left five hand-written rewrites behind before it existed.
 
-Measured at `efd75651` on 2026-09-03.
+Measured at `927f2571` on 2026-09-06, re-read after `tooling/web/configs/e2e/screenshot.ts` gained an `evidence` flag and its own committed output path: still four files, same list, and the new lines are e2e capture logic rather than anything a target's production build reaches.
 
 ## Risks / open questions
 
