@@ -214,7 +214,7 @@ Seven checks run. Plan and Collisions reach one half each of the `## Run now` te
 | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Shape      | A row whose cell count disagrees with its table's header, or one stranded behind a table a blank line already closed    |
 | Plan       | A `## Run now` row whose Plan column carries no link, resolves to no file, or disagrees with the task's own line        |
-| Mapping    | A row or backlog line naming no task file, and a task file neither surface names                                        |
+| Mapping    | A row or backlog line naming no task file                                                                               |
 | Grouping   | A task carrying a row in more than one readiness group, or on both surfaces                                             |
 | Ordering   | A `## Needs a plan` row whose stated position disagrees with where it actually sits, or which states no position at all |
 | Collisions | Two `## Run now` rows whose Touches columns name a path in common                                                       |
@@ -224,9 +224,9 @@ Shape runs before any other check reads a row, since a row failing it carries no
 
 The Plan check reads the row and the task file both, because the two are written by different hands and only the task's own `Plan:` line reaches the archive. A row carrying a plan whose task states none is `plan-uncited`, and a pair naming two different plans is `plan-mismatched`. Both sides resolve against the board and against the project root before they compare, so a row writing `../plans/x.md` and a task writing `.canon/plans/x.md` name one file rather than two.
 
-Mapping spans two surfaces, because a task sits on `priority.md` when it would plausibly be planned soon and on `backlog.md` otherwise. A task file either surface names is accounted for, a file neither names is `row-missing`, and a file both name is `row-duplicated` for the reason a task in two groups is: it claims two things about itself and only one can hold. One check across both is what lets a task move between them without the move reading as a dropped file.
+Mapping spans two surfaces, because a task sits on `priority.md` when it would plausibly be planned soon and on `backlog.md` otherwise. A row or a backlog line naming no task file is `task-unresolved`, and a file both surfaces name is `row-duplicated` for the reason a task in two groups is: it claims two things about itself and only one can hold. A task file neither surface names is `unplaced` rather than a finding, since that is the normal state between a session filing it and a live orchestrator placing it on the board. One check across both is what lets a task move between them without the move reading as a dropped file.
 
-A backlog line is a bullet carrying a link to a sibling task, since the backlog is a flat unordered list rather than a table. A bullet holding prose is skipped rather than reported, which keeps the file's own intro out of the findings, and the task that bullet meant to name is still reported as reaching neither surface. A project carrying no `backlog.md` reads as an empty backlog rather than a refusal, which leaves the one-to-one mapping this check ran before the second surface existed.
+A backlog line is a bullet carrying a link to a sibling task, since the backlog is a flat unordered list rather than a table. A bullet holding prose is skipped rather than reported, which keeps the file's own intro out of the findings, and the task that bullet meant to name still lands in the `unplaced` array below rather than the findings. A project carrying no `backlog.md` reads as an empty backlog rather than a refusal, which leaves the one-to-one mapping this check ran before the second surface existed.
 
 Ordering reads a `## Needs a plan` row's `Waiting on` cell for the position it claims, and reports two failures off one walk. A row stating an ordinal is checked against where it actually sits, which is `row-misordered`. A row claiming no position in either form it may take is `row-unranked`, since its cell argues the task matters and ranks it against nothing, which leaves the order recording when each row was filed.
 
@@ -281,6 +281,21 @@ A `## Run now` row whose Touches column names a bare folder lands in a third arr
 That claim collides with every row a later session writes under the folder, and it is legitimate whenever the row does rewrite the directory, so the array states the reach and moves no exit code. A measure failing on a cell that is right teaches a reader to skip it. Folder against file is decided by asking the tree for a path that resolves, and by the extension only for a path the row has yet to create, since the name alone reads a file carrying no extension as a folder.
 
 The scan reaches `## Run now` and stops, where the collision check stops. A cell in another group describes work nobody has planned, written as a sentence and rewritten once a plan exists, so a claim read off one reports on prose rather than on a file set. A parked folder claim surfaces when its row is promoted, which is when the cell becomes something a dispatcher can act on.
+
+A task file neither surface names lands in a fourth array, on the same reasoning:
+
+```json
+{
+  "unplaced": [
+    {
+      "subject": "v50.6-a-standard-no-skill-reads", // canon-allow-reference: shows the subject field's real vXX.Y-slug shape, not a citation of a real task
+      "message": "is a task file with no row on the board and no line on the backlog."
+    }
+  ]
+}
+```
+
+Under the roster-checked hand-off `claude-tasks` and `claude-groundwork` state, filing a task and placing its row are two acts a different session each may take, so a task caught between the two is ordinary rather than a finding and this array moves no exit code. It still reports, since it is the only local detector for a row a hand-edit dropped, a handoff message that never arrived, or an orchestrator that ended before placing it.
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 

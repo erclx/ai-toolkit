@@ -22,6 +22,7 @@ import {
 import {
   type Finding,
   type FolderClaim,
+  type Unplaced,
   type Untested,
   type ValidateOutcome,
   validateBoard,
@@ -887,6 +888,17 @@ function reportValidation(
     } else {
       for (const claim of outcome.claims) logWarn(describeClaim(claim))
     }
+
+    // Unplaced is the normal state between a session filing a task and an
+    // orchestrator placing its row, so it moves no exit code. It still reports,
+    // since it is the only local detector for a row a hand-edit dropped or a
+    // handoff that never arrived.
+    logStep('Unplaced')
+    if (outcome.unplaced.length === 0) {
+      logInfo('every task file sits on the board or the backlog')
+    } else {
+      for (const task of outcome.unplaced) logWarn(describeUnplaced(task))
+    }
     outro()
   }
 
@@ -901,6 +913,7 @@ function reportValidation(
         findings: outcome.findings,
         untested: outcome.untested,
         claims: outcome.claims,
+        unplaced: outcome.unplaced,
       })}\n`,
     )
   }
@@ -919,6 +932,10 @@ function describeUntested(row: Untested): string {
 
 function describeClaim(claim: FolderClaim): string {
   return `${claim.group}: ${claim.subject} ${claim.message}`
+}
+
+function describeUnplaced(task: Unplaced): string {
+  return `${task.subject} ${task.message}`
 }
 
 async function runArchive(

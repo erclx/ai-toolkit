@@ -22,6 +22,7 @@ A track that closes with several separable findings writes only one task, and th
 - Carry a lean and the finding that would overturn it on every open question, or admit that a measurement is missing
 - Confine writes to the track folder, with the close-time task file, the experiment fixture, and the intake routing below as the only exceptions
 - Route a closing-track finding the required task does not cover through `claude-intake`, rather than leaving it to be asked about. The route runs in the same session, so it is a write outside the folder rather than a handoff to a later one.
+- Place the closing task's row through `claude-tasks` Step 4 rather than writing `priority.md` or `backlog.md` directly
 - Link every claim about a source outside the project, and list an unread source as a lead rather than citing it
 - Put a fixture a headless run is pointed at outside the repository
 - Write the next-session file self-contained, since the folder is unbacked and dies with the machine

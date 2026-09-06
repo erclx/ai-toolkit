@@ -513,7 +513,7 @@ describe('validateBoard', () => {
     expect(outcome.ok && kinds(outcome.findings)).toEqual(['task-unresolved'])
   })
 
-  it('should report a task file that neither surface names', async () => {
+  it('should report a task file that neither surface names as unplaced rather than a finding', async () => {
     await seedTask('v1.0-first')
     await seedTask('v9.0-orphan')
     await seedPlan('v1.0-first')
@@ -521,8 +521,9 @@ describe('validateBoard', () => {
 
     const outcome = await validateBoard(ROOT)
 
-    expect(outcome.ok && outcome.findings).toMatchObject([
-      { kind: 'row-missing', subject: 'v9.0-orphan' },
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.unplaced).toMatchObject([
+      { subject: 'v9.0-orphan' },
     ])
   })
 

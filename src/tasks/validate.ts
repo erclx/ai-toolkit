@@ -38,7 +38,6 @@ export const FINDING_KINDS = [
   'plan-uncited',
   'plan-mismatched',
   'task-unresolved',
-  'row-missing',
   'row-duplicated',
   'row-misshapen',
   'row-untabled',
@@ -84,6 +83,18 @@ export interface FolderClaim {
 }
 
 /**
+ * A task file neither surface names. That is the normal state between a
+ * session filing it and a live orchestrator placing it, so it reports beside
+ * the findings and moves no exit code. It is still the only local detector for
+ * a row lost to a hand-edit, a handoff message that never arrived, or an
+ * orchestrator that ended before placing it.
+ */
+export interface Unplaced {
+  readonly subject: string
+  readonly message: string
+}
+
+/**
  * A backlog line, which carries a pointer and nothing else. The backlog is
  * explicitly unordered, so a line has no position to read and no columns to
  * resolve.
@@ -116,6 +127,7 @@ export interface ValidateReport {
   readonly findings: readonly Finding[]
   readonly untested: readonly Untested[]
   readonly claims: readonly FolderClaim[]
+  readonly unplaced: readonly Unplaced[]
 }
 
 export interface ValidateRefused {
@@ -556,15 +568,15 @@ function resolves(target: string, dir: string, root: string): boolean {
 }
 
 /**
- * Accounts every task file against both surfaces the board spans. A task sits
- * on `priority.md` when it would plausibly be planned soon and on `backlog.md`
- * otherwise, so a file reached by neither is the dropped one this reports and a
- * file reached by both claims two contradictory things about itself.
+ * Reports a task cited from two places on the board, which claims two
+ * contradictory things about itself: a task belongs to exactly one group,
+ * board or backlog. A task file neither surface names is no longer reported
+ * here, since that is the normal state between a session filing it and a live
+ * orchestrator placing it.
  */
 function checkMapping(
   rows: readonly BoardRow[],
   backlog: readonly BacklogRow[],
-  stems: readonly string[],
   dir: string,
 ): Finding[] {
   const findings: Finding[] = []
@@ -634,18 +646,6 @@ function checkMapping(
         subject: stem,
         message:
           'carries a row on the board and a line on the backlog. A task sits on one surface.',
-      })
-    }
-  }
-
-  for (const stem of stems) {
-    if (!seen.has(stem) && !listed.has(stem)) {
-      findings.push({
-        kind: 'row-missing',
-        group: undefined,
-        subject: stem,
-        message:
-          'is a task file with no row on the board and no line on the backlog.',
       })
     }
   }
@@ -876,6 +876,32 @@ function checkFolderClaims(
   }
 
   return claims
+}
+
+/**
+ * Reports a task file neither the board nor the backlog names. Under the
+ * roster-checked hand-off, filing a task and placing its row are two acts a
+ * different session each may perform, so this state is ordinary rather than
+ * an error, and it moves no exit code. It still surfaces here rather than
+ * nowhere, since it is the only local detector for a row a hand-edit dropped,
+ * a handoff message that never arrived, or an orchestrator that ended before
+ * placing it.
+ */
+function checkUnplaced(
+  rows: readonly BoardRow[],
+  backlog: readonly BacklogRow[],
+  stems: readonly string[],
+): Unplaced[] {
+  const seen = new Set(rows.flatMap((row) => (row.stem ? [row.stem] : [])))
+  const listed = new Set(backlog.flatMap((row) => (row.stem ? [row.stem] : [])))
+
+  return stems
+    .filter((stem) => !seen.has(stem) && !listed.has(stem))
+    .map((stem) => ({
+      subject: stem,
+      message:
+        'is a task file with no row on the board and no line on the backlog.',
+    }))
 }
 
 /**
@@ -1136,7 +1162,7 @@ export async function validateBoard(
 
   const findings = [
     ...shapeFindings,
-    ...checkMapping(rows, backlog, stems, dir),
+    ...checkMapping(rows, backlog, dir),
     ...checkPlans(rows, dir, root),
     ...(await checkPlanAgreement(rows, dir, root)),
     ...checkCollisions(rows),
@@ -1152,5 +1178,6 @@ export async function validateBoard(
     findings,
     untested: parked.untested,
     claims: checkFolderClaims(rows, root),
+    unplaced: checkUnplaced(rows, backlog, stems),
   }
 }
