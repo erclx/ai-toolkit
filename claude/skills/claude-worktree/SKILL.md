@@ -120,8 +120,10 @@ Report the state on one line. Do not install. Entering a worktree to read is as 
 
 Read the worktree root and evaluate node and python independently, each emitting its own line regardless of the other's state:
 
-- Node. `package.json` present, `node_modules/` missing: `Dependencies are not installed. Run <install> before any build, test, or server command.` Take `<install>` from the lockfile beside the manifest, and use `bun install` when no lockfile names one. `package.json` present with `node_modules/` alongside it: `Dependencies are installed.`
-- Python. A `pyproject.toml` or `requirements.txt` present, `.venv/` missing: `No virtual environment. Create and populate one before running anything.` Either manifest present with `.venv/` alongside it: `Dependencies are installed.`
+- Node. `package.json` present, `node_modules/` missing: `Dependencies are not installed. Run <install> before any build, test, or server command.` Take `<install>` from the lockfile beside the manifest, and use `bun install` when no lockfile names one. `package.json` present with `node_modules/` alongside it: `Node dependencies are installed.`
+- Python. A `pyproject.toml` or `requirements.txt` present, `.venv/` missing: `No virtual environment. Create and populate one before running anything.` Either manifest present with `.venv/` alongside it: `Python dependencies are installed.`
+
+Name the ecosystem in both installed lines rather than leaving `Dependencies are installed.` unqualified. Both checks can fire on one project, so an unqualified line reported the same sentence twice for a dual-root project with both folders present, and a reader could not tell which half each line answered.
 
 Emit the closing line only when neither manifest is present, tested directly rather than reached by falling through the two checks above unmatched: `No package manifest, so there is nothing to install.` A dual-root project matches both checks above, and a fallthrough test would route it here by accident.
 
