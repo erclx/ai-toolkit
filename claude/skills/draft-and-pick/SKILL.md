@@ -16,7 +16,7 @@ Some decisions are settled by looking rather than by reasoning, and no draft is 
 ## Step 1: name the decision and the arms
 
 1. State the decision in one sentence, naming what changes between arms and what stays fixed.
-2. Derive a kebab slug from that sentence. Every file this run writes goes to `.canon/tmp/<slug>/`, per `.claude/rules/canon/core/055-scratch.md`.
+2. Derive a kebab slug from that sentence. Every file this run writes goes to `.canon/tmp/<slug>/`, per `.claude/rules/canon/core/055-scratch.md`. Running inside a live `claude-groundwork` track is the one exception: write to that track's own `evidence/<slug>/` instead, since a candidate render is evidence the track's decision file cites rather than spike input.
 3. Write one arm per candidate, each carrying an id, a label, and what the arm costs. An arm with no stated cost is not an option.
 4. Make the current state arm `0`, so the baseline is a candidate rather than an absence. A decision with nothing shipped yet says so and starts at arm `1`.
 5. Stop at three to five arms. Two is a comparison the operator can hold in prose, and past five the pick stops being a look and becomes a sort.

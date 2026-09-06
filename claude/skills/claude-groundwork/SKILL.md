@@ -23,6 +23,7 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/groundwork.md` before writing any file
 - One exception, at close only: write one task file recording what the track concluded.
 - A second exception, for what a spike reads: write an input under `.canon/tmp/groundwork-fixtures/<slug>/`. Keep it out of `.canon/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
 - What a spike produces stays inside the track rather than joining the two exceptions above: write evidence a spike file cites under `.canon/groundwork/<nn>-<slug>/evidence/`, which the first rule already permits. Mode detection matches entries at the top level of the tracks directory, so the sibling the fixtures rule guards against cannot be a folder nested inside a track, and the scratch path holds only what can be deleted without loss, which a recording a finding rests on is not.
+- A `draft-and-pick` run invoked from inside a live track follows its own branch for this, writing to `evidence/` here rather than `.canon/tmp/<slug>/`.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Every claim about a source outside the project carries a link to it. A source found and not read is listed as a lead and is never cited.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
