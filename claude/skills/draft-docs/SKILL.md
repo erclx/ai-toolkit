@@ -1,5 +1,5 @@
 ---
-name: docs-draft
+name: draft-docs
 description: Drafts a brand-new `docs/*.md` page against the docs standard, decides its placement in the existing catalog, confirms with the user, then writes. Use when asked to "add a docs page for X", "write a new doc for X", "document X under docs/", or "create a docs page for X" where no existing page covers the topic. Do NOT use to rewrite or sync an existing `docs/*.md` section against a diff, which is `docs-sync`.
 ---
 

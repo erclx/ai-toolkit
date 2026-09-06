@@ -1,5 +1,5 @@
 ---
-name: wireframe-draft
+name: draft-wireframes
 description: Drafts a brand-new `.claude/wireframes/<surface>.md` file against the wireframes standard, walks the tree for a name collision, detects an existing higher visual-design tier without building one, confirms with the user, then writes. Use when asked to "draft a wireframe for X", "write the wireframe for this surface", "add a .claude/wireframes entry for X", or "wireframe this screen" where no surface file covers it yet. Do NOT use to fix a stale TODO stub or report wireframe drift against a diff, which is `claude-docs`'s wireframe-sweep step.
 ---
 

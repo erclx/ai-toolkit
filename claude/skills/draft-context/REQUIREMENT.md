@@ -1,5 +1,5 @@
 ---
-name: context-draft
+name: draft-context
 description: Why a brand-new .claude/context/<domain>.md entry needs a catalog collision check and a confirm step, not the refresh path claude-docs already owns
 ---
 
@@ -32,6 +32,6 @@ Without this skill, a session documenting a domain that has no context entry yet
 ## Out of scope
 
 - Refreshing an existing `.claude/context/<domain>.md` entry against a diff: `claude-docs`
-- Drafting a `.claude/wireframes/<surface>.md` file: `wireframe-draft`
-- Drafting a `docs/*.md` page: `docs-draft`
+- Drafting a `.claude/wireframes/<surface>.md` file: `draft-wireframes`
+- Drafting a `docs/*.md` page: `draft-docs`
 - Drafting a standard, a snippet, or a governance rule: `create-standard`, `create-snippet`, `create-rule`

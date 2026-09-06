@@ -68,21 +68,21 @@ EOF
   "fits-category")
     log_step "Scenario ready: page fits an existing category"
     log_info "Context: docs/agents/governance.md sits on the Governance shelf"
-    log_info "Action:  /canon:docs-draft add a page documenting the gov audit command"
+    log_info "Action:  /canon:draft-docs add a page documenting the gov audit command"
     log_info "Expect:  drafted at docs/agents/<slug>.md, category: Governance, confirmed before write"
     ;;
 
   "fits-none")
     log_step "Scenario ready: page fits no existing category"
     log_info "Context: no catalog shelf covers a brand-new domain"
-    log_info "Action:  /canon:docs-draft add a page documenting the new capture pipeline"
+    log_info "Action:  /canon:draft-docs add a page documenting the new capture pipeline"
     log_info "Expect:  drafted at docs/<slug>.md, at the flat root, confirmed before write"
     ;;
 
   "already-covered")
     log_step "Scenario ready: topic already has a page"
     log_info "Context: docs/agents/governance.md already documents the gov CLI"
-    log_info "Action:  /canon:docs-draft add a page for the governance CLI"
+    log_info "Action:  /canon:draft-docs add a page for the governance CLI"
     log_info "Expect:  refuses toward /canon:docs-sync, since docs/agents/governance.md already covers it"
     ;;
   *)
