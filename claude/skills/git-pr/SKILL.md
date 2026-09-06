@@ -89,7 +89,7 @@ canon labels scan --title "<title>" --body-file .canon/tmp/pr/body.md --json
 
 Branch on the JSON record rather than the exit code. An operator's shell can wrap `canon` in a function whose status comes from a trailing command, flattening a non-zero exit to 0, the same reason `### Labels` below branches on its own record rather than the exit.
 
-Stop and fix the title or body on a non-empty `phaseLabels`, `boardReferences`, `sessionLinks`, `unspelledWords`, or `titleFormatIssues`. Do not proceed to `### Final command` until a re-run comes back clean on all five. `titleFormatIssues` names which of `standards/pr.md`'s `## Title` rules the title breaks, structure, casing, or length, so fix the named rule rather than guessing. Leave `cutsRelease` and `semverTags` alone, since a release-please pull request legitimately carries version references its own fixed shape explains.
+Stop and fix the title or body on a non-empty `phaseLabels`, `boardReferences`, `sessionLinks`, `unspelledWords`, or `titleFormatIssues`. Do not proceed to `### Final command` until a re-run comes back clean on all five. `titleFormatIssues` names which `## Title` rule in `${CLAUDE_SKILL_DIR}/../../standards/pr.md` the title breaks, structure, casing, or length, so fix the named rule rather than guessing. Leave `cutsRelease` and `semverTags` alone, since a release-please pull request legitimately carries version references its own fixed shape explains.
 
 A `pull_request` workflow job now backs the phase-label half for this repository, running `canon labels scan` against the opened title and body. A project holding an older `canon` carries no such job, and one predating this plan carries no `titleFormatIssues` key at all, so the scan above stays required rather than optional.
 
