@@ -35,11 +35,27 @@ Invoke `canon:claude-worker` first, whatever the worktree state. This session is
 
 Report it rather than proceeding silently when `canon:claude-worker` does not resolve. It ships with the plugin, so a session running this chain from a project holding the CLI alone builds with no role asserted.
 
-If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `canon:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
+If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `canon:claude-worktree` before continuing, carrying the argument the subsection below derives. The wrapper handles branch alignment. Do not call `EnterWorktree` directly.
 
 If neither command resolves, stop: `❌ Not a git repository. Autoship needs git or a WorktreeCreate hook.`
 
 If the two commands differ, the session is already in a linked worktree. Continue.
+
+### Name the worktree from the plan rather than leaving it to be derived
+
+This step runs ahead of Step 1, so what it holds is the raw invocation argument rather than a resolved plan. When that argument is a plan path or a bare slug, run the verb on it and hand the result to `canon:claude-worktree` as its tier 0 argument:
+
+```bash
+canon tasks plan-branch <argument> --json
+```
+
+- `conforms: true`: pass the record's `branch`, which is already `<type>/<slug>`, and invoke nothing else to derive a name.
+- `conforms: false`: the plan's own filename breaks a cap in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`. Pass `branch` anyway and say the cap it broke, since the alternative is a name this session shortened by hand, which is a second derivation and the thing this call exists to prevent. `git-branch` decides the rename at ship.
+- Anything else, including a refusal, a record carrying no `branch` key, and an installed binary carrying no `plan-branch` subcommand: invoke `canon:claude-worktree` bare and let its ladder derive the name. Say the verb did not answer, so a reader can tell a derived name from a fallback one.
+
+The dispatch runbook runs the same verb on the same plan to pick the branch its collision check clears, so calling it here is what makes the checked branch and the taken branch one string. Deriving a name from `<plan>` by reading it was the alternative, and it is what produced three strings for one plan across four dispatches on 2026-09-05.
+
+A caller that supplied a task path, or supplied nothing at all, has no plan to hand the verb here, since resolving either is Step 1's work and Step 1 has not run. Invoke `canon:claude-worktree` bare in both cases. That is the ladder unchanged rather than a regression, and it leaves the hole open: a dispatched worker reaching this step through a task path derives its name from a tier rather than from the plan the dispatcher checked.
 
 ## Step 1: read the plan
 

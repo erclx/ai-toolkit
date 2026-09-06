@@ -7,9 +7,18 @@ Run this at loop step 4, for a `## Run now` row whose plan is verified, in place
 
 ## Derive the candidate
 
-Resolve `<slug>` from `<plan>`, the row's plan file, the way `claude-worktree` Step 2 resolves a plan-matched name, per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Resolve `<type>` off that plan's `## Summary` and `**Files to touch:**` lines, per `${CLAUDE_SKILL_DIR}/../../standards/branch.md`, defaulting to `feat` when the lines settle nothing. The candidate branch is `<type>/<slug>`.
+Run `canon tasks plan-branch <plan> --json` against the row's plan file and read `branch`, `type`, `slug`, and `conforms` off the record.
 
-This is the branch the worker takes, not a guess at one it will derive for itself. Carry the exact string into the launch below. Both halves of that derivation have already disagreed in production: one run checked `docs/remaining-skill-verdicts` against a worker that took `docs/skill-verdicts-decide`, and a later one checked `fix/path-form-hook` against a worker that took `feat/path-form-hook`. A check against a branch nobody uses verifies nothing, and a slug mismatch no longer fails the run downstream on its own, since `claude-autoship` now takes `<plan>` directly rather than resolving it from the worker's own branch. The check above is what has to catch a wrong candidate now.
+- `conforms: true`: take `branch` as the candidate, and take `type` and `slug` from the same record for the check below.
+- `conforms: false`: the plan's own filename breaks a cap in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`. Report which, and hand the row to the human-launch line below rather than shortening the slug here. A rename parts the branch from the plan filename that `claude-worktree` tier 1 and `git-pr`'s plan lookup both read back.
+- `reason: archived`, `no-plan`, or `bad-input`: the row does not cite a live plan. Repoint the row or fix the citation rather than dispatching, since `claude-autoship` Step 1 refuses the same file and the worker would meet that refusal after the launch spent.
+- Anything else, including a record carrying no `branch` key and an installed binary carrying no `plan-branch` subcommand: treat the candidate as unverified rather than clear, name which reading could not be taken, and fall back to the human-launch line below. Re-deriving by prose here rebuilds the defect the verb closes, and does it quietly.
+
+Branch on the record rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
+
+The worker calls the same verb on the same plan at `claude-autoship` Step 0, so the branch this gate checks and the branch that session takes are one string by construction rather than two readings of one paragraph. They were two readings until 2026-09-06. One run checked `docs/remaining-skill-verdicts` against a worker that took `docs/skill-verdicts-decide`, another checked `fix/path-form-hook` against a worker that took `feat/path-form-hook`, and four dispatches on 2026-09-05 produced three strings for one plan. A check against a branch nobody uses verifies nothing.
+
+The type the verb reports is fixed at `feat` whatever the row does, which is the half of the derivation that disagreed most. What that costs is a worktree listing where every dispatched branch reads `feat/`, and a wrong type stays cheap, since `git-branch` renames to conventional form before any pull request opens.
 
 ## Check the plan waits on nobody
 
@@ -93,9 +102,9 @@ The worker resolves that id back to a name through `canon sessions list --json`,
 
 The template carries no worktree call. `claude-autoship` Step 0 invokes `canon:claude-worker` and then `canon:claude-worktree` itself, and neither carries the flag, so both are reachable through the `Skill` tool regardless of where a call to them would sit in a prompt. The autoship call carries `<plan>`, the same file this runbook already read to derive the branch, so its Step 1 takes it as the caller-supplied plan rather than re-deriving one from the slug the worker's branch happens to carry.
 
-Dropping the argument does not hand `claude-worktree` a formal one in its place. A worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there, so the ladder alone still closes nothing.
+The template names no branch, and it does not need to. `claude-autoship` Step 0 runs `canon tasks plan-branch <plan>` on the same file this runbook derived the candidate from, and hands the `<type>/<slug>` it reports to `claude-worktree` as its tier 0 argument, so the two sides agree by calling one derivation rather than by a string copied between them.
 
-What closes it is the same inference four workers already took before this template existed: the session already holds `<plan>` and derives `claude-worktree`'s name from it directly, rather than waiting on a tier to supply one. That is a judgment rather than a contract, and it is the same judgment both live disagreements came from, so read it as the residual risk this template still carries rather than as solved.
+That retires the inference four workers took before the verb existed, which was to derive the name from `<plan>` by their own reading of it. Nothing has to reach `claude-worktree`'s ladder now, which mattered because a worker launched onto `main` cannot match tier 1, a board carrying more than one plan puts tier 2 out of reach, and tier 3 tells it to ask a person who is not there. What still travels on judgment is the fallback: a worker whose installed binary carries no `plan-branch` derives by prose, which is where both live disagreements came from.
 
 ### Expansion needs position zero and a clean delimiter, not leading order alone
 
