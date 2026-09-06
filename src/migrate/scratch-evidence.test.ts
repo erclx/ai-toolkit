@@ -140,6 +140,57 @@ describe('planScratchEvidence', () => {
     expect(plan.moves).toHaveLength(0)
     expect(plan.collisions).toEqual([destinationPath(root, 'system-map')])
   })
+
+  it('should leave a refused folder citation untouched while a moving folder citation rewrites', async () => {
+    const collidedText =
+      'See `.claude/.tmp/system-map/how-it-works.md` for the orientation.\n'
+    const movedText = 'Counts are in `.claude/.tmp/target-survey/survey.md`.\n'
+
+    write('.canon/tmp/system-map/how-it-works.md', 'the map\n')
+    write(
+      '.canon/review/evidence/system-map/how-it-works.md',
+      'already there\n',
+    )
+    write('.canon/tmp/target-survey/survey.md', 'the survey\n')
+    write('.canon/tasks/archive/collided.md', collidedText)
+    write('.canon/tasks/archive/moved.md', movedText)
+
+    const plan = await planFrom(root)
+
+    const collidedEntry = plan.entries.find((candidate) =>
+      candidate.path.endsWith('collided.md'),
+    )
+    const movedEntry = plan.entries.find((candidate) =>
+      candidate.path.endsWith('moved.md'),
+    )
+
+    expect(collidedEntry).toBeUndefined()
+    expect(
+      readFileSync(join(root, '.canon/tasks/archive/collided.md'), 'utf8'),
+    ).toBe(collidedText)
+    expect(movedEntry?.text).toContain('.canon/review/evidence/target-survey')
+  })
+
+  it('should still rewrite a late citation of a folder that already completed its move', async () => {
+    write(
+      '.canon/review/evidence/system-map/how-it-works.md',
+      'already moved\n',
+    )
+    write(
+      '.canon/tasks/archive/late.md',
+      'See `.claude/.tmp/system-map/how-it-works.md`.\n',
+    )
+
+    const plan = await planFrom(root)
+
+    expect(plan.moves).toHaveLength(0)
+    expect(plan.collisions).toHaveLength(0)
+
+    const entry = plan.entries.find((candidate) =>
+      candidate.path.endsWith('late.md'),
+    )
+    expect(entry?.text).toContain('.canon/review/evidence/system-map')
+  })
 })
 
 describe('applyScratchEvidence', () => {
