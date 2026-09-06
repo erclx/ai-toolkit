@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.62.0](https://github.com/erclx/canon/compare/v4.61.0...v4.62.0) (2026-09-06)
+
+
+### Features
+
+* **claude:** add setup-smoke for the scaffold stages setup-verify skips ([#1555](https://github.com/erclx/canon/issues/1555)) ([2c69274](https://github.com/erclx/canon/commit/2c692747c25f65cb473aae3303fe8e731e647200))
+* **migrate:** add scratch-evidence promotion verb ([#1552](https://github.com/erclx/canon/issues/1552)) ([3c3a478](https://github.com/erclx/canon/commit/3c3a478ca8f51dcd96a845cf9a848388fc03c623))
+
 ## [4.61.0](https://github.com/erclx/canon/compare/v4.60.0...v4.61.0) (2026-09-06)
 
 
