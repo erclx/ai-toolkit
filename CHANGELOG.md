@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.57.0](https://github.com/erclx/canon/compare/v4.56.0...v4.57.0) (2026-09-06)
+
+
+### Features
+
+* **gate:** fail a push on a bare standards/ path under claude/skills/ ([#1531](https://github.com/erclx/canon/issues/1531)) ([ab7fd36](https://github.com/erclx/canon/commit/ab7fd36dfac8cf8ac0c69fc2aa8771e76975fe78))
+* **labels:** gate a pull request title and commit subject format ([#1532](https://github.com/erclx/canon/issues/1532)) ([8fb8598](https://github.com/erclx/canon/commit/8fb859890872375c167030da6c156cc1899c6adc))
+* **wireframes:** narrow copy rule to structural text ([#1527](https://github.com/erclx/canon/issues/1527)) ([a57a3c5](https://github.com/erclx/canon/commit/a57a3c5120100907f4480c2230cd277a26a5a531))
+
+
+### Bug Fixes
+
+* **git-pr:** cite the pull request standard through its resolving path ([#1533](https://github.com/erclx/canon/issues/1533)) ([ccac31b](https://github.com/erclx/canon/commit/ccac31be531edbb6b77557745f9f043e92380e42))
+* **screenshot:** kill whatever holds the preview port on exit ([#1529](https://github.com/erclx/canon/issues/1529)) ([a8baeb9](https://github.com/erclx/canon/commit/a8baeb9db65eb59ca28ef9603136f0334b431689))
+
 ## [4.56.0](https://github.com/erclx/canon/compare/v4.55.0...v4.56.0) (2026-09-06)
 
 
