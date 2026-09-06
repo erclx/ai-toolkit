@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.63.0](https://github.com/erclx/canon/compare/v4.62.1...v4.63.0) (2026-09-06)
+
+
+### Features
+
+* **repo-metadata:** compress the about description before reporting ([#1564](https://github.com/erclx/canon/issues/1564)) ([47027ca](https://github.com/erclx/canon/commit/47027ca232e239aba7cfd9a1038f2626de6db728))
+* **skills:** point canon-cli at the verb catalog and docs corpus ([#1568](https://github.com/erclx/canon/issues/1568)) ([c2cfc57](https://github.com/erclx/canon/commit/c2cfc5767995e877f4a20d09fbd8fa70e0e93be8))
+* **tooling:** detect a checkout mismatch on sync ([#1570](https://github.com/erclx/canon/issues/1570)) ([757d29c](https://github.com/erclx/canon/commit/757d29cca27a8af9da448e34f51169a251a50655))
+
+
+### Bug Fixes
+
+* **gate:** separate a placeholder path from a broken one by shape ([#1567](https://github.com/erclx/canon/issues/1567)) ([6db55cc](https://github.com/erclx/canon/commit/6db55cce713f3a5ad2075267bf18c4374caac64c))
+
 ## [4.62.1](https://github.com/erclx/canon/compare/v4.62.0...v4.62.1) (2026-09-06)
 
 
