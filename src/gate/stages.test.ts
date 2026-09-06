@@ -60,6 +60,22 @@ describe('the shipped-references stage scope', () => {
   })
 })
 
+describe('the readme-citations stage scope', () => {
+  it('should fire on either file a citation can drift between', () => {
+    const scope = scopeOf('readme-citations')
+
+    expect(scope.test('web/src/content/copy.ts')).toBe(true)
+    expect(scope.test('README.md')).toBe(true)
+  })
+
+  it('should not fire on an unrelated web/ path', () => {
+    const scope = scopeOf('readme-citations')
+
+    expect(scope.test('web/src/components/Hero.astro')).toBe(false)
+    expect(scope.test('docs/agents/readme.md')).toBe(false)
+  })
+})
+
 describe('the client-command-citations stage', () => {
   it('should register the measure unscoped, so no changed-file pattern skips it', () => {
     const stage = STAGES.find(

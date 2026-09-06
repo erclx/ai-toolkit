@@ -1,5 +1,5 @@
 ---
-description: Hold the landing page's four conventions, each of which fails silently when broken
+description: Hold the landing page's five conventions, each of which fails silently when broken
 paths:
   - 'web/**'
 ---
@@ -34,6 +34,13 @@ a rule rather than a note in a context entry.
 - `--color-accent` marks structure exactly once, on the rule card border in `RuleArrival.astro`. A second structural accent leaves a reader with two things claiming to be the one thing worth looking at.
 - The accent has exactly three uses and the set is closed: structure, action, and status. Structure is capped at one, action is `Hero.astro` and `CallToAction.astro`, and status is the working marker in `AgentView.astro`, which is the color the surface it re-creates shows. A fourth use is not a fourth category. Argue it into one of the three or leave the accent out, because every new category arrives with a reason as good as these two and the cap holds only while the set cannot grow.
 - Reach for `--color-success` or a surface and border token when a section separates a state that is not the live one, which is what `AgentView.astro` does for its completed rows.
+
+## Every citation is a quoted phrase, never a line number
+
+- Anchor a string in `copy.ts` to `README.md` with `// README.md: "<phrase>"`, a phrase copied verbatim from the current `README.md` text. A line number drifts silently the moment the cited line moves, where a quoted phrase fails loudly instead, which is what `readmeCitations` gates on in `src/gate/measures.ts`.
+- Mark a string that condenses or paraphrases a run of `README.md` lines rather than quoting one with `canon-allow-readme-paraphrase: <reason>` instead of forcing a distorted quote.
+- Write a citation with more than one phrase as `// README.md: "<phrase>" "<phrase>"`, space-separated on the one anchor line, rather than splitting it across two comments.
+- Put a quote on the same line as `canon-allow-readme-paraphrase` when the marked string also borrows a phrase verbatim. The marker exempts only the part of the string that isn't in quotes, so `readmeCitations` still checks the quoted part against the current `README.md` text.
 
 ## Before shipping
 

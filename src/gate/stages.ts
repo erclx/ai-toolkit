@@ -5,6 +5,7 @@ import {
   markdownBans,
   type Measure,
   pluginManifests,
+  readmeCitations,
   recordIdempotence,
   sandboxCoverage,
   seedStandards,
@@ -389,6 +390,16 @@ export const STAGES: readonly Stage[] = [
     scope: new RegExp(SHIPPED_CORPORA.map((corpus) => `^${corpus}/`).join('|')),
     skipped: 'No shipped corpus changed, so no reference was read',
     checks: [{ kind: 'measure', measure: shippedReferences }],
+  },
+  {
+    // Scoped to the two files a citation can drift between, so an edit to
+    // either one runs the check. web/src/content/copy.ts carries the anchors
+    // and README.md is the text they quote from.
+    id: 'readme-citations',
+    label: 'README citations',
+    scope: /^(web\/src\/content\/copy\.ts|README\.md)$/,
+    skipped: 'Neither copy.ts nor README.md changed, so no citation was read',
+    checks: [{ kind: 'measure', measure: readmeCitations }],
   },
   {
     id: 'seed-standards',
