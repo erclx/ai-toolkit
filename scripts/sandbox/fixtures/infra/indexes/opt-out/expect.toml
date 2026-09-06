@@ -1,0 +1,16 @@
+# What `canon indexes regen` leaves behind against a folder opted out with
+# `auto: false`. Read by `canon sandbox check`. `regenOne` reads the field
+# ahead of any render and returns `skipped` rather than touching the file.
+
+paths = ["docs/index.md"]
+absent = []
+
+manual = []
+
+[[content]]
+path = "docs/index.md"
+pattern = '^auto: false$'
+
+[[content]]
+path = "docs/index.md"
+pattern = 'Stale content that should be overwritten'

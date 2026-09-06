@@ -1,0 +1,22 @@
+# What a correct `/setup-indexes` run leaves behind against a bare folder of
+# five raw markdown files with no frontmatter and no index.md. Read by
+# `canon sandbox check`. Agent-driven with no headless driver wired into
+# `canon sandbox check` yet, the same gap `claude/setup-smoke`'s own fixtures
+# already accept, so an actual pass needs someone to drive /setup-indexes by
+# hand or through a scripted session and hand the checker --envelope/--writes.
+
+max_turns = 20
+
+paths = ["docs/index.md"]
+absent = []
+
+manual = [
+  "Every sibling under docs/ gained drafted frontmatter, not only architecture.md. Semantic: computeIndex fails the whole folder on any sibling missing title or description, so docs/index.md existing already proves all five gained it, and the content pin below checks one as a representative rather than the claim's full scope",
+  "The drafted title and description read as accurate summaries of each file's body. Semantic: quality of the drafted text is a judgment call no pattern can score",
+]
+
+# One sibling's drafted frontmatter, standing in for all five per the manual
+# entry above.
+[[content]]
+path = "docs/architecture.md"
+pattern = '^---\ntitle:'

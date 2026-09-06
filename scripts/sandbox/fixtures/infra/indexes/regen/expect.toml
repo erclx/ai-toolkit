@@ -1,0 +1,25 @@
+# What `canon indexes regen` leaves behind against a flat folder of two
+# frontmatter-bearing siblings. Read by `canon sandbox check`.
+
+paths = ["docs/index.md"]
+absent = []
+
+manual = []
+
+# The seeded placeholder heading is gone, proving the walker rewrote the file
+# rather than leaving the stale content the sandbox seeds it with.
+[[content]]
+path = "docs/index.md"
+pattern = '^# Docs$'
+
+[[content]]
+path = "docs/index.md"
+pattern = 'Sample folder index for sandbox'
+
+[[content]]
+path = "docs/index.md"
+pattern = '\[Alpha\]\(alpha\.md\): First sample entry'
+
+[[content]]
+path = "docs/index.md"
+pattern = '\[Beta\]\(beta\.md\): Second sample entry'

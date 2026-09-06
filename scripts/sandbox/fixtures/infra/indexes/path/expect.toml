@@ -1,0 +1,17 @@
+# What `canon indexes regen docs/alpha.md` leaves behind. Read by
+# `canon sandbox check`. The positional file resolves up to its nearest
+# indexed ancestor, `docs/`, so the effect is the same rewrite the `regen`
+# arm asserts, triggered from a file rather than a bare walk.
+
+paths = ["docs/index.md"]
+absent = []
+
+manual = []
+
+[[content]]
+path = "docs/index.md"
+pattern = '\[Alpha\]\(alpha\.md\): First sample entry'
+
+[[content]]
+path = "docs/index.md"
+pattern = '\[Beta\]\(beta\.md\): Second sample entry'
