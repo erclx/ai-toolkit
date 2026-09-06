@@ -168,14 +168,17 @@ const DOCS_PATH = /(?<![\w./-])docs\/[^\s`)\]]*\.md\b/g
  * lookbehind rejects, so a citation already rewritten to the resolving form
  * does not fail this check a second time.
  *
- * Reported only where `isStandardsPathResolvable` confirms the match
- * resolves against this checkout, the same gate `DOCS_PATH` runs. A body
- * illustrating the shape a project's own `standards/<name>.md` takes writes
- * the identical placeholder token this pattern matches, such as
- * `standards/<slug>.md` in `create-standard/SKILL.md` or `standards/<name>.md`
- * in `migration-standards-drop/SKILL.md`, and neither resolves to a real
- * file. Four such placeholders surfaced across three files the first time
- * this pattern ran unresolved, measured 2026-09-06.
+ * Reported unless `isStandardsPathReportable` reads the match as a
+ * deliberate placeholder rather than a real citation. A body illustrating
+ * the shape a project's own `standards/<name>.md` takes writes a bracketed
+ * token this pattern also matches, such as `standards/<slug>.md` in
+ * `create-standard/SKILL.md` or `standards/<name>.md` in
+ * `migration-standards-drop/SKILL.md`, and neither names a real file. A bare,
+ * non-bracketed match now reports whether or not the file exists, unlike
+ * `DOCS_PATH`, which still gates on existence: a same-repository citation
+ * under this corpus names no target project's own tree the way a `docs/`
+ * path can, so shape alone separates a placeholder from a broken citation
+ * here with no false-positive class existence was catching.
  */
 const STANDARDS_PATH = /(?<![\w./-])standards\/[^\s`)\]]*\.md\b/g
 
@@ -221,13 +224,29 @@ export interface ShippedReference {
 }
 
 /**
- * Whether a `DOCS_PATH` match names a real file in this checkout.
+ * Whether a matched path is a deliberate placeholder rather than a real
+ * citation, true when the text carries both `<` and `>`. A real path never
+ * carries either character, so the two classes cannot collide.
+ */
+function isPlaceholderPath(path: string): boolean {
+  return path.includes('<') && path.includes('>')
+}
+
+/**
+ * Whether a `DOCS_PATH` match should be reported.
  *
  * `file` gates the `docs/` corpus out by the caller's own location rather
  * than by a pattern exemption: a citation from inside `docs/` is read
  * together with the rest of that corpus through the same `canon docs`
  * resolution, which is a weaker claim than one from a skill body with no
  * `docs/` sibling at all.
+ *
+ * The placeholder check runs ahead of `existsSync` rather than replacing it.
+ * Shape alone cannot separate a genuinely broken same-repository citation
+ * from a legitimate illustration of a target project's own tree, such as
+ * `docs/retry.md`, and no signal in the text draws that line, so existence
+ * still does the work of muting those. The placeholder check only catches
+ * the bracketed illustrations existence alone would report as broken.
  */
 function isDocsPathResolvable(
   file: string,
@@ -235,6 +254,7 @@ function isDocsPathResolvable(
   root: string,
 ): boolean {
   if (file.startsWith('docs/')) return false
+  if (isPlaceholderPath(path)) return false
   return existsSync(join(root, path))
 }
 
@@ -250,9 +270,19 @@ function isStandardsPathScope(file: string): boolean {
   return file.startsWith('claude/skills/') && !file.endsWith('/REQUIREMENT.md')
 }
 
-/** Whether a `STANDARDS_PATH` match names a real file in this checkout. */
-function isStandardsPathResolvable(path: string, root: string): boolean {
-  return existsSync(join(root, path))
+/**
+ * Whether a `STANDARDS_PATH` match should be reported: every match that is
+ * not a placeholder, whether or not the named file exists.
+ *
+ * Existence used to gate this the same way `isDocsPathResolvable` gates its
+ * corpus, which conflated a deliberate placeholder with a genuinely broken,
+ * real-looking citation: both fail existence and both passed muted. A bare
+ * `standards/<name>.md` names no target-project tree the way a `docs/` path
+ * can, so shape alone separates the two classes here with no false-positive
+ * class existence was catching.
+ */
+function isStandardsPathReportable(path: string): boolean {
+  return !isPlaceholderPath(path)
 }
 
 /**
@@ -329,7 +359,7 @@ export function referencesIn(
 
     if (isStandardsPathScope(file)) {
       for (const match of line.matchAll(STANDARDS_PATH)) {
-        if (!isStandardsPathResolvable(match[0], root)) continue
+        if (!isStandardsPathReportable(match[0])) continue
         references.push({
           file,
           line: index + 1,
