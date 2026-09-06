@@ -164,7 +164,7 @@ Quiz option order is drawn by `canon teach lesson` rather than stated in the ski
 
 What the split cannot close is that the body remains free to reorder what the verb reports, since nothing downstream compares the two. The sandbox arm records that as a manual entry rather than claiming it, because the order the verb draws is uniform and one run cannot separate a taken order from a chosen one.
 
-`#1523` is a second instance of the same shape. A worker's own reading of a plan to derive a branch name and type is the instruction the decision above already names, and `canon tasks plan-branch` (`src/tasks/branch.ts`) is the verb that replaces it, reading the plan's own `type` field rather than trusting a worker's grading of it. See `.claude/context/claude-internal/orchestration.md` for the mechanism. The fallback it leaves open is a target whose installed binary carries no `plan-branch` subcommand, reading the plan by hand instead. Measured at `285723bc` on 2026-09-06.
+`#1523` is a second instance of the same shape. A worker deriving a branch name and type from its own reading of a plan is the instruction the decision above already names, and `canon tasks plan-branch` (`src/tasks/branch.ts`) is the verb that replaces it: the dispatcher's check and the worker's branch become one derivation instead of two readings, which is what stopped four dispatches from producing three strings for one plan. See `.claude/context/claude-internal/orchestration.md` for the mechanism. The fallback it leaves open is a target whose installed binary carries no `plan-branch` subcommand, reading the plan by hand instead. Measured at `285723bc` on 2026-09-06.
 
 ### A writing rule travels by whether anything reads it
 
