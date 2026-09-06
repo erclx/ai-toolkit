@@ -57,7 +57,9 @@ The caller's type still wins over the verb's, because tier 0 is the one source t
 
 Branch on the record rather than on the exit code, which a shell function wrapping `canon` can flatten to zero. Take `feat` and say the verb did not answer where it refuses, where the record carries no `type` key, or where the installed binary carries no `plan-branch` subcommand.
 
-A wrong type is cheap. `git-branch` renames to conventional format later in the same chain and runs ahead of `git-pr`, so a `feat/` written over a fix is corrected before any pull request opens.
+A wrong type is cheap because the branch type is cosmetic rather than because anything corrects it. `git-stage` reads a commit's type off the staged diff and `git-pr` reads a title off the diff too, so the semantics a release reads never pass through the branch name at all. Nothing downstream is wrong when a `feat/` sits over a fix, and a person scanning a worktree listing loses a signal.
+
+`git-branch` does not correct it, which three surfaces used to say it did. Its second guard reads `If branch name already follows conventions, stop`, and `${CLAUDE_SKILL_DIR}/../../standards/branch.md` makes the type vocabulary an axis without making the choice within that vocabulary one, so `feat/` over a fix conforms and the guard fires ahead of the Analysis line that would have re-derived the type.
 
 Then test both names the entry is about to claim. Neither read needs a worktree, and a stop after Step 4 leaves one built with the session sitting inside it, so both belong here rather than beside the rename:
 

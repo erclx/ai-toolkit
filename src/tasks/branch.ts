@@ -8,8 +8,9 @@ const MARKDOWN = '.md'
  * The type every plan-derived branch takes. It is a constant rather than a
  * reading, because determinism is the whole property that makes the dispatch
  * gate and the worker agree, and prose reading is the judgment that produced
- * three strings for one plan. A wrong type is cheap: `git-branch` renames to
- * conventional form later in the same chain.
+ * three strings for one plan. A wrong type is cheap because a branch type is
+ * cosmetic, since a commit's type and a pull request's title are both read off
+ * the diff. Nothing renames it later, whatever three shipped bodies used to say.
  */
 export const PLAN_BRANCH_TYPE = 'feat'
 

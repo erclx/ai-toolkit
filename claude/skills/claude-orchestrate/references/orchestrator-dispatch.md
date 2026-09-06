@@ -18,7 +18,7 @@ Branch on the record rather than on the exit code, which a shell function wrappi
 
 The worker calls the same verb on the same plan at `claude-autoship` Step 0, so the branch this gate checks and the branch that session takes are one string by construction rather than two readings of one paragraph. They were two readings until 2026-09-06. One run checked `docs/remaining-skill-verdicts` against a worker that took `docs/skill-verdicts-decide`, another checked `fix/path-form-hook` against a worker that took `feat/path-form-hook`, and four dispatches on 2026-09-05 produced three strings for one plan. A check against a branch nobody uses verifies nothing.
 
-The type the verb reports is fixed at `feat` whatever the row does, which is the half of the derivation that disagreed most. What that costs is a worktree listing where every dispatched branch reads `feat/`, and a wrong type stays cheap, since `git-branch` renames to conventional form before any pull request opens.
+The type the verb reports is fixed at `feat` whatever the row does, which is the half of the derivation that disagreed most. What makes that safe is that a branch type is cosmetic: `git-stage` reads a commit's type off the staged diff and `git-pr` reads a title off the diff, so nothing a release reads passes through the branch name. What it costs is a worktree listing where every dispatched branch reads `feat/`, which a person scanning one loses. Nothing renames it later, and this paragraph said `git-branch` did until 2026-09-06, when its conventions guard turned out to fire on a conforming `feat/` before reaching any type judgment.
 
 ## Check the plan waits on nobody
 
