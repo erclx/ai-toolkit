@@ -21,10 +21,12 @@ Does not govern:
 - Structure: `<type>/<description>` or `<type>/<ticket>-<description>`
 - Length: 50 characters maximum
 - Casing: kebab-case only, no underscores or camelCase
-- Description: 2 words maximum, 3 only when genuinely needed for specificity
+- Description: 2 words maximum, up to 4 only when genuinely needed for specificity
 - Capture the core change, not the commit message verbatim
 - For branches with multiple commits, use the unifying concern as the description.
 - Do not duplicate type in description (e.g., `feat/feature-login`)
+
+The upper bound reads 4 rather than 3 for every branch, whoever named it. It was widened on 2026-09-06 so that a branch taking its description from a planning document's own filename stops being renamed at ship, since a rename there is a third derivation and parts the branch from the filename that later tooling reads back to find the document. Nothing can tell such a name from any other, so the wider bound holds for all of them and 2 words stays the target.
 
 ## Types
 
