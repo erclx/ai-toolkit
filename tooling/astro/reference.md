@@ -21,7 +21,7 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 - `vitest.config.ts`: uses `getViteConfig` from `astro/config` (not `mergeConfig`). jsdom, globals, setup file, `passWithNoTests: true`, v8 coverage, `**/*.astro` in coverage excludes.
 - `playwright.config.ts`: all browsers, `webServer` runs `bun run build && bun run preview` on port `4321` plus `WORKTREE_PORT_OFFSET`, `reuseExistingServer: false`. Astro's dev/prod gap is wide (MDX, island hydration, asset optimization), so E2E always tests the built `dist/`. `DIST_PREBUILT` set in the environment drops the `build` half, running `bun run preview` alone against a `dist/` a prior CI job already produced.
 - `tsconfig.json`: extends `astro/tsconfigs/strict`, adds `skipLibCheck`, `vitest/globals` and `@testing-library/jest-dom` in types, `@/` paths.
-- `eslint.config.js`: overrides the web layer. Adds `eslint-plugin-astro` (`.astro` parser via `astro-eslint-parser`). React-hooks scoped to `.jsx`/`.tsx` only (`.astro` is not React). `src/pages/**` exempt from filename and folder naming conventions because Astro's file-based routing ties names to URL segments.
+- `eslint.config.js`: overrides the web layer. Adds `eslint-plugin-astro` (`.astro` parser via `astro-eslint-parser`). React-hooks scoped to `.jsx`/`.tsx` only (`.astro` is not React). `check-file/filename-naming-convention` reaches `.ts` and `.tsx` only, matching `web` and `nextjs`, and deliberately excludes `.astro`, since Astro's own PascalCase component convention governs component filenames instead. `check-file/folder-naming-convention`'s `src/**/!(__tests__|pages)` pattern reaches no folder under a real ESLint run, `.astro`-only or otherwise. See `.claude/context/tooling.md` for the measurement.
 
 ## Typecheck
 

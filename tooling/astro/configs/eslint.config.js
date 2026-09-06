@@ -45,7 +45,7 @@ export default defineConfig([
       ],
       'check-file/filename-naming-convention': [
         'error',
-        { '**/*.{ts,tsx,astro}': 'KEBAB_CASE' },
+        { '**/*.{ts,tsx}': 'KEBAB_CASE' },
         { ignoreMiddleExtensions: true },
       ],
       'check-file/folder-naming-convention': [
