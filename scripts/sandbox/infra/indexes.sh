@@ -119,6 +119,14 @@ Body content for the glossary doc goes here.
 EOF
 }
 
+seed_no_candidate() {
+  cat <<'EOF' >CLAUDE.md
+# Project
+
+Sample project for testing the setup-indexes skill on an empty scan.
+EOF
+}
+
 seed_git_repo() {
   seed_folder
   git init -q
@@ -139,8 +147,9 @@ stage_setup() {
   log_info "lint-staged : stages sibling, regen stages regenerated index"
   log_info "no-stage    : same as lint-staged but --no-stage skips git add"
   log_info "bootstrap   : seeds raw markdown for the setup-indexes skill"
+  log_info "no-candidate: bare CLAUDE.md, no markdown-heavy folder to bootstrap"
 
-  select_or_route_scenario "Which scenario?" "regen" "nested" "dry-run" "json" "opt-out" "path" "lint-staged" "no-stage" "bootstrap"
+  select_or_route_scenario "Which scenario?" "regen" "nested" "dry-run" "json" "opt-out" "path" "lint-staged" "no-stage" "bootstrap" "no-candidate"
 
   case "$SELECTED_OPTION" in
   "regen")
@@ -203,6 +212,12 @@ stage_setup() {
     log_step "Seeded docs/ with 5 raw markdown files (no frontmatter, no index.md)"
     log_info "Open Claude in this sandbox and invoke /setup-indexes"
     log_info "The skill should detect docs/ as a candidate and walk the bootstrap flow"
+    ;;
+  "no-candidate")
+    seed_no_candidate
+    log_step "Seeded a bare CLAUDE.md with no markdown-heavy folder anywhere"
+    log_info "Open Claude in this sandbox and invoke /setup-indexes"
+    log_info "The skill should report an empty scan and skip straight to the convention seed offer"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

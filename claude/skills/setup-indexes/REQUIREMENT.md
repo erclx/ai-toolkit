@@ -15,6 +15,8 @@ One failure predates the scan. `setup-init` declines an install that wants the C
 
 Drafted frontmatter is a proposal, and a session that writes it before the user sees it turns a review into a cleanup. The convention block has the mirror failure. A session that paraphrases it into `CLAUDE.md` produces a copy that reads correctly and no longer matches its source, so the two drift with nothing reporting it. And a project with no `CLAUDE.md` gets one scaffolded to hold the block, which installs a file the project declined.
 
+A fourth failure sits after the scan rather than inside it. `## Present candidates` had no branch for a scan that finds zero folders, so an empty result walked straight into the ask with nothing to choose from. `setup-init` folds this skill into the onboarding chain, and a fresh scaffold usually carries no markdown-heavy folder yet, so the ordinary onboarding run reached the undefined case.
+
 ## Must
 
 - Bootstrap all-or-nothing per chosen folder, since a folder carrying partial frontmatter hard-errors on regen
@@ -36,6 +38,7 @@ Drafted frontmatter is a proposal, and a session that writes it before the user 
 
 - A folder with fewer than the sibling threshold stays out of the candidate list unless the user names it explicitly, so the scan proposes and the user overrides
 - A `CLAUDE.md` already carrying the convention section skips the seed silently rather than appending a second copy
+- A scan that finds no candidate reports a one-line result and returns, skipping the ask and every step between it and the seed offer, rather than opening a prompt with nothing in it
 
 ## Out of scope
 
