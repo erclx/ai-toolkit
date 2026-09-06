@@ -13,10 +13,11 @@ stage_setup() {
   log_info "branch-only  : branch bar + no plans, skill uses bar"
   log_info "typed-branch : branch feat/baz + matching plan, target collides and the skill stops before entry"
   log_info "no-deps      : branch qux + matching plan + a manifest with nothing installed, skill reports the install command"
+  log_info "dual-root    : branch quux + matching plan + both a node and a python manifest, skill reports both independently"
   log_info "port-offset  : branch corge + matching plan + the port helper installed, skill reports a derived offset"
   log_info "submodule    : run from inside the submodule, skill stops and names the superproject"
   log_info "submodule-root: the same tree run from the superproject root, skill proceeds"
-  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset" "submodule" "submodule-root"
+  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "dual-root" "port-offset" "submodule" "submodule-root"
 
   mkdir -p .canon/plans
 
@@ -114,6 +115,40 @@ EOF
     log_info "         package.json present and node_modules missing, so it names bun install"
     log_info "         no scripts/worktree-port.sh here, so the port line names the stack default"
     log_info "         nothing is installed, since the step reports rather than runs"
+    ;;
+  "dual-root")
+    cat <<'EOF' >.canon/plans/feature-quux.md
+# Feature: quux
+
+Stub plan seeded for the dual-root dependency report. The project declares both a node manifest and a python manifest, neither installed against.
+EOF
+
+    cat <<'EOF' >package.json
+{
+  "name": "quux",
+  "version": "0.1.0",
+  "private": true
+}
+EOF
+
+    cat <<'EOF' >pyproject.toml
+[project]
+name = "quux"
+version = "0.1.0"
+EOF
+
+    git add . && git commit -m "feat(plans): seed quux plan and both manifests" --no-verify -q
+    git checkout -b quux -q
+
+    log_step "Scenario ready: dual-root dependency report (Step 6)"
+    log_info "Branch: quux"
+    log_info "Plan:   .canon/plans/feature-quux.md"
+    log_info "Action:  /canon:claude-worktree"
+    log_info "Expect:  entry proceeds, then Step 6 reports both ecosystems"
+    log_info "         package.json present and node_modules missing, so it names bun install"
+    log_info "         pyproject.toml present and .venv missing, so it names the missing virtual environment"
+    log_info "         no scripts/worktree-port.sh here, so the port line names the stack default"
+    log_info "Headless: scripts/sandbox/run.sh claude:worktree \"/canon:claude-worktree\" dual-root"
     ;;
   "port-offset")
     cat <<'EOF' >.canon/plans/feature-corge.md

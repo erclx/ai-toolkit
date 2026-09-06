@@ -118,14 +118,14 @@ A linked worktree is a second working directory over one repository, and every e
 
 Report the state on one line. Do not install. Entering a worktree to read is as common as entering one to run, and an install is slow, needs a network, and picks an ecosystem on the session's behalf.
 
-Read the worktree root and emit the first line that matches:
+Read the worktree root and evaluate node and python independently, each emitting its own line regardless of the other's state:
 
-- `package.json` present, `node_modules/` missing: `Dependencies are not installed. Run <install> before any build, test, or server command.` Take `<install>` from the lockfile beside the manifest, and use `bun install` when no lockfile names one.
-- A `pyproject.toml` or `requirements.txt` present, `.venv/` missing: `No virtual environment. Create and populate one before running anything.`
-- A manifest present with its folder alongside it: `Dependencies are installed.`
-- No package manifest of either kind: `No package manifest, so there is nothing to install.`
+- Node. `package.json` present, `node_modules/` missing: `Dependencies are not installed. Run <install> before any build, test, or server command.` Take `<install>` from the lockfile beside the manifest, and use `bun install` when no lockfile names one. `package.json` present with `node_modules/` alongside it: `Dependencies are installed.`
+- Python. A `pyproject.toml` or `requirements.txt` present, `.venv/` missing: `No virtual environment. Create and populate one before running anything.` Either manifest present with `.venv/` alongside it: `Dependencies are installed.`
 
-The last line is what keeps the step honest on a stack this skill cannot read. Entry is not stack-aware, and silence is indistinguishable from a check that passed.
+Emit the closing line only when neither manifest is present, tested directly rather than reached by falling through the two checks above unmatched: `No package manifest, so there is nothing to install.` A dual-root project matches both checks above, and a fallthrough test would route it here by accident.
+
+The closing line is what keeps the step honest on a stack this skill cannot read. Entry is not stack-aware, and silence is indistinguishable from a check that passed.
 
 Then report the port this worktree derives, on a second line:
 
