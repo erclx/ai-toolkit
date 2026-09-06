@@ -1,0 +1,19 @@
+[stack]
+name = "nextjs"
+extends = "web"
+runtime = "bun"
+scaffold = "bunx create-next-app@latest {{name}} --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-bun --skip-install --disable-git --no-agents-md --yes"
+
+[dependencies.dev]
+packages = [
+  "next",
+  "@tailwindcss/postcss",
+]
+
+[scripts]
+"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && next start --port $((3000 + WORKTREE_PORT_OFFSET))"
+"typecheck" = "next typegen && tsc --noEmit"
+
+[scripts.override]
+"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && next dev --port $((3000 + WORKTREE_PORT_OFFSET))"
+"screenshot" = "PREVIEW_PORT=$(bash scripts/worktree-port.sh 3000) && export PREVIEW_PORT && bash scripts/screenshot.sh"

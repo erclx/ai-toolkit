@@ -56,6 +56,13 @@ Run `canon tooling sync <stack> <target> --check` for the list resolved against 
 - `commitlint.config.js`
 - `scripts/verify.sh`
 
+### nextjs
+
+- `eslint.config.js`
+- `next.config.ts`
+- `playwright.config.ts`
+- `vitest.config.ts`
+
 ### python
 
 - `.coveragerc`

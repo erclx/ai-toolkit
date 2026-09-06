@@ -138,6 +138,7 @@ tostring
 toupper
 tsconfig
 tsgolint
+turbopack
 unpushed
 uv
 uvicorn
