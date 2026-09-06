@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { execScript } from '@/exec'
-import { PROJECT_ROOT } from '@/project-root'
+import { findCheckoutMismatch, PROJECT_ROOT } from '@/project-root'
 import {
   injectConfigs,
   injectGitignore,
@@ -267,6 +267,13 @@ async function runSync(
   opts: SyncOptions,
 ): Promise<number> {
   intro('canon tooling sync')
+
+  const mismatch = findCheckoutMismatch(process.cwd())
+  if (mismatch !== undefined) {
+    logWarn(
+      `Resolved via ${PROJECT_ROOT}, not the checkout at ${mismatch}. Run \`bun ${mismatch}/src/cli.ts tooling sync ...\` to sync against that checkout instead.`,
+    )
+  }
 
   if (opts.check === true && opts.write === true) {
     logWarn('Pass --check or --write, not both.')

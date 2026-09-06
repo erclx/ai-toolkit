@@ -110,3 +110,37 @@ describe('tooling sync write authorization', () => {
     ).toThrow()
   })
 })
+
+describe('tooling sync checkout-mismatch warning', () => {
+  let decoy: string
+
+  beforeEach(() => {
+    decoy = mkdtempSync(join(tmpdir(), 'tooling-sync-decoy-'))
+    writeFileSync(
+      join(decoy, 'package.json'),
+      JSON.stringify({ name: '@erclx/canon' }),
+    )
+  })
+
+  afterEach(() => {
+    rmSync(decoy, { force: true, recursive: true })
+  })
+
+  const syncFrom = (cwd: string): Run => {
+    const run = spawnSync(
+      'bun',
+      [CLI, 'tooling', 'sync', 'base', target, '--check'],
+      { cwd, encoding: 'utf8', env: buildEnv({ CANON_NON_INTERACTIVE: '1' }) },
+    )
+
+    return { status: run.status, stderr: run.stderr }
+  }
+
+  it('should warn on stderr when cwd sits inside a second canon checkout', () => {
+    expect(syncFrom(decoy).stderr).toContain(decoy)
+  })
+
+  it('should warn nothing from an ordinary target-style cwd', () => {
+    expect(syncFrom(target).stderr).not.toContain('checkout')
+  })
+})
