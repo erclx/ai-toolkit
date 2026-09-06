@@ -76,4 +76,59 @@ describe('screenshot.sh EXIT trap', () => {
 
     expect(result.status).not.toBe(0)
   })
+
+  it('should leave the port unbound when a detached grandchild outlives the tracked pid', () => {
+    if (spawnSync('lsof', ['-v']).error) {
+      throw new Error(
+        'lsof is required to verify this test and was not found on PATH',
+      )
+    }
+
+    const port = '4173'
+    stubBin(
+      'bun',
+      [
+        'if [[ "$1 $2" == "run build" ]]; then exit 0; fi',
+        'if [[ "$1 $2" == "run preview" ]]; then',
+        "  setsid node -e \"require('net').createServer((c) => c.end()).listen(process.env.PREVIEW_PORT, () => require('fs').writeFileSync(process.env.READY_MARKER, ''))\" </dev/null >/dev/null 2>&1 &",
+        '  exit 0',
+        'fi',
+        'if [[ "$1" == "e2e/screenshot.ts" ]]; then exit 0; fi',
+        'exit 1',
+      ].join('\n'),
+    )
+
+    const result = spawnSync('bash', [SCRIPT], {
+      cwd: fixture,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${bin}:${process.env.PATH}`,
+        PREVIEW_PORT: port,
+        READY_MARKER: readyMarker,
+      },
+      timeout: 10_000,
+    })
+
+    const portPidList = (): string[] =>
+      (
+        spawnSync('lsof', ['-ti', `tcp:${port}`], { encoding: 'utf8' })
+          .stdout ?? ''
+      )
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+
+    try {
+      expect(result.status).toBe(0)
+      expect(portPidList()).toEqual([])
+    } finally {
+      // A regression in the trap under test is exactly what would leave this
+      // bound, so a failed assertion above must not leak the listener into
+      // whatever runs against this port next.
+      for (const pid of portPidList()) {
+        spawnSync('kill', [pid])
+      }
+    }
+  })
 })
