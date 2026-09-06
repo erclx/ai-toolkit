@@ -318,6 +318,16 @@ describe('referencesIn', () => {
         ),
       ).toEqual([])
     })
+
+    it('should pass a bracketed docs path illustrating a placeholder shape', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Read `docs/<domain>.md` for the reference shape.',
+          root,
+        ),
+      ).toEqual([])
+    })
   })
 
   describe('STANDARDS_PATH', () => {
@@ -359,6 +369,23 @@ describe('referencesIn', () => {
           root,
         ),
       ).toEqual([])
+    })
+
+    it('should report a bare standards/ path that resolves nowhere, since only shape mutes it now', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          'Read `standards/does-not-exist-xyz.md` for the shape.',
+          root,
+        ),
+      ).toEqual([
+        {
+          file: 'claude/skills/alpha/SKILL.md',
+          line: 1,
+          kind: 'standards-path',
+          text: 'standards/does-not-exist-xyz.md',
+        },
+      ])
     })
 
     it('should pass the resolving ${CLAUDE_SKILL_DIR} form the layout standard requires', () => {
