@@ -115,7 +115,7 @@ Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files
 
 Step 4: invoke `setup-verify`. Runs the `package.json` scripts and reports pass/fail.
 
-Step 5: hand off to `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. The skill confirms candidate folders with the operator rather than running unattended, which is the one step in this chain that pauses for a conversation. A fresh scaffold usually has no markdown-heavy folder yet, so finding no candidate is the ordinary outcome and reports as a pass rather than a skip needing an explanation.
+Step 5: hand off to `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. The skill confirms candidate folders with the operator rather than running unattended, which is the one step in this chain that pauses for a conversation. A fresh scaffold usually has no markdown-heavy folder yet, so this step frequently hands off with nothing for `setup-indexes` to present, which is that skill's own outcome to define rather than a claim this chain makes for it.
 
 ## Report
 
