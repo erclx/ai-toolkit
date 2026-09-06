@@ -76,4 +76,53 @@ describe('screenshot.sh EXIT trap', () => {
 
     expect(result.status).not.toBe(0)
   })
+
+  it('should leave the port unbound when a detached grandchild outlives the tracked pid', () => {
+    const port = '4173'
+    stubBin(
+      'bun',
+      [
+        'if [[ "$1 $2" == "run build" ]]; then exit 0; fi',
+        'if [[ "$1 $2" == "run preview" ]]; then',
+        "  setsid node -e \"require('net').createServer((c) => c.end()).listen(process.env.PREVIEW_PORT, () => require('fs').writeFileSync(process.env.READY_MARKER, ''))\" </dev/null >/dev/null 2>&1 &",
+        '  exit 0',
+        'fi',
+        'if [[ "$1" == "e2e/screenshot.ts" ]]; then exit 0; fi',
+        'exit 1',
+      ].join('\n'),
+    )
+
+    const result = spawnSync('bash', [SCRIPT], {
+      cwd: fixture,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${bin}:${process.env.PATH}`,
+        PREVIEW_PORT: port,
+        READY_MARKER: readyMarker,
+      },
+      timeout: 10_000,
+    })
+
+    try {
+      expect(result.status).toBe(0)
+
+      const stillBound = spawnSync('lsof', ['-ti', `tcp:${port}`], {
+        encoding: 'utf8',
+      })
+      expect(stillBound.stdout.trim()).toBe('')
+    } finally {
+      // A regression in the trap under test is exactly what would leave this
+      // bound, so a failed assertion above must not leak the listener into
+      // whatever runs against this port next.
+      for (const pid of spawnSync('lsof', ['-ti', `tcp:${port}`], {
+        encoding: 'utf8',
+      })
+        .stdout.trim()
+        .split('\n')
+        .filter(Boolean)) {
+        spawnSync('kill', [pid])
+      }
+    }
+  })
 })
