@@ -302,14 +302,14 @@ This section is the corpus the coverage claim is measured against: every name `c
 
 ### Answer a question at any point
 
-| Skill                       | When to use                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| `canon:canon-cli`           | Before a sync or install, to learn what it overwrites, merges, or leaves alone |
-| `canon:index-lookup`        | To find where a topic is documented across the tracked `index.md` catalogs     |
-| `canon:youtube-transcripts` | When a video transcript is wanted in the repo as context                       |
-| `canon:claude-teach`        | To learn a subject across sessions, in a workspace that holds the progress     |
-| `canon:write-human`         | Before drafting or revising prose, for voice, rhythm, and density              |
-| `canon:restate-plainly`     | When an answer or a document has to be read again in plain words               |
+| Skill                       | When to use                                                                                                                                                            |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `canon:canon-cli`           | Before running an unfamiliar verb, a sync, or an install, to learn which command to run, which reference doc covers it, or what it overwrites, merges, or leaves alone |
+| `canon:index-lookup`        | To find where a topic is documented across the tracked `index.md` catalogs                                                                                             |
+| `canon:youtube-transcripts` | When a video transcript is wanted in the repo as context                                                                                                               |
+| `canon:claude-teach`        | To learn a subject across sessions, in a workspace that holds the progress                                                                                             |
+| `canon:write-human`         | Before drafting or revising prose, for voice, rhythm, and density                                                                                                      |
+| `canon:restate-plainly`     | When an answer or a document has to be read again in plain words                                                                                                       |
 
 Every row answers a question rather than marking a point in a project's life, so a phase above would send a reader to the wrong group.
 

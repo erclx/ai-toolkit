@@ -1,11 +1,17 @@
 ---
 name: canon-cli
-description: Reference for what canon sync and install commands overwrite, merge, or leave untouched in a target project. Use before running `canon tooling`, `canon standards`, `canon claude sync`, or `canon init`, or when asked "will this overwrite my changes". Do NOT use to run the commands, only to know their effect.
+description: Reference for what a canon verb does before you run it. Run `canon docs agents` for the full command catalog, `canon docs` for any other reference doc, and read this skill's own table for what a sync or install command overwrites, merges, or leaves untouched in a target project. Use when asked "which canon command do I run", "is there a doc for X", "will this overwrite my changes", or before running `canon tooling`, `canon standards`, `canon claude sync`, or `canon init`. Do NOT use to execute a sync, an install, or a docs lookup, only to know which command answers the question.
 ---
 
 # Toolkit CLI contract
 
-What each `canon` sync or install command does to existing files in a target project. Consult before running one, then warn the user about anything destructive. This skill is reference only. It does not run commands.
+Consult before running an unfamiliar `canon` verb, before a sync or install, or when asked "will this overwrite my changes". This skill is reference only. It never runs a sync or an install.
+
+## Verb catalog and reference docs
+
+- Run `canon docs agents` for the full command catalog and invocation contract, rather than guessing at a verb from its name.
+- Run `canon docs list` for every other reference doc, then `canon docs <topic>` by name.
+- State neither list here. Both read live off the CLI, and a copy in this body ships on a different cadence than the commands it names.
 
 ## Overwrite contract
 
