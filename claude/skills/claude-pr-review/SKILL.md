@@ -141,7 +141,7 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the comment to `.canon/tmp/pr-review/body-<number>-<short-sha>.md`, which the rest of this step calls `<body-file>`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered.
+Write the comment to `.canon/tmp/pr-review/body-<number>-<short-sha>.md` at the main worktree root, not the current worktree, which the rest of this step calls `<body-file>`. Resolve that root the way `claude-worktree` does, and send the write as a plain single `Bash` command carrying a heredoc from a linked worktree, since `Edit` and `Write` refuse a main-root path there. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post, and the head commit stops a second pass overwriting the first one's body, leaving the folder a record of which commit each review covered.
 
 Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
 
