@@ -51,6 +51,12 @@ tooling = ["tooling/"]
 cli = ["src/", "scripts/lib/", "scripts/tooling/", "scripts/eval/"]
 sandbox = ["scripts/sandbox/", "scripts/manage-sandbox.sh"]
 docs = ["docs/", "wiki/", "README.md", "CONTRIBUTING.md", "examples/"]
+# The canon.erclx.dev landing page: its own Astro config, its own manual
+# typecheck path, its own Playwright e2e suite, and its own deploy workflow
+# (deploy-site.yml) building and shipping it independently of every row
+# above, which is what earns it a row of its own rather than riding with
+# docs or landing in [declined].
+web = ["web/"]
 # `scripts/core/` reaches the whole folder, maintenance scripts included, and
 # the two hook families enforce what the verify gate cannot. `.claude/settings.json`
 # registers those hooks, so it rides the same row.
