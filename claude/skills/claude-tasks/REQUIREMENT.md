@@ -11,12 +11,15 @@ Without this skill, a task file gets a filename and frontmatter invented on the 
 
 Archiving fails in two ways that both lose work. Moving the file, editing the ordering file, and regenerating the index as three separate acts drifts from the one command the merge hook calls, so the attended and unattended paths stop agreeing. And an all-`[x]` task gets archived while its pull request is still open, because marking outcomes happens on the branch as the first step of shipping. The board is gitignored, so nothing restores a task archived early.
 
+Placing a row without checking for another writer collides the same way. Two sessions filing work at once can claim one phase label twice or land two rows beside each other unread, since neither reads the board before writing it.
+
 ## Must
 
 - Resolve the board at the main worktree root, since a linked worktree writing to `pwd` creates a second board nothing reads
 - Read the tasks standard before writing, rather than working the filename and frontmatter from memory
 - Require an origin at creation, because that is the only moment the invariant is enforceable
 - Propose the phase label from what is already on the board and pad it to two digits
+- Check the roster for a live orchestrator before writing a row, and hand off rather than write when one is found
 - Confirm the work reached the default branch before archiving
 - Run the archive command and route on the reason it refuses, since each reason has one resolution
 - Report an origin that carries no task, as a list rather than a prompt

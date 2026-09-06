@@ -38,7 +38,6 @@ export const FINDING_KINDS = [
   'plan-uncited',
   'plan-mismatched',
   'task-unresolved',
-  'row-missing',
   'row-duplicated',
   'row-misshapen',
   'row-untabled',
@@ -556,15 +555,15 @@ function resolves(target: string, dir: string, root: string): boolean {
 }
 
 /**
- * Accounts every task file against both surfaces the board spans. A task sits
- * on `priority.md` when it would plausibly be planned soon and on `backlog.md`
- * otherwise, so a file reached by neither is the dropped one this reports and a
- * file reached by both claims two contradictory things about itself.
+ * Reports a task cited from two places on the board, which claims two
+ * contradictory things about itself: a task belongs to exactly one group,
+ * board or backlog. A task file neither surface names is no longer reported
+ * here, since that is the normal state between a session filing it and a live
+ * orchestrator placing it.
  */
 function checkMapping(
   rows: readonly BoardRow[],
   backlog: readonly BacklogRow[],
-  stems: readonly string[],
   dir: string,
 ): Finding[] {
   const findings: Finding[] = []
@@ -634,18 +633,6 @@ function checkMapping(
         subject: stem,
         message:
           'carries a row on the board and a line on the backlog. A task sits on one surface.',
-      })
-    }
-  }
-
-  for (const stem of stems) {
-    if (!seen.has(stem) && !listed.has(stem)) {
-      findings.push({
-        kind: 'row-missing',
-        group: undefined,
-        subject: stem,
-        message:
-          'is a task file with no row on the board and no line on the backlog.',
       })
     }
   }
@@ -1136,7 +1123,7 @@ export async function validateBoard(
 
   const findings = [
     ...shapeFindings,
-    ...checkMapping(rows, backlog, stems, dir),
+    ...checkMapping(rows, backlog, dir),
     ...checkPlans(rows, dir, root),
     ...(await checkPlanAgreement(rows, dir, root)),
     ...checkCollisions(rows),

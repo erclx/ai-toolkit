@@ -519,11 +519,7 @@ describe('validateBoard', () => {
     await seedPlan('v1.0-first')
     await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
 
-    const outcome = await validateBoard(ROOT)
-
-    expect(outcome.ok && outcome.findings).toMatchObject([
-      { kind: 'row-missing', subject: 'v9.0-orphan' },
-    ])
+    expect(await validateBoard(ROOT)).toMatchObject({ ok: true, findings: [] })
   })
 
   it('should account for a task file the backlog names', async () => {
