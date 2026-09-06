@@ -26,6 +26,7 @@ paths:
 - Cite `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` from a body under `claude/`, which resolves off the `claude/standards` symlink in every plugin cache.
 - Call `canon standards <name>` from a rule or a seed. Both are read with no skill context, so `${CLAUDE_SKILL_DIR}` expands to nothing there.
 - Cite `standards/<name>.md` from a file that stays in this repository, which is the working root the resolver reads first.
+- Cite a standard by bare name with no path in a `SKILL.md` frontmatter `description` field. Frontmatter loads ahead of the body, so `${CLAUDE_SKILL_DIR}` has nothing to expand against there, and a raw `standards/<name>.md` path resolves nowhere in an installed target. Say "the `<name>` standard" instead.
 
 ## What a shipped body may assume about its checkout
 

@@ -320,6 +320,88 @@ describe('referencesIn', () => {
     })
   })
 
+  describe('STANDARDS_PATH', () => {
+    let root: string
+
+    beforeEach(() => {
+      root = mkdtempSync(join(tmpdir(), 'canon-references-standards-'))
+      const real = join(root, 'standards/tasks.md')
+      mkdirSync(dirname(real), { recursive: true })
+      writeFileSync(real, 'placeholder\n')
+    })
+
+    afterEach(() => {
+      rmSync(root, { recursive: true, force: true })
+    })
+
+    it('should report a bare standards/ path that resolves against the checkout', () => {
+      expect(
+        referencesIn(
+          'claude/skills/claude-orchestrate/references/orchestrator-parked.md',
+          'since `standards/tasks.md` fixes that file as unordered',
+          root,
+        ),
+      ).toEqual([
+        {
+          file: 'claude/skills/claude-orchestrate/references/orchestrator-parked.md',
+          line: 1,
+          kind: 'standards-path',
+          text: 'standards/tasks.md',
+        },
+      ])
+    })
+
+    it('should pass a standards/ path illustrating a placeholder shape, which resolves nowhere', () => {
+      expect(
+        referencesIn(
+          'claude/skills/create-standard/SKILL.md',
+          'Write the file to `standards/<slug>.md`, creating the folder when it is absent.',
+          root,
+        ),
+      ).toEqual([])
+    })
+
+    it('should pass the resolving ${CLAUDE_SKILL_DIR} form the layout standard requires', () => {
+      expect(
+        referencesIn(
+          'claude/skills/claude-orchestrate/references/orchestrator-parked.md',
+          'since `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` fixes that file as unordered',
+          root,
+        ),
+      ).toEqual([])
+    })
+
+    it('should pass a bare standards/ path cited from the docs/ corpus, which resolves there without a skill context', () => {
+      expect(
+        referencesIn(
+          'docs/agents/tasks.md',
+          'Read `standards/tasks.md` for the frontmatter contract.',
+          root,
+        ),
+      ).toEqual([])
+    })
+
+    it("should pass a bare standards/ path cited from a skill's own REQUIREMENT.md, which a maintainer reads rather than a session", () => {
+      expect(
+        referencesIn(
+          'claude/skills/claude-tasks/REQUIREMENT.md',
+          'Read `standards/tasks.md` before writing a case.',
+          root,
+        ),
+      ).toEqual([])
+    })
+
+    it('should mute a bare standards/ path marked as deliberate', () => {
+      expect(
+        referencesIn(
+          'claude/skills/alpha/SKILL.md',
+          `Read \`standards/tasks.md\` for the shape. <!-- ${REFERENCE_MARKER}: illustrates the bare form the rule bans -->`,
+          root,
+        ),
+      ).toEqual([])
+    })
+  })
+
   describe('PHASE_LABEL', () => {
     let root: string
 

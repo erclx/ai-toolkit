@@ -1,6 +1,6 @@
 ---
 name: context-draft
-description: Drafts a brand-new `.claude/context/<domain>.md` entry against `standards/context.md`, checks the catalog for a name-or-topic collision, decides flat-file placement, confirms with the user, then writes. Use when asked to "write a context entry for X", "document the X domain", "add a context entry for X", or "create a .claude/context page for X" where no existing entry covers the domain. Do NOT use to refresh an existing entry against a diff, which is `claude-docs`.
+description: Drafts a brand-new `.claude/context/<domain>.md` entry against the context standard, checks the catalog for a name-or-topic collision, decides flat-file placement, confirms with the user, then writes. Use when asked to "write a context entry for X", "document the X domain", "add a context entry for X", or "create a .claude/context page for X" where no existing entry covers the domain. Do NOT use to refresh an existing entry against a diff, which is `claude-docs`.
 ---
 
 # Context draft
