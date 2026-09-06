@@ -135,13 +135,23 @@ export function backlogPath(root: string): string {
 }
 
 /**
+ * Every link target in a cell, in order. `linkTarget` reads only the first,
+ * which is what the single-link `Task` and `Plan` columns need; `citedStem`
+ * walks the rest to find a blocker cell's bare sibling pointer.
+ */
+function linkTargets(cell: string): string[] {
+  return [...cell.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)].map((match) =>
+    match[1].trim(),
+  )
+}
+
+/**
  * Pulls the target out of a markdown link, which is how both the `Task` and the
  * `Plan` column spell their pointer. A cell carrying prose instead of a link
  * yields nothing, and that absence is the finding rather than a parse failure.
  */
 function linkTarget(cell: string): string | undefined {
-  const match = /\[[^\]]*\]\(([^)]+)\)/.exec(cell)
-  return match ? match[1].trim() : undefined
+  return linkTargets(cell)[0]
 }
 
 function linkText(cell: string): string {
@@ -874,11 +884,18 @@ function checkFolderClaims(
  * directory names something else and yields nothing. A row waiting on a plan
  * links that plan, and reading its stem as a task would report the row settled
  * against a folder the plan does not sit in.
+ *
+ * A cell can carry more than one link, such as a `Waiting on` cell naming the
+ * record answering the blocker before naming the sibling task it waits on, so
+ * this walks every target rather than reading only the first. It stops at the
+ * first bare one rather than trying a later link when that one fails to
+ * resolve to a stem.
  */
 function citedStem(cell: string): string | undefined {
-  const target = linkTarget(cell)?.split('#')[0]
-  if (!target || target.includes('/')) return undefined
-  return stemOf(target)
+  const target = linkTargets(cell)
+    .map((t) => t.split('#')[0])
+    .find((t) => !t.includes('/'))
+  return target ? stemOf(target) : undefined
 }
 
 /** What one blocker citation produced, since a row can be neither settled nor open. */

@@ -996,6 +996,63 @@ describe('validateBoard', () => {
     ])
   })
 
+  it('should resolve the task cited after a record link in a blocker cell', async () => {
+    await seedTask('v1.0-first', '- [x] shipped', 673)
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [a record](../review/branch/review-blocker.md) answered it, then waits on [v1.0-first](v1.0-first.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT, trunkHolding(673))
+
+    expect(outcome.ok && kinds(outcome.findings)).toEqual(['blocker-settled'])
+  })
+
+  it('should read no task out of a blocker cell citing only a record', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [a record](../review/branch/review-blocker.md) answered it |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.untested).toMatchObject([
+      { group: 'Up next', subject: 'v2.0-second' },
+    ])
+  })
+
+  it('should keep resolving a blocker cell whose task link comes first, before a later record link', async () => {
+    await seedTask('v1.0-first', '- [x] shipped', 673)
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [v1.0-first](v1.0-first.md), settled by [a record](../review/branch/review-blocker.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT, trunkHolding(673))
+
+    expect(outcome.ok && kinds(outcome.findings)).toEqual(['blocker-settled'])
+  })
+
   it('should report a parked row whose cited file nothing under run now holds', async () => {
     await seedTask('v1.0-first')
     await seedTask('v2.0-second')
