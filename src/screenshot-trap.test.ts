@@ -78,6 +78,12 @@ describe('screenshot.sh EXIT trap', () => {
   })
 
   it('should leave the port unbound when a detached grandchild outlives the tracked pid', () => {
+    if (spawnSync('lsof', ['-v']).error) {
+      throw new Error(
+        'lsof is required to verify this test and was not found on PATH',
+      )
+    }
+
     const port = '4173'
     stubBin(
       'bun',
@@ -104,23 +110,23 @@ describe('screenshot.sh EXIT trap', () => {
       timeout: 10_000,
     })
 
+    const portPidList = (): string[] =>
+      (
+        spawnSync('lsof', ['-ti', `tcp:${port}`], { encoding: 'utf8' })
+          .stdout ?? ''
+      )
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+
     try {
       expect(result.status).toBe(0)
-
-      const stillBound = spawnSync('lsof', ['-ti', `tcp:${port}`], {
-        encoding: 'utf8',
-      })
-      expect(stillBound.stdout.trim()).toBe('')
+      expect(portPidList()).toEqual([])
     } finally {
       // A regression in the trap under test is exactly what would leave this
       // bound, so a failed assertion above must not leak the listener into
       // whatever runs against this port next.
-      for (const pid of spawnSync('lsof', ['-ti', `tcp:${port}`], {
-        encoding: 'utf8',
-      })
-        .stdout.trim()
-        .split('\n')
-        .filter(Boolean)) {
+      for (const pid of portPidList()) {
         spawnSync('kill', [pid])
       }
     }
