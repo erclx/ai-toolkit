@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.58.0](https://github.com/erclx/canon/compare/v4.57.0...v4.58.0) (2026-09-06)
+
+
+### Features
+
+* **plan:** carry the deviation-rewrite into executing bodies ([#1536](https://github.com/erclx/canon/issues/1536)) ([e5ae96a](https://github.com/erclx/canon/commit/e5ae96a35a3a3a21128d6f20510440bc9d753ef3))
+
+
+### Bug Fixes
+
+* **tasks:** walk every link in a blocker cell for the cited task ([#1535](https://github.com/erclx/canon/issues/1535)) ([17617b1](https://github.com/erclx/canon/commit/17617b1e7525a4db2acc390d682fd491ee7cb056))
+* **worktree:** report node and python dependency state independently ([#1538](https://github.com/erclx/canon/issues/1538)) ([618ae99](https://github.com/erclx/canon/commit/618ae9909ebf003567b26c2834bbbc285c5dca1d))
+
 ## [4.57.0](https://github.com/erclx/canon/compare/v4.56.0...v4.57.0) (2026-09-06)
 
 
