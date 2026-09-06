@@ -1,0 +1,18 @@
+# What a correct `/canon:setup-smoke` run leaves behind on the `fail` arm. Read
+# by `canon sandbox check`. `test:e2e` exits non-zero, so a correct run stops
+# before `screenshot` ever starts.
+
+max_turns = 20
+
+# dev, preview, and test:e2e each touch their marker before failing or
+# finishing. A stop-on-first-failure run reaches all three.
+paths = [".smoke/dev-started", ".smoke/preview-started", ".smoke/e2e-ran"]
+
+# screenshot's marker is the proof the run actually stopped rather than
+# collecting every failure and continuing past the first one.
+absent = [".smoke/screenshot-ran"]
+
+manual = [
+  "The dev and preview stages report pass ahead of the test:e2e failure. Semantic: pass/fail for a long-running server has no manifest-exposed port to probe, so the judgment reads backgrounded output for a fatal string rather than a fixed exit code",
+  "The run reports test:e2e as the failing stage and surfaces its output. Unwired: the envelope does not carry which stage a skill named as the break, only the tree the run left behind",
+]
