@@ -15,6 +15,10 @@ import {
   SHIPPED_CORPORA,
   type ShippedReference,
 } from '@/shipped/references'
+import {
+  README_PARAPHRASE_MARKER,
+  readmeCitationsIn,
+} from '@/web/readme-citations'
 
 export interface CommandResult {
   readonly exitCode: number
@@ -619,6 +623,75 @@ export const clientCommandCitations = async (
       found.length === 1
         ? `One tracked citation quotes a client command with the wrong argument. Match it against the canonical form in src/client-commands.ts, or mark the line ${CLIENT_COMMAND_MARKER}: <reason> where the argument differs on purpose.`
         : `${found.length} tracked citations quote a client command with the wrong argument. Match each against the canonical form in src/client-commands.ts, or mark the line ${CLIENT_COMMAND_MARKER}: <reason> where the argument differs on purpose.`,
+  }
+}
+
+/**
+ * Every `README.md:` anchor in `web/src/content/copy.ts` whose quoted phrase no
+ * longer appears in the current `README.md`, plus any leftover bare
+ * `README.md:<n>` citation the retired line-number convention would leave
+ * behind.
+ *
+ * Scoped to the one file carrying the anchors rather than walked across the
+ * tree, since `web/src/content/copy.ts` is the only place this repository
+ * writes one. A quoted phrase is checked with a plain substring test against
+ * the whole `README.md` text rather than against the cited line, which is the
+ * property that lets the anchor survive `README.md` growing or shrinking
+ * above it: the phrase fails only when the content itself moved or changed,
+ * never when a line number did.
+ */
+export const readmeCitations: Measure = async (ctx) => {
+  const copyPath = 'web/src/content/copy.ts'
+  const readmePath = 'README.md'
+  const copyFile = join(ctx.root, copyPath)
+  const readmeFile = join(ctx.root, readmePath)
+
+  if (!existsSync(copyFile) || !existsSync(readmeFile)) {
+    return {
+      emissions: [],
+      unmeasured: `${copyPath} or ${readmePath} is absent, so no citation was checked.`,
+    }
+  }
+
+  const readmeText = readFileSync(readmeFile, 'utf8')
+  const citations = readmeCitationsIn(copyPath, readFileSync(copyFile, 'utf8'))
+
+  if (citations.length === 0) {
+    return {
+      emissions: [],
+      unmeasured: `${copyPath} carries no README.md citation, so nothing was checked.`,
+    }
+  }
+
+  const bad = citations.filter(
+    (citation) =>
+      citation.kind === 'bare' ||
+      (citation.kind === 'quoted' &&
+        citation.phrases.some((phrase) => !readmeText.includes(phrase))),
+  )
+
+  if (bad.length === 0) {
+    return {
+      emissions: [
+        info(
+          `${citations.length} README.md citation(s) in ${copyPath} verified against the current text`,
+        ),
+      ],
+    }
+  }
+
+  return {
+    emissions: bad.map((citation) =>
+      warn(
+        citation.kind === 'bare'
+          ? `${citation.file}:${citation.line} carries ${citation.text}, a bare line number that cannot detect a shifted line`
+          : `${citation.file}:${citation.line} carries ${citation.text}, whose quoted phrase no longer appears in README.md`,
+      ),
+    ),
+    failure:
+      bad.length === 1
+        ? `One README.md citation in ${copyPath} failed. Quote a verbatim phrase from the current README.md, or mark the line ${README_PARAPHRASE_MARKER}: <reason> where the string condenses rather than quotes.`
+        : `${bad.length} README.md citations in ${copyPath} failed. Quote a verbatim phrase from the current README.md, or mark each line ${README_PARAPHRASE_MARKER}: <reason> where the string condenses rather than quotes.`,
   }
 }
 
