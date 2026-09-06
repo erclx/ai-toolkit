@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.60.0](https://github.com/erclx/canon/compare/v4.59.0...v4.60.0) (2026-09-06)
+
+
+### Features
+
+* **tasks:** hand a row to a live orchestrator rather than write it ([#1543](https://github.com/erclx/canon/issues/1543)) ([191a69c](https://github.com/erclx/canon/commit/191a69c9a866a07c55a64153519394421977ec10))
+* **tooling:** ignore nextjs build output ([#1546](https://github.com/erclx/canon/issues/1546)) ([0aebde4](https://github.com/erclx/canon/commit/0aebde423d1c16ba6df653b3fe5802ba1238c2df))
+
+
+### Bug Fixes
+
+* **labels:** skip title format grade when a scan carries no title ([#1545](https://github.com/erclx/canon/issues/1545)) ([1140364](https://github.com/erclx/canon/commit/1140364fb5854ea842c23c7379ca2d2ba7f64ad0))
+* **memory:** resolve routing append at the main worktree root ([#1544](https://github.com/erclx/canon/issues/1544)) ([7d7c1be](https://github.com/erclx/canon/commit/7d7c1bea25d78957c0772512a739a68cc392e821))
+
 ## [4.59.0](https://github.com/erclx/canon/compare/v4.58.0...v4.59.0) (2026-09-06)
 
 
