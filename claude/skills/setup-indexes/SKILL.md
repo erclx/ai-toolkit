@@ -29,6 +29,14 @@ For each candidate, capture:
 
 ## Present candidates
 
+If the scan found no candidate, report the flat result and skip ahead:
+
+```plaintext
+No folder has three or more markdown siblings without an index.md already. Nothing to bootstrap.
+```
+
+Skip past the ask below and every step between it and the seed offer, straight to `## Offer the convention seed`. There is no candidate to ask about, so this stops rather than opening a prompt with nothing in it.
+
 Output one line per candidate:
 
 ```plaintext
