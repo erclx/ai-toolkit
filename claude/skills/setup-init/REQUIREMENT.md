@@ -9,7 +9,7 @@ description: Scope boundary for the one-shot onboarding chain and the setup step
 
 Without this skill, a session installs a stack whose name it recalled rather than read, hand-writes configs the tooling sync already ships as golden files, and re-runs the chain over a project that owns its configs already.
 
-Two failures are the expensive ones because both return success. A monorepo run drops husky into every subtree, git honors one `core.hooksPath`, and the extra hook directories go quiet with nothing reporting it. A caller reads the chain as onboarding complete when index bootstrap and plugin provisioning never ran, since no step states whether they belong to the chain.
+Two failures are the expensive ones because both return success. A monorepo run drops husky into every subtree, git honors one `core.hooksPath`, and the extra hook directories go quiet with nothing reporting it. A caller reads the chain as onboarding complete when plugin provisioning never runs, since no step states that it sits outside the chain.
 
 Two more start at the resolve step. A project whose language the toolkit carries no stack for resolves to `base`, and the preview reports the resolved name without marking it as a fallback, so `base` development dependencies, scripts, and hooks land on a project that will not use them and nobody had the moment to decline.
 
@@ -20,7 +20,7 @@ The other is the refusal that ends rather than routes. An existing project, an i
 - Resolve every domain argument against a catalog read at run time, so a stack, rule, snippet, or tooling name the catalog does not carry cannot reach the command line
 - Preview the resolved chain before the first command runs, naming the evidence file behind each detected technology
 - Pass `--skip base` on every subtree past the first in a monorepo, so the shared hook layer lands once
-- State which onboarding steps the chain does not run, so a caller knows what is left rather than inferring completeness from a clean report
+- State which onboarding steps the chain does not run and why, so a caller knows what is left and where the boundary sits rather than inferring completeness from a clean report
 - Mark a stack reached by fallback as a fallback in the preview, and name what `base` carries, so the write can be declined at the one point it is still declinable
 - Name a destination for every state the chain does not serve, in this body rather than only in a reference doc the person would have to already know to open, and say for each whether the chain stops or runs on a default
 
@@ -37,9 +37,10 @@ The other is the refusal that ends rather than routes. An existing project, an i
 ## Out of scope
 
 - Installing governance rules alone: `setup-gov`. This skill installs governance beside tooling and the seeds.
-- Bootstrapping the `index.md` system: `setup-indexes`. Neither `canon init` nor this chain performs it.
 - Provisioning Claude Code plugins: `setup-plugins`. Those install once per machine rather than into a project, so no project-scoped chain can carry them.
-- Running the verification scripts, which `setup-verify` owns and this chain invokes as its last step
+- Running the verification scripts, which `setup-verify` owns and this chain invokes as step 4
+- Publishing repository metadata: `repo-metadata`. It reaches a remote, which is past the project edge this chain stops at.
+- Making the first commit: `git-commit`. It reaches the project's history, which is past the project edge this chain stops at.
 - Re-installing into a project that already has the files, which the per-domain `canon <domain> install` and `canon sync` commands own
 - Deciding which of those per-domain commands an existing project needs: `canon-operator`. That skill reads the target before naming one, which this chain never does, so it is the destination rather than a guess made here.
 - Seeding the `.claude/` folder without the tooling chain, which `canon claude init` does on its own and `setup-indexes` finishes
