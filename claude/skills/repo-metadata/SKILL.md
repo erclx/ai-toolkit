@@ -19,13 +19,14 @@ Reads what `canon repo metadata propose` computes locally and reports it against
 
 1. Run `canon repo metadata propose --json`.
 2. Read `diff` and `repo` from the record. `repo` is the `--repo` value the later apply step must carry. An empty `diff` means the remote already matches what this run computed: report that and stop, since there is nothing to answer.
-3. For each field `diff` carries, put the change to the operator through the structured question surface: which of the differing fields to write. Rank accepting the proposed value first for a field whose current value is stale or wrong, and give the reject option the cost of leaving the remote as it stands. Never pre-select an answer for the operator.
-4. Report the fields the proposal left absent as unchanged, naming that neither the README nor `package.json` carried a source for them.
-5. Stop. Do not run apply here even when the operator answers immediately, since answering is not yet an apply invocation.
+3. When `diff` carries a `description` field, compress its proposed value into a single short phrase, not the two-sentence paragraph the CLI computed. Leave the shape and length of the phrase to judgment on each run. No numeric target applies. Keep the raw proposed value beside the compressed phrase in what gets reported, so the operator can check the phrase against the README line it came from.
+4. For each field `diff` carries, put the change to the operator through the structured question surface: which of the differing fields to write. For `description`, the value offered to accept is the compressed phrase from step 3, not the raw line beside it. Rank accepting the proposed value first for a field whose current value is stale or wrong, and give the reject option the cost of leaving the remote as it stands. Never pre-select an answer for the operator.
+5. Report the fields the proposal left absent as unchanged, naming that neither the README nor `package.json` carried a source for them.
+6. Stop. Do not run apply here even when the operator answers immediately, since answering is not yet an apply invocation.
 
 ## Apply
 
-1. Confirm every field about to be written was answered by the operator in this conversation. Carry no field forward unanswered.
+1. Confirm every field about to be written was answered by the operator in this conversation. Carry no field forward unanswered. For `description`, the answered value is the compressed phrase Propose offered, never the raw README line reported beside it.
 2. Run `canon repo metadata apply`, always passing `--repo <owner/name>` from the propose record's `repo` field, plus the flags for the answered fields: `--description <text>`, `--homepage <url>`, `--topics <comma-separated list>`. `--topics` is the full desired set, and the command reads the current set itself to compute what to add and remove. The command refuses rather than writing when `--repo` does not match what `--root` resolves to, so never omit it and never guess it from anything but the propose record's `repo` field.
 3. Report the written state from the JSON record.
 
@@ -35,7 +36,7 @@ Propose:
 
 ```plaintext
 📋 Repo metadata proposal
-description: "<current>" → "<proposed>"
+description: "<current>" → "<compressed>" (derived from the README's opening line: "<raw>")
 homepage: unchanged, no local source
 topics: +<added>, -<removed>
 
