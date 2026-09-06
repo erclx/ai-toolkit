@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.61.0](https://github.com/erclx/canon/compare/v4.60.0...v4.61.0) (2026-09-06)
+
+
+### Features
+
+* **capture:** split output into a sweep and a committed evidence set ([#1553](https://github.com/erclx/canon/issues/1553)) ([e6fa98b](https://github.com/erclx/canon/commit/e6fa98b58fc6305157dd8ee8d8306489097b58d8))
+* **setup-indexes:** report and return on an empty scan ([#1551](https://github.com/erclx/canon/issues/1551)) ([b47af91](https://github.com/erclx/canon/commit/b47af916c04be4ccd227dc68421b3c2f33dc9ea8))
+* **tasks:** allocate the next phase label across board and archive ([#1554](https://github.com/erclx/canon/issues/1554)) ([0ad9356](https://github.com/erclx/canon/commit/0ad93569b7273046487902aeb36dde351be95295))
+
+
+### Bug Fixes
+
+* **ci:** add merge_group trigger for a future merge queue ([#1548](https://github.com/erclx/canon/issues/1548)) ([a2e72b6](https://github.com/erclx/canon/commit/a2e72b6a8d0212eec3133cd556546de1f2ccc974))
+
 ## [4.60.0](https://github.com/erclx/canon/compare/v4.59.0...v4.60.0) (2026-09-06)
 
 
