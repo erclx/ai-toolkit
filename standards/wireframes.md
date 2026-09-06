@@ -61,7 +61,7 @@ Both fields feed `.claude/wireframes/index.md` when regenerated.
 ## Copy
 
 - Carry short structural text verbatim, in the ASCII block or a short list below it: labels, headings, empty-state strings, and nav or footer copy. The wireframe is the source of truth for this text.
-- Cite the source file for long-form or article-body content instead of duplicating it. A lede sentence or a body paragraph pulled into an ASCII figure drifts the moment its source changes, and nothing checks a fenced block against prose elsewhere.
+- Cite the source file for long-form or article-body content instead of duplicating it. A lede sentence or a body paragraph pulled into an ASCII figure drifts the moment its source changes, and nothing checks a fenced block against prose elsewhere. A citation elsewhere in the file does not excuse the block itself from still carrying the duplicate. Trim the block once the citation exists.
 - Mark copy that is dynamic or templated so a reader does not treat a placeholder as final text.
 
 ## Behavior
