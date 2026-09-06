@@ -59,6 +59,12 @@ Append to the `## Scripts` table:
 
 In `.claude/context/ci.md`, the Typecheck row's assertion reads: `` `astro check` passes ``. The Build row's assertion reads: `` `astro build` succeeds ``.
 
+## Gitignore (extend)
+
+`[gitignore]` groups this stack edits, restated here per the manifest-to-reference symmetry:
+
+- `"# Astro" = [".astro/"]`
+
 ## Scenario switcher
 
 - `src/components/dev/scenarios.astro` ships as a golden config, always overwritten on sync, since it is toolkit-authored infrastructure rather than a file a project hand-edits.
