@@ -26,7 +26,7 @@ export default defineConfig([
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
   {
-    files: ['**/*.{ts,tsx,js,jsx}'],
+    files: ['**/*.{ts,tsx,js,jsx,astro}'],
     plugins: {
       'simple-import-sort': simpleImportSort,
       'check-file': checkFile,
