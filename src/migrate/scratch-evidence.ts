@@ -98,14 +98,18 @@ function citationPattern(folder: string): RegExp {
   )
 }
 
-/** One promoted folder's citation pattern, paired with its replacement. */
-const REWRITES: readonly {
+interface Rewrite {
   readonly pattern: RegExp
   readonly folder: string
-}[] = PROMOTED_FOLDERS.map((folder) => ({
-  pattern: citationPattern(folder),
-  folder,
-}))
+}
+
+/** One rewrite per folder, paired with its citation pattern. */
+function buildRewrites(folders: readonly string[]): readonly Rewrite[] {
+  return folders.map((folder) => ({
+    pattern: citationPattern(folder),
+    folder,
+  }))
+}
 
 /**
  * Marks a line naming a promoted folder's old path on purpose, the same
@@ -125,40 +129,43 @@ function isKept(lines: readonly string[], index: number): boolean {
   return above >= 0 && (lines[above]?.includes(KEEP_MARKER) ?? false)
 }
 
-function rewriteLine(line: string): string {
-  return REWRITES.reduce(
+function rewriteLine(line: string, rewrites: readonly Rewrite[]): string {
+  return rewrites.reduce(
     (current, { pattern, folder }) =>
       current.replace(pattern, `.canon/review/evidence/${folder}`),
     line,
   )
 }
 
-/**
- * Rewrites every unmarked citation of a promoted folder into its destination
- * under `.canon/review/evidence/`, absolute regardless of how the source
- * citation was spelled. A file naming no promoted folder returns
- * byte-identical, and a marked line is returned unchanged.
- */
-export function rewriteScratchEvidence(text: string): string {
-  const lines = text.split('\n')
-  return lines
-    .map((line, index) => (isKept(lines, index) ? line : rewriteLine(line)))
-    .join('\n')
+interface RewriteOutcome {
+  readonly text: string
+  readonly count: number
 }
 
-/** How many unmarked citations `rewriteScratchEvidence` would change. */
-export function countScratchEvidenceCitations(text: string): number {
+/**
+ * Rewrites every unmarked citation of a folder `rewrites` covers into its
+ * destination under `.canon/review/evidence/`, absolute regardless of how the
+ * source citation was spelled, counting each as it goes. A file naming no
+ * such folder returns byte-identical with a count of zero, and a marked line
+ * is returned unchanged and uncounted.
+ */
+function applyRewrites(
+  text: string,
+  rewrites: readonly Rewrite[],
+): RewriteOutcome {
   const lines = text.split('\n')
   let count = 0
 
-  for (const [index, line] of lines.entries()) {
-    if (isKept(lines, index)) continue
-    for (const { pattern } of REWRITES) {
+  const rewritten = lines.map((line, index) => {
+    if (isKept(lines, index)) return line
+
+    for (const { pattern } of rewrites) {
       count += [...line.matchAll(pattern)].length
     }
-  }
+    return rewriteLine(line, rewrites)
+  })
 
-  return count
+  return { text: rewritten.join('\n'), count }
 }
 
 /** The files under every `BACKED_FOLDERS` entry, archives included. */
@@ -261,17 +268,17 @@ export function planScratchEvidence(
   sources: readonly ScratchEvidenceSource[],
 ): ScratchEvidencePlan {
   const { moves, collisions } = planFolderMoves(root)
+  const folders = PROMOTED_FOLDERS.filter(
+    (folder) => !collisions.includes(destinationPath(root, folder)),
+  )
+  const rewrites = buildRewrites(folders)
   const entries: CitationEntry[] = []
 
   for (const source of sources) {
-    const rewritten = countScratchEvidenceCitations(source.text)
-    if (rewritten === 0) continue
+    const { text, count } = applyRewrites(source.text, rewrites)
+    if (count === 0) continue
 
-    entries.push({
-      path: source.path,
-      text: rewriteScratchEvidence(source.text),
-      rewritten,
-    })
+    entries.push({ path: source.path, text, rewritten: count })
   }
 
   return {
