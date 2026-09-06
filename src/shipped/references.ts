@@ -149,6 +149,37 @@ const SAME_REPOSITORY =
 const DOCS_PATH = /(?<![\w./-])docs\/[^\s`)\]]*\.md\b/g
 
 /**
+ * A bare `standards/<name>.md` citation from a body under `claude/skills/`,
+ * which `598-authoring-layout.md` fixes as the broken form there:
+ * `${CLAUDE_SKILL_DIR}` is what resolves off the `claude/standards` symlink
+ * in every plugin cache, and a raw path has nothing to expand it.
+ *
+ * Scoped to that one corpus rather than every `isShippedCorpus` reads,
+ * because `docs/agents/` and `docs/workflow/` carry the identical
+ * `standards/<name>.md` shape correctly: a docs page resolves from this
+ * checkout's own root rather than through a skill's `${CLAUDE_SKILL_DIR}`,
+ * so the same string is the fix in one corpus and the defect in the other.
+ * Widening the pattern to every corpus turns it into a mass false-positive
+ * over the dozens of correct citations those two folders carry.
+ *
+ * The same leading-boundary discipline as `DOCS_PATH` excludes the already
+ * correct form: a `/` sits ahead of `standards` in
+ * `${CLAUDE_SKILL_DIR}/../../standards/<name>.md`, which the negative
+ * lookbehind rejects, so a citation already rewritten to the resolving form
+ * does not fail this check a second time.
+ *
+ * Reported only where `isStandardsPathResolvable` confirms the match
+ * resolves against this checkout, the same gate `DOCS_PATH` runs. A body
+ * illustrating the shape a project's own `standards/<name>.md` takes writes
+ * the identical placeholder token this pattern matches, such as
+ * `standards/<slug>.md` in `create-standard/SKILL.md` or `standards/<name>.md`
+ * in `migration-standards-drop/SKILL.md`, and neither resolves to a real
+ * file. Four such placeholders surfaced across three files the first time
+ * this pattern ran unresolved, measured 2026-09-06.
+ */
+const STANDARDS_PATH = /(?<![\w./-])standards\/[^\s`)\]]*\.md\b/g
+
+/**
  * A phase-label-shaped token: exactly two numeric groups, with a negative
  * lookahead rejecting a third.
  *
@@ -173,7 +204,12 @@ export interface ShippedReference {
   readonly file: string
   /** One-based, matching the `file:line` form a reader clicks. */
   readonly line: number
-  readonly kind: 'pull-request' | 'commit' | 'docs-path' | 'phase-label'
+  readonly kind:
+    | 'pull-request'
+    | 'commit'
+    | 'docs-path'
+    | 'standards-path'
+    | 'phase-label'
   /** The reference as written, so a report names the token to qualify. */
   readonly text: string
   /**
@@ -203,17 +239,36 @@ function isDocsPathResolvable(
 }
 
 /**
+ * Whether `file` sits in the one corpus `STANDARDS_PATH` gates.
+ *
+ * `REQUIREMENT.md` is excluded for the reason `598-authoring-layout.md`
+ * leaves it alone: a maintainer or an audit command reads that file rather
+ * than a session loading it, so the resolver rule this pattern enforces
+ * never applies there.
+ */
+function isStandardsPathScope(file: string): boolean {
+  return file.startsWith('claude/skills/') && !file.endsWith('/REQUIREMENT.md')
+}
+
+/** Whether a `STANDARDS_PATH` match names a real file in this checkout. */
+function isStandardsPathResolvable(path: string, root: string): boolean {
+  return existsSync(join(root, path))
+}
+
+/**
  * Every reference in one shipped file that no marker mutes.
  *
  * The corpus walk is deliberately absent, which lets most of the shape be
  * tested against a string rather than against a fixture. That is the seam
  * `headingCitationsIn` draws in `src/claude/skills-headings.ts` and `citationsIn`
- * draws in `skills-reach.ts`. `DOCS_PATH` is the one pattern that still needs
- * a filesystem, since resolving against this checkout is the only thing that
- * separates its two readings, so it takes `root` as the one caller-supplied
- * exception to that rule. `root` is required rather than defaulted, since a
- * caller that dropped it silently would report zero docs-path findings
- * rather than raising, which is the wrong failure direction for a gate.
+ * draws in `skills-reach.ts`. `DOCS_PATH` and `STANDARDS_PATH` are the two
+ * patterns that still need a filesystem, since resolving against this
+ * checkout is the only thing that separates a real citation from an
+ * illustration for either, so `referencesIn` takes `root` as the one
+ * caller-supplied exception to that rule. `root` is required rather than
+ * defaulted, since a caller that dropped it silently would report zero
+ * findings for both rather than raising, which is the wrong failure
+ * direction for a gate.
  *
  * The unit is the match rather than the line, unlike those two, because one
  * line here can carry three separate tokens each needing its own repair and a
@@ -270,6 +325,18 @@ export function referencesIn(
         kind: 'docs-path',
         text: match[0],
       })
+    }
+
+    if (isStandardsPathScope(file)) {
+      for (const match of line.matchAll(STANDARDS_PATH)) {
+        if (!isStandardsPathResolvable(match[0], root)) continue
+        references.push({
+          file,
+          line: index + 1,
+          kind: 'standards-path',
+          text: match[0],
+        })
+      }
     }
 
     for (const match of line.matchAll(PHASE_LABEL)) {
