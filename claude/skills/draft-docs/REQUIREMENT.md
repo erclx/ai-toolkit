@@ -1,5 +1,5 @@
 ---
-name: docs-draft
+name: draft-docs
 description: Why a brand-new docs/*.md page needs a placement decision and a confirm step, not the rewrite path docs-sync already owns
 ---
 

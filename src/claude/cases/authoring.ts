@@ -40,17 +40,17 @@ export const AUTHORING_CASES: readonly SkillCase[] = [
   {
     prompt:
       'Write a brand-new docs page for the capture command, nothing under docs/ covers it yet.',
-    expect: 'docs-draft',
+    expect: 'draft-docs',
   },
   {
     prompt:
       'Write a context entry for the payments domain, there is no .claude/context page for it yet.',
-    expect: 'context-draft',
+    expect: 'draft-context',
   },
   {
     prompt:
       'Draft a wireframe for the settings panel, nothing under .claude/wireframes covers that surface yet.',
-    expect: 'wireframe-draft',
+    expect: 'draft-wireframes',
   },
   {
     prompt: 'Say what that dense answer actually means in plain terms.',

@@ -1,5 +1,5 @@
 ---
-name: wireframe-draft
+name: draft-wireframes
 description: Why a brand-new .claude/wireframes/<surface>.md file needs a real draft and a tier-detect step, not the stub the wireframe-sweep already writes
 ---
 
@@ -32,7 +32,7 @@ Without this skill, a session drafting a wireframe for a surface with no file ye
 ## Out of scope
 
 - Stubbing a surface a diff touched, or reporting drift in an existing wireframe against a diff: `claude/skills/claude-docs/references/wireframe-sweep.md`
-- Drafting a `.claude/context/<domain>.md` entry: `context-draft`
-- Drafting a `docs/*.md` page: `docs-draft`
+- Drafting a `.claude/context/<domain>.md` entry: `draft-context`
+- Drafting a `docs/*.md` page: `draft-docs`
 - Drafting a standard, a snippet, or a governance rule: `create-standard`, `create-snippet`, `create-rule`
 - Building or wiring an actual tier-1 or tier-2 rendering pipeline: the visual design workflow's own tier guidance, out of reach of a hand-drafting skill
