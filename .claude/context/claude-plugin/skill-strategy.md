@@ -1,6 +1,6 @@
 ---
 title: Skill strategy
-description: Where a plugin skill lives, the catalog command, the workflow against domain-knowledge split, and the redundancy audit
+description: Where a plugin skill lives, the catalog command, the workflow against domain-knowledge split, the redundancy audit, and the trim read at seventy-three
 ---
 
 # Skill strategy
@@ -623,5 +623,50 @@ Each taken borrow carries the body it landed in and the date, matching how this 
 - `canon:git-worktree` vs the Step 6 cleanup inside `obra/superpowers/finishing-a-development-branch`, read at 6.1.1. The `claude-worktree` comparison above parked worktree cleanup as this skill's subject, and this is the pass that reads it. Different scopes at different moments.
   - Theirs cleans the one worktree the session sits in, at the end of one branch, and only for two of its four options. Ours enumerates every worktree in the repository at any time, resolves each branch's merge state through `gh` with a local-ancestry fallback, and removes the merged set in one batch.
   - One borrow the closing batch left standing, taken after it as `v68.0` on its own row. Theirs tests the worktree path against a known prefix before removing anything and leaves a workspace the harness owns in place. Ours guarded on merge state, cleanliness, and the current-worktree exclusion alone, so `git worktree list` reporting every worktree put a merged clean tree an operator added by hand elsewhere on disk inside the remove set, its branch following under `branch -D`. The fix adds a fourth enumeration test: a non-main row whose path sits outside `<MAIN_ROOT>/.claude/worktrees/` reads as `foreign` and joins the skip set with that reason, in `list` and `cleanup` both. No instance was observed, and nothing in the skill would have reported one. The row taking the other four read this one as a data-loss shape wanting its own verification rather than a line in a parity batch.
+
+## The trim read at seventy-three, and the two candidates the overlap test surfaces
+
+`.canon/tasks/v89.0-the-catalog-grew-past-the-count-that-prompted-a-trim.md` asked for a trim and got this read instead. The catalog holds 73 folders under `claude/skills/`, listed at `285723bc` on 2026-09-06 rather than carried from the row, which wrote 72 before `setup-smoke` landed as `#1555`. Six more are queued behind the answered intake at `.canon/intake/77-skill-catalog-and-naming/01-skill-additions.md`. Nothing here removes a folder, and the sections below say why a candidate list is the whole deliverable.
+
+### Groundwork 31 settled cut nothing, so this section does not re-derive it
+
+`.canon/groundwork/31-skill-surface-shape/06-decision.md` ran the overlap read across the 57 skills shipping then and closed on three things: cut nothing, repair four routing defects, and spike the marketplace subset lever before building on it. The one job-duplication candidate it found was `git-commit` inside `git-stage`, and that pair fails the merge on a behavioral difference neither description states, since `git-stage` clears the stage and restages whole files, destroying the hunk-level selection `git-commit` preserves. Every other pair that read as overlap was a declared boundary or a wording collision.
+
+The budget argument the operator opened on is answered elsewhere rather than by a cut. `.claude/context/claude-plugin/distribution.md` carries the spike's result, where a curated marketplace root holding one symlink per kept skill loads 4 skills at roughly 330 always-on tokens against 64 at roughly 8,300. Read the subset lever there. A trim measured by catalog size reaches the decision above at the cost it already paid, which is why this row asked for a read.
+
+Settled is not executed, and the four repairs split three to one. `git-commit`'s narrowed trigger, the `docs-sync` against `claude-docs` split, and the reciprocal worktree boundary are all visible in the bodies today. The fourth reached one body of the five it named, since `claude-seed-sync` cites `canon-cli` while `setup-init`, `setup-gov`, and `setup-indexes` cite it under neither that name nor the retired `toolkit-cli`. The fifth body it named, `migration-standards`, has since retired.
+
+### The row's `v74.1` citation names a different migration
+
+The row reads the four `migration-*` skills as the one class a completed migration would make dead weight, and cites `v74.1` as evidence at least one of those migrations is unfinished. That row is `canon migrate rename --scope target`, the CLI verb moving a target off the retired `aitk` package name, and it names none of `migration-claude-md`, `migration-context`, `migration-standards-drop`, or `migration-superseded`. The word is shared and nothing else is.
+
+The premise under the citation does not hold either. Each of the four proposes a per-project structural move and applies none of it, so the job closes for a target that has taken it and stays open for every target that has not. No global finished state exists for a completed migration to reach, since a project scaffolded later arrives holding whatever layout it was scaffolded with. What retires one is its destination ceasing to be legitimate, which is what happened to `migration-standards` when the snippets install channel closed, and that is a different event from a migration finishing.
+
+### The six that landed since the audit closed at sixty-two
+
+`#### All twenty-two keep, and the audit closes at sixty-two` names two folders as carrying no row. The gap is six now, and question 1 of `## Whether a skill earns its place`, whether a rule, a verb, or an existing skill already reaches this moment, runs against each below. None answers yes.
+
+- `claude-worker` and `claude-planner`. Each asserts a role for a session already dispatched, holding boundaries, lifetime, and channel obligations. No verb asserts a role, and the bodies needing one invoke these rather than restating them, which is what `claude-autoship` Step 0 does.
+- `migration-standards-drop`. It proposes the drop and the citation repoint `migration-standards` left behind, on the shape its three siblings set. Nothing else proposes either half.
+- `repo-metadata`. It computes an About text, a homepage, and a topic set from the README's opening line and `package.json`, reports the difference against the remote, and stops. `gh repo edit` is the write it stops short of rather than a surface already reaching the proposal.
+- `index-lookup`. The closest of the five to the wrapper shape question 1 exists to catch, since `canon indexes list --json` already reaches the catalog. What it adds is the topic match over each entry's title, description, and path, and the boundary report that keeps a miss from reading as a topic nobody documented.
+- `setup-smoke`. Tested here rather than inherited, and the verdict runs below.
+
+`setup-smoke` sits beside `setup-verify` in one chain and reads the same `scripts` block through the same declared-scripts contract, which is what makes it the one of the six worth testing rather than inheriting. The two script sets are disjoint, and `setup-verify`'s `Not covered` list named the dev server, the preview server, and the browser suite as unowned before this folder existed. Judging differs as well, since a leaf script is judged by its exit code and a server has to be judged by whether it starts and stays up, which is the procedure question 2 asks for rather than a wrapper. Sharing a mechanism is not holding one job.
+
+### Two candidates the queued additions surfaced on their own
+
+The six queued additions are the other half of what this row asked for, and two of them carry an overlap their own intake item already found. Both were written up with a `Fix:` line proposing an existing skill and closed with a `You:` line taking a separate skill regardless, so the overlap is recorded rather than discovered here.
+
+- The standalone TDD skill against `claude-autoship`. Item 1's `Fix:` adds `canon gov test-order` as an autoship step between verify and review rather than a skill, on the ground that the rule already loads every session and the verb already reports. The answer builds both, so one subject runs across two mechanisms.
+- The recording skill against `canon-screencast`. Item 3's `Fix:` extends `canon-screencast` with a second mode compiling and running the draft it wrote, rather than adding a third skill to a two-step chain, and its `Suggested:` line adds that a second skill re-reads a draft it did not write. The answer builds the second skill and keeps the draft guard intact.
+
+The other four additions surface nothing. `readme-draft`, the video reader, the assets skill, and `role-report` each carry a `Fix:` line proposing a new folder, so no existing surface was passed over in reaching them.
+
+### Naming a candidate is not proposing a cut
+
+The two above are the trim candidates this read produces, and neither is a recommendation to drop anything. Both are additions nobody has built, so there is no folder to cut, and the operator answered both with a separate skill after reading the alternative. What the naming buys is a place to look once either lands. A TDD skill that turns out to restate the autoship step, or a recording skill that turns out to re-read a beat file it did not write, is a merge candidate measured against a body that shipped rather than against a proposal.
+
+Nothing here re-verdicts the 67 folders already carrying a row or a narrative mention. A trim candidate hiding in that set is not surfaced, and re-running that census is the cost `.canon/groundwork/31-skill-surface-shape/06-decision.md` and this row's own first finding both priced out.
 
 `wiki/claude/claude-skills.md` covers the Claude Code skill feature itself, and `docs/workflow/visual-design-workflow.md` is the worked example of per-workflow skill recommendations.
