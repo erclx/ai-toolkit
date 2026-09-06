@@ -8,4 +8,4 @@ description: Write temporary files to the scratch folder structure
 
 - Write temporary files to `.canon/tmp/<slug>/<file>.md` in the project root, a nested `<slug>/` folder with a kebab-slug tied to the topic, not a flat `<slug>-<file>.md`. The scratch-guard hook enforces the location.
 - Write to `.claude/.tmp/<slug>/` instead in a project that carries no `.canon/` root, which is one the record move has not reached. The hook accepts either, but the ignore file is the source: `.gitignore` and its manifest counterpart are what keep the fallback spelling out of `git status`, and the hook and this rule both defer to it. `canon migrate records` is what moves a project from this second spelling to the first. <!-- canon-keep-record-root -->
-- "The project root" above means the current worktree by default. `085-worktrees.md` names the write kinds that resolve at the main worktree root instead.
+- "The project root" above means the current worktree by default. `085-worktrees.md` states the same mixed default for `.canon/tmp/` and defers to each skill's own body for which write resolves at the main root instead.
