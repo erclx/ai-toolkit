@@ -20,14 +20,14 @@ The chrome shown here comes from `nav.ts`'s current render functions rather than
 ├────────────────────────────────────────────── ┤  │  The procedure│  below the bar, sits
 │                                                │  │  Worked example│ in the gutter right
 │  Scoping before solving                       │← h1  Your week    │  of the measure, one
-│  Lesson 1. What the forward-deployed design   │← lede  Where the…  │  link per h2
-│  round actually is, the procedure that        │  │  The advantage│
-│  survives it, and a ranked list of what to    │  │  Retrieval…   │
-│  learn in the week you have.                  │  └───────────────┘
+│  Lesson 1. What the forward-deployed design…  │← lede  Where the…  │  link per h2
+│                                               │  │  The advantage│
+│                                               │  │  Retrieval…   │
+│                                               │  └───────────────┘
 │                                                │
 │  Assumes: you have shipped real systems…      │← .assumes panel,
-│  Covers: the shape of the round, the scoping  │  one line per field,
-│  procedure, and the roadmap.                  │  small-caps label
+│  Covers: the shape of the round…              │  one line per field,
+│                                               │  small-caps label
 │  Sources: an FDE interview guide, cited at    │
 │  the foot…                                    │
 │                                                │
