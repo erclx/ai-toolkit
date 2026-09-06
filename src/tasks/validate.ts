@@ -894,7 +894,7 @@ function checkFolderClaims(
 function citedStem(cell: string): string | undefined {
   const target = linkTargets(cell)
     .map((t) => t.split('#')[0])
-    .find((t) => !t.includes('/'))
+    .find((t) => t && !t.includes('/'))
   return target ? stemOf(target) : undefined
 }
 

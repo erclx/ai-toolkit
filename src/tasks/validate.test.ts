@@ -1053,6 +1053,24 @@ describe('validateBoard', () => {
     expect(outcome.ok && kinds(outcome.findings)).toEqual(['blocker-settled'])
   })
 
+  it('should not stop at an in-page anchor link, whose target is empty rather than slashed', async () => {
+    await seedTask('v1.0-first', '- [x] shipped', 673)
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [see](#note) waits on [v1.0-first](v1.0-first.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT, trunkHolding(673))
+
+    expect(outcome.ok && kinds(outcome.findings)).toEqual(['blocker-settled'])
+  })
+
   it('should report a parked row whose cited file nothing under run now holds', async () => {
     await seedTask('v1.0-first')
     await seedTask('v2.0-second')
