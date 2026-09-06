@@ -9,6 +9,7 @@ import {
   type PlanCitations,
   planCitations,
 } from '@/tasks/archive'
+import { type LabelOutcome, nextLabel } from '@/tasks/label'
 import {
   type CloseOutcome,
   closeOutcomes,
@@ -84,6 +85,11 @@ interface OutcomeCommandOptions {
   readonly close?: readonly string[]
   readonly json?: boolean
   readonly plan?: string
+  readonly root?: string
+}
+
+interface NextLabelCommandOptions {
+  readonly json?: boolean
   readonly root?: string
 }
 
@@ -379,6 +385,40 @@ export function register(program: Command): void {
     .action(async (task: string | undefined, opts: OutcomeCommandOptions) => {
       process.exitCode = await runOutcome(task, opts)
     })
+
+  tasks
+    .command('next-label')
+    .description(
+      'Report the next unused phase label across the board and its archive',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Reads .canon/tasks/ and its archive/ sibling together, since the',
+        'archive holds labels the live board no longer shows and a scan',
+        'confined to the board hands out one already spent.',
+        '',
+        'Exit codes:',
+        '  0  the label is derived',
+        '  1  refused with no-board',
+        '',
+        'It reports and never writes. Two sessions calling it in the same',
+        'second can still take the same answer, since the board is',
+        'gitignored files rather than a store with a lock.',
+        '',
+        'Examples:',
+        '  canon tasks next-label',
+        '  canon tasks next-label --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: NextLabelCommandOptions) => {
+      process.exitCode = await runNextLabel(opts)
+    })
 }
 
 function collectPosition(value: string, previous: string[]): string[] {
@@ -644,6 +684,50 @@ function reportOutcome(
   for (const already of outcome.alreadyClosed) logInfo(`${already} (already)`)
 
   if (outcome.closed.length > 0) logInfo(relative(root, outcome.path))
+  outro()
+
+  return 0
+}
+
+async function runNextLabel(opts: NextLabelCommandOptions): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await nextLabel(root)
+
+  return reportNextLabel(outcome, opts.json ?? false, root)
+}
+
+function reportNextLabel(
+  outcome: LabelOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: outcome.reason, message: outcome.message })}\n`,
+      )
+      return 1
+    }
+
+    intro('canon tasks next-label')
+    logStep('Refused')
+    logError(outcome.message)
+    outro()
+    return 1
+  }
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ...outcome, root })}\n`)
+    return 0
+  }
+
+  intro('canon tasks next-label')
+  logStep(outcome.label)
+  logInfo(
+    outcome.highest
+      ? `next after ${outcome.highest}.`
+      : 'the board and its archive hold no label yet.',
+  )
   outro()
 
   return 0

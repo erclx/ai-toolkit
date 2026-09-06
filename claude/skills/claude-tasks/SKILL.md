@@ -27,11 +27,11 @@ A task with no origin is either lost context or work nobody decided to do. This 
 
 Accept work whose origin is the conversation itself only when the user says so explicitly, and record what it was in the intro paragraph instead of writing a link line to a file that does not exist.
 
-### Step 2: propose the phase label
+### Step 2: allocate the phase label
 
-List the existing filenames in `.canon/tasks/` and read `index.md` for what each holds. Propose the next label from what is already on the board, and say which neighbors it sits between.
+Run `canon tasks next-label --json` and take its `label` field. The verb reads the live board and its `archive/` sibling together, so the label it returns accounts for what the board alone no longer shows.
 
-Do not derive the label from a version file. `${CLAUDE_SKILL_DIR}/../../standards/versioning.md` permits free renumbering, so the board is the only surface that knows what a label currently means. Pad the phase to two digits in the filename, since index entries sort by filename alone and a bare `v9.0` sorts after `v15.0`. <!-- canon-allow-reference: illustrates the padding rule's own sort collision, not a citation of a real task -->
+Do not derive the label from a version file. `${CLAUDE_SKILL_DIR}/../../standards/versioning.md` permits free renumbering, so the verb's two folders are the only surface that knows what a label currently means.
 
 ### Step 3: write the file
 
@@ -138,7 +138,7 @@ Create:
 ```plaintext
 ✅ Created: .canon/tasks/vXX.Y-<slug>.md
 
-<label> sits between <neighbor> and <neighbor>.
+<label>, next after <highest>.
 <board or backlog, and why it landed there>.
 
 **Origin with no task:**
