@@ -35,7 +35,11 @@ Scope selection goes through an `--all` argument, because it describes what to r
 
 ### Triggers and stage selection
 
-CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request`, on pushes to `main`, on a weekly `schedule`, and on `workflow_dispatch`, so the backstop covers the merge as well as the pull request that preceded it. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Scoping still baselines on `origin/main`, so a branch is gated against what it will merge into rather than against its own tip.
+CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request`, on pushes to `main`, on `merge_group`, on a weekly `schedule`, and on `workflow_dispatch`. Scoping still baselines on `origin/main`, so a branch is gated against what it will merge into rather than against its own tip.
+
+That baseline answers a branch tested against a stale `main`, and it says nothing about two branches each green against the same `main` whose combination is red. `v89.7` is the incident that reached exactly that shape: `#1531` shipped a citation pattern and `#1532` independently wrote the citation it forbids, each green, and the merge of both left `main` red until `#1533` repaired it by hand. The ruleset governing merges (id `12882487`) requires `🛡️ Static Checks` and carries `strict_required_status_checks_policy: false` with no `merge_queue` rule, so a pull request's green run tests against its own branch tip rather than the state it will actually merge into, which is the mechanism the incident exploited. The `merge_group` trigger above is a prerequisite for closing that gap through a merge queue rather than a fix on its own: a workflow with no job listening for the event never completes a queue entry, so the trigger has to exist before a `merge_queue` ruleset rule can be added, and it stays inert without one.
+
+A `merge_queue` ruleset rule is the GitHub REST type this would append, and the API refuses it here: `PUT /repos/erclx/canon/rulesets/12882487` with a `merge_queue` entry returns `422` with an empty rule-specific message, and merge queue is restricted to organization-owned repositories, confirmed against `erclx/canon`'s owner type (`User`) and the free personal plan. This repository cannot adopt the fix `v89.7` proposed without first moving off personal ownership, so the gap this section names stays open, gated on that decision rather than on the trigger above. Measured against ruleset `12882487` on 2026-09-06.
 
 The `static-checks` job carries `if: github.event_name != 'schedule'` and a second job, `dependency-advisories`, carries the opposite: `if: github.event_name == 'schedule'`. Both jobs sit in the one workflow file because they share the same `on:` block, and the `if:` guard is what keeps a weekly cron firing from re-running the whole gate over an unchanged tree, or a pull request from running an advisory lookup nothing in the diff asked for. `dependency-advisories` runs `bun src/cli.ts deps audit` alone, no `fetch-depth: 0` and no shell-tools install, since nothing it reads needs history or shellcheck.
 
@@ -133,7 +137,7 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 ## Triggers
 
-- `verify.yml` on pull requests targeting `main`, on pushes to `main`, on a weekly `schedule` that runs the `dependency-advisories` job alone, and on `workflow_dispatch`
+- `verify.yml` on pull requests targeting `main`, on pushes to `main`, on `merge_group` for a queued entry, on a weekly `schedule` that runs the `dependency-advisories` job alone, and on `workflow_dispatch`
 - `phase-label-gate.yml` on a pull request targeting `main` opened, edited, reopened, or synchronized, and on `workflow_dispatch`
 - `release-please.yml` on pushes to `main`, and on `workflow_dispatch` with an optional `tag` that publishes that tag alone
 
