@@ -35,4 +35,5 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Tasks reference](tasks.md): Folder layout, filename convention, readiness groups, and content rules for .canon/tasks/
 - [Teach reference](teach.md): Workspace layout, ordinal naming, frontmatter, and the mission and learning-record formats for a learning workspace
 - [Versioning reference](versioning.md): Phase label vs semver discipline across tasks, PRs, reviews, issues, commits, and tags
+- [Wiki reference](wiki.md): Folder split, frontmatter, naming convention, and sourcing for a wiki reference page
 - [Wireframe reference](wireframes.md): Shape and content rules for .claude/wireframes/<surface>.md files
