@@ -10,7 +10,7 @@ Orchestrates the onboarding chain. Detects project type, resolves per-domain arg
 ## Scope
 
 - This skill and `canon init` run once on a fresh scaffold, never on an existing project. They do not guard against clobbering existing configs. When tempted to add guards, mode switches, or an existing-project branch, stop. Extend the per-domain `canon <domain> install` or `canon sync` paths instead.
-- The chain does not bootstrap the `index.md` system and does not provision Claude Code plugins. `setup-indexes` owns the first. `setup-plugins` owns the second, which installs once per machine rather than into a project, so no project-scoped chain can carry it. Name both in the report so a clean result does not read as onboarding complete.
+- The chain folds `setup-indexes` in as its own final step, once the project-scoped work is written. It still does not provision Claude Code plugins: `setup-plugins` owns that, installing once per machine rather than into a project, so no project-scoped chain can carry it. Name it in the report so a clean result does not read as onboarding complete.
 
 ## Declined states
 
@@ -75,7 +75,7 @@ A resolved name and a fallback read alike once written, so mark the fallback her
 
 ## Execute
 
-Run the chain in order, starting immediately after the preview. Each step's permission dialog is the confirmation gate. Do not pause for additional confirmation. Run from the target project's current directory.
+Run the chain in order, starting immediately after the preview. Each step's permission dialog is the confirmation gate, except step 5, which hands off to a skill that confirms its own folder list with the operator. Do not pause for additional confirmation elsewhere. Run from the target project's current directory.
 
 Step 1: `canon init` installs base tooling, claude seeds, governance rules, and wiki.
 
@@ -115,6 +115,8 @@ Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files
 
 Step 4: invoke `setup-verify`. Runs the `package.json` scripts and reports pass/fail.
 
+Step 5: hand off to `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. The skill confirms candidate folders with the operator rather than running unattended, which is the one step in this chain that pauses for a conversation. A fresh scaffold usually has no markdown-heavy folder yet, so finding no candidate is the ordinary outcome and reports as a pass rather than a skip needing an explanation.
+
 ## Report
 
 After the chain, report:
@@ -123,6 +125,9 @@ After the chain, report:
 - Tooling stack synced (or skipped). Name the layers pulled via the extends chain.
 - Any post-sync fixups applied (ESLint pin, filename renames)
 - `setup-verify` outcome
+- `setup-indexes` outcome (folders bootstrapped, or none found)
 - Any domains or scripts that failed
 - Any detection gaps surfaced during resolve
-- Onboarding steps left to the caller: `setup-indexes` for the `index.md` system, `setup-plugins` for Claude Code plugins
+- Onboarding steps left to the caller: `setup-plugins` for Claude Code plugins
+
+The chain stops at the project edge. `repo-metadata` and `git-commit` also ship, reaching a remote and the project's history respectively, and neither runs here.
