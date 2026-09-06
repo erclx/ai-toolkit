@@ -2,6 +2,7 @@ import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { type LabelAuditRefusal, auditLabels } from '@/labels/audit'
 import { resolveScanInput } from '@/labels/event'
+import { checkTitleFormat, type TitleFormatIssue } from '@/labels/format'
 import { MAP_REL } from '@/labels/map'
 import { scanPhaseLabels } from '@/labels/phase'
 import { scanTitleSpelling } from '@/labels/spelling'
@@ -20,6 +21,15 @@ interface ScanOptions {
   readonly bodyFile?: string
   readonly head?: string
   readonly json?: boolean
+}
+
+/** What a reader does about each way `checkTitleFormat` graded a title as broken. */
+const TITLE_FORMAT_MESSAGES: Record<TitleFormatIssue, string> = {
+  structure: 'does not match <type>(<scope>): <subject>',
+  'casing-type': 'the type is not lowercase',
+  'casing-scope': 'the scope is not lowercase',
+  'casing-subject': 'the first word of the subject is not lowercase',
+  length: 'is over 72 characters',
 }
 
 /** What a reader does about each way the audit produced no reading. */
@@ -142,11 +152,19 @@ export function register(program: Command): void {
         'a target project carries none, rather than reaching the network or',
         'forcing a new dependency.',
         '',
+        "It also grades the title alone against standards/pr.md's ## Title",
+        'section: the `<type>(<scope>): <subject>` structure, lowercase casing',
+        'for the type, the scope, and the first subject word, and a 72-',
+        'character length cap. A review carries no title of its own, so this',
+        'check is skipped there rather than graded against the forced empty',
+        'string.',
+        '',
         'Exit codes:',
-        '  0  none of the four found',
+        '  0  none of the five found',
         '  1  refused, with the reason on stderr or in the JSON record',
         '  2  the title or body carries a phase label, a board identifier, a',
-        '     session link, or a title word no dictionary holds',
+        '     session link, a title word no dictionary holds, or a title',
+        "     breaking standards/pr.md's format, casing, or length",
         '',
         'Examples:',
         '  canon labels scan --event "$GITHUB_EVENT_PATH"',
@@ -269,6 +287,12 @@ async function runScan(opts: ScanOptions): Promise<number> {
 
   const result = scanPhaseLabels(resolved)
   const spelling = await scanTitleSpelling(resolved.title, process.cwd())
+  // A review carries no title of its own, so `resolved.title` is forced
+  // empty and grading it would fail as `structure` for the wrong reason.
+  const titleFormat =
+    resolved.source === 'pull-request'
+      ? checkTitleFormat(resolved.title)
+      : undefined
 
   logStep(resolved.source === 'review' ? 'Review comment' : 'Pull request')
   logInfo(
@@ -339,6 +363,28 @@ async function runScan(opts: ScanOptions): Promise<number> {
     for (const word of unspelledWords) logWarn(word)
   }
 
+  const titleFormatIssues = titleFormat?.issues ?? []
+
+  logStep(
+    titleFormat === undefined
+      ? 'Title format not checked'
+      : titleFormat.conforms
+        ? 'Clean'
+        : 'Title format issue found',
+  )
+  if (titleFormat === undefined) {
+    logInfo('a review comment carries no title, so there is no format to grade')
+  } else if (titleFormat.conforms) {
+    logInfo(
+      'the title matches <type>(<scope>): <subject> and its casing and length rules',
+    )
+  } else {
+    logWarn(
+      `${plural(titleFormatIssues.length, 'title format issue')} against standards/pr.md's ## Title section.`,
+    )
+    for (const issue of titleFormatIssues) logWarn(TITLE_FORMAT_MESSAGES[issue])
+  }
+
   outro()
 
   if (emitJson) {
@@ -351,6 +397,7 @@ async function runScan(opts: ScanOptions): Promise<number> {
         sessionLinks: result.sessionLinks,
         unspelledWords,
         spellingChecked,
+        titleFormatIssues,
       })}\n`,
     )
   }
@@ -358,7 +405,8 @@ async function runScan(opts: ScanOptions): Promise<number> {
   return result.phaseLabels.length === 0 &&
     result.boardReferences.length === 0 &&
     result.sessionLinks.length === 0 &&
-    unspelledWords.length === 0
+    unspelledWords.length === 0 &&
+    titleFormatIssues.length === 0
     ? 0
     : 2
 }

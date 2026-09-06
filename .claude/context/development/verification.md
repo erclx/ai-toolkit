@@ -130,3 +130,7 @@ cspell has no way to recognize a base64 payload as non-prose, so a generated Typ
 ### A percent-encoded data URI inside prose needs an inline exemption, not a path one
 
 A path-level `ignorePaths` entry only exempts a whole file, which is too wide for a percent-encoded data URI sitting in one line of otherwise ordinary markdown prose, such as an inline SVG favicon literal in a shipped skill body. Each percent-encoded angle bracket glued to the tag name after it reads as one unknown word to cspell. `cspell.json`'s `ignoreRegExpList` closes this at the substring instead: a pattern matching from `data:image/svg+xml,` to the next `"` skips the encoded segment without exempting the prose around it.
+
+### A root-level test file needs its own vitest include entry
+
+`vitest.config.ts`'s `test.include` reads `src/**/*.test.ts` alone, so a test file sitting beside a root config it exercises, such as `commitlint.config.test.ts` beside `commitlint.config.js`, never runs under `bun run test` or the Tests stage inside `bun run check`. Neither reports a failure, since vitest finds no matching file to run there, so the gap surfaces only as a suite that passed without ever asserting anything for the new file. A plan calling for that shape of test needs `include` widened with a bare `*.test.ts` entry alongside the existing one.
