@@ -1,6 +1,6 @@
 ---
 title: Tasks
-description: Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board and backlog checks validate runs, and why the board root defaults to the main worktree
+description: Selecting a shipped task by stem or pull request, recording a number and closing an outcome, deriving the branch a dispatch and a worker both take, the refusal reasons, the board and backlog checks validate runs, and why the board root defaults to the main worktree
 ---
 
 # Tasks
@@ -102,6 +102,32 @@ The orchestrator dispatch runbook calls this before it checks the branch or the 
 
 ```bash
 canon tasks plan-answers dispatch-answer-gate --json | jq -r '.launchable'
+```
+
+## Plan branch
+
+`canon tasks plan-branch <plan>` derives the branch name from a plan file. It reports and never writes, and it names the plan the same two ways `canon tasks plan-answers` does, by path or by slug, against the same two bases.
+
+```bash
+canon tasks plan-branch dispatch-answer-gate
+canon tasks plan-branch .canon/plans/feature-dispatch-answer-gate.md --json
+```
+
+| Option          | Effect                                      |
+| --------------- | ------------------------------------------- |
+| `--json`        | Emit a machine-readable record on stdout    |
+| `--root <path>` | Board root, defaulting to the main worktree |
+
+The record carries `type`, `slug`, `branch`, `words`, and `conforms`. Exit codes: `0` derived and conforming, `1` refused with `no-plan`, `archived`, or `bad-input`, `2` derived with `conforms` false. Branch on `conforms` rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
+
+`slug` is the plan filename with its `feature-` prefix and its extension taken off, and `type` is the constant `feat`. Reading a type off the plan's prose was the alternative, and it is the half of the derivation that has already disagreed with itself: one dispatch checked `fix/path-form-hook` against a worker that took `feat/path-form-hook`, both sides reading one plan. What makes the constant safe is that a branch type is cosmetic. `git-stage` reads a commit's type off the staged diff and `git-pr` reads a title off the diff, so the semantics a release reads never pass through the branch name. What it costs is a worktree listing where every plan-derived branch reads `feat/`, and nothing renames it later.
+
+`conforms` reads both caps `standards/branch.md` states, being 4 words on the description and 50 characters on the whole branch. A false reading is a row for a person rather than a name to shorten here, since a rename parts the branch slug from the plan slug that `claude-worktree` tier 1 and `git-pr`'s plan lookup both read back.
+
+Both sides of a dispatch call it. The orchestrator's collision check derives its candidate here, and `claude-autoship` Step 0 derives the worktree it enters from the same plan, so the branch a gate clears and the branch a session takes are one string by construction. They were two readings of one paragraph until 2026-09-06, when four dispatches on one plan produced three different strings.
+
+```bash
+canon tasks plan-branch dispatch-answer-gate --json | jq -r '.branch'
 ```
 
 ## Plan link

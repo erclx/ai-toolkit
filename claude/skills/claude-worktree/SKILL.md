@@ -49,11 +49,17 @@ Tier 0 sits ahead of the inference because every tier below it answers from stat
 
 Validate the result: letters, digits, dots, underscores, dashes only, max 64 chars (`/` separators are also allowed). If the derived name violates the rule, sanitize by replacing invalid chars with `-` and truncating. Show the sanitized name in the preview before invoking.
 
-Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it, drawing the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`. A type the caller spelled in tier 0 wins outright and no reading overrides it. A name from a plan takes the type that plan's own work carries, read off its `## Summary` and `**Files to touch:**` lines. Every other case takes `feat`, which covers a name from a branch, a bare name from the user, and a plan whose lines settle nothing.
+Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it, drawing the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`. A type the caller spelled in tier 0 wins outright and no reading overrides it. A name that came from a plan, through tier 1 or tier 2, takes its type from `canon tasks plan-branch <plan> --json`, read off the record's `type` field. Every other case takes `feat`, which covers a name from a branch, a bare name from the user, and a plan the verb could not answer for.
 
-The caller's type wins because reading it off a plan is the half that has already disagreed in production. One dispatch checked `fix/path-form-hook` and the worker took `feat/path-form-hook`, both sides reading the same plan and grading it differently.
+The verb is the reading rather than this body, because a type read off a plan's `## Summary` and `**Files to touch:**` lines is a judgment, and it has disagreed with itself in production. One dispatch checked `fix/path-form-hook` and the worker took `feat/path-form-hook`, both sides reading the same plan and grading it differently. The verb answers `feat` for every plan, so two sides calling it cannot part.
 
-A wrong type is cheap. `git-branch` renames to conventional format later in the same chain and runs ahead of `git-pr`, so a `feat/` written over a fix is corrected before any pull request opens.
+The caller's type still wins over the verb's, because tier 0 is the one source that knows something no file states. The ordinary caller is `claude-autoship` Step 0, which ran the verb itself and is handing over the answer it got, so nothing is overridden in that case either.
+
+Branch on the record rather than on the exit code, which a shell function wrapping `canon` can flatten to zero. Take `feat` and say the verb did not answer where it refuses, where the record carries no `type` key, or where the installed binary carries no `plan-branch` subcommand.
+
+A wrong type is cheap because the branch type is cosmetic rather than because anything corrects it. `git-stage` reads a commit's type off the staged diff and `git-pr` reads a title off the diff too, so the semantics a release reads never pass through the branch name at all. Nothing downstream is wrong when a `feat/` sits over a fix, and a person scanning a worktree listing loses a signal.
+
+`git-branch` does not correct it, which three surfaces used to say it did. Its second guard reads `If branch name already follows conventions, stop`, and `${CLAUDE_SKILL_DIR}/../../standards/branch.md` makes the type vocabulary an axis without making the choice within that vocabulary one, so `feat/` over a fix conforms and the guard fires ahead of the Analysis line that would have re-derived the type.
 
 Then test both names the entry is about to claim. Neither read needs a worktree, and a stop after Step 4 leaves one built with the session sitting inside it, so both belong here rather than beside the rename:
 

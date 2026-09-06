@@ -48,6 +48,18 @@ export interface PlanAnswers {
 export type AnswersOutcome = PlanAnswers | AnswersRefused
 
 /**
+ * A reference that named a live plan, carrying the absolute path a reader opens
+ * and the root-relative spelling a record reports.
+ */
+export interface PlanResolved {
+  readonly ok: true
+  readonly path: string
+  readonly plan: string
+}
+
+export type ResolveOutcome = PlanResolved | AnswersRefused
+
+/**
  * The spellings a caller reaches a plan by, in the order they are tried. A bare
  * slug names the live folder outright, and a path is resolved against the
  * project root and against the board directory both.
@@ -146,19 +158,18 @@ function openQuestions(lines: readonly string[]): OpenQuestion[] {
 }
 
 /**
- * Answers whether a plan is launchable, which is whether it still waits on the
- * operator for a call only they can make. It reads the question block through
- * the same `readQuestions` the plan validator runs, so the gate and the
- * conformance check cannot drift into disagreeing about what a question is.
+ * Resolves a caller's reference to a live plan, refusing an empty reference, a
+ * reference that names no file, and one that lands in the plans archive.
  *
- * It reports and never writes. Holding the row, naming the slot, and reaching
- * the operator belong to the dispatcher, which is where the decision already
- * sits.
+ * Both `planAnswers` and `planBranch` answer the same reference, so the
+ * resolution and the three refusals sit here rather than in each of them. Two
+ * verbs reading one reference through two copies of this ladder is the defect
+ * the branch derivation was filed against, one layer down.
  */
-export async function planAnswers(
+export function resolvePlanReference(
   root: string,
   reference: string,
-): Promise<AnswersOutcome> {
+): ResolveOutcome {
   if (reference.trim().length === 0) {
     return refuse('bad-input', 'No plan named. Pass a plan path or its slug.')
   }
@@ -188,12 +199,32 @@ export async function planAnswers(
     )
   }
 
-  const sections = splitPlanSections(await readFile(path, 'utf8'))
+  return { ok: true, path, plan: relative(root, path) }
+}
+
+/**
+ * Answers whether a plan is launchable, which is whether it still waits on the
+ * operator for a call only they can make. It reads the question block through
+ * the same `readQuestions` the plan validator runs, so the gate and the
+ * conformance check cannot drift into disagreeing about what a question is.
+ *
+ * It reports and never writes. Holding the row, naming the slot, and reaching
+ * the operator belong to the dispatcher, which is where the decision already
+ * sits.
+ */
+export async function planAnswers(
+  root: string,
+  reference: string,
+): Promise<AnswersOutcome> {
+  const resolved = resolvePlanReference(root, reference)
+  if (!resolved.ok) return resolved
+
+  const sections = splitPlanSections(await readFile(resolved.path, 'utf8'))
   const open = openQuestions(sections.get('Questions') ?? [])
 
   return {
     ok: true,
-    plan: relative(root, path),
+    plan: resolved.plan,
     launchable: open.length === 0,
     open,
   }

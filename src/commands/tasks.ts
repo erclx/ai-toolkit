@@ -1,6 +1,7 @@
 import { relative } from 'node:path'
 import type { Command } from 'commander'
 import { type AnswersOutcome, planAnswers } from '@/tasks/answers'
+import { type BranchOutcome, planBranch } from '@/tasks/branch'
 import {
   type ArchiveOutcome,
   archiveTask,
@@ -58,6 +59,11 @@ interface CitationsCommandOptions {
 }
 
 interface AnswersCommandOptions {
+  readonly json?: boolean
+  readonly root?: string
+}
+
+interface BranchCommandOptions {
   readonly json?: boolean
   readonly root?: string
 }
@@ -228,6 +234,42 @@ export function register(program: Command): void {
     )
     .action(async (plan: string, opts: AnswersCommandOptions) => {
       process.exitCode = await runAnswers(plan, opts)
+    })
+
+  tasks
+    .command('plan-branch')
+    .description('Derive the branch name a dispatch and a worker both take')
+    .argument('<plan>', 'Plan path or its slug, as in dispatch-answer-gate')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the branch is derived and conforms to standards/branch.md',
+        '  1  refused as no-plan, archived, or bad-input',
+        '  2  derived, and conforms is false because the slug breaks a cap',
+        '',
+        'It reports type, slug, branch, words, and conforms. The type is fixed',
+        'at feat, since a derivation two sides grade differently is the defect',
+        'this closes, and git-branch renames a wrong type later in the chain.',
+        'Branch on conforms rather than on the exit code, which a shell',
+        'function wrapping canon can flatten to zero.',
+        '',
+        'The dispatch collision check and the worker worktree entry both call',
+        'it, so the branch a gate clears is the branch a session takes.',
+        '',
+        'Examples:',
+        '  canon tasks plan-branch dispatch-answer-gate',
+        '  canon tasks plan-branch .canon/plans/feature-dispatch-answer-gate.md',
+        '  canon tasks plan-branch dispatch-answer-gate --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (plan: string, opts: BranchCommandOptions) => {
+      process.exitCode = await runBranch(plan, opts)
     })
 
   tasks
@@ -726,6 +768,61 @@ function reportAnswers(
 
   logError(
     `${outcome.open.length} question${one ? '' : 's'} ${one ? 'waits' : 'wait'} on you, so the dispatch holds this row.`,
+  )
+  outro()
+
+  return EXIT_FINDINGS
+}
+
+async function runBranch(
+  plan: string,
+  opts: BranchCommandOptions,
+): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = planBranch(root, plan)
+
+  return reportBranch(outcome, opts.json ?? false, root)
+}
+
+function reportBranch(
+  outcome: BranchOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: outcome.reason, message: outcome.message })}\n`,
+      )
+      return 1
+    }
+
+    intro('canon tasks plan-branch')
+    logStep('Refused')
+    logError(outcome.message)
+    outro()
+    return 1
+  }
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ...outcome, root })}\n`)
+    return outcome.conforms ? 0 : EXIT_FINDINGS
+  }
+
+  intro('canon tasks plan-branch')
+  logStep(outcome.branch)
+
+  if (outcome.conforms) {
+    logInfo(`derived from ${outcome.plan}, ${outcome.words} words.`)
+    outro()
+    return 0
+  }
+
+  logWarn(
+    `derived from ${outcome.plan}, ${outcome.words} words and ${outcome.branch.length} characters.`,
+  )
+  logError(
+    'The slug breaks a cap in standards/branch.md, so hand the row to a person rather than renaming it.',
   )
   outro()
 

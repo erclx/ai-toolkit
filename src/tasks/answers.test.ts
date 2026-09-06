@@ -7,6 +7,7 @@ import {
   type AnswersOutcome,
   planAnswers,
   planCandidates,
+  resolvePlanReference,
 } from '@/tasks/answers'
 
 let ROOT: string
@@ -284,6 +285,38 @@ describe('planAnswers', () => {
     expect(outcome.ok === false && outcome.message).toContain(
       join('.canon', 'plans', 'feature-absent.md'),
     )
+  })
+})
+
+describe('resolvePlanReference', () => {
+  it('should carry both the absolute path and the root-relative spelling', async () => {
+    await writePlan('gate', [])
+
+    const outcome = resolvePlanReference(ROOT, 'gate')
+
+    expect(outcome.ok).toBe(true)
+    expect(outcome.ok === true && outcome.path).toBe(
+      join(ROOT, '.canon', 'plans', 'feature-gate.md'),
+    )
+    expect(outcome.ok === true && outcome.plan).toBe(
+      join('.canon', 'plans', 'feature-gate.md'),
+    )
+  })
+
+  it('should refuse a plan in the archive without reading its questions', async () => {
+    mkdirSync(join(ROOT, '.canon', 'plans', 'archive'), { recursive: true })
+    await writeFile(
+      join(ROOT, '.canon', 'plans', 'archive', 'feature-gate.md'),
+      planBody([]),
+      'utf8',
+    )
+
+    const outcome = resolvePlanReference(
+      ROOT,
+      '.canon/plans/archive/feature-gate.md',
+    )
+
+    expect(outcome.ok === false && outcome.reason).toBe('archived')
   })
 })
 
