@@ -30,12 +30,12 @@ const count =
       and inheriting the transform rendered it as "2 OF 24". */
   }
   <div
-    class="mb-0.5 flex items-baseline gap-2.5 text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-muted) uppercase"
+    class="mb-0.5 flex items-baseline gap-2.5 text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-muted)"
   >
     <span>{label}</span>
     {
       count && (
-        <span class="tracking-normal text-(--color-text-secondary) normal-case">
+        <span class="tracking-normal text-(--color-text-secondary)">
           {count}
         </span>
       )

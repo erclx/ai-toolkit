@@ -12,8 +12,39 @@
     box-sizing: border-box;
   }
 
+  :root {
+    /*
+     * The bar's inset and its own height, declared once so the page can reason
+     * about the space it occupies rather than each rule guessing.
+     *
+     * The inset is a step on the design system's spacing scale rather than a
+     * number chosen to look right.
+     */
+    --nav-inset: var(--space-lg);
+    /*
+     * A fallback only. `site-nav.astro` measures the bar it actually rendered
+     * and overwrites this, because a height written here is a guess that goes
+     * stale the moment the bar's padding or type changes. It was already wrong
+     * by 8px when first written.
+     */
+    --nav-height: 42px;
+  }
+
   html {
     color-scheme: dark;
+
+    /*
+     * Where an anchor lands, given a bar that floats over the page.
+     *
+     * Without this the landing worked by accident: every section carries 96px
+     * of top padding, which happened to exceed the bar, so a heading cleared
+     * it. A section with less padding would have landed underneath and nothing
+     * would have reported it. Derived from the bar rather than measured
+     * against the sections it must clear.
+     */
+    scroll-padding-top: calc(
+      var(--nav-inset) + var(--nav-height) + var(--space-md)
+    );
   }
 
   body {
@@ -61,19 +92,19 @@
 }
 
 /*
- * The action treatment, picked on 2026-09-07 over a glow, an inset edge, and
- * the flat fill that shipped before it.
+ * The action treatment, settled on 2026-09-07 across two rounds.
  *
- * A button carries a one-pixel top highlight and a drop shadow, so it sits
- * above the page rather than on it, lifts on hover and settles on press. The
- * flat fill it replaces gave a reader nothing that read as pressable until
- * they touched it.
+ * The first round asked what stops a button reading as flat and picked a lift:
+ * a one-pixel top highlight and a drop shadow, rising on hover and settling on
+ * press. That still stands and is what carries the affordance.
+ *
+ * The second round asked why the result read as imported from another design
+ * system, and the answer was that it had departed from the page three ways at
+ * once. The material now comes from the panels instead, which is the arm that
+ * won against five alternatives drawn beside the rows a button sits next to.
  *
  * The shadow is a variable rather than a literal because the same alpha reads
- * as depth on the dark ground and as grime on the light one. The glow arm was
- * the closest to what was asked for and lost on a cost this page had just
- * paid: its chips return to accent-tinted, which is the treatment that put 21
- * accent marks on the page and cost the accent its meaning.
+ * as depth on the dark ground and as grime on the light one.
  */
 @layer base {
   :root {
@@ -91,55 +122,59 @@
   }
 
   /*
-   * The label takes the proportional family, which is the change that mattered.
+   * A button is the panel vocabulary at button scale.
    *
-   * Eight variants were drawn against each other varying one property apiece,
-   * and the typeface was the one a reader notices: the same fill at the same
-   * size in mono reads as terminal output rather than as a control, because
-   * every other line of the page is mono too. Weight, size and fill each moved
-   * it a little; the family moved it a lot.
+   * An earlier cut answered "boring" by departing from the page three ways at
+   * once, with a proportional label, a gradient fill and an off-white label.
+   * It stopped being boring and started reading as an element from another
+   * design system, which is a worse failure: the page is monospace panels on
+   * surface and border tokens, and nothing else on it looks like that.
+   *
+   * So the material is borrowed rather than invented. Same border token, same
+   * panel radius, same mono family as every row it sits beside. The lift is
+   * what carries the affordance, and the accent carries the label rather than
+   * the fill, which keeps the accent's one structural use intact.
    */
   .btn {
     display: inline-block;
-    border: 1px solid transparent;
-    border-radius: var(--radius-action);
-    padding: 0.8rem 1.6rem;
-    font-family: var(--type-page-display-family);
-    font-size: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    padding: 0.75rem 1.4rem;
+    font-family: inherit;
+    font-size: var(--type-body-size);
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
-    transition:
-      transform 0.18s ease,
-      box-shadow 0.18s ease,
-      background-color 0.18s ease;
-  }
-
-  /*
-   * The fill runs light to dark rather than flat, and the label is off-white
-   * rather than the page ground. Near-black on accent measured legible and
-   * read as a disabled control; the light label is what makes it look live.
-   */
-  .btn-primary {
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--color-accent) 90%, #fff) 0%,
-      color-mix(in srgb, var(--color-accent) 78%, #000) 100%
-    );
-    border-color: color-mix(in srgb, var(--color-accent) 75%, #000);
-    color: #fff8f2;
-    box-shadow:
-      0 1px 0 var(--edge-top) inset,
-      var(--shadow-action);
-  }
-
-  .btn-secondary {
     background: var(--color-chrome);
-    border-color: var(--color-border);
     color: var(--color-text);
     box-shadow:
       0 1px 0 var(--edge-top) inset,
       var(--shadow-action);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease;
+  }
+
+  /* The primary leads on its border and its label rather than on a fill, which
+     is how the scoped chip already marks the row it sits on. */
+  .btn-primary {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .btn-secondary {
+    border-color: var(--color-border);
+    color: var(--color-text);
+  }
+
+  .btn-primary:hover {
+    border-color: var(--color-accent);
+    background: color-mix(
+      in srgb,
+      var(--color-accent) 10%,
+      var(--color-chrome)
+    );
   }
 
   .btn:hover {
