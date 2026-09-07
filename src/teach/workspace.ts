@@ -1,10 +1,12 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
+import { TEACH_STYLESHEET_COMPONENTS } from '@/design/components'
 import { buildDesignCss } from '@/design/css'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
 import { type BodyLine, bodyLines } from '@/markdown/scan'
 import { recordDir } from '@/record-root'
+import { TEACH_FONT_FACES } from '@/teach/fonts'
 
 export const TEACH_REFUSALS = [
   'no-teach',
@@ -1046,7 +1048,8 @@ export async function writeStylesheet(
     path,
     buildDesignCss(undefined, {
       banner: STYLESHEET_BANNER,
-      embedFonts: true,
+      embedFonts: TEACH_FONT_FACES,
+      components: TEACH_STYLESHEET_COMPONENTS,
     }),
   )
 

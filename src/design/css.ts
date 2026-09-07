@@ -1,4 +1,6 @@
+import type { Component } from '@/design/components'
 import { COMPONENTS } from '@/design/components'
+import type { FontFace } from '@/design/fonts'
 import { FONT_FACES } from '@/design/fonts'
 import type { DesignTokens } from '@/design/tokens'
 import { TOKENS } from '@/design/tokens'
@@ -113,39 +115,52 @@ ${pairs}
 }`
 }
 
-function componentBlock(): string {
-  return COMPONENTS.map(
-    (component) => `/* ${component.name}
+function componentBlock(components: readonly Component[]): string {
+  return components
+    .map(
+      (component) => `/* ${component.name}
    ${component.note} */
 
 ${component.rules}`,
-  ).join('\n\n')
+    )
+    .join('\n\n')
 }
 
 /**
- * `@font-face` rules carrying the mono stack's primary family as base64, so a
- * stylesheet renders in the same typeface everywhere regardless of what the
- * reader's machine has installed. Only the teach stylesheet opts in today.
+ * `@font-face` rules carrying a font list as base64, so a stylesheet renders
+ * in the same typeface everywhere regardless of what the reader's machine has
+ * installed. Defaults to the mono stack's primary family; teach passes its own
+ * three faces instead of widening this default for every consumer.
  */
-function fontFaceBlock(): string {
-  return FONT_FACES.map(
-    (face) => `@font-face {
+function fontFaceBlock(faces: readonly FontFace[]): string {
+  return faces
+    .map(
+      (face) => `@font-face {
   font-family: '${face.family}';
   font-weight: ${face.weight};
   font-style: normal;
   font-display: swap;
   src: url(data:font/woff2;base64,${face.base64}) format('woff2');
 }`,
-  ).join('\n\n')
+    )
+    .join('\n\n')
 }
 
 export interface CssOptions {
   /** Prepended as a comment, naming what wrote the file and from where. */
   readonly banner?: string
-  /** Component rules ride along by default; a token-only consumer opts out. */
-  readonly components?: boolean
-  /** Off by default. Embeds the mono stack's faces as base64 `@font-face` rules. */
-  readonly embedFonts?: boolean
+  /**
+   * Component rules ride along by default; a token-only consumer opts out
+   * with `false`. Pass an explicit list, such as teach's own chrome set, to
+   * emit those instead of the generic default.
+   */
+  readonly components?: boolean | readonly Component[]
+  /**
+   * Off by default. `true` embeds the mono stack's faces as base64
+   * `@font-face` rules. Pass an explicit list, such as teach's three faces,
+   * to embed those instead.
+   */
+  readonly embedFonts?: boolean | readonly FontFace[]
 }
 
 export function buildDesignCss(
@@ -155,10 +170,22 @@ export function buildDesignCss(
   const banner =
     options.banner === undefined ? '' : `/* ${options.banner} */\n\n`
   const root = [':root {', ...tokenProperties(tokens), '}'].join('\n')
-  const parts = options.embedFonts ? [fontFaceBlock(), root] : [root]
+  const faces =
+    options.embedFonts === true
+      ? FONT_FACES
+      : Array.isArray(options.embedFonts)
+        ? options.embedFonts
+        : undefined
+  const parts = faces ? [fontFaceBlock(faces), root] : [root]
   parts.push(lightBlock(tokens))
 
-  if (options.components !== false) parts.push(componentBlock())
+  const components =
+    options.components === false
+      ? undefined
+      : Array.isArray(options.components)
+        ? options.components
+        : COMPONENTS
+  if (components) parts.push(componentBlock(components))
 
   return `${banner}${parts.join('\n\n')}\n`
 }
