@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -109,6 +109,84 @@ describe('checkout-mismatch warning at each directly wired verb', () => {
 
   it('should warn on canon sandbox check', () => {
     expectWarns(['sandbox', 'check', 'claude:docs'])
+  })
+
+  /**
+   * `runGate` always spawns `STAGES` with `cwd: PROJECT_ROOT`, never the
+   * caller's `cwd`, so the decoy here never scopes what the stages read: a
+   * spawned `canon gate run --json` run to completion runs the real `tests`
+   * stage against this checkout, which runs `bun run test` and re-enters this
+   * very file, recursing without bound. `--json` defers the mismatch warning
+   * until after every stage finishes, so this drops it for the bare form,
+   * whose warning logs ahead of `runStages`, and kills the child the instant
+   * the warning reaches stderr rather than waiting on exit.
+   */
+  it('should warn on canon gate run before the stage sequence starts', async () => {
+    const child = spawn('bun', [CLI, 'gate', 'run'], {
+      cwd: decoy,
+      env: buildEnv(),
+    })
+
+    const sawMismatch = await new Promise<boolean>((resolveWait) => {
+      let stderr = ''
+      let settled = false
+      const finish = (result: boolean): void => {
+        if (settled) return
+        settled = true
+        clearTimeout(timer)
+        child.kill('SIGKILL')
+        resolveWait(result)
+      }
+      const timer = setTimeout(() => finish(false), 15000)
+      child.stderr.on('data', (chunk: Buffer) => {
+        stderr += chunk.toString()
+        if (stderr.includes(decoy)) finish(true)
+      })
+      child.on('exit', () => finish(stderr.includes(decoy)))
+      child.on('error', () => finish(false))
+    })
+
+    expect(sawMismatch).toBe(true)
+  })
+})
+
+/**
+ * `feedback.ts` reads `.claude/`'s presence off `PROJECT_ROOT`, which resolves
+ * to the checkout this test spawns `bun` out of rather than to `cwd`, so the
+ * decoy cannot make this verb refuse the way the other cases' `plain` root
+ * does elsewhere in this file. The write lands in this checkout's own
+ * `.canon/review/feedback/`, which the test deletes.
+ */
+describe('checkout-mismatch warning on canon feedback', () => {
+  it('should warn on the local-scratch write path', () => {
+    const body = [
+      '## Toolkit feedback',
+      '',
+      '### Surface',
+      '',
+      'checkout-mismatch regression test',
+      '',
+      '### Observed',
+      '',
+      'placeholder',
+      '',
+      '### Proposed fix',
+      '',
+      'placeholder',
+      '',
+    ].join('\n')
+
+    const result = spawnSync('bun', [CLI, 'feedback'], {
+      cwd: decoy,
+      encoding: 'utf8',
+      env: buildEnv(),
+      input: body,
+    })
+
+    expect(result.stderr).toContain(decoy)
+
+    const filePath = result.stdout.trim()
+    rmSync(filePath, { force: true })
   })
 })
 
