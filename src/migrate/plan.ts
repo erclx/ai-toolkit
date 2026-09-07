@@ -1,6 +1,7 @@
 import {
   isExcludedPath,
   renamePath,
+  type RenameRules,
   renameText,
   scanText,
 } from '@/migrate/rename'
@@ -59,20 +60,27 @@ export function isToolkitOwned(path: string): boolean {
  * reported or applied. A file whose content and path both stay put is dropped
  * rather than carried as a no-op entry, which keeps the reported count equal
  * to the number of files the sweep actually changes.
+ *
+ * The rules arrive as an argument rather than being read from a module, since
+ * this planner serves every rename the engine compiles and the four calls
+ * below have no other way to say which one they mean.
  */
-export function planRename(sources: readonly RenameSource[]): RenamePlan {
+export function planRename(
+  sources: readonly RenameSource[],
+  rules: RenameRules,
+): RenamePlan {
   const entries: RenameEntry[] = []
   const excluded: string[] = []
 
   for (const source of sources) {
-    if (isExcludedPath(source.path)) {
+    if (isExcludedPath(source.path, rules)) {
       excluded.push(source.path)
       continue
     }
 
-    const movesTo = renamePath(source.path)
-    const rewritten = renameText(source.text)
-    const counts = scanText(source.text)
+    const movesTo = renamePath(source.path, rules)
+    const rewritten = renameText(source.text, rules)
+    const counts = scanText(source.text, rules)
     const moved = movesTo !== source.path
     const changed = rewritten !== source.text
 
