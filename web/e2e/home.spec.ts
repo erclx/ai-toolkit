@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { loadsWhen, readRuleGroups } from '../src/lib/catalogs'
 import { readCatalogCounts } from '../src/lib/counts'
 // The spec runs outside vite, which resolves a bare JSON import for the
 // component but not for this file, so the attribute is required here and not
@@ -11,17 +12,77 @@ test('renders the eight sections', async ({ page }) => {
   await expect(page.locator('section')).toHaveCount(8)
 })
 
-test('every section image resolves', async ({ page }) => {
+test('no section falls back to a committed raster', async ({ page }) => {
   await page.goto('/')
-  const images = page.locator('img')
-  const count = await images.count()
+  // Every catalog the page shows is rendered from a build-time read now. A
+  // raster reappearing means a section regressed to a picture of its content,
+  // which is soft, carries no links, and cannot reflow.
+  await expect(page.locator('main img')).toHaveCount(0)
+})
+
+test('the rules panel names every domain with its true count', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const groups = page.locator('#catalog .panel-group')
+  // The group structure is complete and the sampling sits one level down. A
+  // flat sample of ten rules renders five of the eight domains and tells the
+  // reader nothing about the three it dropped.
+  const count = await groups.count()
+  expect(count).toBeGreaterThanOrEqual(8)
+  await expect(groups.first()).toContainText(/of \d+/)
+})
+
+test('a path-scoped rule is marked and an always-on rule is not', async ({
+  page,
+}) => {
+  // Reads the same catalog the page samples from, rather than pinning the
+  // assertion to today's first glob. A rule's `paths:` list edited on another
+  // branch should not fail this one.
+  const { groups } = readRuleGroups()
+  const scoped = groups
+    .flatMap((group) => group.sample)
+    .find((rule) => loadsWhen(rule).scoped)
+  if (!scoped) throw new Error('no path-scoped rule in the sampled catalog')
+
+  await page.goto('/')
+  const catalog = page.locator('#catalog')
+  await expect(catalog.getByText('every session').first()).toBeVisible()
+  await expect(catalog.getByText(loadsWhen(scoped).label).first()).toBeVisible()
+})
+
+test('every nav link resolves to a section on the page', async ({ page }) => {
+  await page.goto('/')
+  const links = page.locator('nav[aria-label="Sections"] a')
+  const count = await links.count()
   expect(count).toBeGreaterThan(0)
   for (let i = 0; i < count; i++) {
-    const src = await images.nth(i).getAttribute('src')
-    expect(src).toBeTruthy()
-    const response = await page.request.get(src as string)
-    expect(response.ok()).toBe(true)
+    const href = await links.nth(i).getAttribute('href')
+    expect(href).toMatch(/^#/)
+    await expect(page.locator(href as string)).toHaveCount(1)
   }
+})
+
+test('the toggle flips the theme and records the choice', async ({ page }) => {
+  await page.goto('/')
+  const root = page.locator('html')
+  const before = await root.getAttribute('data-theme')
+
+  // The bar is hidden over the hero, so the toggle is reached by scrolling
+  // past it, which is the only way a reader reaches it too.
+  await page.locator('#install').scrollIntoViewIfNeeded()
+  await expect(page.locator('.site-nav')).toHaveAttribute(
+    'data-at-top',
+    'false',
+  )
+
+  await page.locator('.theme-toggle').click()
+
+  const after = await root.getAttribute('data-theme')
+  expect(after).not.toBe(before)
+  expect(await page.evaluate(() => localStorage.getItem('canon-theme'))).toBe(
+    after,
+  )
 })
 
 test('the rule arrives once its stage scrolls into view', async ({ page }) => {
@@ -174,8 +235,13 @@ test('catalog counts match a live canon gov counts read', async ({ page }) => {
   const live = readCatalogCounts()
   await page.goto('/')
 
+  // Scoped to the counts panel by its own hook. The section carries a second
+  // definition list for the domain summaries, and a bare `dl > div` matched
+  // both, with a catalog name appearing inside the prose of the other.
   for (const [name, value] of Object.entries(live)) {
-    const card = page.locator('dl > div').filter({ hasText: name })
+    const card = page
+      .locator('[data-catalog-counts] > div')
+      .filter({ hasText: name })
     await expect(card.locator('dd')).toHaveText(String(value))
   }
 })

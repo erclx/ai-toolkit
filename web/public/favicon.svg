@@ -1,1 +1,8 @@
-../../assets/brand/mark.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80">
+  <style>
+    path, rect { fill: #a4471c; }
+    @media (prefers-color-scheme: dark) { path, rect { fill: #e0724b; } }
+  </style>
+  <path d="M34,20 L15,28 L15,72 L34,80 Z M66,20 L85,28 L85,72 L66,80 Z" />
+  <rect x="44" y="15" width="12" height="70" rx="2" />
+</svg>

@@ -220,10 +220,11 @@ export const STAGES: readonly Stage[] = [
     success: 'Tooling paths clean',
   },
   {
-    // `.claude/DESIGN.md` and the base stylesheet are both written from
-    // `src/design/tokens.ts` and neither is edited by hand. Two artifacts from
-    // one source is the cost of the token move, and a render step that has to
-    // run is only safe while something fails when it did not, which is this.
+    // `.claude/DESIGN.md`, the base stylesheet, the web stylesheet, and the
+    // tab icon are all written from `src/design/tokens.ts` and none is edited
+    // by hand. Four artifacts from one source is the cost of the token move,
+    // and a render step that has to run is only safe while something fails
+    // when it did not, which is this.
     id: 'design',
     label: 'Design',
     checks: [
@@ -243,6 +244,28 @@ export const STAGES: readonly Stage[] = [
         pathspec: 'src/design/base.css',
         failure:
           'The base stylesheet drifted from the token source. Run bun run check and commit src/design/base.css.',
+      },
+      {
+        kind: 'command',
+        argv: ['bun', 'run', 'web:tokens'],
+        failure: 'Web token regen failed',
+      },
+      {
+        kind: 'drift',
+        pathspec: 'web/src/styles/tokens.css',
+        failure:
+          'The web stylesheet drifted from the token source. Run bun run check and commit web/src/styles/tokens.css.',
+      },
+      {
+        kind: 'command',
+        argv: ['bun', 'run', 'web:favicon'],
+        failure: 'Web favicon regen failed',
+      },
+      {
+        kind: 'drift',
+        pathspec: 'web/public/favicon.svg',
+        failure:
+          'The tab icon drifted from the token source. Run bun run check and commit web/public/favicon.svg.',
       },
     ],
     success: 'Design source clean',

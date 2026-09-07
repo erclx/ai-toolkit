@@ -1,34 +1,90 @@
 ---
-import { readCatalogCounts } from '../lib/counts'
 import { catalog } from '../content/copy'
+import { readCatalogCounts } from '../lib/counts'
+import { loadsWhen, readRuleGroups } from '../lib/catalogs'
+import Panel from './panel.astro'
+import PanelGroup from './panel-group.astro'
+import PanelRow from './panel-row.astro'
 
+/**
+ * The counts, then the rules those counts are over.
+ *
+ * The rules half is the treatment picked on 2026-09-07 across two rounds. Its
+ * point is that the group structure is complete at every domain while the rows
+ * inside each are the sample: a flat sample of ten rules renders five of the
+ * eight domains and gives the reader no way to know the other three exist, so
+ * the corpus reads smaller than it is.
+ *
+ * This replaced `hero.png`, which carried the same catalogs as a raster.
+ */
 const counts = readCatalogCounts()
+const { groups, total, domains } = readRuleGroups()
 ---
 
-<section class="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24">
-  <h2 class="text-[length:var(--type-heading-size)]">{catalog.heading}</h2>
-  <img
-    src={catalog.image.src}
-    alt={catalog.image.alt}
-    class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
-    loading="lazy"
-  />
-  <p class="text-(--color-text-secondary)">{catalog.countNote}</p>
-  <dl class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+<section
+  data-reveal
+  id="catalog"
+  class="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24"
+>
+  <h2>{catalog.heading}</h2>
+
+  <Panel foot={catalog.countNote}>
+    <dl data-catalog-counts class="m-0 grid grid-cols-2 gap-4 sm:grid-cols-3">
+      {
+        (Object.entries(counts) as [string, number][]).map(([name, value]) => (
+          <div>
+            <dd class="m-0 text-[length:var(--type-display-size)] leading-[var(--type-display-lh)] font-bold text-(--color-text)">
+              {value}
+            </dd>
+            <dt class="text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary)">
+              {name}
+            </dt>
+          </div>
+        ))
+      }
+    </dl>
+  </Panel>
+
+  <p>{catalog.rulesLede}</p>
+
+  <Panel columns foot={catalog.rulesProvenance(total, domains)}>
     {
-      (Object.entries(counts) as [string, number][]).map(([name, value]) => (
-        <div class="rounded-[var(--radius-panel)] bg-(--color-surface) p-4">
-          <dt class="text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary) uppercase">
-            {name}
-          </dt>
-          <dd class="m-0 text-[length:var(--type-heading-size)] font-semibold text-(--color-text)">
-            {value}
-          </dd>
-        </div>
+      groups.map((group) => (
+        <PanelGroup
+          label={group.domain}
+          total={group.total}
+          shown={group.sample.length}
+        >
+          {group.sample.map((rule) => {
+            const loads = loadsWhen(rule)
+            return (
+              <PanelRow
+                name={rule.name}
+                value={loads.label}
+                scoped={loads.scoped}
+              />
+            )
+          })}
+        </PanelGroup>
       ))
     }
+  </Panel>
+
+  {
+    /* Six domains, each a term and what it is. A flat run of paragraphs read as
+      a wall, so the name is split out and carries the weight. */
+  }
+  <dl class="m-0 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+    {
+      catalog.items.map((item) => {
+        const [term, ...rest] = item.split(': ')
+        return (
+          <div>
+            <dt class="font-semibold text-(--color-text)">{term}</dt>
+            <dd class="m-0 text-(--color-text-secondary)">{rest.join(': ')}</dd>
+          </div>
+        )
+      })
+    }
   </dl>
-  <ul class="flex flex-col gap-3">
-    {catalog.items.map((item) => <li>{item}</li>)}
-  </ul>
 </section>

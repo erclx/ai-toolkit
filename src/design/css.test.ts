@@ -70,18 +70,25 @@ describe('buildDesignCss', () => {
     )
   })
 
-  it('names the roles with no light counterpart rather than inventing one', () => {
+  it('emits no gap notice once every role carries a light counterpart', () => {
     const css = buildDesignCss()
 
-    expect(unmappedOnLight()).toEqual([
-      'chrome',
-      'text-body',
-      'text-secondary',
-      'success',
-    ])
+    expect(unmappedOnLight()).toEqual([])
+    expect(css).not.toContain('no light counterpart')
+  })
+
+  it('maps every role the light theme block stands in for', () => {
+    const css = buildDesignCss()
+
+    // The four that closed the gap. Each one carries text on a light ground,
+    // or is the surface step behind it, so a page reading any of them used to
+    // resolve a dark value against a light canvas.
+    expect(css).toContain('--color-chrome: var(--color-light-chrome);')
+    expect(css).toContain('--color-text-body: var(--color-light-text-body);')
     expect(css).toContain(
-      'no light counterpart for chrome, text-body, text-secondary, success',
+      '--color-text-secondary: var(--color-light-text-secondary);',
     )
+    expect(css).toContain('--color-success: var(--color-light-success);')
   })
 
   it('carries every component rule by default', () => {

@@ -47,9 +47,13 @@
         --color-success: #61c454;
         --color-light-background: #faf7f2;
         --color-light-surface: #f4efe6;
+        --color-light-chrome: #ede4d6;
         --color-light-text: #1a1815;
+        --color-light-text-body: #3d3630;
+        --color-light-text-secondary: #5c544b;
         --color-light-muted: #726b62;
         --color-light-accent: #a4471c;
+        --color-light-success: #2d6b22;
         --color-light-border: #e4dcd0;
         --space-xs: 6px;
         --space-sm: 12px;
@@ -84,15 +88,16 @@
         --radius-marker: 999px;
       }
 
-      /* The record declares no light counterpart for chrome, text-body, text-secondary, success, so
-         a light-ground surface using one is reading a dark value. Declare the
-         counterpart in src/design/tokens.ts rather than overriding it here. */
       [data-theme='light'] {
         --color-background: var(--color-light-background);
         --color-surface: var(--color-light-surface);
+        --color-chrome: var(--color-light-chrome);
         --color-text: var(--color-light-text);
+        --color-text-body: var(--color-light-text-body);
+        --color-text-secondary: var(--color-light-text-secondary);
         --color-muted: var(--color-light-muted);
         --color-accent: var(--color-light-accent);
+        --color-success: var(--color-light-success);
         --color-border: var(--color-light-border);
       }
 

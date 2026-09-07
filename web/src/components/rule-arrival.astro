@@ -2,13 +2,17 @@
 import { ruleArrival } from '../content/copy'
 ---
 
-<section class="rule-arrival mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24">
-  <h2 class="text-[length:var(--type-heading-size)]">{ruleArrival.heading}</h2>
+<section
+  data-reveal
+  id="rules"
+  class="rule-arrival mx-auto flex max-w-4xl flex-col gap-6 px-6 py-24"
+>
+  <h2>{ruleArrival.heading}</h2>
   <p>{ruleArrival.body}</p>
   <div class="rule-arrival-stage grid gap-4 sm:grid-cols-2">
     <div class="rounded-[var(--radius-panel)] bg-(--color-surface) p-4">
       <p
-        class="text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary) uppercase"
+        class="text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary)"
       >
         Editing
       </p>
@@ -19,7 +23,7 @@ import { ruleArrival } from '../content/copy'
       class="rule-card rounded-[var(--radius-panel)] border border-(--color-accent) bg-(--color-surface) p-4 opacity-0"
     >
       <p
-        class="text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary) uppercase"
+        class="text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-text-secondary)"
       >
         {ruleArrival.rule.glob}
       </p>

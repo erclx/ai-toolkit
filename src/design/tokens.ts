@@ -181,9 +181,26 @@ export const TOKENS: DesignTokens = {
       value: '#f4efe6',
     },
     {
+      role: 'light-chrome',
+      intent: 'the window titlebar, one step above the canvas',
+      value: '#ede4d6',
+    },
+    {
       role: 'light-text',
       intent: 'primary text on a light ground',
       value: '#1a1815',
+      grounds: LIGHT_GROUNDS,
+    },
+    {
+      role: 'light-text-body',
+      intent: 'default body copy on a light ground',
+      value: '#3d3630',
+      grounds: LIGHT_GROUNDS,
+    },
+    {
+      role: 'light-text-secondary',
+      intent: 'labels, captions, supporting copy on a light ground',
+      value: '#5c544b',
       grounds: LIGHT_GROUNDS,
     },
     {
@@ -197,6 +214,12 @@ export const TOKENS: DesignTokens = {
       intent: 'links and primary action on light',
       value: '#a4471c',
       grounds: LIGHT_GROUNDS,
+    },
+    {
+      role: 'light-success',
+      intent: 'confirmations, rendered and in the terminal, on light',
+      value: '#2d6b22',
+      grounds: ['light-background'],
     },
     {
       role: 'light-border',

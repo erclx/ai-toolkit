@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css'
+import { footer, site } from '../content/copy'
+import SiteNav from '../components/site-nav.astro'
 
 interface Props {
   title: string
@@ -7,6 +9,13 @@ interface Props {
 }
 
 const { title, description } = Astro.props
+
+/**
+ * The card image is the hero frame, which regenerates from the catalogs like
+ * every other image the page cites. A card needs an absolute URL, so it is
+ * resolved against the deployed origin rather than written as a path.
+ */
+const cardImage = new URL('/assets/hero.png', site.origin).href
 ---
 
 <!doctype html>
@@ -17,8 +26,100 @@ const { title, description } = Astro.props
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={site.origin} />
+    <meta property="og:image" content={cardImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={cardImage} />
+
+    <script is:inline>
+      /**
+       * Runs before first paint so a stored or preferred theme never flashes
+       * the other ground. The stylesheet keys its light block on the
+       * attribute, and `color-scheme` is set alongside it so form controls
+       * and scrollbars follow.
+       */
+      const stored = (() => {
+        try {
+          return localStorage.getItem('canon-theme')
+        } catch {
+          return null
+        }
+      })()
+      const preferred = window.matchMedia('(prefers-color-scheme: light)')
+        .matches
+        ? 'light'
+        : 'dark'
+      const theme = stored === 'light' || stored === 'dark' ? stored : preferred
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.style.colorScheme = theme
+    </script>
   </head>
   <body>
-    <slot />
+    <SiteNav />
+    <main>
+      <slot />
+    </main>
+
+    <script>
+      /**
+       * One observer drives every entrance on the page, which is what makes the
+       * treatment uniform by construction rather than by convention. A section
+       * opting in carries `data-reveal`; children staggering inside one carry it
+       * too, with `--reveal-index` deciding the order.
+       *
+       * It disconnects per element after firing, so a section never re-animates
+       * on the way back up, and it never runs at all when the reader prefers
+       * reduced motion: the stylesheet already lands the end state there, so
+       * observing would only risk removing it.
+       */
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+      if (!reduced.matches) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue
+              entry.target.classList.add('is-revealed')
+              observer.unobserve(entry.target)
+            }
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+        )
+        for (const node of document.querySelectorAll('[data-reveal]')) {
+          observer.observe(node)
+        }
+      }
+    </script>
+    <footer
+      class="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-12 text-[length:var(--type-label-size)] text-(--color-text-secondary) sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="m-0 max-w-md">{footer.note}</p>
+      {
+        /* Each label stays on one line. In a row with the note taking its
+          natural width, the links were compressed to 73px and "MIT license"
+          broke across two lines mid-phrase. */
+      }
+      <nav
+        aria-label="Elsewhere"
+        class="flex shrink-0 flex-wrap gap-x-6 gap-y-1"
+      >
+        {
+          footer.links.map((link) => (
+            <a
+              href={link.href}
+              class="whitespace-nowrap text-(--color-text-secondary)"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+    </footer>
   </body>
 </html>
