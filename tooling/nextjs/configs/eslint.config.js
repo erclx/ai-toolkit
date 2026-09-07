@@ -59,15 +59,16 @@ export default defineConfig([
       ],
       'check-file/folder-naming-convention': [
         'error',
-        { 'src/**/!(__tests__)': 'KEBAB_CASE' },
+        { 'src/**/!(__tests__)/': 'KEBAB_CASE' },
       ],
     },
   },
   {
-    // App Router route and layout files export non-component values (metadata, route handlers), which this rule flags as violations.
+    // App Router route and layout files export non-component values (metadata, route handlers) and use bracket, paren, and at-sign folder syntax (dynamic segments, route groups, parallel slots), which these rules flag as violations.
     files: ['src/app/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
+      'check-file/folder-naming-convention': 'off',
     },
   },
   {
