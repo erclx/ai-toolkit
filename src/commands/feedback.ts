@@ -7,11 +7,11 @@ import {
   missingField,
   missingFieldMessage,
 } from '@/commands/feedback-format'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { creationRel } from '@/record-root'
 import { createGithubIssue } from '@/github'
 import { issueFailureMessage } from '@/github-format'
-import { frameError, frameSuccess, palette } from '@/ui'
+import { frameError, frameSuccess, logWarn, palette } from '@/ui'
 
 function readStdin(): Promise<string> {
   return new Promise((resolveStream, rejectStream) => {
@@ -45,7 +45,7 @@ function isToolkitSource(): boolean {
  * hand, so each writes under its own name and the enclosing folder keeps the
  * single ignore entry and the single backed-folder entry it already had.
  */
-function writeLocal(body: string): string {
+function writeLocal(body: string, mismatch: string | undefined): string {
   // Resolved against the same root the write joins onto, so a checkout that has
   // not migrated its records writes this beside the ones already there rather
   // than opening a second root nothing reads.
@@ -55,7 +55,16 @@ function writeLocal(body: string): string {
   const filename = `feedback-${deriveSlug(body)}-${timestamp()}.md`
   const filePath = join(reviewDir, filename)
   writeFileSync(filePath, `${body}\n`, 'utf8')
-  frameSuccess('canon feedback', join(relativeDir, filename))
+
+  // Manual frame rather than `frameSuccess`, since the mismatch warning is a
+  // frame-interior line landing between the opener and the command title,
+  // matching the convention `#1587` set at its other six sites.
+  const { GREEN, GREY, NC, WHITE } = palette(process.stderr)
+  process.stderr.write(`${GREY}┌${NC}\n`)
+  if (mismatch !== undefined) logWarn(mismatch)
+  process.stderr.write(
+    `${GREY}│${NC} ${WHITE}canon feedback${NC}\n${GREY}│${NC}\n${GREY}│${NC} ${GREEN}✓${NC} ${join(relativeDir, filename)}\n${GREY}└${NC}\n`,
+  )
   return filePath
 }
 
@@ -124,7 +133,8 @@ export function register(program: Command): void {
         return
       }
 
-      const filePath = writeLocal(body)
+      const mismatch = checkoutMismatchWarning(process.cwd())
+      const filePath = writeLocal(body, mismatch)
       process.stdout.write(`${filePath}\n`)
     })
 }

@@ -12,7 +12,7 @@ import {
   summarize,
 } from '@/gate/sequencer'
 import { STAGES } from '@/gate/stages'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import {
   intro,
   logError,
@@ -89,6 +89,7 @@ export function register(program: Command): void {
 
 async function runGate(opts: RunCommandOptions): Promise<number> {
   const root = PROJECT_ROOT
+  const mismatch = checkoutMismatchWarning(process.cwd())
   const emitJson = opts.json ?? false
   const nested = opts.nested ?? false
   const write = opts.write ?? true
@@ -102,6 +103,7 @@ async function runGate(opts: RunCommandOptions): Promise<number> {
     ? { scoped: false, files: [] }
     : await collectChangedFiles(run)
   if (!emitJson && changed.notice !== undefined) logWarn(changed.notice)
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const ctx: GateContext = {
     root,
