@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.65.0](https://github.com/erclx/canon/compare/v4.64.0...v4.65.0) (2026-09-07)
+
+
+### Features
+
+* **governance:** widen surface-capture rule to match components/ ([#1583](https://github.com/erclx/canon/issues/1583)) ([06d8cc6](https://github.com/erclx/canon/commit/06d8cc68fcf9d86f8ed3565281ac8e415766de7c))
+* **web:** render the landing page from live catalog reads ([#1581](https://github.com/erclx/canon/issues/1581)) ([f949280](https://github.com/erclx/canon/commit/f94928056b3902e9ee26bfb8a46f212a21ce021e))
+
+
+### Bug Fixes
+
+* **sandbox:** assert the bootstrap indexes arm's measured stop ([#1582](https://github.com/erclx/canon/issues/1582)) ([e517b18](https://github.com/erclx/canon/commit/e517b183d67719a2e9676754e33ed5b2fa35ce53))
+
 ## [4.64.0](https://github.com/erclx/canon/compare/v4.63.0...v4.64.0) (2026-09-07)
 
 
