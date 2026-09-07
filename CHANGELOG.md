@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.66.0](https://github.com/erclx/canon/compare/v4.65.0...v4.66.0) (2026-09-07)
+
+
+### Features
+
+* **cli:** warn from every verb that answers from PROJECT_ROOT ([#1587](https://github.com/erclx/canon/issues/1587)) ([e2563e4](https://github.com/erclx/canon/commit/e2563e4f08c904b6fe32adb72f3d37eb5b50ae4b))
+* **demo:** read a recording's frames back through a new skill ([#1589](https://github.com/erclx/canon/issues/1589)) ([0a5b028](https://github.com/erclx/canon/commit/0a5b02849d77fe567b81f69a80520e1ecc6daf4c))
+
+
+### Bug Fixes
+
+* **claude:** give claude-worktree step 6 a literal dependency test ([#1590](https://github.com/erclx/canon/issues/1590)) ([de47a41](https://github.com/erclx/canon/commit/de47a4132580911de49ae11b2cc75871359dcc16))
+
 ## [4.65.0](https://github.com/erclx/canon/compare/v4.64.0...v4.65.0) (2026-09-07)
 
 
