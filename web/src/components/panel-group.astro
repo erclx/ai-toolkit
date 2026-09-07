@@ -14,6 +14,12 @@ interface Props {
 }
 
 const { label, total, shown } = Astro.props
+/*
+ * The rows of a group form one grid, so every chip in it starts at the same x.
+ * Laid out per row, each chip right-aligned to the panel edge at its own
+ * width, and the widths run from a two-segment glob to a path several
+ * segments long. The ragged column that produced read as noise.
+ */
 const count =
   total === undefined
     ? null
@@ -41,5 +47,20 @@ const count =
       )
     }
   </div>
-  <slot />
+  <div class="group-rows">
+    <slot />
+  </div>
 </div>
+
+<style>
+  /*
+   * Name and value form two columns across the whole group, so every chip in
+   * it starts at one x. Each row laid out on its own put its chip hard against
+   * the panel edge at whatever width the chip happened to be.
+   */
+  .group-rows {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 1rem;
+  }
+</style>

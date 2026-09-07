@@ -36,19 +36,24 @@ const { foot, columns = false } = Astro.props
 </div>
 
 <style>
+  /*
+   * A grid rather than CSS columns.
+   *
+   * `column-count` balances by height, which put five groups in the left
+   * column and three in the right and left the two single-rule domains
+   * stranded at the bottom of one side. A grid places them in order, so the
+   * columns hold an equal number of groups whatever height each one runs to.
+   */
   .panel-columns {
-    column-count: 2;
-    column-gap: 2.5rem;
-  }
-
-  /* A group split across the fold reads as two groups, so it never breaks. */
-  .panel-columns :global(.panel-group) {
-    break-inside: avoid;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 2.5rem;
+    align-content: start;
   }
 
   @media (max-width: 640px) {
     .panel-columns {
-      column-count: 1;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

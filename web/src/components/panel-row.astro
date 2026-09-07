@@ -25,7 +25,10 @@ interface Props {
 const { name, value, scoped = false } = Astro.props
 ---
 
-<div class="flex items-baseline justify-between gap-4 py-px">
+{/* `display: contents` hands the two cells to the group's grid, which is what
+    lines every chip in a group up on one edge. As its own flex row each one
+    aligned against the panel instead. */}
+<div class="panel-row">
   <span class="text-(--color-text)">{name}</span>
   {
     scoped ? (
@@ -39,3 +42,14 @@ const { name, value, scoped = false } = Astro.props
     )
   }
 </div>
+
+<style>
+  .panel-row {
+    display: contents;
+  }
+
+  /* The cells keep the row's own rhythm now that the row box is gone. */
+  .panel-row > span {
+    padding-block: 1px;
+  }
+</style>
