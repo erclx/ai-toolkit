@@ -26,7 +26,10 @@ export const footer = {
   note: 'Every count and every frame on this page is read from the repository at build time.',
   links: [
     // README.md: "MIT"
-    { label: 'MIT license', href: 'https://github.com/erclx/canon/blob/main/LICENSE' },
+    {
+      label: 'MIT license',
+      href: 'https://github.com/erclx/canon/blob/main/LICENSE',
+    },
     { label: 'Documentation', href: 'https://github.com/erclx/canon#readme' },
     { label: 'GitHub', href: 'https://github.com/erclx/canon' },
   ],
