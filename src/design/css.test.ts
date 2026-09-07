@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { COMPONENTS } from '@/design/components'
+import { COMPONENTS, TEACH_STYLESHEET_COMPONENTS } from '@/design/components'
 import { buildDesignCss, slug, unmappedOnLight } from '@/design/css'
 import type { DesignTokens } from '@/design/tokens'
 import { TOKENS } from '@/design/tokens'
@@ -106,6 +106,30 @@ describe('buildDesignCss', () => {
     expect(css).toContain('--color-accent:')
   })
 
+  it('emits only an explicit component list, leaving the generic default out', () => {
+    const custom = {
+      name: 'custom',
+      note: 'A component built for this test alone.',
+      reads: [] as const,
+      rules: '.custom { color: red; }',
+    }
+
+    const css = buildDesignCss(undefined, { components: [custom] })
+
+    expect(css).toContain('.custom { color: red; }')
+    expect(css).not.toContain('.status::before')
+  })
+
+  it('embeds only an explicit font list, leaving the mono default out', () => {
+    const custom = { family: 'Custom Face', weight: '400', base64: 'AAAA' }
+
+    const css = buildDesignCss(undefined, { embedFonts: [custom] })
+
+    expect(css).toContain("font-family: 'Custom Face';")
+    expect(css).toContain('base64,AAAA')
+    expect(css.match(/@font-face/g)).toHaveLength(1)
+  })
+
   it('prepends a banner only when the caller supplies one', () => {
     expect(
       buildDesignCss(undefined, { banner: 'Written by a test' }),
@@ -129,6 +153,18 @@ describe('buildDesignCss', () => {
     const css = buildDesignCss()
 
     for (const component of COMPONENTS) {
+      for (const property of component.reads) {
+        expect(css).toContain(`${property}:`)
+      }
+    }
+  })
+
+  it('reads every property the teach chrome set declares it reads', () => {
+    const css = buildDesignCss(undefined, {
+      components: TEACH_STYLESHEET_COMPONENTS,
+    })
+
+    for (const component of TEACH_STYLESHEET_COMPONENTS) {
       for (const property of component.reads) {
         expect(css).toContain(`${property}:`)
       }

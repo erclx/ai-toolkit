@@ -11,6 +11,7 @@ bierner
 calibri
 cambria
 canva
+cascadia
 chdir
 cksum
 clack
@@ -78,6 +79,7 @@ noto
 nowrap
 nullglob
 numpy
+nunito
 nvmrc
 ollama
 oxlint
@@ -108,6 +110,7 @@ respawn
 rlength
 rstart
 rtrimstr
+segoe
 semgrep
 setattr
 setsid

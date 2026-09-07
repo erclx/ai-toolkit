@@ -4,7 +4,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { focusLine, generateNav } from '@/teach/nav'
-import { openWorkspace, teachDir, writeStylesheet } from '@/teach/workspace'
+import {
+  listWorkspaces,
+  openWorkspace,
+  teachDir,
+  writeStylesheet,
+} from '@/teach/workspace'
 
 let ROOT: string
 
@@ -156,6 +161,30 @@ describe('generateNav', () => {
     expect(contents).toContain(
       '<span class="crumb crumb-here">Regular expressions</span>',
     )
+  })
+
+  it('should link a generated course.css from the root page rather than embedding it', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await generateNav(ROOT)
+
+    const root = await readFile(join(teachDir(ROOT), 'index.html'), 'utf8')
+    expect(root).toContain('<link rel="stylesheet" href="course.css">')
+    expect(root).not.toContain('<style>')
+
+    const css = await readFile(join(teachDir(ROOT), 'course.css'), 'utf8')
+    expect(css).toContain('.bar {')
+    expect(css).toContain('.status::before')
+  })
+
+  it('should still list exactly one workspace after the root stylesheet is written', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await generateNav(ROOT)
+    await generateNav(ROOT)
+
+    const listed = await listWorkspaces(ROOT)
+
+    expect(listed).toMatchObject({ ok: true })
+    expect(listed.ok && listed.workspaces).toHaveLength(1)
   })
 
   it('should carry the close-on-outside-click script on every generated page', async () => {

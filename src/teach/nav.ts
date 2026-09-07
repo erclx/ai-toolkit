@@ -1,8 +1,10 @@
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
+import { TEACH_STYLESHEET_COMPONENTS } from '@/design/components'
 import { buildDesignCss } from '@/design/css'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
+import { TEACH_FONT_FACES } from '@/teach/fonts'
 import {
   listWorkspaces,
   readWorkspace,
@@ -500,7 +502,7 @@ function renderRootPage(workspaces: readonly WorkspaceSummary[]): string {
     })
     .join('')
 
-  return `${pageHead('Learning workspaces', undefined, buildDesignCss(undefined, { embedFonts: true }))}<body>
+  return `${pageHead('Learning workspaces', TEACH_STYLESHEET, undefined)}<body>
 ${renderHeader(segments, track)}
 <main class="wide-body">
 
@@ -783,6 +785,14 @@ export async function generateNav(
   const dir = teachDir(root)
   const rootPath = join(dir, 'index.html')
   await writeFile(rootPath, renderRootPage(listed.workspaces))
+
+  await writeFile(
+    join(dir, TEACH_STYLESHEET),
+    buildDesignCss(undefined, {
+      embedFonts: TEACH_FONT_FACES,
+      components: TEACH_STYLESHEET_COMPONENTS,
+    }),
+  )
 
   const contents: string[] = []
   const skipped: LessonSkipped[] = []

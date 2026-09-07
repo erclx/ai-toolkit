@@ -640,6 +640,22 @@ describe('writeStylesheet', () => {
     expect(body).toContain('base64,')
   })
 
+  it('carries the teach chrome, not just the generic tokens and components', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+
+    const outcome = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!outcome.ok) throw new Error(outcome.message)
+
+    const body = await readFile(join(ROOT, outcome.path), 'utf8')
+
+    expect(body).toContain('.bar {')
+    expect(body).toContain('.quiz')
+    expect(body).toContain('.theme:hover { border-color: var(--color-accent)')
+    expect(body).toContain("font-family: 'Nunito';")
+    expect(body).toContain("font-family: 'Virgil';")
+    expect(body).toContain("font-family: 'Cascadia Code';")
+  })
+
   it('leaves a stylesheet the workspace already carries, since lessons add to it', async () => {
     await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
     const first = await writeStylesheet(ROOT, 'regular-expressions')

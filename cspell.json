@@ -25,7 +25,13 @@
     "/'[0-9A-Fa-f]{6}'/g",
     "/data:image\\/svg\\+xml,[^\"]*/g"
   ],
-  "ignorePaths": [".cspell/**", "tooling/**", ".git/**", "src/design/fonts.ts"],
+  "ignorePaths": [
+    ".cspell/**",
+    "tooling/**",
+    ".git/**",
+    "src/design/fonts.ts",
+    "src/teach/fonts.ts"
+  ],
   "overrides": [
     {
       "filename": ["**/*.html.tmpl"],
