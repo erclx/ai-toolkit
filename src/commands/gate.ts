@@ -103,7 +103,7 @@ async function runGate(opts: RunCommandOptions): Promise<number> {
     ? { scoped: false, files: [] }
     : await collectChangedFiles(run)
   if (!emitJson && changed.notice !== undefined) logWarn(changed.notice)
-  if (!emitJson && mismatch !== undefined) logWarn(mismatch)
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const ctx: GateContext = {
     root,
@@ -129,7 +129,6 @@ async function runGate(opts: RunCommandOptions): Promise<number> {
     if (failed?.failure !== undefined) {
       process.stderr.write(`${failed.label}: ${failed.failure}\n`)
     }
-    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(
       `${JSON.stringify({
         ok: code === 0,

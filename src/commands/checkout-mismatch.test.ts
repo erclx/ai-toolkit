@@ -114,12 +114,12 @@ describe('checkout-mismatch warning at each directly wired verb', () => {
   /**
    * `runGate` always spawns `STAGES` with `cwd: PROJECT_ROOT`, never the
    * caller's `cwd`, so the decoy here never scopes what the stages read: a
-   * spawned `canon gate run --json` run to completion runs the real `tests`
-   * stage against this checkout, which runs `bun run test` and re-enters this
-   * very file, recursing without bound. `--json` defers the mismatch warning
-   * until after every stage finishes, so this drops it for the bare form,
-   * whose warning logs ahead of `runStages`, and kills the child the instant
-   * the warning reaches stderr rather than waiting on exit.
+   * spawned `canon gate run` run to completion runs the real `tests` stage
+   * against this checkout, which runs `bun run test` and re-enters this very
+   * file, recursing without bound. The mismatch warning logs ahead of
+   * `runStages` in both the bare and the `--json` form, so this case kills
+   * the child the instant the warning reaches stderr rather than waiting on
+   * exit.
    */
   it('should warn on canon gate run before the stage sequence starts', async () => {
     const child = spawn('bun', [CLI, 'gate', 'run'], {
