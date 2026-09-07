@@ -18,8 +18,11 @@ manual = [
   "The reply identifies the missing `## Indexes` section and offers the correct convention block rather than a different one. Semantic: the offer's exact wording varies run to run, so a substring pin would be fragile and the correctness of the paraphrase is a judgment no pattern can carry",
 ]
 
-# Proves the offer never wrote to CLAUDE.md: the seed's exact two lines,
-# anchored start to end, with nothing appended below them.
+# Proves nothing was written, not that the offer happened. This pin, and
+# `absent` above, hold identically whether the run stops correctly at the
+# convention seed offer or crashes before ever reaching it. Telling the two
+# apart is the `manual` entry's job, which `countMechanicalAssertions`
+# excludes from the arm's asserted count.
 [[content]]
 path = "CLAUDE.md"
 pattern = '^# Project\n\nSample project for testing the setup-indexes skill on an empty scan\.\n$'
