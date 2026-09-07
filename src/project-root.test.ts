@@ -2,7 +2,11 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { findCheckoutMismatch, PROJECT_ROOT } from '@/project-root'
+import {
+  checkoutMismatchWarning,
+  findCheckoutMismatch,
+  PROJECT_ROOT,
+} from '@/project-root'
 
 let fixture: string
 
@@ -37,5 +41,25 @@ describe('findCheckoutMismatch', () => {
 
   it('should report nothing when the matching ancestor is PROJECT_ROOT itself', () => {
     expect(findCheckoutMismatch(PROJECT_ROOT)).toBeUndefined()
+  })
+})
+
+describe('checkoutMismatchWarning', () => {
+  it('should name both roots when the caller stands in a second checkout', () => {
+    writePackage(fixture, '@erclx/canon')
+    const startDir = join(fixture, 'src/commands')
+    mkdirSync(startDir, { recursive: true })
+
+    const message = checkoutMismatchWarning(startDir)
+
+    expect(message).toContain(PROJECT_ROOT)
+    expect(message).toContain(fixture)
+  })
+
+  it('should report nothing when no ancestor carries a matching package.json', () => {
+    const startDir = join(fixture, 'unrelated/project')
+    writePackage(startDir, 'some-other-package')
+
+    expect(checkoutMismatchWarning(startDir)).toBeUndefined()
   })
 })

@@ -51,3 +51,20 @@ export function findCheckoutMismatch(startDir: string): string | undefined {
     dir = parent
   }
 }
+
+/**
+ * The warning line every verb that answers from `PROJECT_ROOT` emits when the
+ * caller's cwd sits inside a second checkout, or `undefined` when it does not.
+ *
+ * It returns the string rather than logging it so this module keeps no `@/ui`
+ * dependency and the wording is unit-testable on its own. The wording names
+ * both roots and no subcommand: the four chokepoints that carry it stand under
+ * eight-plus verbs each, so a per-verb suffix would cost a parameter at every
+ * call site to buy back one verb's exact string.
+ */
+export function checkoutMismatchWarning(cwd: string): string | undefined {
+  const mismatch = findCheckoutMismatch(cwd)
+  if (mismatch === undefined) return undefined
+
+  return `Resolved via ${PROJECT_ROOT}, not the checkout at ${mismatch}. Run \`bun ${mismatch}/src/cli.ts ...\` to answer from that checkout instead.`
+}
