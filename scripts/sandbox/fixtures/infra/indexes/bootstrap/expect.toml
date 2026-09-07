@@ -12,20 +12,23 @@
 # ($0.137 and $0.120), and each phrased the follow-up differently ("Would
 # you like me to bootstrap `docs/`? (yes / no — or name it explicitly if you
 # want a different scope)" against "Which folder would you like to
-# bootstrap? You can say `docs`, `all`, or `none`."), matching the sibling
-# `no-candidate` arm's finding that no reply substring survives both.
+# bootstrap? You can say `docs`, `all`, or `none`."). Both phrasings share
+# `docs/` and `bootstrap`, so the reply pin below asserts the run reached the
+# candidate question rather than only that nothing was written.
 
 max_turns = 16
 
 absent = ["docs/index.md"]
 
+reply = ["docs/", "bootstrap"]
+
 manual = [
-  "The reply names docs/ as the sole candidate, its file count, and its frontmatter coverage, then asks which folder to bootstrap. Semantic: the exact phrasing varies run to run, so a substring pin would be fragile and the correctness of the paraphrase is a judgment no pattern can carry",
+  "The reply names docs/ as the sole candidate, its file count, and its frontmatter coverage, before asking which folder to bootstrap. Semantic: the exact phrasing varies run to run beyond the two pinned tokens, and the correctness of the paraphrase is a judgment no pattern can carry",
 ]
 
-# Proves docs/architecture.md was not touched: the raw seeded body carries no
-# frontmatter, and the run stopped before any draft, scaffold, or inject step
-# could add it.
+# Proves docs/architecture.md gained no frontmatter, without pinning the
+# seeded body's prose, which a later rewrite of seed_bare_folder could reword
+# without changing whether the run touched the file.
 [[content]]
 path = "docs/architecture.md"
-pattern = '^# Architecture\n\nSystem boundaries and module responsibilities for the sample project\. Defines how the API gateway forwards requests to the worker pool and where state persists\.\n$'
+pattern = '^# Architecture\n'
