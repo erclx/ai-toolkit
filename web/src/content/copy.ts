@@ -9,6 +9,29 @@
  * here is written from scratch.
  */
 
+export const site = {
+  name: 'canon',
+  /**
+   * The deployed origin, which a social card's absolute image URL is resolved
+   * against. It is the address `.github/workflows/deploy-site.yml` publishes to
+   * rather than anything `README.md` states, so it carries no citation.
+   */
+  origin: 'https://canon.erclx.dev',
+}
+
+export const footer = {
+  // README.md: canon-allow-readme-paraphrase: states what the page is built
+  // from, which no single README sentence says. The claim is checked by the
+  // page itself rather than borrowed.
+  note: 'Every count and every frame on this page is read from the repository at build time.',
+  links: [
+    // README.md: "MIT"
+    { label: 'MIT license', href: 'https://github.com/erclx/canon/blob/main/LICENSE' },
+    { label: 'Documentation', href: 'https://github.com/erclx/canon#readme' },
+    { label: 'GitHub', href: 'https://github.com/erclx/canon' },
+  ],
+}
+
 export const hero = {
   // README.md: "work across more than one repository", the reader's problem
   // rather than a proof claim.
