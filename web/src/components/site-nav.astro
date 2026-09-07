@@ -27,12 +27,24 @@ import { nav } from '../content/copy'
       href="#top"
       class="nav-mark flex items-center gap-2 rounded-[var(--radius-pill)] px-3 py-1 font-semibold text-(--color-accent) no-underline"
     >
+      {
+        /* The viewBox is cropped to the artwork rather than taking the source's
+          10-90 frame, which carries 5 units of padding on every side. With the
+          padding in, the rendered box is larger than the ink and no alignment
+          on the box can line the two up.
+
+          `items-center` then still aligns boxes, and "canon" is five x-height
+          letters with no ascender and no descender, so its ink sits low in its
+          own box. The nudge is that difference, measured at 0.9px between the
+          two ink centres rather than guessed. */
+      }
       <svg
-        viewBox="10 10 80 80"
-        width="15"
-        height="15"
+        viewBox="15 15 70 70"
+        width="12"
+        height="12"
         aria-hidden="true"
         focusable="false"
+        class="mark-glyph"
       >
         <path
           d="M34,20 L15,28 L15,72 L34,80 Z M66,20 L85,28 L85,72 L66,80 Z"
@@ -84,6 +96,10 @@ import { nav } from '../content/copy'
 
   .site-nav[data-at-top='true'] > * {
     pointer-events: none;
+  }
+
+  .mark-glyph {
+    transform: translateY(0.9px);
   }
 
   .nav-link[aria-current='true'] {
