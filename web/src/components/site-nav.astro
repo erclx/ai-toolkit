@@ -21,7 +21,7 @@ import { nav } from '../content/copy'
   class="site-nav pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4"
 >
   <div
-    class="pointer-events-auto flex items-center gap-1 rounded-[var(--radius-pill)] border border-(--color-border) bg-(--color-chrome)/90 px-2 py-1.5 shadow-lg backdrop-blur"
+    class="nav-pill pointer-events-auto flex items-center gap-1 rounded-[var(--radius-pill)] border border-(--color-border) bg-(--color-chrome)/90 px-2 py-1.5 shadow-lg backdrop-blur"
   >
     <a
       href="#top"
@@ -98,7 +98,32 @@ import { nav } from '../content/copy'
     pointer-events: none;
   }
 
+  /*
+   * Every child of the pill takes one line box, which is what lets centring
+   * them produce a row that reads as level.
+   *
+   * The wordmark is 16px and the links are 12px, so their natural line boxes
+   * were 26.4px and 19.8px and the wordmark sat 6.2px low. Padding and
+   * `align-items` were identical throughout, so neither was the cause.
+   *
+   * Two other fixes were tried and measured. Aligning the row on baselines
+   * made it worse, 6.2px to 7.2px, because the wordmark is itself a flex row
+   * and a flex container takes its first item's baseline, which here is an SVG
+   * that has none to give. Laying the wordmark out inline so the word supplied
+   * the baseline dropped the glyph onto its own line. Equal line boxes leave
+   * the two text sizes about 1.5px apart at the baseline, which is ordinary
+   * for mixed sizes centred together and is what a reader sees as level.
+   */
+  .nav-pill > *,
+  .nav-pill > ul > li,
+  .nav-pill > ul > li > a {
+    line-height: 20px;
+  }
+
+  /* An SVG has no baseline, so it is centred against the word beside it. The
+     nudge is the measured gap between the two ink centres. */
   .mark-glyph {
+    align-self: center;
     transform: translateY(0.9px);
   }
 
