@@ -393,6 +393,15 @@ EOF
     log_info "         outside the range and reports nothing either way"
     log_info "         a clean Step 4 here means the worktree was taken off origin/main rather"
     log_info "         than local HEAD, so check that .claude/settings.json baseRef took effect"
+    log_info "Headless: this arm drives the whole ship chain, so raise CANON_SKILL_TEST_MAX_TURNS."
+    log_info "         At the default and at 60 it truncates inside the ship sequence, which"
+    log_info "         leaves the same shape as the stopped chain above. Tell the two apart by"
+    log_info "         the branch: a stop on the finding leaves no whisper commit at all, and a"
+    log_info "         truncation leaves the commit with no pull request behind it."
+    log_info "Driven:  at 140 turns on sonnet for 1.83 dollars on 2026-09-07, reaching a draft"
+    log_info "         pull request and stopping in the CI watch on the harness background"
+    log_info "         ceiling. baseRef took, the branch carried both shout commits intact,"
+    log_info "         Step 4 reported the one finding, and whisper shipped with its test."
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
