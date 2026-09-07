@@ -4,6 +4,7 @@ paths:
   - '**/routes/**/*.{tsx,jsx,vue,svelte,astro}'
   - '**/pages/**/*.{tsx,jsx,vue,svelte,astro}'
   - '**/app/**/page.{tsx,jsx}'
+  - '**/components/**/*.{tsx,jsx,vue,svelte,astro}'
   - '**/*.html'
 ---
 
@@ -13,6 +14,7 @@ paths:
 
 - A surface is anything the project renders for a person to look at. A framework route is one. A page the project generates is another, whoever generates it.
 - Judge a generated page by the same rule as a route. Reading its markup reports nothing about how it composes.
+- A component the production build strips out is not a surface, such as a dev-only scenario switcher gated behind a build flag. The build removes it before anything renders, so no comparison exists to capture.
 
 ## When to capture
 

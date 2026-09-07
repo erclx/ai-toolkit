@@ -113,6 +113,7 @@ describe('governance/rules/ui', () => {
       '410-a11y',
       '420-forms',
       '430-ux-completeness',
+      '440-surface-capture',
       '450-link-behavior',
     ])
   })
