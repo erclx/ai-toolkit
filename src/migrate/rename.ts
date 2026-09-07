@@ -46,8 +46,9 @@ export interface RenameRuleSpec {
    * A rename whose tokens are whole names wants this, and one whose tokens are
    * word stems cannot have it. `aitk` is a stem that legitimately carries a
    * suffix, as in `aitk-allow-superseded`, so requiring a boundary there would
-   * leave every hyphenated form behind. A skill name is not a stem, and
-   * `claude-worktree` inside `claude-worktrees` is a different subject: the
+   * leave every hyphenated form behind. A skill name is not a stem, and the
+   * spelling below is the pre-rename one on purpose (canon-keep-retired):
+   * `claude-worktree` inside `claude-worktrees` is a different subject, the
    * wiki page about the harness feature, which the rename must not move.
    */
   readonly wholeToken?: boolean
@@ -88,7 +89,7 @@ const NEVER_MATCHES = '(?!)'
  *
  * A plain word boundary rejects a following letter and accepts a following
  * hyphen, since `\b` reads a hyphen as the end of a word. That leaves
- * `claude-intake` matching inside `claude-intake-answer`, with the ordering of
+ * `plan-intake` matching inside `plan-intake-answer`, with the ordering of
  * the alternation the only thing standing between them. Naming the characters
  * that continue an identifier holds on both, so the ordering and the boundary
  * each cover what the other could miss, and a slash, a dot, or a backtick
