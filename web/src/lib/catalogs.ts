@@ -1,4 +1,4 @@
-import { execSync, spawnSync } from 'node:child_process'
+import { readCanonJson } from './canon-cli'
 
 /**
  * Build-time catalog reads, on the contract `counts.ts` already keeps: the CLI
@@ -38,30 +38,6 @@ export interface RuleGroup {
   readonly sample: readonly GovRule[]
 }
 
-function repoRoot(): string {
-  // The build may start from web/ rather than the repository root, so the root
-  // is resolved through git rather than assumed from cwd.
-  return execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim()
-}
-
-function readCatalog<T>(args: readonly string[]): T {
-  const result = spawnSync('canon', [...args, '--json'], {
-    encoding: 'utf8',
-    cwd: repoRoot(),
-    // The standards catalog carries every standard's full body, which runs
-    // past the default buffer and would otherwise truncate into a parse error.
-    maxBuffer: 64 * 1024 * 1024,
-  })
-
-  if (result.error || !result.stdout) {
-    throw new Error(
-      `canon ${args.join(' ')} --json produced no output. The page never ships a typed catalog, so the build cannot continue without it. Underlying error: ${result.error instanceof Error ? result.error.message : (result.stderr ?? 'none')}`,
-    )
-  }
-
-  return JSON.parse(result.stdout) as T
-}
-
 /**
  * Rules grouped by domain, largest first, with a sample inside each.
  *
@@ -75,7 +51,7 @@ export function readRuleGroups(perDomain = 2): {
   total: number
   domains: number
 } {
-  const { rules } = readCatalog<{ rules: GovRule[] }>(['gov', 'list'])
+  const { rules } = readCanonJson<{ rules: GovRule[] }>(['gov', 'list'])
 
   const byDomain = new Map<string, GovRule[]>()
   for (const rule of rules) {
@@ -96,7 +72,7 @@ export function readRuleGroups(perDomain = 2): {
 }
 
 export function readToolingStacks(): ToolingStack[] {
-  return readCatalog<{ stacks: ToolingStack[] }>(['tooling', 'list']).stacks
+  return readCanonJson<{ stacks: ToolingStack[] }>(['tooling', 'list']).stacks
 }
 
 /**
@@ -105,7 +81,7 @@ export function readToolingStacks(): ToolingStack[] {
  * than carried through the build.
  */
 export function readStandards(): { entries: StandardEntry[]; total: number } {
-  const { standards } = readCatalog<{ standards: StandardEntry[] }>([
+  const { standards } = readCanonJson<{ standards: StandardEntry[] }>([
     'standards',
     'list',
   ])

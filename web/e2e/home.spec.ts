@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { loadsWhen, readRuleGroups } from '../src/lib/catalogs'
 import { readCatalogCounts } from '../src/lib/counts'
 // The spec runs outside vite, which resolves a bare JSON import for the
 // component but not for this file, so the attribute is required here and not
@@ -35,10 +36,19 @@ test('the rules panel names every domain with its true count', async ({
 test('a path-scoped rule is marked and an always-on rule is not', async ({
   page,
 }) => {
+  // Reads the same catalog the page samples from, rather than pinning the
+  // assertion to today's first glob. A rule's `paths:` list edited on another
+  // branch should not fail this one.
+  const { groups } = readRuleGroups()
+  const scoped = groups
+    .flatMap((group) => group.sample)
+    .find((rule) => loadsWhen(rule).scoped)
+  if (!scoped) throw new Error('no path-scoped rule in the sampled catalog')
+
   await page.goto('/')
   const catalog = page.locator('#catalog')
   await expect(catalog.getByText('every session').first()).toBeVisible()
-  await expect(catalog.getByText('**/*.md').first()).toBeVisible()
+  await expect(catalog.getByText(loadsWhen(scoped).label).first()).toBeVisible()
 })
 
 test('every nav link resolves to a section on the page', async ({ page }) => {

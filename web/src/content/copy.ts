@@ -13,8 +13,9 @@ export const site = {
   name: 'canon',
   /**
    * The deployed origin, which a social card's absolute image URL is resolved
-   * against. It is the address `.github/workflows/deploy-site.yml` publishes to
-   * rather than anything `README.md` states, so it carries no citation.
+   * against and which `astro.config.mjs` reads as its own `site` value. It is
+   * the address `.github/workflows/deploy-site.yml` publishes to rather than
+   * anything `README.md` states, so it carries no citation.
    */
   origin: 'https://canon.erclx.dev',
 }
