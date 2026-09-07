@@ -81,21 +81,31 @@ import { nav } from '../content/copy'
 </nav>
 
 <style>
+  /*
+   * Hidden by default rather than only once the observer has run.
+   *
+   * Keyed on `data-at-top='true'` alone, the bar painted visible over the hero
+   * on every load and vanished a frame later when the script set the
+   * attribute. On a fast reload that flash of a second row of words across the
+   * headline is what reads as the hero text appearing twice.
+   */
   .site-nav {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
     transition:
       opacity 0.25s ease,
       transform 0.25s ease;
   }
 
-  /* Hidden over the hero, where the reader has not left the first screen. */
-  .site-nav[data-at-top='true'] {
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(-8px);
+  /* Shown once the reader has left the first screen. */
+  .site-nav[data-at-top='false'] {
+    opacity: 1;
+    transform: none;
   }
 
-  .site-nav[data-at-top='true'] > * {
-    pointer-events: none;
+  .site-nav[data-at-top='false'] > * {
+    pointer-events: auto;
   }
 
   /*
@@ -118,6 +128,22 @@ import { nav } from '../content/copy'
   .nav-pill > ul > li,
   .nav-pill > ul > li > a {
     line-height: 20px;
+  }
+
+  /*
+   * The wordmark block rides up to meet the links.
+   *
+   * Equal line boxes above make every child of the pill 28px tall, which is
+   * necessary and not sufficient: 16px text and 12px text sit differently
+   * inside the same box, so "canon" still landed 2.15px below "Workflow" by
+   * ink centre with its baseline 2.00px lower. The offset is that measurement.
+   *
+   * It moves the glyph and the word together, since the two are one element to
+   * a reader. Their alignment to each other is handled separately below and
+   * measures 0.00px, so shifting the pair preserves it.
+   */
+  .nav-mark {
+    transform: translateY(-2px);
   }
 
   /* An SVG has no baseline, so it is centred against the word beside it. The

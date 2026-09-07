@@ -28,7 +28,15 @@ import { hero } from '../content/copy'
 </section>
 
 <style>
-  .page-display {
+  /*
+   * The proportional family belongs to the headline alone.
+   *
+   * Set on the section it cascaded into every child, so the subhead and the
+   * call to action rendered sans while the same button in the closing section
+   * rendered mono. Two primary buttons on one page in two typefaces, and
+   * nothing caught it because each looked deliberate on its own.
+   */
+  .page-display > h1 {
     font-family: var(--type-page-display-family);
   }
 </style>
