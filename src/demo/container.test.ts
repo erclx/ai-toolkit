@@ -1,9 +1,15 @@
-import { existsSync, mkdtempSync, rmSync, statSync } from 'node:fs'
+import {
+  existsSync,
+  mkdtempSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { convertToGif, convertToMp4 } from '@/demo/container'
+import { convertToGif, convertToMp4, extractFrames } from '@/demo/container'
 
 async function ffmpegAvailable(): Promise<boolean> {
   const result = await execa('ffmpeg', ['-version'], { reject: false })
@@ -66,6 +72,32 @@ describe('convertToMp4', () => {
         expect(existsSync(result.gifPath)).toBe(true)
         expect(statSync(result.gifPath).size).toBeGreaterThan(0)
       })
+
+      it('should write numbered png frames beside the webm', async () => {
+        const result = await extractFrames(webmPath)
+
+        expect(result).toMatchObject({ status: 'extracted' })
+        if (result.status !== 'extracted') return
+        expect(result.framePaths.length).toBeGreaterThan(0)
+        for (const framePath of result.framePaths) {
+          expect(existsSync(framePath)).toBe(true)
+          expect(statSync(framePath).size).toBeGreaterThan(0)
+        }
+      })
+
+      it('should order frames numerically past the three-character padding ffmpeg writes', async () => {
+        writeFileSync(join(root, 'clip-frame-999.png'), '')
+        writeFileSync(join(root, 'clip-frame-1000.png'), '')
+
+        const result = await extractFrames(webmPath)
+
+        expect(result).toMatchObject({ status: 'extracted' })
+        if (result.status !== 'extracted') return
+        const names = result.framePaths.map((path) => path.split('/').pop())
+        expect(names.indexOf('clip-frame-999.png')).toBeLessThan(
+          names.indexOf('clip-frame-1000.png'),
+        )
+      })
     },
   )
 })
@@ -74,6 +106,19 @@ describe('convertToGif', () => {
   it('should report the converter missing without failing the run', async () => {
     const result = await convertToGif(
       '/nonexistent/clip.webm',
+      'definitely-not-a-real-ffmpeg-binary',
+    )
+
+    expect(result).toEqual({ status: 'skipped', reason: 'converter-missing' })
+  })
+})
+
+describe('extractFrames', () => {
+  it('should report the converter missing without failing the run', async () => {
+    const result = await extractFrames(
+      '/nonexistent/clip.webm',
+      undefined,
+      {},
       'definitely-not-a-real-ffmpeg-binary',
     )
 

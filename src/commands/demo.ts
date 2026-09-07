@@ -4,7 +4,12 @@ import type { Command } from 'commander'
 import { INSTALL_BROWSER, isEngineMissing } from '@/browser/engine'
 import { parseDraft } from '@/demo/beats'
 import { compilePlan, parsePlan, unresolved } from '@/demo/compile'
-import { convertToGif, convertToMp4, INSTALL_CONVERTER } from '@/demo/container'
+import {
+  convertToGif,
+  convertToMp4,
+  extractFrames,
+  INSTALL_CONVERTER,
+} from '@/demo/container'
 import { DEFAULT_CURSORS } from '@/demo/cursors'
 import { loadCursorTheme } from '@/demo/theme'
 import { intro, logError, logInfo, logStep, logWarn, outro, plural } from '@/ui'
@@ -31,6 +36,12 @@ interface RunOptions {
   readonly video: boolean
   readonly still: boolean
   readonly gif?: boolean
+  readonly json?: boolean
+}
+
+interface FramesOptions {
+  readonly out?: string
+  readonly fps: string
   readonly json?: boolean
 }
 
@@ -110,6 +121,38 @@ export function register(program: Command): void {
     )
     .action(async (plan: string, opts: RunOptions) => {
       process.exitCode = await runDrive(plan, opts)
+    })
+
+  demo
+    .command('frames')
+    .description('Pull numbered still frames from a recorded video')
+    .argument('<video>', 'Video written by canon demo run')
+    .helpOption('-h, --help', 'Show this help message')
+    .option(
+      '-o, --out <dir>',
+      'Directory to write frames into, default beside the video',
+    )
+    .option('--fps <n>', 'Frames extracted per second of video', '1')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Needs ffmpeg on PATH, the same binary demo run already shells to for',
+        `mp4 and gif conversion. Install it with: ${INSTALL_CONVERTER}`,
+        '',
+        'Exit codes:',
+        '  0  frames were written',
+        '  1  refused, with the reason on stderr',
+        '',
+        'Examples:',
+        '  canon demo frames demos/inline-edit.webm',
+        '  canon demo frames demos/inline-edit.webm --fps 2 --out frames',
+        '',
+      ].join('\n'),
+    )
+    .action(async (video: string, opts: FramesOptions) => {
+      process.exitCode = await runFrames(video, opts)
     })
 }
 
@@ -340,6 +383,59 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
     durationMs: result.durationMs,
     ...(mp4Reason ? { mp4Reason } : {}),
     ...(gifReason ? { gifReason } : {}),
+  })
+  return 0
+}
+
+async function runFrames(
+  videoPath: string,
+  opts: FramesOptions,
+): Promise<number> {
+  intro('canon demo frames')
+
+  const source = resolve(process.cwd(), videoPath)
+  if (!existsSync(source)) {
+    logStep('Video')
+    logError(`${videoPath} not found`)
+    outro()
+    emit(opts.json, { video: source, reason: 'video-missing' })
+    return 1
+  }
+
+  logStep('Video')
+  logInfo(display(source))
+
+  const outDir = opts.out ? resolve(process.cwd(), opts.out) : undefined
+  const fps = Number(opts.fps)
+
+  logStep('Frames')
+  const extracted = await extractFrames(source, outDir, { fps })
+  if (extracted.status === 'skipped') {
+    logError('ffmpeg is not installed, so no frames were written.')
+    logWarn(`Install it with: ${INSTALL_CONVERTER}`)
+    outro()
+    emit(opts.json, { video: source, reason: extracted.reason })
+    return 1
+  }
+  if (extracted.status === 'failed') {
+    logError(`frame extraction failed: ${extracted.reason}`)
+    outro()
+    emit(opts.json, {
+      video: source,
+      reason: 'extraction-failed',
+      message: extracted.reason,
+    })
+    return 1
+  }
+
+  for (const framePath of extracted.framePaths) logInfo(display(framePath))
+  logInfo(`${plural(extracted.framePaths.length, 'frame')} at ${fps} fps`)
+  outro()
+
+  emit(opts.json, {
+    video: source,
+    frames: extracted.framePaths,
+    fps,
   })
   return 0
 }

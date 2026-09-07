@@ -20,7 +20,7 @@ The whole feature came out of `.canon/groundwork/38-demo-recorder/`, which measu
 - `src/demo/theme.ts`: reads a cursor theme folder for `--cursor`
 - `src/demo/drive.ts`: every browser reference the feature adds
 - `src/browser/engine.ts`: the install command, the two ways the engine can be absent, the unreachable-server test, and the keyboard-modality press, shared with `canon inventory` and `canon drive` as each became the next command needing them
-- `src/demo/container.ts`: converts the webm the driver wrote into mp4, and into a gif behind `--gif`, as post-steps the compiler and the driver never see
+- `src/demo/container.ts`: converts the webm the driver wrote into mp4, and into a gif behind `--gif`, plus numbered PNG frames a caller pulls back out on demand, as post-steps the compiler and the driver never see
 - `src/commands/demo.ts`: wiring only, with the driver behind a dynamic import
 
 ## Decisions
@@ -38,6 +38,7 @@ The whole feature came out of `.canon/groundwork/38-demo-recorder/`, which measu
 - **A scroll step centres its target rather than revealing it, and passes `behavior: 'instant'`.** `scrollIntoViewIfNeeded` scrolls the least it can, which leaves a target taller than the remaining space flush against the bottom edge, measured on this repository's own recording at 225 pixels of dead space above the content and 2 below. Centring moved that to 170 and 165. The behavior is explicit because the replacement runs in the page where the old call ran through the debugging protocol: an in-page scroll honours the document's `scroll-behavior`, so a project setting it to `smooth` would get a call returning before the scroll finished. Nothing in this repository sets it, which is why the recorder cannot catch that on its own pages.
 - **mp4 is a post-step, not a compiler or driver concern.** `container.ts` shells out to `ffmpeg` through `execa` once the driver has already written the webm, writes beside it rather than instead of it, and degrades a missing or failing converter to a warning rather than failing a run whose recording already succeeded.
 - **The gif is opt-in where the mp4 is not, and the split is destination rather than cost.** A gif runs several times the size of the webm it derives from and one destination needs one, a README on a host that strips a video tag, so `--gif` gates it while the mp4 stays unconditional for the opposite reason. The filter generates a palette from the source and applies it rather than quantizing per frame, since a per-frame palette is what makes a recording of flat interface colors band and shimmer.
+- **Frame extraction is a third verb, not a `run` flag, because reading a recording back is a separate act from writing one.** `canon demo frames` defaults to one PNG a second, matched to how long a tuned recording runs rather than to any measured failure, and it names each frame `<video-basename>-frame-<NNN>.png` beside the video so the output falls under the same `demos/*.png` gitignore entry the still already claims. `canon-frames-read` is the routed caller: it reads every frame with the Read tool and reports a plain description each, never a verdict, since the task's own outcome states a frame read is evidence rather than a pass or fail this toolkit hands anyone.
 
 ## Gotchas
 

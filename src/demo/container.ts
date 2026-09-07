@@ -1,3 +1,4 @@
+import { mkdirSync } from 'node:fs'
 import { join, parse } from 'node:path'
 import { execa } from 'execa'
 
@@ -19,6 +20,15 @@ export type GifResult =
   | { status: 'converted'; gifPath: string }
   | { status: 'skipped'; reason: 'converter-missing' }
   | { status: 'failed'; reason: string }
+
+export type FramesResult =
+  | { status: 'extracted'; framePaths: string[] }
+  | { status: 'skipped'; reason: 'converter-missing' }
+  | { status: 'failed'; reason: string }
+
+export interface ExtractFramesOptions {
+  readonly fps?: number
+}
 
 /**
  * Writes mp4 beside the webm rather than instead of it, since both stated use
@@ -121,4 +131,65 @@ export async function convertToGif(
     }
   }
   return { status: 'converted', gifPath }
+}
+
+/**
+ * Written beside the video by default, so frames fall under the same
+ * `demos/*.png` gitignore entry the still already uses with no new rule
+ * needed. One frame a second by default, matched to the seconds-to-tens-of-
+ * seconds length a tuned recording runs, without a smarter sampling strategy
+ * nobody has asked for.
+ *
+ * The missing-binary and failure handling matches `convertToMp4` exactly: the
+ * recording already succeeded by the time this runs, so an optional step
+ * never fails the run.
+ */
+export async function extractFrames(
+  videoPath: string,
+  outDir?: string,
+  opts: ExtractFramesOptions = {},
+  bin: string = CONVERTER_BIN,
+): Promise<FramesResult> {
+  const { dir, name } = parse(videoPath)
+  const targetDir = outDir ?? dir
+  const fps = opts.fps ?? 1
+  if (outDir) mkdirSync(outDir, { recursive: true })
+
+  const pattern = join(targetDir, `${name}-frame-%03d.png`)
+  const result = await execa(
+    bin,
+    ['-y', '-i', videoPath, '-vf', `fps=${fps}`, pattern],
+    { reject: false },
+  )
+
+  if (result.failed && result.code === 'ENOENT') {
+    return { status: 'skipped', reason: 'converter-missing' }
+  }
+  if (result.exitCode !== 0) {
+    return {
+      status: 'failed',
+      reason: result.stderr?.trim() || `ffmpeg exited ${result.exitCode}`,
+    }
+  }
+
+  const framePaths = [
+    ...new Bun.Glob(`${name}-frame-*.png`).scanSync({
+      cwd: targetDir,
+      onlyFiles: true,
+    }),
+  ]
+    .sort((a, b) => frameIndex(a) - frameIndex(b))
+    .map((frame) => join(targetDir, frame))
+
+  return { status: 'extracted', framePaths }
+}
+
+/**
+ * ffmpeg's `%03d` pads to three characters and then widens rather than
+ * truncating, so a run producing 1000 or more frames writes `-1000.png`
+ * beside `-999.png` and a lexicographic sort reads the wider name first.
+ */
+function frameIndex(filename: string): number {
+  const match = filename.match(/-frame-(\d+)\.png$/)
+  return match ? Number(match[1]) : 0
 }

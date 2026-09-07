@@ -1,6 +1,6 @@
 ---
 title: Demo
-description: Compiling a screencast draft into a runnable plan, driving a served application to a recording and a still, the pointer the recording paints, and what each refusal reports
+description: Compiling a screencast draft into a runnable plan, driving a served application to a recording and a still, reading numbered frames back out of a recording, the pointer the recording paints, and what each refusal reports
 ---
 
 # Demo
@@ -13,6 +13,7 @@ Two verbs, and they are separate because the artifact between them is edited.
 canon demo compile .canon/tmp/screencast/inline-edit.md
 canon demo run demos/inline-edit.json
 canon demo run demos/inline-edit.json --cursor ~/cursors/theme --out assets
+canon demo frames demos/inline-edit.webm --fps 2
 ```
 
 ## The draft and the plan are different files
@@ -53,6 +54,18 @@ When `ffmpeg` is on PATH, the run also writes an mp4 beside the webm, since webm
 
 A step waits on its `waitFor` selector becoming visible and then holds for its own `holdMs`, which is what puts a finished state on screen long enough to read. `navigate` uses the plan's URL unless the step names its own.
 
+## What frames does
+
+`canon demo frames` pulls numbered PNG stills back out of a recorded video through the same `ffmpeg` binary the mp4 and gif conversion already shells to. Nothing reads a recording back today, so a broken one ships until a person opens it, and this verb is what a skill calls to read one instead. It writes one frame a second by default, sampling at a rate matched to how long a tuned recording runs rather than at a rate tuned for any one clip. Frames land beside the video by default, named `<video-basename>-frame-<NNN>.png`, so they fall under the same `demos/*.png` gitignore entry the still already uses.
+
+| Option            | Behavior                                                 |
+| ----------------- | -------------------------------------------------------- |
+| `-o, --out <dir>` | Directory to write frames into, default beside the video |
+| `--fps <n>`       | Frames extracted per second of video, default `1`        |
+| `--json`          | Add a record on stdout carrying every frame path written |
+
+`canon-frames-read` is the routed way to call this verb and read the frames back: it runs the verb, reads each returned frame with the Read tool, and reports one plain description per frame. It never renders a verdict, since a frame read is evidence a person weighs rather than a pass or fail this toolkit states on their behalf.
+
 ## The pointer is painted inside the page
 
 The browser engine offers an annotation of its own that draws a dot on the interacted element and a title naming the API call it made, and this recorder does not turn it on. It paints no cursor, so a run relying on it looks like the pointer teleports between targets, and the two overlays below supersede it: a real cursor where the dot is a marker, and the beat's narration where the title reads `Mouse move`. Running both put four overlays on the frame, and the two the engine drew were the two a viewer reads as noise.
@@ -77,6 +90,9 @@ Every refusal exits 1 and names its reason in the `--json` record, so a skill br
 | `plan-unreadable`     | The plan is not JSON, or a step names a kind nothing drives                         |
 | `browser-missing`     | The browser binary is not installed, with `install` carrying the command            |
 | `engine-missing`      | The browser package itself did not resolve                                          |
+| `video-missing`       | No file at the path given to `frames`                                               |
+| `converter-missing`   | `ffmpeg` is not on PATH, so `frames` extracted nothing                              |
+| `extraction-failed`   | `ffmpeg` exited non-zero, with `message` carrying its stderr                        |
 
 ## The browser reaches every target
 
