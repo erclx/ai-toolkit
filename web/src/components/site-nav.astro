@@ -2,39 +2,54 @@
 import { nav } from '../content/copy'
 
 /**
- * The floating pill, picked on 2026-09-07 over a left rail and a sticky
- * header. It carries the section links and the theme toggle, which is why the
- * navigation shape had to be settled before the toggle had anywhere to live.
+ * The floating pill, picked on 2026-09-07 over a left rail and a sticky header.
  *
- * The links resolve to the eight section ids. Six of those ids did not exist
- * before this branch, so three quarters of the page could not be linked to at
- * all and any navigation would have had nothing to point at.
+ * It sits at the top and stays hidden until the reader has left the hero,
+ * which is the one position where navigation is redundant. Anchored at the
+ * bottom it obscured live content at every scroll position rather than only
+ * the footer.
  *
- * The toggle writes the reader's choice to `localStorage` and flips the same
- * attribute the pre-paint script in `base.astro` sets, so a reload keeps the
- * choice rather than falling back to the system preference.
+ * The mark is inlined rather than linked so it inherits `currentColor`, which
+ * is the whole reason `assets/brand/mark.svg` keeps that fill. The favicon is
+ * a separate generated copy for the opposite reason: a browser loads it with
+ * no CSS context, so it needs a literal.
  */
 ---
 
 <nav
   aria-label="Sections"
-  class="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-4"
+  class="site-nav pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4"
 >
   <div
-    class="pointer-events-auto flex items-center gap-1 rounded-[var(--radius-pill)] border border-(--color-border) bg-(--color-chrome)/95 px-2 py-1.5 backdrop-blur"
+    class="pointer-events-auto flex items-center gap-1 rounded-[var(--radius-pill)] border border-(--color-border) bg-(--color-chrome)/90 px-2 py-1.5 shadow-lg backdrop-blur"
   >
     <a
       href="#top"
-      class="rounded-[var(--radius-pill)] px-3 py-1 font-semibold text-(--color-accent) no-underline"
-      >{nav.mark}</a
+      class="nav-mark flex items-center gap-2 rounded-[var(--radius-pill)] px-3 py-1 font-semibold text-(--color-accent) no-underline"
     >
+      <svg
+        viewBox="10 10 80 80"
+        width="15"
+        height="15"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M34,20 L15,28 L15,72 L34,80 Z M66,20 L85,28 L85,72 L66,80 Z"
+          fill="currentColor"></path>
+        <rect x="44" y="15" width="12" height="70" rx="2" fill="currentColor"
+        ></rect>
+      </svg>
+      {nav.mark}
+    </a>
     <ul class="m-0 hidden list-none gap-0.5 p-0 sm:flex">
       {
         nav.links.map((link) => (
           <li>
             <a
               href={`#${link.id}`}
-              class="block rounded-[var(--radius-pill)] px-3 py-1 text-[length:var(--type-label-size)] text-(--color-text-secondary) no-underline"
+              data-spy={link.id}
+              class="nav-link block rounded-[var(--radius-pill)] px-3 py-1 text-[length:var(--type-label-size)] text-(--color-text-secondary) no-underline"
             >
               {link.label}
             </a>
@@ -48,26 +63,56 @@ import { nav } from '../content/copy'
       aria-label={nav.toggleLabel}
       aria-pressed="false"
     >
-      <span aria-hidden="true" class="theme-toggle-glyph">◐</span>
+      <span aria-hidden="true">◐</span>
     </button>
   </div>
 </nav>
 
 <style>
+  .site-nav {
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  /* Hidden over the hero, where the reader has not left the first screen. */
+  .site-nav[data-at-top='true'] {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .site-nav[data-at-top='true'] > * {
+    pointer-events: none;
+  }
+
+  .nav-link[aria-current='true'] {
+    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+    color: var(--color-text);
+  }
+
   .theme-toggle:hover,
-  nav a:hover {
+  .nav-link:hover,
+  .nav-mark:hover {
     color: var(--color-text);
   }
 
   /* 410-a11y: interactive elements take the page focus ring, never none. */
   .theme-toggle:focus-visible,
-  nav a:focus-visible {
+  .site-nav a:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-nav {
+      transition: none;
+    }
   }
 </style>
 
 <script>
+  const bar = document.querySelector<HTMLElement>('.site-nav')
   const toggle = document.querySelector<HTMLButtonElement>('.theme-toggle')
   const root = document.documentElement
 
@@ -90,4 +135,58 @@ import { nav } from '../content/copy'
   toggle?.addEventListener('click', () => {
     apply(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light')
   })
+
+  /**
+   * The bar reveals once the hero has scrolled away. A sentinel is used rather
+   * than a scroll handler so the browser reports the crossing itself instead of
+   * the page recomputing it every frame.
+   */
+  const hero = document.querySelector('#top')
+  if (bar && hero) {
+    bar.setAttribute('data-at-top', 'true')
+    new IntersectionObserver(
+      ([entry]) => {
+        bar.setAttribute('data-at-top', String(entry?.isIntersecting ?? true))
+      },
+      { rootMargin: '-45% 0px 0px 0px' },
+    ).observe(hero)
+  }
+
+  /**
+   * Which section the reader is in. Every observed section reports its own
+   * ratio and the largest wins, which is what keeps a short section between two
+   * tall ones from being skipped as the page scrolls past it.
+   */
+  const links = [...document.querySelectorAll<HTMLElement>('.nav-link')]
+  const targets = links
+    .map((link) => document.getElementById(link.dataset.spy ?? ''))
+    .filter((el): el is HTMLElement => el !== null)
+
+  if (targets.length) {
+    const ratios = new Map<string, number>()
+
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target.id, entry.intersectionRatio)
+        }
+
+        let best = ''
+        let seen = 0
+        for (const [id, ratio] of ratios) {
+          if (ratio > seen) {
+            seen = ratio
+            best = id
+          }
+        }
+
+        for (const link of links) {
+          link.setAttribute('aria-current', String(link.dataset.spy === best))
+        }
+      },
+      { threshold: [0, 0.15, 0.3, 0.5, 0.75, 1] },
+    )
+
+    for (const target of targets) spy.observe(target)
+  }
 </script>

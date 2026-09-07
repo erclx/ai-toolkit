@@ -4,14 +4,17 @@
  * section turns on.
  *
  * `scoped` decides which of two forms the trailing value takes. A scoped value
- * is the discriminating one, so it carries the accent pill and the reader's
- * eye lands on it first; an unscoped value is the ordinary case and stays flat
- * and muted. That contrast is the whole argument of the rules section, and
- * drawing both the same way is what the committed frame does wrong.
+ * gets a chip and an unscoped one stays bare, which is the distinction the
+ * rules section argues: a glob decides whether a rule loads at all.
  *
- * The accent here is the structural use `593-landing-page.md` caps at one, and
- * it stays one: the pill is the same structural mark the rule card border was,
- * moved rather than joined by a second.
+ * The chip is deliberately not the accent. An earlier cut drew it in
+ * `--color-accent` and the page ended up carrying 21 of them, against a rule
+ * in `internal/rules/claude/593-landing-page.md` that caps structural accent
+ * at exactly one use. Measured at 5.36:1 against a 3:1 floor, no single chip
+ * was too bright; there were simply twenty-one, so the accent stopped being a
+ * signal and became the texture of the page. The chip now reads on surface and
+ * border tokens, which is what that rule points a section at when it separates
+ * a state that is not the live one.
  */
 interface Props {
   name: string
@@ -26,7 +29,7 @@ const { name, value, scoped = false } = Astro.props
   <span class="text-(--color-text)">{name}</span>
   {
     scoped ? (
-      <span class="shrink-0 rounded-[var(--radius-pill)] border border-(--color-accent) bg-(--color-accent)/15 px-2.5 text-[length:var(--type-label-size)] text-(--color-accent)">
+      <span class="shrink-0 rounded-[var(--radius-pill)] border border-(--color-border) bg-(--color-chrome) px-2.5 text-[length:var(--type-label-size)] text-(--color-text-secondary)">
         {value}
       </span>
     ) : (

@@ -32,6 +32,23 @@
     margin: 0;
   }
 
+  /*
+   * A section heading takes the display step, which the scale already declares
+   * and nothing was using. It previously took the heading step at 19px against
+   * 16px body copy at the same weight, a 1.19x difference with no weight
+   * change, so a reader scanning the page had nothing to scan by.
+   *
+   * Set here rather than on each section, because eight components each
+   * declaring their own heading size is how a scale grows a step nobody chose.
+   */
+  h2 {
+    font-family: var(--type-display-family);
+    font-size: var(--type-display-size);
+    line-height: var(--type-display-lh);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
   a {
     color: var(--color-accent);
   }

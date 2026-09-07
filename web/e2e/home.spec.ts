@@ -58,6 +58,14 @@ test('the toggle flips the theme and records the choice', async ({ page }) => {
   const root = page.locator('html')
   const before = await root.getAttribute('data-theme')
 
+  // The bar is hidden over the hero, so the toggle is reached by scrolling
+  // past it, which is the only way a reader reaches it too.
+  await page.locator('#install').scrollIntoViewIfNeeded()
+  await expect(page.locator('.site-nav')).toHaveAttribute(
+    'data-at-top',
+    'false',
+  )
+
   await page.locator('.theme-toggle').click()
 
   const after = await root.getAttribute('data-theme')
@@ -217,8 +225,13 @@ test('catalog counts match a live canon gov counts read', async ({ page }) => {
   const live = readCatalogCounts()
   await page.goto('/')
 
+  // Scoped to the counts panel by its own hook. The section carries a second
+  // definition list for the domain summaries, and a bare `dl > div` matched
+  // both, with a catalog name appearing inside the prose of the other.
   for (const [name, value] of Object.entries(live)) {
-    const card = page.locator('dl > div').filter({ hasText: name })
+    const card = page
+      .locator('[data-catalog-counts] > div')
+      .filter({ hasText: name })
     await expect(card.locator('dd')).toHaveText(String(value))
   }
 })

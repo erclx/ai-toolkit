@@ -23,13 +23,19 @@ const count =
 ---
 
 <div class="panel-group mb-3">
+  {
+    /* One tracking value for every uppercase label on the page. Two components
+      declaring 0.05em and 0.1em rendered the same 12px step two ways, on rows
+      that sit side by side. The count is normal-case because it is a number,
+      and inheriting the transform rendered it as "2 OF 24". */
+  }
   <div
-    class="mb-0.5 flex items-baseline gap-2.5 text-[length:var(--type-label-size)] tracking-[0.1em] text-(--color-muted) uppercase"
+    class="mb-0.5 flex items-baseline gap-2.5 text-[length:var(--type-label-size)] tracking-[0.05em] text-(--color-muted) uppercase"
   >
     <span>{label}</span>
     {
       count && (
-        <span class="tracking-normal text-(--color-text-secondary)">
+        <span class="tracking-normal text-(--color-text-secondary) normal-case">
           {count}
         </span>
       )
