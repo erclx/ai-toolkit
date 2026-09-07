@@ -188,7 +188,22 @@ export async function extractFrames(
     }
   }
 
-  const framePaths = [
+  return { status: 'extracted', framePaths: collectFrames(targetDir, name) }
+}
+
+/**
+ * The glob-and-sort step `extractFrames` reads its result from, pulled out so
+ * a test can drive it against a directory it wrote by hand rather than
+ * through a real extraction, which is the only way to reach the four-digit
+ * boundary below without an ffmpeg run long enough to produce one.
+ *
+ * ffmpeg's `%03d` pads to three characters and then widens rather than
+ * truncating, so a run producing 1000 or more frames writes `-1000.png`
+ * beside `-999.png`, and a lexicographic sort reads the wider name first.
+ * `frameIndex` sorts on the parsed number instead.
+ */
+export function collectFrames(targetDir: string, name: string): string[] {
+  return [
     ...new Bun.Glob(`${name}-frame-*.png`).scanSync({
       cwd: targetDir,
       onlyFiles: true,
@@ -196,16 +211,9 @@ export async function extractFrames(
   ]
     .sort((a, b) => frameIndex(a) - frameIndex(b))
     .map((frame) => join(targetDir, frame))
-
-  return { status: 'extracted', framePaths }
 }
 
-/**
- * ffmpeg's `%03d` pads to three characters and then widens rather than
- * truncating, so a run producing 1000 or more frames writes `-1000.png`
- * beside `-999.png` and a lexicographic sort reads the wider name first.
- */
-export function frameIndex(filename: string): number {
+function frameIndex(filename: string): number {
   const match = filename.match(/-frame-(\d+)\.png$/)
   return match ? Number(match[1]) : 0
 }

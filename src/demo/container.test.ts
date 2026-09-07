@@ -1,13 +1,19 @@
-import { existsSync, mkdtempSync, rmSync, statSync } from 'node:fs'
+import {
+  existsSync,
+  mkdtempSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
+  collectFrames,
   convertToGif,
   convertToMp4,
   extractFrames,
-  frameIndex,
 } from '@/demo/container'
 
 async function ffmpegAvailable(): Promise<boolean> {
@@ -113,19 +119,26 @@ describe('convertToGif', () => {
   })
 })
 
-describe('frameIndex', () => {
-  it('should sort past the three-character padding ffmpeg writes', () => {
-    const names = [
-      'clip-frame-1000.png',
-      'clip-frame-001.png',
-      'clip-frame-999.png',
-    ]
+describe('collectFrames', () => {
+  it('should order frames numerically past the three-character padding ffmpeg writes', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'canon-demo-collect-frames-'))
+    try {
+      for (const frame of [
+        'clip-frame-1000.png',
+        'clip-frame-001.png',
+        'clip-frame-999.png',
+      ]) {
+        writeFileSync(join(dir, frame), '')
+      }
 
-    expect([...names].sort((a, b) => frameIndex(a) - frameIndex(b))).toEqual([
-      'clip-frame-001.png',
-      'clip-frame-999.png',
-      'clip-frame-1000.png',
-    ])
+      expect(collectFrames(dir, 'clip')).toEqual([
+        join(dir, 'clip-frame-001.png'),
+        join(dir, 'clip-frame-999.png'),
+        join(dir, 'clip-frame-1000.png'),
+      ])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 })
 
