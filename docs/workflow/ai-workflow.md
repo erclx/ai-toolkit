@@ -157,7 +157,7 @@ The list stays written in the skill body as the fallback for a target whose inst
 
 #### Memory in the chain
 
-`git-ship` runs its verify gate and then opens on `claude-memory-capture`, which sends what the session learned to the surface that owns it. `autoship` reaches the same step by invoking that skill at its Step 7 rather than restating the order. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.canon/memory/`.
+`git-ship` runs its verify gate and then opens on `claude-memory-capture`, which sends what the session learned to the surface that owns it. `autoship` reaches the same step by invoking that skill at its Step 8 rather than restating the order. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.canon/memory/`.
 
 Capture leads rather than trails because a routed fact edits a tracked file, which has to reach the branch before the commit steps run.
 
@@ -219,13 +219,14 @@ This section is the corpus the coverage claim is measured against: every name `c
 
 ### Build the feature
 
-| Skill                        | When to use                                                         |
-| ---------------------------- | ------------------------------------------------------------------- |
-| `canon:claude-worktree`      | At the plan-to-execute boundary, to get an isolated tree and branch |
-| `canon:claude-autoship`      | After plan approval, to chain implement, verify, review, draft PR   |
-| `canon:project-commands`     | When the project's own command needs running                        |
-| `canon:systematic-debugging` | When a test fails or a bug surfaces, to force root cause first      |
-| `canon:claude-ui-test`       | After a UI change, to generate e2e tests and a visual checklist     |
+| Skill                        | When to use                                                               |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| `canon:claude-worktree`      | At the plan-to-execute boundary, to get an isolated tree and branch       |
+| `canon:claude-autoship`      | After plan approval, to chain implement, verify, review, draft PR         |
+| `canon:project-commands`     | When the project's own command needs running                              |
+| `canon:test-first`           | Before implementing a planned change, to write and run its test red first |
+| `canon:systematic-debugging` | When a test fails or a bug surfaces, to force root cause first            |
+| `canon:claude-ui-test`       | After a UI change, to generate e2e tests and a visual checklist           |
 
 ### Check the work before it leaves the branch
 
