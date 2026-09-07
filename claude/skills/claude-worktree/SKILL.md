@@ -137,7 +137,7 @@ Take `<install>` from the lockfile beside the manifest, checked in this order, f
 | `package-lock.json`       | `npm install`   |
 | none of the above         | `bun install`   |
 
-The order matters only when more than one lockfile sits beside the manifest, such as a project mid-migration between package managers. A fixed order is what removes the ambiguity there, and bun sits first in it so the common case, a project carrying no competing lockfile at all, never depends on the order.
+The order matters only when more than one lockfile sits beside the manifest, such as a project mid-migration between package managers. It is fixed rather than derived from anything about the project, so a reader hitting that rare case checks which manager the project actually uses rather than trusting the row the table picked first.
 
 Emit the closing line only on its own direct test, run ahead of the two checks above rather than reached by falling through them unmatched: `[ ! -f package.json ] && [ ! -f pyproject.toml ] && [ ! -f requirements.txt ]`: `No package manifest, so there is nothing to install.` A dual-root project matches both checks above, and a fallthrough test would route it here by accident.
 
