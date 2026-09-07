@@ -16,6 +16,7 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 - Take the approved plan for the branch as the scope, and implement only what it describes
 - Give every step a stop condition, and leave the code on the branch and the receipts on disk at each one
 - Classify the changed-file list by path as well as by extension, so informational prose skips a code review with no signal on it and executable prose still reaches one
+- Check the branch's committed history for a test-order violation between verify and review, and report any finding without gating on it, matching the verb's own contract
 - Split findings by origin, stopping on a critical or should-fix one the branch inherited and repairing one this run caused
 - Own the review receipt's lifetime, since this chain writes it, cites it in its own closing block, and is the only body that can read whether the step keeping it is still using it
 - Delegate the ship sequence to `git-ship` rather than restating it, and name only what this chain adds to it
@@ -34,6 +35,7 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 - Run the memory Apply phase. Promoting an entry changes how the agent operates and ships as its own change.
 - Read an empty changed-file list as prose-only. It satisfies that test vacuously and would route the branch past review instead of through it.
 - Read a markdown extension as evidence the change only informs. A skill body, a governance rule, and a standard are behavior written in prose.
+- Stop the chain or rewrite a commit over a test-order finding. The verb reports and never gates, and a commit already in history is a different act from the work this run is building.
 
 ## Guards
 
@@ -47,4 +49,4 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 
 - Writing the plan, which `claude-feature` owns. This chain starts from one already approved.
 - The behavior of each step, owned by the skill invoked. This skill owns the order and the stop conditions.
-- The ship sequence and the resume path after a stop, both of which `git-ship` owns. That skill is the tail of this chain, invoked at Step 7 rather than copied into it, so the overlap is one body reached two ways rather than two bodies stating one order.
+- The ship sequence and the resume path after a stop, both of which `git-ship` owns. That skill is the tail of this chain, invoked at Step 8 rather than copied into it, so the overlap is one body reached two ways rather than two bodies stating one order.

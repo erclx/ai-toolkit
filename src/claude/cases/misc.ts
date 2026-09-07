@@ -30,6 +30,11 @@ export const MISC_CASES: readonly SkillCase[] = [
     expect: 'systematic-debugging',
   },
   {
+    prompt:
+      "I'm about to write the retry helper we settled on and nothing covers it yet, so get the failing case in first.",
+    expect: 'test-first',
+  },
+  {
     prompt: 'Does our github about text still match what the readme says?',
     expect: 'repo-metadata',
   },

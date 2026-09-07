@@ -13,7 +13,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "happy-path" "prose-informational" "prose-executable"
+  select_or_route_scenario "Which scenario?" "happy-path" "prose-informational" "prose-executable" "test-order-violation"
 
   log_step "Configuring autoship environment ($ANCHOR_REPO)"
 
@@ -113,7 +113,9 @@ EOF
     log_info "Context: main, with an approved plan staged for feat/add-farewell and one seeded memory entry"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements farewell fn, verify passes, review runs, PR marked draft and read back"
-    log_info "         Step 7 invokes git-ship rather than restating the chain, so the verify"
+    log_info "         Step 4 runs test-order in the worktree and reports clean, since the"
+    log_info "         branch is taken fresh off main and carries no commit of its own yet"
+    log_info "         Step 8 invokes git-ship rather than restating the chain, so the verify"
     log_info "         runs twice and the marking lands before the CI watch, reported from the read"
     log_info "         a headless run with no interaction has nothing for capture to find, so"
     log_info "         it typically reports Nothing worth capturing and Step 9 is skipped"
@@ -183,8 +185,9 @@ EOF
     log_info "Context: main, with a plan staged for feat/expand-intro touching only docs/intro.md"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements prose update, verify passes, REVIEW IS SKIPPED, PR marked draft and read back"
+    log_info "         Step 4 runs test-order in the worktree and reports clean on an empty range"
     log_info "         docs/ is outside every behavior path, so both classifier tests pass"
-    log_info "         autoship Step 5 should print the skip rationale rather than invoking claude-review"
+    log_info "         autoship Step 6 should print the skip rationale rather than invoking claude-review"
     log_info "         pen is empty, so capture and Propose no-op and the fourth output line is omitted"
     ;;
   "prose-executable")
@@ -264,9 +267,132 @@ EOF
     log_info "Context: main, with a plan staged for feat/tighten-deploy-check touching only a SKILL.md body"
     log_info "Action:  /claude-autoship"
     log_info "Expect:  implements the stop condition, verify passes, REVIEW RUNS, PR marked draft and read back"
+    log_info "         Step 4 runs test-order in the worktree and reports clean, since the branch"
+    log_info "         carries no commit and the diff names no TypeScript either way"
     log_info "         the diff is all markdown, so the extension test passes and the path test fails"
-    log_info "         .claude/skills/ is a behavior path, so Step 5 must invoke claude-review"
+    log_info "         .claude/skills/ is a behavior path, so Step 6 must invoke claude-review"
     log_info "         a skipped review here is the defect this arm exists to catch"
+    ;;
+  "test-order-violation")
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-autoship-test-order",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "echo 'lint ok' && echo 'typecheck ok'"
+  }
+}
+EOF
+
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Greeting utility library.
+
+## Commands
+
+- `bun run check`: lint and typecheck
+EOF
+
+    # The branch has to carry the violating commits, and a worktree taken fresh
+    # off the remote default would carry none of them. Branching from local HEAD
+    # is what puts them in the range Step 4 reads.
+    mkdir -p .claude
+    cat <<'EOF' >.claude/settings.json
+{
+  "worktree": {
+    "baseRef": "head"
+  }
+}
+EOF
+
+    mkdir -p src
+    cat <<'EOF' >src/index.ts
+export function greet(name: string): string {
+  return `Hello, ${name}!`
+}
+EOF
+
+    cat <<'EOF' >src/index.test.ts
+import { describe, expect, it } from 'bun:test'
+
+import { greet } from './index'
+
+describe('greet', () => {
+  it('should address the name it was given', () => {
+    expect(greet('Ada')).toBe('Hello, Ada!')
+  })
+})
+EOF
+
+    git add . && git commit -m "feat(project): initial greeting library" --no-verify -q
+    git push --force origin HEAD:main
+
+    # Two commits rather than one, because a subject carrying no test at all
+    # reads as unclassified. A finding needs both sides in the range with the
+    # test arriving second, which is the shape the check is named for.
+    cat <<'EOF' >src/shout.ts
+export function shout(name: string): string {
+  return `HELLO, ${name.toUpperCase()}!`
+}
+EOF
+
+    git add src/shout.ts && git commit -m "feat(shout): add the shout helper" --no-verify -q
+
+    cat <<'EOF' >src/shout.test.ts
+import { describe, expect, it } from 'bun:test'
+
+import { shout } from './shout'
+
+describe('shout', () => {
+  it('should upper-case the name it was given', () => {
+    expect(shout('Ada')).toBe('HELLO, ADA!')
+  })
+})
+EOF
+
+    git add src/shout.test.ts && git commit -m "test(shout): cover the shout helper" --no-verify -q
+
+    git push origin --delete feat/add-whisper -q 2>/dev/null || true
+
+    mkdir -p .canon/plans .canon/review
+
+    cat <<'EOF' >.canon/plans/feature-add-whisper.md
+# Feature: add whisper utility
+
+Add a `whisper` function returning a lower-cased greeting, in its own module beside the others, and cover it with a test.
+
+**Files to touch:**
+
+- `src/whisper.ts`: new `whisper` function returning `hello, <name>.`
+- `src/whisper.test.ts`: the case covering it
+
+**Risks:**
+
+None identified.
+
+**Questions:**
+
+None identified.
+EOF
+
+    log_step "Scenario ready: autoship over a branch whose history already breaks test order"
+    log_info "Context: local main sits two commits ahead of origin/main. src/shout.ts landed"
+    log_info "         first and src/shout.test.ts landed after it, so the pair reads as"
+    log_info "         implementation-first. A plan for a genuinely new whisper module is staged."
+    log_info "Action:  /claude-autoship"
+    log_info "Expect:  Step 4 reports one finding, naming src/shout.ts and the reason that the"
+    log_info "         implementation reached history before the test covering it, then CONTINUES"
+    log_info "         the chain reaches review and opens a draft PR anyway, since the verb"
+    log_info "         reports and never gates, and the commits are an earlier round's rather"
+    log_info "         than this run's to rewrite"
+    log_info "         a stopped chain or a rewritten commit is the defect this arm exists to catch"
+    log_info "         Step 2's own whisper work is uncommitted when Step 4 runs, so it is"
+    log_info "         outside the range and reports nothing either way"
+    log_info "         a clean Step 4 here means the worktree was taken off origin/main rather"
+    log_info "         than local HEAD, so check that .claude/settings.json baseRef took effect"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

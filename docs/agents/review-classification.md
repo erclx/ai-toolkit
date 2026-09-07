@@ -64,13 +64,13 @@ An empty set refuses with `no-changes` rather than skipping. Both tests are univ
 
 ## Why it is a verb
 
-The decision was three sentences in `claude-autoship` Step 5, applied by a session reading a bulleted list of paths. It failed three times. A driven arm on 2026-08-30 staged `.claude/skills/deploy-check/SKILL.md`, which that list names, and the chain skipped review and opened a draft pull request anyway. The rule was correct and the session did not apply it, and the two fixes before that one were each a rewrite of the same prose.
+The decision was three sentences in `claude-autoship`'s review step, applied by a session reading a bulleted list of paths. It failed three times. A driven arm on 2026-08-30 staged `.claude/skills/deploy-check/SKILL.md`, which that list names, and the chain skipped review and opened a draft pull request anyway. The rule was correct and the session did not apply it, and the two fixes before that one were each a rewrite of the same prose.
 
 A rule a session can talk itself out of moves into a verb. That is the same argument the quiz-order draw in `canon teach lesson` was decided on: an instruction is a hope where a verb is a check.
 
 ## The written fallback
 
-The verb ships with the CLI and Step 5 ships with the plugin, so a target holding an older binary meets a missing subcommand. The skill body keeps the written list and applies it by hand there, naming which of the two decided the run.
+The verb ships with the CLI and Step 6 ships with the plugin, so a target holding an older binary meets a missing subcommand. The skill body keeps the written list and applies it by hand there, naming which of the two decided the run.
 
 The fallback is never a skip. Failing open is the exact defect the verb closes, so a body that skips on anything other than a `skip` record would ship every branch unreviewed the moment the subcommand went absent.
 

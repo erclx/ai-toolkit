@@ -17,7 +17,7 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 
 ## Diff baseline
 
-Step 5 classifies the changed-file list to decide whether review runs. Resolve the base ref once:
+Step 6 classifies the changed-file list to decide whether review runs. Resolve the base ref once:
 
 ```bash
 git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
@@ -27,7 +27,7 @@ Prefer `origin/main` over local `main`. A local `main` trailing the remote pulls
 
 The baseline is unusable when no merge base resolves against either ref. Stop: `❌ No diff baseline against main. Fetch origin, then re-run autoship.`
 
-The base equalling HEAD stays usable here, unlike in the four read-only siblings carrying this section. Step 5 runs before anything is committed, since `git-stage` commits at Step 7, so the base equals HEAD on every ordinary run. The classifier diffs the base against the working tree rather than against HEAD, which keeps the uncommitted work in the set at correct scope. Do not port the sibling `base == HEAD` stop into this skill.
+The base equalling HEAD stays usable here, unlike in the four read-only siblings carrying this section. Step 6 runs before anything is committed, since `git-stage` commits at Step 8, so the base equals HEAD on every ordinary run. The classifier diffs the base against the working tree rather than against HEAD, which keeps the uncommitted work in the set at correct scope. Do not port the sibling `base == HEAD` stop into this skill.
 
 ## Step 0: take the role, then enter a worktree
 
@@ -103,7 +103,21 @@ Run the verify commands defined in `CLAUDE.md` (lint, typecheck, tests). On fail
 
 Do not loop. Do not bypass hooks.
 
-## Step 4: UI test (conditional)
+## Step 4: test order
+
+Run `canon gov test-order --json` from the worktree this chain is building in, which is the one tree holding the branch's own commits. The Guards send a `.canon/plans/` and a `.canon/review/` read to the main worktree root and this is not one of those: that checkout sits on the trunk on an ordinary run, so the range closes on itself there and every finding the branch carries reads as clean.
+
+The verb reads git history rather than the working tree, so a branch with nothing committed yet reads as clean, and what it catches is a violation that already reached this branch's history in an earlier session or an earlier round of this chain. It reports and never gates, since nothing wires its exit into a push, so branch on the record's `kind` and its `findings` array rather than on the exit, which reads 2 on a finding and 1 on a refusal and which a shell function wrapping `canon` can flatten to zero either way.
+
+- `kind: 'measured'`, `findings` empty. Nothing on the branch reached history ahead of its test. Continue to Step 5.
+- `kind: 'measured'`, `findings` non-empty. Report each pair's `subject` and `reason` to the user and continue to Step 5. Do not stop the chain and do not attempt a fix: the commit already reached history, and rewriting it here rewrites what an earlier run shipped rather than what this run is building.
+- `kind: 'unreadable'`. Report the `message` and continue to Step 5. A shallow clone or a repository with no trunk is an ordinary state this check cannot read, not a reason to stop shipping.
+
+### When the verb is absent
+
+The verb ships with the CLI and this body ships with the plugin, matching Step 6's own fallback for the classify verb. Report that the check did not run rather than reading a missing subcommand as clean, and continue to Step 5.
+
+## Step 5: UI test (conditional)
 
 If the diff touches UI files (JSX, TSX, Vue, Svelte, HTML, or CSS under `src/`), invoke `canon:claude-ui-test`.
 
@@ -111,7 +125,7 @@ If `claude-ui-test` produces a manual checklist, stop: `❌ UI requires visual v
 
 If all UI changes are covered by e2e tests, continue.
 
-## Step 5: review
+## Step 6: review
 
 Classify the diff first. Take the union of `git diff --name-only <base>` and `git ls-files --others --exclude-standard`, resolving `<base>` per Diff baseline, then hand that set to the verb rather than reading it against the list below yourself:
 
@@ -121,7 +135,7 @@ canon autoship classify --json <path>...
 
 The verb reads names only and touches git not at all, so the set stays the one this step already computed and no second baseline resolves to disagree with the first. Branch on the record's `decision` rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
 
-- `skip`. Every path reads as prose and none states agent behavior. Skip review entirely and continue to Step 7.
+- `skip`. Every path reads as prose and none states agent behavior. Skip review entirely and continue to Step 8.
 - `review`. Invoke `canon:claude-review`. The record names the `file` that decided it and the `test` it failed, `extension` for a path that is not prose and `behavior-path` for prose that states what an agent does.
 - `refused`, carrying reason `no-changes`. The changed set was empty, so take the stop below.
 
@@ -137,7 +151,7 @@ The verb ships with the CLI and this body ships with the plugin, so a target hol
 
 Never read an absent subcommand as a skip. Failing open is the exact defect the verb closes, and a shell that answers `command not found` reaching a body that skips on anything other than a `skip` record would ship every branch unreviewed.
 
-The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `canon:claude-review`.
+The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 8. Otherwise invoke `canon:claude-review`.
 
 Behavior paths carry two spellings, the one a surface authors at and the one it reaches a session at, so the rule reads the same in a toolkit and in a project that consumed one:
 
@@ -156,9 +170,9 @@ The list covers this toolkit's authoring layout and the layout it installs, whic
 
 The verb reads the same set from `src/autoship/paths.ts`, so a path added here belongs there too and a path added there belongs here. Two copies is what the fallback costs, and it stands until a release retires the written half.
 
-## Step 6: evaluate findings
+## Step 7: evaluate findings
 
-Skip this step when Step 5 skipped review. Otherwise read `.canon/review/branch/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
+Skip this step when Step 6 skipped review. Otherwise read `.canon/review/branch/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
 
 - **This run caused it, at any severity.** Fix it, re-run the Step 3 verify commands, re-read the fixed file against what the finding claimed, and continue. Do not report it as a stop and do not offer the fix as a choice, which is the same stop wearing a proposal.
 - **It predates this run, critical or should-fix.** Stop: `❌ Review found non-minor issues that predate this run. See .canon/review/branch/review-<slug>.md. Fix and run /git-ship.`
@@ -168,9 +182,9 @@ Read origin as causation rather than authorship. Staleness this run induced in a
 
 Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .canon/review/branch/review-<slug>.md. Fix and run /git-ship.`
 
-This chain owns the receipt's lifetime, which is what makes the Output block's citation resolve on a run that reaches it. `claude-docs` used to delete the current slug's receipt while running under Step 7 below, so the closing line named a file the same run had already removed. That sweep now reaches only reports whose branch is gone, which collects this one a branch later rather than during the run that wrote it. The cost is one receipt per live branch left in `.canon/review/branch/`, bounded by the branch count rather than by the lifetime of the checkout.
+This chain owns the receipt's lifetime, which is what makes the Output block's citation resolve on a run that reaches it. `claude-docs` used to delete the current slug's receipt while running under Step 8 below, so the closing line named a file the same run had already removed. That sweep now reaches only reports whose branch is gone, which collects this one a branch later rather than during the run that wrote it. The cost is one receipt per live branch left in `.canon/review/branch/`, bounded by the branch count rather than by the lifetime of the checkout.
 
-## Step 7: ship
+## Step 8: ship
 
 Invoke `canon:git-ship`. That body owns the sequence, being the verify gate, memory capture, both doc syncs, staging, the commit grouping, the branch rename, the pull request, the CI watch, and the scoped memory review, along with the reason each step sits where it does. This step used to restate that list and the two drifted apart with nothing comparing them, so read the order there and never here.
 
@@ -201,11 +215,11 @@ Respond with up to five lines:
 <Memory proposal at .canon/review/memory/memory-review-<slug>.md>
 ```
 
-`<state>` is whatever the Step 7 read returned, being `draft` or `ready, unsupervised`, rather than the state the undo asked for. Writing the word `draft` there unconditionally is what this line used to do, and it named a state no step had read.
+`<state>` is whatever the Step 8 read returned, being `draft` or `ready, unsupervised`, rather than the state the undo asked for. Writing the word `draft` there unconditionally is what this line used to do, and it named a state no step had read.
 
 Omit the second line if there were no minor findings, and the third if nothing routed. Omit the fourth and fifth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal. A run that routes every fact and writes none is the shape to expect, and it reports three lines.
 
-This block replaces the one `git-ship` closes on rather than following it. The two carry the same three trailing lines and differ on the two above them, since the first names the state the read returned and the second reports the minor findings Step 6 kept, neither of which that body has a counterpart for. Emitting both reports one run twice and buries the state under a `✅ Shipped` that does not name it.
+This block replaces the one `git-ship` closes on rather than following it. The two carry the same three trailing lines and differ on the two above them, since the first names the state the read returned and the second reports the minor findings Step 7 kept, neither of which that body has a counterpart for. Emitting both reports one run twice and buries the state under a `✅ Shipped` that does not name it.
 
 ## Failure recovery
 
