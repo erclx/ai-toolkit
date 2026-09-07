@@ -43,6 +43,10 @@ export const AUTHORING_CASES: readonly SkillCase[] = [
     expect: 'draft-docs',
   },
   {
+    prompt: 'This project has no README.md at all, write one from scratch.',
+    expect: 'draft-readme',
+  },
+  {
     prompt:
       'Write a context entry for the payments domain, there is no .claude/context page for it yet.',
     expect: 'draft-context',
