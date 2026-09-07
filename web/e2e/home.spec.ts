@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 import { readCatalogCounts } from '../src/lib/counts'
 // The spec runs outside vite, which resolves a bare JSON import for the
 // component but not for this file, so the attribute is required here and not
-// in AgentView.astro.
+// in agent-view.astro.
 import fixture from '../src/fixtures/agent-view.json' with { type: 'json' }
 
 test('renders the eight sections', async ({ page }) => {

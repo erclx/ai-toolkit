@@ -202,7 +202,7 @@ const summary = {
 }
 
 const fixture = {
-  // Read by web/src/components/AgentView.astro. Every field below is either a
+  // Read by web/src/components/agent-view.astro. Every field below is either a
   // live read or a hand transcription, and this header is what says which.
   generatedBy: "scripts/core/regen-agent-fixture.sh",
   readAt: READ_AT,

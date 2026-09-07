@@ -25,15 +25,15 @@ a rule rather than a note in a context entry.
 
 ## Three animations, and a fourth replaces one rather than joining it
 
-- The page carries three: the rule card arriving in `RuleArrival.astro`, and the working marker and the row moving from Working to Completed in `AgentView.astro`.
+- The page carries three: the rule card arriving in `rule-arrival.astro`, and the working marker and the row moving from Working to Completed in `agent-view.astro`.
 - Replace one of the three when a section needs motion. A fourth turns a page that demonstrates into a page that decorates, and no build catches the difference.
 - Give every animation a `prefers-reduced-motion: reduce` branch that still lands the state change. A transition carried by a class survives the branch where one carried by the motion alone does not.
 
 ## One structural accent, and the action color is not it
 
-- `--color-accent` marks structure exactly once, on the rule card border in `RuleArrival.astro`. A second structural accent leaves a reader with two things claiming to be the one thing worth looking at.
-- The accent has exactly three uses and the set is closed: structure, action, and status. Structure is capped at one, action is `Hero.astro` and `CallToAction.astro`, and status is the working marker in `AgentView.astro`, which is the color the surface it re-creates shows. A fourth use is not a fourth category. Argue it into one of the three or leave the accent out, because every new category arrives with a reason as good as these two and the cap holds only while the set cannot grow.
-- Reach for `--color-success` or a surface and border token when a section separates a state that is not the live one, which is what `AgentView.astro` does for its completed rows.
+- `--color-accent` marks structure exactly once, on the rule card border in `rule-arrival.astro`. A second structural accent leaves a reader with two things claiming to be the one thing worth looking at.
+- The accent has exactly three uses and the set is closed: structure, action, and status. Structure is capped at one, action is `hero.astro` and `call-to-action.astro`, and status is the working marker in `agent-view.astro`, which is the color the surface it re-creates shows. A fourth use is not a fourth category. Argue it into one of the three or leave the accent out, because every new category arrives with a reason as good as these two and the cap holds only while the set cannot grow.
+- Reach for `--color-success` or a surface and border token when a section separates a state that is not the live one, which is what `agent-view.astro` does for its completed rows.
 
 ## Every citation is a quoted phrase, never a line number
 
