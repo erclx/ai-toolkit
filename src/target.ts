@@ -1,6 +1,7 @@
 import { statSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { logError, outro } from '@/ui'
+import { checkoutMismatchWarning } from '@/project-root'
+import { logError, logWarn, outro } from '@/ui'
 
 export function isDirectory(path: string): boolean {
   try {
@@ -23,6 +24,9 @@ export function resolveTarget(
   target: string,
   protectedRoot: string,
 ): string | number {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const resolved = resolve(target)
 
   if (!isDirectory(resolved)) {

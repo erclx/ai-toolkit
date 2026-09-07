@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { execScript } from '@/exec'
-import { findCheckoutMismatch, PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import {
   injectConfigs,
   injectGitignore,
@@ -180,14 +180,20 @@ export function register(program: Command): void {
  * pass-through loop below skips the `intro` the shared helper carries.
  */
 function runList(opts: ListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the `--json` path, which returns first and
+  // opens none. One position cannot serve both.
+  const mismatch = checkoutMismatchWarning(process.cwd())
   const stacks = buildStackSummaries(PROJECT_ROOT)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(`${JSON.stringify({ stacks })}\n`)
     return 0
   }
 
   intro('canon tooling list')
+  if (mismatch !== undefined) logWarn(mismatch)
   logStep('Stacks')
   for (const summary of stacks) logInfo(describeStack(summary))
   outro()
@@ -229,6 +235,9 @@ function printReference(stack: string): number {
  * stack the way it drove `merge_gitignore` before.
  */
 function prepare(stack: string, target: string, skip?: string): Prepared {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   if (!stackExists(PROJECT_ROOT, stack)) {
     return { ok: false, error: `Stack not found: ${stack}` }
   }
@@ -267,13 +276,6 @@ async function runSync(
   opts: SyncOptions,
 ): Promise<number> {
   intro('canon tooling sync')
-
-  const mismatch = findCheckoutMismatch(process.cwd())
-  if (mismatch !== undefined) {
-    logWarn(
-      `Resolved via ${PROJECT_ROOT}, not the checkout at ${mismatch}. Run \`bun ${mismatch}/src/cli.ts tooling sync ...\` to sync against that checkout instead.`,
-    )
-  }
 
   if (opts.check === true && opts.write === true) {
     logWarn('Pass --check or --write, not both.')

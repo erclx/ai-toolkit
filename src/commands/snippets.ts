@@ -1,9 +1,9 @@
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { BASE_CATEGORY } from '@/snippets/categories'
 import { buildSnippetsCatalog } from '@/snippets/list'
-import { intro, logInfo, logStep, outro } from '@/ui'
+import { intro, logInfo, logStep, logWarn, outro } from '@/ui'
 
 const PASS_THROUGH_VERBS = ['create'] as const
 
@@ -42,14 +42,20 @@ export function register(program: Command): void {
  * emitted section headers and the pass-through above it owned the `┌`.
  */
 function runList(opts: ListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the `--json` path, which returns first and
+  // opens none. One position cannot serve both.
+  const mismatch = checkoutMismatchWarning(process.cwd())
   const catalog = buildSnippetsCatalog(PROJECT_ROOT)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(`${JSON.stringify(catalog)}\n`)
     return 0
   }
 
   intro('canon snippets list')
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const showCategories = opts.entries !== true
   const showEntries = opts.categories !== true

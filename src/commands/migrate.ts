@@ -31,7 +31,7 @@ import {
   type ScratchEvidencePlan,
   walkScratchEvidenceCorpus,
 } from '@/migrate/scratch-evidence'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { readStamp, stampedHashes } from '@/sync/stamp'
 import { logError, logInfo, logStep, logWarn, pipeOutput, plural } from '@/ui'
 
@@ -583,6 +583,9 @@ interface RuleLayoutOptions {
  */
 async function runRuleLayout(opts: RuleLayoutOptions): Promise<number> {
   const root = opts.root ?? process.cwd()
+
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const files = await walkFlatRules(root)
   const hashes = stampedHashes(readStamp(root), 'governance')

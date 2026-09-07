@@ -2,7 +2,7 @@ import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
 import { listTopics, readTopic, resolveTopic } from '@/docs/read'
 import { execScript } from '@/exec'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { intro, logError, logInfo, logStep, logWarn, outro } from '@/ui'
 
 export function register(program: Command): void {
@@ -41,6 +41,9 @@ export function register(program: Command): void {
  */
 function get(topic: string): number {
   intro('canon docs')
+
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const resolved = resolveTopic(PROJECT_ROOT, topic)
 

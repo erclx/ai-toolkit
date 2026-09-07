@@ -2,7 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { execScript } from '@/exec'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import {
   assertedPercent,
   collectCensus,
@@ -286,6 +286,9 @@ function runCoverage(options: CoverageOptions): void {
 
   intro('canon sandbox coverage')
 
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const report = collectCoverage(PROJECT_ROOT)
 
   // A broken `exempt.toml` reads as a caller error, not as a crash. The parser
@@ -340,6 +343,9 @@ function runCheck(
   options: CheckOptions,
 ): void {
   intro('canon sandbox check')
+
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const parsed = parseTarget(target)
   if (parsed === undefined) {

@@ -27,6 +27,8 @@ byok
 canon
 changelog
 changelogithub
+chokepoint
+chokepoints
 clpa
 clpac
 clpc

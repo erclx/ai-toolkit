@@ -8,7 +8,7 @@ import {
   type CountsReport,
   scanCounts,
 } from '@/counts/scan'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { creationRel, SCRATCH } from '@/record-root'
 import { createGovAdapter } from '@/gov/adapter'
 import { regenConsumedRules } from '@/gov/consumed'
@@ -203,8 +203,11 @@ export function register(program: Command): void {
         '',
       ].join('\n'),
     )
-    .action(async (opts: RegenOptions) => {
-      process.exitCode = await runRegen(opts)
+    .action(async (opts: RegenOptions, cmd: Command) => {
+      process.exitCode = await runRegen(
+        opts,
+        cmd.getOptionValueSource('root') === 'cli',
+      )
     })
 
   gov
@@ -1052,10 +1055,15 @@ function selectedSections(opts: ListOptions): {
  * untouched by it.
  */
 function runList(opts: ListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the `--json` path, which returns first and
+  // opens none. One position cannot serve both.
+  const mismatch = checkoutMismatchWarning(process.cwd())
   const catalog = buildGovCatalog(PROJECT_ROOT)
   const sections = selectedSections(opts)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(
       `${JSON.stringify({
         ...(sections.stacks ? { stacks: catalog.stacks } : {}),
@@ -1067,6 +1075,7 @@ function runList(opts: ListOptions): number {
   }
 
   intro('canon gov list')
+  if (mismatch !== undefined) logWarn(mismatch)
 
   if (sections.stacks) {
     logStep('Stacks')
@@ -1092,7 +1101,18 @@ function runList(opts: ListOptions): number {
  * the only work that stage does now. The installed set is readable on disk, so
  * printing it would only add noise to every `bun run check`.
  */
-async function runRegen(opts: RegenOptions): Promise<number> {
+async function runRegen(
+  opts: RegenOptions,
+  rootPassed: boolean,
+): Promise<number> {
+  // An operator naming `--root` names their own target on purpose, so only the
+  // default can silently regenerate against a checkout nobody is standing in.
+  // The value alone cannot separate the two, since the flag carries a default.
+  if (!rootPassed) {
+    const mismatch = checkoutMismatchWarning(process.cwd())
+    if (mismatch !== undefined) logWarn(mismatch)
+  }
+
   const result = await regenConsumedRules(resolve(opts.root ?? PROJECT_ROOT))
 
   if (!result.ok) {
