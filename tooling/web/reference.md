@@ -110,7 +110,7 @@ Append rows:
 
 `canon tooling verify <stack>` is the only automated caller of `bun run screenshot`, running it for any stack whose `package.json` declares the script and asserting that PNG files land under `screenshots/`. It counts them with a recursive find carrying no depth limit, so the section folders the seed writes satisfy the assertion without a change to it. Do not flatten the layout to protect that check. No ship chain captures a screenshot, so the output path the seed writes is a contract that one verifier reads rather than a default a ship step depends on.
 
-`governance/rules/ui/440-surface-capture.md` is what asks a session to run the capture after a route changes. It fires on route and page files rather than on every component, so a shared component changing every screen fires nothing and the operator runs the capture by hand.
+`governance/rules/ui/440-surface-capture.md` is what asks a session to run the capture after a surface changes. It now fires on every component file too, reversing the route-and-page-only scope this reference once described, after a shipped batch of components carried no capture and a defect went unseen. The rule body states its own exemption for a component the production build strips out, so a reader chasing that case reads it there rather than here.
 
 The sweep under `screenshots/` is ignored again, and only a flagged case's `evidence/` output tracks in git, so the first capture a scaffolded target runs after this change is the baseline it commits there.
 

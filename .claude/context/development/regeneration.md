@@ -17,6 +17,8 @@ Staging to clear the stage changes what the next skill in that chain measures. `
 
 `.claude/rules/` is not a whole-directory mirror, because the toolkit authors 71 rules under `governance/rules/` and consumes 64 into `.claude/rules/`, and installing the framework rules here would fire a React rule on a fixture this repository writes. The ui rules are consumed and the framework rules are not, which separates two families this sentence read as one until this repository started rendering surfaces of its own. `internal/governance.toml` carries that reason beside the list. It resolves through `canon gov regen` instead, which reads the stack named in `internal/governance.toml` and installs it with the same machinery `canon gov install` uses for a target.
 
+`canon gov regen`'s `--root` flag defaults to wherever the invoking binary is installed, never to the working directory. Run it bare from a worktree or any checkout other than that install and it looks for `internal/governance.toml` on the wrong tree, refusing there if none exists or regenerating the wrong repository's rules if one does. Pass `--root <literal-path>` naming the checkout being regenerated.
+
 The producer clears `.claude/rules/` before installing, so a rule dropped from the record disappears rather than lingering as an unsourced file. That is also why `internal/rules/` exists: a rule governing toolkit authoring alone needs a source somewhere outside `governance/rules/`, which ships to every target. `internal/rules/` named the internal mirror's one exclusion before this branch retired that mirror entirely, so those rules land at one path now for a simpler reason: nothing under `internal/` mirrors anywhere.
 
 ## Tooling paths
