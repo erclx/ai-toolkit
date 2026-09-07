@@ -3,22 +3,29 @@
 # `canon sandbox check`, which only asserts against what a run left behind
 # and drives nothing itself. `scripts/sandbox/run.sh infra:indexes
 # "/canon:setup-indexes" bootstrap` drives this arm headlessly the same way
-# it drives any `claude:setup-smoke` arm, category is not what gates it, and
-# hands the checker `--envelope`/`--writes` on completion. No reviewing
-# session has run it yet.
+# it drives any `claude:setup-smoke` arm, category is not what gates it.
+#
+# Driven twice on 2026-09-07: the scan finds `docs/` as the sole candidate
+# and the skill reaches `## Present candidates`, which lists it and asks
+# which folder to bootstrap, a question no reply channel reaches on a single
+# headless turn. Both runs left `docs/` untouched, at 9 and 4 turns
+# ($0.137 and $0.120), and each phrased the follow-up differently ("Would
+# you like me to bootstrap `docs/`? (yes / no — or name it explicitly if you
+# want a different scope)" against "Which folder would you like to
+# bootstrap? You can say `docs`, `all`, or `none`."), matching the sibling
+# `no-candidate` arm's finding that no reply substring survives both.
 
-max_turns = 20
+max_turns = 16
 
-paths = ["docs/index.md"]
-absent = []
+absent = ["docs/index.md"]
 
 manual = [
-  "Every sibling under docs/ gained drafted frontmatter, not only architecture.md. Semantic: computeIndex fails the whole folder on any sibling missing title or description, so docs/index.md existing already proves all five gained it, and the content pin below checks one as a representative rather than the claim's full scope",
-  "The drafted title and description read as accurate summaries of each file's body. Semantic: quality of the drafted text is a judgment call no pattern can score",
+  "The reply names docs/ as the sole candidate, its file count, and its frontmatter coverage, then asks which folder to bootstrap. Semantic: the exact phrasing varies run to run, so a substring pin would be fragile and the correctness of the paraphrase is a judgment no pattern can carry",
 ]
 
-# One sibling's drafted frontmatter, standing in for all five per the manual
-# entry above.
+# Proves docs/architecture.md was not touched: the raw seeded body carries no
+# frontmatter, and the run stopped before any draft, scaffold, or inject step
+# could add it.
 [[content]]
 path = "docs/architecture.md"
-pattern = '^---\ntitle:'
+pattern = '^# Architecture\n\nSystem boundaries and module responsibilities for the sample project\. Defines how the API gateway forwards requests to the worker pool and where state persists\.\n$'
