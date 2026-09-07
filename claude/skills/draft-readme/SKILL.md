@@ -20,6 +20,7 @@ Read these files in parallel:
   - It carries an H1 naming the project: it is authored. Stop: `❌ <path> already exists and covers the project. Run canon:docs-sync instead.`
   - It carries no H1, or its only headings restate the tool that scaffolded it rather than the project: it is unedited generator output. Continue, drafting over it rather than syncing its sections.
   - It does not exist: continue.
+- A hand-authored README opening with a badge block, or a title in some other form the H1 test misses, falls into the no-H1 branch the same as a scaffold page. The Confirm step below is what catches that case before the write happens, so treat it as load-bearing rather than a courtesy: never skip it on the reasoning that the guard already decided.
 
 ## Detect
 
