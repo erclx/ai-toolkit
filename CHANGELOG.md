@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.64.0](https://github.com/erclx/canon/compare/v4.63.0...v4.64.0) (2026-09-07)
+
+
+### Features
+
+* **autoship:** carry the test-first rule into the work ([#1578](https://github.com/erclx/canon/issues/1578)) ([adbd915](https://github.com/erclx/canon/commit/adbd915befb6b18931d8c4c988e62a60c1f62fe8))
+* **claude:** add draft-readme for authoring project READMEs ([#1575](https://github.com/erclx/canon/issues/1575)) ([0428c2f](https://github.com/erclx/canon/commit/0428c2f5a2f304476b148c432da1a3a9ef234add))
+* **skills:** add canon-record to drive the demo compile-and-run step ([#1579](https://github.com/erclx/canon/issues/1579)) ([95dc96b](https://github.com/erclx/canon/commit/95dc96bc366a3efe9d3fd790aa531647ad8a5cc4))
+* **skills:** add identity skill for a logo mark and social card ([#1576](https://github.com/erclx/canon/issues/1576)) ([5328472](https://github.com/erclx/canon/commit/5328472ffb9d319506f751adaac55536ed9b2bfb))
+
+
+### Bug Fixes
+
+* **sandbox:** assert only what a driven run can check ([#1580](https://github.com/erclx/canon/issues/1580)) ([5064528](https://github.com/erclx/canon/commit/5064528e4c9282c700e0350f528974a96a7aee4f))
+* **tooling:** add trailing slash so folder-naming-convention fires ([#1573](https://github.com/erclx/canon/issues/1573)) ([15f215f](https://github.com/erclx/canon/commit/15f215ffe8e9ab43b1d2fef25ab5864a08553a57))
+
 ## [4.63.0](https://github.com/erclx/canon/compare/v4.62.1...v4.63.0) (2026-09-06)
 
 
