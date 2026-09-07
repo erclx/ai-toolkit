@@ -23,10 +23,13 @@ a rule rather than a note in a context entry.
 - Say so on the page when a frame is a hand-taken snapshot that no build refreshes, which is what `boardLifecycle.note` does for the task board.
 - Never hand-edit a generated artifact. A hand-edit after generation defeats the discipline silently, which is the failure `assets/captures/install.html.tmpl` documents for the terminal frames and `scripts/core/regen-agent-fixture.sh` inherits for the session rows.
 
-## Three animations, and a fourth replaces one rather than joining it
+## Three demonstrative animations, and a fourth replaces one rather than joining it
 
 - The page carries three: the rule card arriving in `rule-arrival.astro`, and the working marker and the row moving from Working to Completed in `agent-view.astro`.
 - Replace one of the three when a section needs motion. A fourth turns a page that demonstrates into a page that decorates, and no build catches the difference.
+- Count an animation against the three when it asserts something. Each of the three above is evidence for a claim the section is making: the row reaching Completed is the dispatch completing, and the card arriving is the glob firing. Motion that argues is what the cap is about.
+- Do not count the entrance treatment, which asserts nothing. It is one decision applied to every section, driven by the single observer in `base.astro` and the `[data-reveal]` rules in `global.css`, and it is uniform by construction rather than by convention.
+- Give a section no arrival of its own. The moment one is tuned separately it has stopped being an entrance and started making a claim, so it lands back under the cap and replaces one of the three. That test is what keeps the second class from becoming a way around the first.
 - Give every animation a `prefers-reduced-motion: reduce` branch that still lands the state change. A transition carried by a class survives the branch where one carried by the motion alone does not.
 
 ## One structural accent, and the action color is not it

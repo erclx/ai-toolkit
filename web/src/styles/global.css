@@ -42,3 +42,42 @@
     font-size: var(--type-code-size);
   }
 }
+
+/*
+ * The entrance treatment, applied uniformly to every section.
+ *
+ * `internal/rules/claude/593-landing-page.md` caps the page at three
+ * animations, and that cap is about motion which asserts something: a row
+ * reaching Completed is the dispatch completing, and a rule card arriving is
+ * the glob firing. An entrance asserts nothing, so it is a second class rather
+ * than a fourth animation. What keeps that from being a loophole is that it is
+ * one decision applied to every section: the moment a section earns its own
+ * arrival, it is making a claim again and counts against the three.
+ *
+ * The branch below is what the same rule requires of every animation, and it
+ * lands the end state rather than only dropping the transition, so a reader
+ * with the preference set sees the finished section rather than a blank one.
+ */
+@layer base {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+    transition-delay: calc(var(--reveal-index, 0) * 60ms);
+  }
+
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      transition: none;
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
