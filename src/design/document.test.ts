@@ -62,7 +62,9 @@ describe('renderDesignDocument', () => {
     const document = renderDesignDocument()
 
     expect(document).toContain('#e4dcd0 ? verify')
-    expect(document).toContain('| background       | page canvas')
+    // The role column pads to the widest role in the table, so this width
+    // moves whenever a longer role name is declared.
+    expect(document).toContain('| background           | page canvas')
   })
 
   /**
