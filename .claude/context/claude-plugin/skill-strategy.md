@@ -655,6 +655,8 @@ The premise under the citation does not hold either. Each of the four proposes a
 
 `setup-smoke` sits beside `setup-verify` in one chain and reads the same `scripts` block through the same declared-scripts contract, which is what makes it the one of the six worth testing rather than inheriting. The two script sets are disjoint, and `setup-verify`'s `Not covered` list named the dev server, the preview server, and the browser suite as unowned before this folder existed. Judging differs as well, since a leaf script is judged by its exit code and a server has to be judged by whether it starts and stays up, which is the procedure question 2 asks for rather than a wrapper. Sharing a mechanism is not holding one job.
 
+Three of the five bullets above named a folder already carrying a row rather than a gap. `migration-standards-drop`, `index-lookup`, and `setup-smoke` all sit in `docs/workflow/ai-workflow.md`'s `## Skills` table, so the six narrows to three genuine row-less folders: `claude-worker`, `claude-planner`, and `repo-metadata`. The table now carries all three. Measured against `0428c2f5` on 2026-09-07.
+
 ### Two candidates the queued additions surfaced on their own
 
 The six queued additions are the other half of what this row asked for, and two of them carry an overlap their own intake item already found. Both were written up with a `Fix:` line proposing an existing skill and closed with a `You:` line taking a separate skill regardless, so the overlap is recorded rather than discovered here.
