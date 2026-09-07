@@ -32,6 +32,8 @@ Fall back to the stated default when nothing is detected, since no `tooling/` st
 - `180x180`
 - `192x192`, `512x512`
 
+This default set is raster-only. Step 6 already writes the vector source at `favicon.svg` regardless of which branch decided the sequence, so a project willing to reference an SVG favicon directly is covered either way.
+
 Announce which of the two decided the sequence.
 
 ## Step 3: detect the write folder
