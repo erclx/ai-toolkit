@@ -2,23 +2,24 @@
 # CLAUDE.md with no markdown-heavy folder anywhere. Read by `canon sandbox
 # check`, which only asserts against what a run left behind and drives
 # nothing itself. The scan finds no candidate, so the skill skips straight
-# to the convention seed offer against the CLAUDE.md `seed_no_candidate`
-# stages. No reviewing session has run it yet.
+# to the convention seed offer, which is a question rather than a write. A
+# single headless turn has nobody to answer it, so a correct run stops
+# there with `CLAUDE.md` untouched instead of reaching the closeout.
+# Driven twice on 2026-09-07: both ran 4 turns at $0.12 and left `CLAUDE.md`
+# unchanged, and each phrased the offer differently ("Want me to append the
+# canonical convention block to it?" against "I'd add this block... Should
+# I install it?"), so no reply substring survives both and none is pinned.
 
-max_turns = 30
+max_turns = 8
 
 absent = ["docs/index.md"]
 
 manual = [
-  "The convention seed offer resolves to accept rather than decline. Semantic: acceptance is the operator's call and no pattern can force it, so the content pins below only hold when the run's own judgment lands there",
+  "The reply identifies the missing `## Indexes` section and offers the correct convention block rather than a different one. Semantic: the offer's exact wording varies run to run, so a substring pin would be fragile and the correctness of the paraphrase is a judgment no pattern can carry",
 ]
 
-reply = ["Bootstrap complete."]
-
+# Proves the offer never wrote to CLAUDE.md: the seed's exact two lines,
+# anchored start to end, with nothing appended below them.
 [[content]]
 path = "CLAUDE.md"
-pattern = '^## Indexes$'
-
-[[content]]
-path = "CLAUDE.md"
-pattern = '^- When a folder has an `index\.md`, check it before reading individual files in that folder\.$'
+pattern = '^# Project\n\nSample project for testing the setup-indexes skill on an empty scan\.\n$'
