@@ -1,6 +1,6 @@
 ---
 title: Shared skill procedures
-description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the review classifier that became data a verb parses, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
+description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the review classifier that became data a verb parses, the core.bare repair carried at two points, the dependency-check step that misreports on an empty node_modules/, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
 ---
 
 # Shared skill procedures
@@ -110,6 +110,10 @@ Repairing only after entry would still admit a repository broken by an earlier s
 `scripts/core/repair-bare-flag.sh` carries the same repair as a second line of defense, sourced from `scripts/lib/worktree.sh` and run by `canon gate run` ahead of every stage because the flag breaks the git reads that scope the run. Nothing forces worktree entry through the skill, and one occurrence hit an operator whose session never entered a worktree at all. A git hook cannot serve here, because the corrupted command aborts before any hook runs.
 
 Both call sites confirm the repository's common dir is named `.git` before writing, which separates the defect from a genuinely bare repository that keeps its objects at the root and would be broken by the repair. The skill states the upstream issue inline rather than pointing at `wiki/claude/claude-worktrees.md`, since a shipped skill runs where no `wiki/` path resolves and `check-skill-paths.sh` fails the build on one.
+
+### The dependency-check step misreports on an empty `node_modules/`
+
+`claude-worktree` Step 6 tests `ls node_modules 2>/dev/null | head -1 && echo "..." || echo "..."`, and the pipe's exit status comes from `head`, which succeeds on empty input regardless of what `ls` found. A worktree carrying no `node_modules/` at all still reports dependencies installed, so a session skips `bun install` and meets the failure downstream instead, at whichever command needs the missing package first. Confirmed 2026-09-07 in a freshly entered `.claude/worktrees/bootstrap-arm-fixture/`: the check reported installed while the directory was absent, and `bun run check`'s format stage failed on a missing `prettier-plugin-astro` until `bun install` ran by hand.
 
 ### The branch worktree entry hands to the ship chain
 
