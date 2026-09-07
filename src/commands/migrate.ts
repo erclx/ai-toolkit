@@ -5,6 +5,7 @@ import { listRepositoryFiles } from '@/git-files'
 import { indexSourceRules } from '@/gov/adapter'
 import { applyRecordsMove, applyRename, readSources } from '@/migrate/apply'
 import { isToolkitOwned, planRename, type RenamePlan } from '@/migrate/plan'
+import { AITK_RULES, type RenameRules } from '@/migrate/rename'
 import {
   applyRecordTree,
   planRecordTree,
@@ -24,6 +25,7 @@ import {
   type RuleLayoutPlan,
   walkFlatRules,
 } from '@/migrate/rule-layout'
+import { SKILL_NAME_MAP, SKILL_NAME_RULES } from '@/migrate/skill-names'
 import {
   applyScratchEvidence,
   planScratchEvidence,
@@ -33,12 +35,15 @@ import {
 } from '@/migrate/scratch-evidence'
 import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { readStamp, stampedHashes } from '@/sync/stamp'
-import { logError, logInfo, logStep, logWarn, pipeOutput, plural } from '@/ui'
+import { logError, logInfo, logStep, logWarn, plural } from '@/ui'
 
-interface RenameOptions {
+interface SweepOptions {
   readonly json?: boolean
   readonly write?: boolean
   readonly root?: string
+}
+
+interface RenameOptions extends SweepOptions {
   readonly scope?: string
 }
 
@@ -51,18 +56,44 @@ function isScope(value: string): value is Scope {
 }
 
 /**
- * Reports rather than writes without `--write`, matching `canon records
- * migrate`. A rename touching this many files has no undo short of the branch
- * it ran on, so the safe outcome sits on the default path.
+ * The `aitk` sweep, which is the one rename with a second population to name.
+ * A target holds toolkit-owned folders whose content came from here beside
+ * prose that project wrote, and the scope is what separates them.
  */
 async function runRename(opts: RenameOptions): Promise<number> {
-  const root = opts.root ?? process.cwd()
   const scope = opts.scope ?? 'self'
 
   if (!isScope(scope)) {
     logError(`Unknown scope ${scope}. Use one of ${SCOPES.join(', ')}.`)
     return 1
   }
+
+  return runSweep(opts, AITK_RULES, scope)
+}
+
+/**
+ * The skill rename owns no scope. Every folder it moves is authored here, and
+ * no target holds a copy of this repository's skill catalog, so there is no
+ * second population for a caller to name.
+ */
+async function runSkillNames(opts: SweepOptions): Promise<number> {
+  return runSweep(opts, SKILL_NAME_RULES, undefined)
+}
+
+/**
+ * One sweep over a repository's tracked files under whichever rules it was
+ * handed.
+ *
+ * Reports rather than writes without `--write`, matching `canon records
+ * migrate`. A rename touching this many files has no undo short of the branch
+ * it ran on, so the safe outcome sits on the default path.
+ */
+async function runSweep(
+  opts: SweepOptions,
+  rules: RenameRules,
+  scope: Scope | undefined,
+): Promise<number> {
+  const root = opts.root ?? process.cwd()
 
   const files = await listRepositoryFiles(root)
   if (files === undefined) {
@@ -72,7 +103,7 @@ async function runRename(opts: RenameOptions): Promise<number> {
 
   const scoped = scope === 'target' ? files.filter(isToolkitOwned) : files
   const sources = await readSources(root, scoped)
-  const plan = planRename(sources)
+  const plan = planRename(sources, rules)
 
   // A target scope reports the citations it did not rewrite, since prose the
   // project wrote is theirs to change and a sweep editing it underneath them
@@ -84,12 +115,15 @@ async function runRename(opts: RenameOptions): Promise<number> {
             root,
             files.filter((f) => !isToolkitOwned(f)),
           ),
+          rules,
         ).entries.length
       : 0
 
+  // stdout, so the record pipes clean. `pipeOutput` frames to stderr, which is
+  // where this command's report belongs and where a JSON record does not.
   if (opts.json) {
-    pipeOutput(
-      JSON.stringify(toRecord(plan, scope, citations, opts.write), null, 2),
+    process.stdout.write(
+      `${JSON.stringify(toRecord(plan, scope, citations, opts.write), null, 2)}\n`,
     )
   }
 
@@ -115,8 +149,12 @@ async function runRename(opts: RenameOptions): Promise<number> {
   return 0
 }
 
-function report(plan: RenamePlan, scope: Scope, citations: number): void {
-  logInfo(`Scope ${scope}.`)
+function report(
+  plan: RenamePlan,
+  scope: Scope | undefined,
+  citations: number,
+): void {
+  if (scope !== undefined) logInfo(`Scope ${scope}.`)
   logInfo(
     `${plural(plan.entries.length, 'file')} to change, ${plural(plan.renamed, 'occurrence')} to rewrite.`,
   )
@@ -138,12 +176,12 @@ function report(plan: RenamePlan, scope: Scope, citations: number): void {
 
 function toRecord(
   plan: RenamePlan,
-  scope: Scope,
+  scope: Scope | undefined,
   citations: number,
   wrote: boolean | undefined,
 ): unknown {
   return {
-    scope,
+    ...(scope === undefined ? {} : { scope }),
     wrote: wrote === true,
     files: plan.entries.length,
     renamed: plan.renamed,
@@ -849,6 +887,45 @@ export function register(program: Command): void {
     )
     .action(async (opts: RenameOptions) => {
       process.exitCode = await runRename(opts)
+    })
+
+  migrate
+    .command('skill-names')
+    .description('Move the prefixed skill folders onto their two-word names')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option('--write', 'Apply the plan rather than reporting it')
+    .option(
+      '--root <path>',
+      'Project root, defaulting to the working directory',
+    )
+    .addHelpText(
+      'after',
+      [
+        '',
+        `Rewrites ${Object.keys(SKILL_NAME_MAP).length} skill names and moves the folders that carry them.`,
+        'It takes no scope. The skill folders it moves are authored in the',
+        'toolkit and no target holds a copy of that catalog, so in a target it',
+        'rewrites citations of a renamed skill and moves nothing.',
+        '',
+        'Exit codes:',
+        '  0  nothing to rewrite, or --write applied the whole plan',
+        '  1  refused, or a move failed',
+        '  2  a plan exists and --write was not passed',
+        '',
+        'The changelog is never rewritten, and neither is an eval transcript.',
+        'Each records what shipped or what a session ran under the name that',
+        'was current then.',
+        '',
+        'Examples:',
+        '  canon migrate skill-names',
+        '  canon migrate skill-names --write',
+        '  canon migrate skill-names --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: SweepOptions) => {
+      process.exitCode = await runSkillNames(opts)
     })
 
   migrate

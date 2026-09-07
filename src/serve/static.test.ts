@@ -396,6 +396,10 @@ describe('startServer', () => {
 
     const second = start(ROOT, { port: DEFAULT_PORT })
 
-    expect(second.port).toBe(first.port + 1)
+    // Greater than rather than exactly one above, because the walk skips every
+    // occupied port and this machine runs parallel worktree sessions that hold
+    // ports of their own. Pinning the offset asserts that nothing else was
+    // listening, which is a fact about the machine rather than about the walk.
+    expect(second.port).toBeGreaterThan(first.port)
   })
 })
