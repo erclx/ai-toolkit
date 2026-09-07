@@ -45,10 +45,10 @@ The refusal strings sit in the body, since the runtime loads that file and ignor
 
 ## Out of scope
 
-- `claude-feature` plans the work once the answer is settled, and declares the pull request boundary its plan carries. This produces the answer to pick from and stops before the plan.
-- `claude-ux-audit` reads source to find roughness and reports it. This takes its input from the operator and changes nothing until they pick.
-- `claude-ux-measure` measures what a running interface costs to paint. This measures whatever a visual claim depends on, which is usually geometry or contrast rather than cost.
-- `claude-ui-test` writes tests for a change already made. This runs before there is a change to test.
+- `plan-feature` plans the work once the answer is settled, and declares the pull request boundary its plan carries. This produces the answer to pick from and stops before the plan.
+- `ux-audit` reads source to find roughness and reports it. This takes its input from the operator and changes nothing until they pick.
+- `ux-measure` measures what a running interface costs to paint. This measures whatever a visual claim depends on, which is usually geometry or contrast rather than cost.
+- `ui-test` writes tests for a change already made. This runs before there is a change to test.
 - `canon-screencast` scripts a recording of something already built. This has nothing built yet.
 - `canon capture`, `canon serve`, and `canon drive` own the render, the address, and the probes, and are invoked rather than reimplemented.
 

@@ -78,7 +78,7 @@ Exit codes: `0` at least one target was read, `1` refused or every target refuse
 
 `checks` is `null` rather than `passing` when no check ran at all, which is not the same answer. A failure outranks a run still going, since a job that already failed cannot be cleared by one still in flight.
 
-`review` reads the first line of the newest pass carrying `## Review` or `## Review closed`, which `claude-pr-review` owns and posts. A target leaves a wave on `closed` rather than on a worker's reply.
+`review` reads the first line of the newest pass carrying `## Review` or `## Review closed`, which `review-pr` owns and posts. A target leaves a wave on `closed` rather than on a worker's reply.
 
 A target that could not be read carries a `reason` rather than an empty pull list. Reading a failed query as no open work is what reports a target as done having read nothing, which is the failure mode of the hand-written shell loop this replaces.
 

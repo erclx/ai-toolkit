@@ -72,15 +72,15 @@ Keep the `## Scripts` table in `.claude/context/development.md` current as scrip
 Scaffold installs tooling and seeds. It does not fill the planning docs or the design system. Complete those before the first feature session:
 
 1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
-2. For a UI project, invoke `canon:claude-design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
-3. Optionally invoke `canon:claude-diagram` to draft entries under `.canon/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
+2. For a UI project, invoke `canon:design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
+3. Optionally invoke `canon:draft-diagram` to draft entries under `.canon/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds.
 4. Start the feature loop. See [AI workflow](workflow/ai-workflow.md) for the per-feature sequence.
 
 A machine without a renderer still gets the diagrams and is told which check was skipped.
 
-Each diagram entry records the commit and date it was last verified against, and nothing maintains that record for you. The folder is redrawn on demand rather than swept on every ship, so `verified` carries the whole signal: an entry whose date sits far behind your branch is due a read, and no pass will name which one. Run `canon:claude-diagram` again when the code a kind is drawn from moves.
+Each diagram entry records the commit and date it was last verified against, and nothing maintains that record for you. The folder is redrawn on demand rather than swept on every ship, so `verified` carries the whole signal: an entry whose date sits far behind your branch is due a read, and no pass will name which one. Run `canon:draft-diagram` again when the code a kind is drawn from moves.
 
-`.claude/ARCHITECTURE.md` carries the same mechanism on the same ship. `canon:claude-docs` anchors a decision it amends to the paths that decision cites, and reports an anchored decision whose cited path the branch touched.
+`.claude/ARCHITECTURE.md` carries the same mechanism on the same ship. `canon:docs-fold` anchors a decision it amends to the paths that decision cites, and reports an anchored decision whose cited path the branch touched.
 
 ### Stack decision
 
@@ -175,7 +175,7 @@ The first line reports the plan and the second applies it, relocating each rule 
 
 ### Rename the skill citations, once
 
-Twenty-five plugin skills dropped their `claude-` prefix for two-word names, so `canon:claude-docs` answers as `canon:docs-fold` and `canon:claude-tasks` as `canon:task-board`. A project that installed governance or tooling before that release holds files naming the old ones, and the plugin answers to none of them.
+Twenty-five plugin skills dropped their `claude-` prefix for two-word names, so `canon:docs-fold` answers as `canon:docs-fold` and `canon:task-board` as `canon:task-board`. A project that installed governance or tooling before that release holds files naming the old ones, and the plugin answers to none of them.
 
 Two of those files run rather than sit there. `.husky/post-merge` prints a command for a person to type, and `.claude/hooks/pr-create-log.sh` hands a session a message naming a skill, so a stale copy tells someone to invoke something that no longer exists. A rule under `.claude/rules/canon/core/` names skills too, though a rule is read rather than run.
 
@@ -202,7 +202,7 @@ The report opens by naming the binary running it. The installed version reads ag
 
 #### Then the causes
 
-A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `canon:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is a relocation the report names but no command runs.
+A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `canon:seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is a relocation the report names but no command runs.
 
 That attribution comes from `.claude/canon/config.json`, a stamp every install and sync writes. A target stamped before that path shipped is read from the retired `.claude/canon.json` instead, reported rather than migrated. Governance records a hash per installed file, plus the stack `canon gov install` was given, and tooling records the stack chain it resolved instead of any file hash, since its install runs no per-file walk to attribute.
 
@@ -210,7 +210,7 @@ Each domain holds its own toolkit commit, so syncing governance today does not m
 
 A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
-Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `canon:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.canon/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated`, and no command moves it either. The project moves the content itself.
+Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `canon:seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.canon/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated`, and no command moves it either. The project moves the content itself.
 
 `unmigrated` currently names no domain, since standards and snippets are the two the toolkit ever installed at the project root and both closed their install channel. A target still holding a root `standards/` or `snippets/` folder from an older toolkit is carrying its own authoring surface now, not an unfinished install, and nothing proposes moving either.
 
@@ -258,7 +258,7 @@ Standards take no part in that run. Nothing installed them, so there is no copy 
 
 ### Targeted
 
-- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `canon:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
+- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `canon:seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
 - Governance rules already installed: `canon gov sync <path>` diffs and applies, and never adds new rules. A rule your recorded stack lists reports as `missing` instead.
 - Tooling configs and seeds: `canon tooling <stack> <path>` overwrites golden configs and merges seeds
 - Reference docs for a stack: `canon tooling reference <stack>` reads and never writes, so there is nothing to sync
@@ -281,7 +281,7 @@ claude
 
 In the session, invoke `canon:setup-init`. The skill detects no framework and resolves tooling to `base` and governance to `base`. The preview marks both stacks as fallbacks, since neither came from a match, then the chain runs `canon init`.
 
-Ongoing: run `canon sync --check .` to see what has drifted, then invoke `canon:claude-seed-sync` for seed drift or `canon sync .` for a catch-all refresh.
+Ongoing: run `canon sync --check .` to see what has drifted, then invoke `canon:seed-sync` for seed drift or `canon sync .` for a catch-all refresh.
 
 ### Web application
 
@@ -295,7 +295,7 @@ Invoke `canon:setup-init`. The skill reads `package.json` and the Vite config, r
 Ongoing maintenance:
 
 - What has drifted: `canon sync --check .`
-- Seed drift: invoke `canon:claude-seed-sync`
+- Seed drift: invoke `canon:seed-sync`
 - Catch-all sync: `canon sync .`
 - Governance rule refresh only: `canon gov sync .`
 - Layer a new rule on top, for example `260-shadcn` after adopting shadcn: `canon gov install react --add 260-shadcn .`

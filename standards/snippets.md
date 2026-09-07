@@ -38,7 +38,7 @@ Overlapping a skill that does the same job is not disqualifying on its own. A sn
 ## Use patterns
 
 - Run-as-is: invoke and send immediately. The snippet is self-contained and needs no extra context.
-- Invoke-then-add-context: invoke the snippet, then append specifics in the same message (e.g. invoke `claude-feature`, then add the feature name or extra constraints)
+- Invoke-then-add-context: invoke the snippet, then append specifics in the same message (e.g. invoke `plan-feature`, then add the feature name or extra constraints)
 - Invoke-on-history: invoke after a discussion. The snippet uses prior conversation as implicit context with no additional input needed (e.g. invoke `claude-figma` after discussing a design).
 
 ## Authoring

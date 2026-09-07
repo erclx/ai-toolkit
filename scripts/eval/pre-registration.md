@@ -64,7 +64,7 @@ A section landing in the third bucket is a failure of the seed, not of the sessi
 
 N of 1, one arm, no baseline, matching the standards arms. The harness has confirmed twice and discriminated zero times, so a pass here is a third confirmation from a test that has never failed anything. Weigh it accordingly and say so in the result.
 
-A cut removes a line from new projects and leaves it in every existing one. Any cut this run justifies names `claude-seed-sync` as the path that carries it into projects already scaffolded, or states that it does not.
+A cut removes a line from new projects and leaves it in every existing one. Any cut this run justifies names `seed-sync` as the path that carries it into projects already scaffolded, or states that it does not.
 
 ## Ablation pairs
 

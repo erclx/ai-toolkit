@@ -45,7 +45,7 @@ paths = [
 #
 # A newly created branch in a repository this small writes a loose ref, so the
 # path is the branch. Both worktree folders are named as well, since
-# `claude-worktree` builds `.claude/worktrees/<name>/` inside the target it
+# `session-worktree` builds `.claude/worktrees/<name>/` inside the target it
 # enters and that folder is the other thing a build leaves behind.
 absent = [
   "targets/kestrel-a/.git/refs/heads/chore/agents",

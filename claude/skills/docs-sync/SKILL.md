@@ -1,6 +1,6 @@
 ---
 name: docs-sync
-description: Rewrites stale `README.md` and `docs/*.md` sections based on changes since main. Use before staging, or when asked to "sync the public docs", "update the docs in docs/", or "update the README". Do NOT use for the `.claude/` planning surface, which `claude-docs` owns, or for changelog and `CLAUDE.md` updates.
+description: Rewrites stale `README.md` and `docs/*.md` sections based on changes since main. Use before staging, or when asked to "sync the public docs", "update the docs in docs/", or "update the README". Do NOT use for the `.claude/` planning surface, which `docs-fold` owns, or for changelog and `CLAUDE.md` updates.
 ---
 
 # Docs sync

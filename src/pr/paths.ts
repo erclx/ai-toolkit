@@ -20,7 +20,7 @@ export interface PathClaim {
    * True when the first segment names an entry the tree actually holds.
    *
    * An unanchored claim is a path written partially, such as
-   * `claude-worker/SKILL.md` for a file under `claude/skills/`. It can confirm
+   * `role-worker/SKILL.md` for a file under `claude/skills/`. It can confirm
    * that a changed file was named and can never accuse one of being absent,
    * because the comparison has no way to tell a partial spelling from a
    * genuinely wrong one.
@@ -145,7 +145,7 @@ function maskSpans(text: string): string {
  * that came out. A path past the comma was left out of the claim set entirely
  * and fell to the unnamed direction, accepted here on the ground that the
  * direction reports without grading. It graded anyway, one consumer removed:
- * `claude-pr-review` reads `unnamed` as a question to put to the branch author,
+ * `review-pr` reads `unnamed` as a question to put to the branch author,
  * and on 2026-09-01 the question went to three pull requests over bullets that
  * had named the files all along, with `#1329` gaining bullets it did not need.
  *

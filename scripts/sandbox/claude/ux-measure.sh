@@ -161,7 +161,7 @@ EOF
   log_info "  so the banner is pushed down and the layout reading is non-zero"
   log_info "Before:  bun install, then bunx playwright install chromium. Neither is seeded,"
   log_info "         since a sandbox provisions files and cannot fetch a browser."
-  log_info "Action:  /claude-ux-measure"
+  log_info "Action:  /ux-measure"
   log_info "Expect:  Playwright named as the harness, a median per metric beside its threshold,"
   log_info "         a Shifted line naming the banner img the seeded shift moves,"
   log_info "         taken off the run that produced the median rather than merged across three,"

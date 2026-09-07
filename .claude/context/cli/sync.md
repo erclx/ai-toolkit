@@ -74,7 +74,7 @@ An unmigrated domain counts as a marker because `detectUnmigrated` fires only on
 
 ### Seeds
 
-Seeds get their own reader in `src/sync/seeds-report.ts` rather than a `SyncAdapter`. Three things blocked the adapter. `listInstalled` globs `**/*.md` under one root while seeds span the target root for `CLAUDE.md`, `.claude/` for the rest, and include a `.json` and four `.sh` files. And `planSync` queues a copy for every non-matching file, which would overwrite `CLAUDE.md` wholesale and defeat the section merge `claude-seed-sync` exists to run.
+Seeds get their own reader in `src/sync/seeds-report.ts` rather than a `SyncAdapter`. Three things blocked the adapter. `listInstalled` globs `**/*.md` under one root while seeds span the target root for `CLAUDE.md`, `.claude/` for the rest, and include a `.json` and four `.sh` files. And `planSync` queues a copy for every non-matching file, which would overwrite `CLAUDE.md` wholesale and defeat the section merge `seed-sync` exists to run.
 
 The reader reuses `readHistoryIndex` and `findInstalledOrigin` directly, because `recoverAttribution` is private to the engine and takes an adapter seeds have no way to supply. Seeds carry no stamp, so `customized` is unreachable and an unattributed difference stays `drifted`.
 
@@ -132,7 +132,7 @@ The arm restores a dropped file at its published bytes rather than writing one b
 
 `canon sync [target]` runs every installed domain sync in sequence (governance, claude), then a git workflow step that detects which domains changed and previews the commit and pull request body before prompting. Neither standards nor snippets sits in that sequence, since neither installs into a target for a sync to reconcile. Committing creates `chore/canon-sync-YYYYMMDD-HHMM` when the run is on `main` or `master` and stays on the current branch otherwise. The pull request body lists up to three changed filenames per domain, then a count for the rest.
 
-Claude sync runs under `CANON_NON_INTERACTIVE=1` so the embedded call does not prompt. The one other domain sync, governance, inherits stdin and prompts for its own changes, and the combined pull request preview is the confirmation gate for the workflow alone. `canon claude sync` writes only `.gitignore`, so the changed-file tracking watches that path and a gitignore-only change still reports under a `claude/` domain line. Seed audits stay a manual step through the `claude-seed-sync` skill, which `canon sync` points at when `.claude/` is present.
+Claude sync runs under `CANON_NON_INTERACTIVE=1` so the embedded call does not prompt. The one other domain sync, governance, inherits stdin and prompts for its own changes, and the combined pull request preview is the confirmation gate for the workflow alone. `canon claude sync` writes only `.gitignore`, so the changed-file tracking watches that path and a gitignore-only change still reports under a `claude/` domain line. Seed audits stay a manual step through the `seed-sync` skill, which `canon sync` points at when `.claude/` is present.
 
 Governance is the one domain whose sync condition differs from its detection condition. It reports as absent without `.claude/rules/`, yet still syncs when only the retired `.claude/GOV.md` remains, so that the sync can delete it.
 

@@ -2,7 +2,7 @@
  * The surfaces where markdown states what an agent does, and the extensions
  * that read as prose, held as data one command parses.
  *
- * Lifted verbatim in content from the list `claude-autoship/SKILL.md` Step 5
+ * Lifted verbatim in content from the list `auto-ship/SKILL.md` Step 5
  * carried, which a session was asked to apply by hand. It failed that
  * application three times, so the set moved here and the body now calls a verb
  * that reads it. Being machine-parsed makes it permanently exempt from any

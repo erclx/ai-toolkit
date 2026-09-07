@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-pr-review` run leaves behind on the
+# What a correct `/canon:review-pr` run leaves behind on the
 # late-finding arm. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 #

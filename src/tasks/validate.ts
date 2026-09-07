@@ -557,7 +557,7 @@ async function listTaskStems(dir: string): Promise<string[]> {
 
 /**
  * Resolves a pointer against the board and against the project root both, the
- * way `claude-docs` reads the same line. A fragment is dropped first, since an
+ * way `docs-fold` reads the same line. A fragment is dropped first, since an
  * anchor is part of the link and never part of the path.
  */
 function resolves(target: string, dir: string, root: string): boolean {

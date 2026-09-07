@@ -333,7 +333,7 @@ describe('isExcludedPath', () => {
   })
 
   it('should sweep an ordinary shipped body', () => {
-    expect(isExcludedPath('claude/skills/claude-autoship/SKILL.md')).toBe(false)
+    expect(isExcludedPath('claude/skills/auto-ship/SKILL.md')).toBe(false)
   })
 })
 

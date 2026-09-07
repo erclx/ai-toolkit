@@ -151,7 +151,7 @@ An arm over a step that reports rather than writes needs `reply`, because every 
 
 ### Naming and staging a scenario
 
-A scenario file is named for the skill it drives, not for the domain the skill sits in. `scripts/sandbox/claude/memory-review.sh` drives `/canon:claude-memory-review`, and had the two names diverged the `<category>/<rest>.sh` mapping rule would find nothing and the audit would report the skill unpaired. A skill that gets renamed takes its scenario file with it rather than gaining a second scenario beside it.
+A scenario file is named for the skill it drives, not for the domain the skill sits in. `scripts/sandbox/claude/memory-review.sh` drives `/canon:memory-review`, and had the two names diverged the `<category>/<rest>.sh` mapping rule would find nothing and the audit would report the skill unpaired. A skill that gets renamed takes its scenario file with it rather than gaining a second scenario beside it.
 
 - A scenario whose expectation reads a slug checks out its branch explicitly. `git init` inherits the machine's `init.defaultBranch`, so an arm resting on the initial branch name passes or fails by local git config.
 - Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `canon sandbox reset` restores without provisioning again.

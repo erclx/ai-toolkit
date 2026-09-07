@@ -148,9 +148,9 @@ The record carries `type`, `slug`, `branch`, `words`, and `conforms`. Exit codes
 
 `slug` is the plan filename with its `feature-` prefix and its extension taken off, and `type` is the constant `feat`. Reading a type off the plan's prose was the alternative, and it is the half of the derivation that has already disagreed with itself: one dispatch checked `fix/path-form-hook` against a worker that took `feat/path-form-hook`, both sides reading one plan. What makes the constant safe is that a branch type is cosmetic. `git-stage` reads a commit's type off the staged diff and `git-pr` reads a title off the diff, so the semantics a release reads never pass through the branch name. What it costs is a worktree listing where every plan-derived branch reads `feat/`, and nothing renames it later.
 
-`conforms` reads both caps `standards/branch.md` states, being 4 words on the description and 50 characters on the whole branch. A false reading is a row for a person rather than a name to shorten here, since a rename parts the branch slug from the plan slug that `claude-worktree` tier 1 and `git-pr`'s plan lookup both read back.
+`conforms` reads both caps `standards/branch.md` states, being 4 words on the description and 50 characters on the whole branch. A false reading is a row for a person rather than a name to shorten here, since a rename parts the branch slug from the plan slug that `session-worktree` tier 1 and `git-pr`'s plan lookup both read back.
 
-Both sides of a dispatch call it. The orchestrator's collision check derives its candidate here, and `claude-autoship` Step 0 derives the worktree it enters from the same plan, so the branch a gate clears and the branch a session takes are one string by construction. They were two readings of one paragraph until 2026-09-06, when four dispatches on one plan produced three different strings.
+Both sides of a dispatch call it. The orchestrator's collision check derives its candidate here, and `auto-ship` Step 0 derives the worktree it enters from the same plan, so the branch a gate clears and the branch a session takes are one string by construction. They were two readings of one paragraph until 2026-09-06, when four dispatches on one plan produced three different strings.
 
 ```bash
 canon tasks plan-branch dispatch-answer-gate --json | jq -r '.branch'
@@ -158,7 +158,7 @@ canon tasks plan-branch dispatch-answer-gate --json | jq -r '.branch'
 
 ## Plan link
 
-`canon tasks plan-link <task> <plan>` writes or corrects a task's `Plan:` line, as `Plan: [<label>](<target>)` right after the H1. `claude-feature` calls it right after a plan file lands, when Step 1 resolved an existing task for the feature, so the line is a mechanical write rather than hand-edited markdown.
+`canon tasks plan-link <task> <plan>` writes or corrects a task's `Plan:` line, as `Plan: [<label>](<target>)` right after the H1. `plan-feature` calls it right after a plan file lands, when Step 1 resolved an existing task for the feature, so the line is a mechanical write rather than hand-edited markdown.
 
 Name the task by its filename stem, and the plan by its path or its slug, the same two forms `canon tasks plan-answers` accepts:
 
@@ -321,7 +321,7 @@ A task file neither surface names lands in a fourth array, on the same reasoning
 }
 ```
 
-Under the roster-checked hand-off `claude-tasks` and `claude-groundwork` state, filing a task and placing its row are two acts a different session each may take, so a task caught between the two is ordinary rather than a finding and this array moves no exit code. It still reports, since it is the only local detector for a row a hand-edit dropped, a handoff message that never arrived, or an orchestrator that ended before placing it.
+Under the roster-checked hand-off `task-board` and `plan-groundwork` state, filing a task and placing its row are two acts a different session each may take, so a task caught between the two is ordinary rather than a finding and this array moves no exit code. It still reports, since it is the only local detector for a row a hand-edit dropped, a handoff message that never arrived, or an orchestrator that ended before placing it.
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 

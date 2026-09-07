@@ -1,6 +1,6 @@
 ---
 name: draft-and-pick
-description: Drafts several candidates for a decision judged by looking, renders them side by side on one page, hands the operator the addresses, takes the pick through the structured question surface, and loops on the pick until they stop. Use when asked to "draft some options", "show me a few versions", "try a few variations", "mock up alternatives", "give me candidates for X", or when a choice is taste rather than correctness. Do NOT use when the request already names the answer and asks for it to be built, which is `claude-feature`. Do NOT use to read source for roughness, which is `claude-ux-audit`, to measure what a running interface costs to paint, which is `claude-ux-measure`, to write tests for a change already made, which is `claude-ui-test`, or to script a recording, which is `canon-screencast`.
+description: Drafts several candidates for a decision judged by looking, renders them side by side on one page, hands the operator the addresses, takes the pick through the structured question surface, and loops on the pick until they stop. Use when asked to "draft some options", "show me a few versions", "try a few variations", "mock up alternatives", "give me candidates for X", or when a choice is taste rather than correctness. Do NOT use when the request already names the answer and asks for it to be built, which is `plan-feature`. Do NOT use to read source for roughness, which is `ux-audit`, to measure what a running interface costs to paint, which is `ux-measure`, to write tests for a change already made, which is `ui-test`, or to script a recording, which is `canon-screencast`.
 ---
 
 # Draft and pick
@@ -9,14 +9,14 @@ Some decisions are settled by looking rather than by reasoning, and no draft is 
 
 ## Guards
 
-- If the request names one answer and asks for it to be built, stop: `❌ This names one answer, so there is nothing to pick between. Use /canon:claude-feature.`
+- If the request names one answer and asks for it to be built, stop: `❌ This names one answer, so there is nothing to pick between. Use /canon:plan-feature.`
 - If the decision has no visible form, stop: `❌ Nothing to look at. Drafting candidates needs a decision a render can show.`
 - Draft no candidate for a decision the operator has not asked to make. A run offering options everywhere spends their attention rather than saving it.
 
 ## Step 1: name the decision and the arms
 
 1. State the decision in one sentence, naming what changes between arms and what stays fixed.
-2. Derive a kebab slug from that sentence. Call the folder every file this run writes to `<dest>` below. `<dest>` is `.canon/tmp/<slug>/`, per `.claude/rules/canon/core/055-scratch.md`. Running inside a live `claude-groundwork` track is the one exception: `<dest>` is the track's own `evidence/<slug>/` instead, since a candidate render is evidence the track's decision file cites rather than spike input.
+2. Derive a kebab slug from that sentence. Call the folder every file this run writes to `<dest>` below. `<dest>` is `.canon/tmp/<slug>/`, per `.claude/rules/canon/core/055-scratch.md`. Running inside a live `plan-groundwork` track is the one exception: `<dest>` is the track's own `evidence/<slug>/` instead, since a candidate render is evidence the track's decision file cites rather than spike input.
 3. Write one arm per candidate, each carrying an id, a label, and what the arm costs. An arm with no stated cost is not an option.
 4. Make the current state arm `0`, so the baseline is a candidate rather than an absence. A decision with nothing shipped yet says so and starts at arm `1`.
 5. Stop at three to five arms. Two is a comparison the operator can hold in prose, and past five the pick stops being a look and becomes a sort.
@@ -66,7 +66,7 @@ Put the choice to the operator through the structured question surface, per `.cl
 
 1. Apply the winning arm to the real surface, in one change.
 2. Close out whatever document stated the decision as open, in the same change, naming the arm that won and the ones that stayed defensible. A pick that changes a surface and records nothing about why leaves the next reader to re-derive it from a diff, and the losing arms are gone by the next step where `<dest>` is deleted. Skip this where nothing stated the decision.
-3. Delete `<dest>` and every losing arm with it, when `<dest>` is the scratch path. A variant left behind there is a second design nobody maintains. Leave `<dest>` in place when it is a live track's `evidence/<slug>/`: `claude-groundwork`'s write scope treats evidence as durable rather than as scratch a session may delete, and the render a decision file cites has to stay where that file points.
+3. Delete `<dest>` and every losing arm with it, when `<dest>` is the scratch path. A variant left behind there is a second design nobody maintains. Leave `<dest>` in place when it is a live track's `evidence/<slug>/`: `plan-groundwork`'s write scope treats evidence as durable rather than as scratch a session may delete, and the render a decision file cites has to stay where that file points.
 4. Report `<dest>` as still standing when the scratch-path delete is refused, naming the path for the operator to remove, rather than closing on a report the tree contradicts. The pick is applied either way, so the run has done its work and the folder is what outlives it.
 5. Report every surface that changed, each on its own line, and name the arm that won by its id and its cost.
 
@@ -86,7 +86,7 @@ Three rules no probe reaches:
 
 Cite these rather than restating them. A step reimplemented here rots against the skill that owns it.
 
-- `claude-feature` plans the work once the pick is made, and declares the pull request boundary that plan carries
+- `plan-feature` plans the work once the pick is made, and declares the pull request boundary that plan carries
 - `write-human` carries the voice for any copy an arm puts in front of a reader
 - `git-stage`, `git-pr`, and `git-followup` carry the commits and the pull request
-- `claude-review` and `claude-address-review` run the review pass
+- `review-branch` and `review-address` run the review pass

@@ -38,7 +38,7 @@ function write(path: string, body: string): void {
 }
 
 /**
- * The tree a correct `/claude-docs` run leaves behind on the drift arm. Every
+ * The tree a correct `/docs-fold` run leaves behind on the drift arm. Every
  * negative case mutates exactly one thing from here, so a case that goes red
  * names which assertion caught it.
  */
@@ -824,7 +824,7 @@ describe('parseTarget', () => {
   })
 
   it('should reject a target with no separator', () => {
-    expect(parseTarget('claude-docs')).toBeUndefined()
+    expect(parseTarget('docs-fold')).toBeUndefined()
   })
 
   it('should reject a target with an empty half', () => {

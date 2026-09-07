@@ -1,4 +1,4 @@
-# What a correct `/claude-teach` run leaves behind on the lesson arm.
+# What a correct `/teach-workspace` run leaves behind on the lesson arm.
 # Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 

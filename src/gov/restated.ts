@@ -24,7 +24,7 @@ export const RULES_REL = join('governance', 'rules')
 /**
  * Path pairs whose duplication is deliberate and already recorded.
  *
- * The seed is authored from the always-loaded file and `claude-seed-sync`
+ * The seed is authored from the always-loaded file and `seed-sync`
  * exists to reconcile the two, so a bullet appearing in both is the design
  * rather than a defect. Excluding by pair rather than by content is what the
  * plan settled on: the duplication is a location fact this repository already
@@ -574,7 +574,7 @@ function authorityFor(
   if (candidate.kind === 'seed') {
     return {
       authority: 'claude-md',
-      reason: `${INSTRUCTIONS_REL} is authored first and the seed carries it to a target, so an edit starts there and reaches the seed through claude-seed-sync`,
+      reason: `${INSTRUCTIONS_REL} is authored first and the seed carries it to a target, so an edit starts there and reaches the seed through seed-sync`,
     }
   }
 

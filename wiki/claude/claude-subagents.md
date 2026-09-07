@@ -37,7 +37,7 @@ Three cases justify a subagent. If none apply, a same-session step is cheaper an
 
 The subagent must not inherit reasoning from the caller. Code review is the canonical case. An implementer's context biases the reviewer toward rationalizing the approach already on the page. A cold subagent starts from the diff and the standards and sees the code the way a new reviewer would.
 
-The `claude-autoship` chain weighed this exact spawn and declined it, so its review runs in the session that wrote the code. The reason was that the highest-value findings needed more than one pull request in view, which a reviewer holding a single diff cannot produce, though the call is contested rather than settled.
+The `auto-ship` chain weighed this exact spawn and declined it, so its review runs in the session that wrote the code. The reason was that the highest-value findings needed more than one pull request in view, which a reviewer holding a single diff cannot produce, though the call is contested rather than settled.
 
 ### Context isolation
 

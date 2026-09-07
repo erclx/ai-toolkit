@@ -178,7 +178,7 @@ EOF
   log_info "Expect:  proposal block with grouped sections:"
   log_info "         Move to .claude/context/: web.md, python.md"
   log_info "         Keep in docs/: contributing.md"
-  log_info "         Defer to claude-seed-sync: development.md"
+  log_info "         Defer to seed-sync: development.md"
   log_info "         Suggested git mv commands listed for the user to run"
   log_info "         Inbound link to fix: CLAUDE.md references docs/web.md and docs/python.md"
   log_info "         Skill does NOT execute the moves and does NOT rewrite CLAUDE.md"

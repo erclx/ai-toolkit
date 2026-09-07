@@ -143,7 +143,7 @@ EOF
   log_info "  4. .claude/skills/example/SKILL.md: em dash and inflated prose ('comprehensive', 'offers')"
   log_info "  5. .claude/skills/example/SKILL.md: non-imperative hedging voice ('You should probably try')"
   log_info "  6. .claude/context/api.md: em dash, and a Layout section listing files instead of folders"
-  log_info "Action:  /claude-standards-audit"
+  log_info "Action:  /standards-audit"
   log_info "Expect:  violations grouped by file with line references, each naming its standard."
   log_info "         .claude/context/api.md is the reach test: it must be audited against context.md,"
   log_info "         which the mapping resolves from that standard's own scope statement."

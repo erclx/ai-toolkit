@@ -1,4 +1,4 @@
-# What a correct `/claude-worktree` run leaves behind on the port-offset arm.
+# What a correct `/session-worktree` run leaves behind on the port-offset arm.
 # Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 

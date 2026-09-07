@@ -1,6 +1,6 @@
 ---
 name: session-map
-description: Writes the session map, the pre-compaction handoff at `.canon/tasks/session-<slug>.md`, from any session whatever role it holds, running the skill-drift step the write procedure opens with. Use when asked to "write the handoff", "write the session map", "save the session before it compacts", "we are about to compact", "hand off to the next session", or "leave a note for whoever picks this up". Do NOT use to route session facts to a context entry or the memory folder, which is `claude-memory-capture` and writes a different artifact, and do NOT use to read a handoff back, which is `session-resume`.
+description: Writes the session map, the pre-compaction handoff at `.canon/tasks/session-<slug>.md`, from any session whatever role it holds, running the skill-drift step the write procedure opens with. Use when asked to "write the handoff", "write the session map", "save the session before it compacts", "we are about to compact", "hand off to the next session", or "leave a note for whoever picks this up". Do NOT use to route session facts to a context entry or the memory folder, which is `memory-capture` and writes a different artifact, and do NOT use to read a handoff back, which is `session-resume`.
 ---
 
 # Session map
@@ -25,7 +25,7 @@ Decline where the session holds no reasoning a reader could not get faster from 
 
 ## Step 1: run the capture the procedure opens with
 
-Item 1 of `## Writing one` is a capture. Invoke `canon:claude-memory-capture` and let it return before writing, so the map cites what was written instead of restating the same lesson in prose.
+Item 1 of `## Writing one` is a capture. Invoke `canon:memory-capture` and let it return before writing, so the map cites what was written instead of restating the same lesson in prose.
 
 Pass on the caveat a caller states about committing. A caller that does not commit says so, and capture then skips routing and writes memory files alone, since a routed fact lands in a context entry and that is a tracked file. A caller stating nothing leaves capture to decide for itself, which is the ordinary run.
 

@@ -28,7 +28,7 @@ The `design` and `security` categories cover the common gaps for a new machine.
 When the user asks for a recommended set, propose `frontend-design` and
 `security-guidance`. Offer `code-review` and `superpowers` as additions.
 
-`code-review` overlaps the toolkit's own `claude-review` skill. They run in
+`code-review` overlaps the toolkit's own `review-branch` skill. They run in
 different places, the plugin on a PR and the toolkit skill on a local diff. Install
 `code-review` only when the user wants the GitHub-side flow too.
 

@@ -37,7 +37,7 @@ The tier folds into `bun --bun vitest run` rather than a step of its own for thi
 
 ### A shell script's own test file does not gate the script
 
-Types and tests ran on any `src/` change alone, so a shell script under `claude/skills/*/scripts/` gated only the Shell stage even when a `src/*.test.ts` file covered it. `claude/skills/claude-orchestrate/scripts/poll.sh` and `src/orchestrate-poll.test.ts` are one such pair. A branch touching only the script reported clean on `bun run check` and on `bash -n` alike while the classifier crashed on a carried line, caught only by running `bun --bun vitest run src/orchestrate-poll.test.ts` by hand. Tests now admits the census in the decision below, which reaches that pair, so run the specific test file by hand only for a corpus the census never named.
+Types and tests ran on any `src/` change alone, so a shell script under `claude/skills/*/scripts/` gated only the Shell stage even when a `src/*.test.ts` file covered it. `claude/skills/role-orchestrator/scripts/poll.sh` and `src/orchestrate-poll.test.ts` are one such pair. A branch touching only the script reported clean on `bun run check` and on `bash -n` alike while the classifier crashed on a carried line, caught only by running `bun --bun vitest run src/orchestrate-poll.test.ts` by hand. Tests now admits the census in the decision below, which reaches that pair, so run the specific test file by hand only for a corpus the census never named.
 
 That command used to read `bun test src/orchestrate-poll.test.ts`, which the `## The other stages` section below rules out for every file in this repository, so the one instruction this gotcha carried named a form that reports a broken suite on a green tree. The two sit in one entry and nothing compared them.
 
@@ -64,7 +64,7 @@ Run the file beside its corpus before trusting a green gate that never touched `
 - `tooling/base/reference.md`: `bun --bun vitest run src/tooling/read.test.ts`
 - `.cspell/banned-spellings.txt`: `bun --bun vitest run src/markdown/bans.test.ts`
 - `.claude/hooks/` and `tooling/claude/seeds/.claude/hooks/`: `bun --bun vitest run src/hooks-guard.test.ts`
-- `claude/skills/claude-orchestrate/scripts/poll.sh`: `bun --bun vitest run src/orchestrate-poll.test.ts`
+- `claude/skills/role-orchestrator/scripts/poll.sh`: `bun --bun vitest run src/orchestrate-poll.test.ts`
 - `tooling/web/configs/scripts/worktree-port.sh`: `bun --bun vitest run src/worktree-port.test.ts`
 - `scripts/lib/worktree.sh`: `bun --bun vitest run src/worktree-repair.test.ts`
 - `scripts/core/check-ignore-parity.sh`: `bun --bun vitest run src/ignore-parity.test.ts`

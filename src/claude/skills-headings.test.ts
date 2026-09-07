@@ -93,7 +93,7 @@ describe('headingCitationsIn', () => {
     expect(
       headingCitationsIn(
         'alpha/SKILL.md',
-        'Resolve that root the way `claude-worktree` does.',
+        'Resolve that root the way `session-worktree` does.',
       ),
     ).toEqual([])
   })

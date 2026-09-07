@@ -42,7 +42,7 @@ All three paths produce the same session isolation. The native flag is convenien
 
 `ExitWorktree(action)` returns the session to the original directory. `action: "keep"` leaves the worktree on disk for later resume. `action: "remove"` deletes the worktree directory and its branch. The tool refuses `remove` when the worktree has uncommitted files or unmerged commits unless `discard_changes: true` is passed. On session exit while still inside the worktree, the user is prompted to keep or remove.
 
-The tool descriptions explicitly require an instruction trail before invocation: a user request, a `CLAUDE.md` rule, or a memory entry. Wrapping invocation in a skill is the canonical pattern, since the skill body is the instruction trail. The `claude-worktree` plugin skill is the toolkit's reference wrapper.
+The tool descriptions explicitly require an instruction trail before invocation: a user request, a `CLAUDE.md` rule, or a memory entry. Wrapping invocation in a skill is the canonical pattern, since the skill body is the instruction trail. The `session-worktree` plugin skill is the toolkit's reference wrapper.
 
 ### Entry can mark the repository bare
 
@@ -120,7 +120,7 @@ A fan-out of N worktrees produces N PRs. The order they merge in matters only wh
 
 **Rebase before merging the next PR.** After PR 1 squash-merges, sibling branches are behind `main` and may have stale rebases of shared files. In each sibling worktree, run `git fetch origin && git rebase origin/main` before merging. Merge when the rebase is clean, and when it conflicts resolve in the worktree, push, then merge. Never force-merge a stale branch.
 
-**Clean up after merge.** Once a PR merges, the worktree and its local branch are stale. Run `/git-worktree cleanup` to remove worktrees whose branches are merged on GitHub and prune the local branches. The skill detects merge state via `gh pr view`. To start a fresh feature from inside a stale worktree, `ExitWorktree(action: "keep")` back to main, then `/claude-worktree <new-name>`.
+**Clean up after merge.** Once a PR merges, the worktree and its local branch are stale. Run `/git-worktree cleanup` to remove worktrees whose branches are merged on GitHub and prune the local branches. The skill detects merge state via `gh pr view`. To start a fresh feature from inside a stale worktree, `ExitWorktree(action: "keep")` back to main, then `/session-worktree <new-name>`.
 
 **Session transcripts survive.** Removing a worktree does not delete its `~/.claude/projects/<sanitized-path>/` transcript directory. `/resume` still finds the session if the worktree is later recreated at the same path, but a new slug means a new transcript scope.
 

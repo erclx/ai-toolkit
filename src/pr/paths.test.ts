@@ -331,13 +331,13 @@ describe('extractKeyChangePaths', () => {
   it('should mark a partially written path unanchored (#1259)', () => {
     const read = extractKeyChangePaths(
       body(
-        '- Rewrite the addressing ladder in `claude-worker/SKILL.md` to resolve a name from the carried id at send time.',
+        '- Rewrite the addressing ladder in `role-worker/SKILL.md` to resolve a name from the carried id at send time.',
       ),
       ROOTS,
     )
 
     expect(read.kind === 'read' && read.claims).toMatchObject([
-      { path: 'claude-worker/SKILL.md', anchored: false },
+      { path: 'role-worker/SKILL.md', anchored: false },
     ])
   })
 
@@ -375,7 +375,7 @@ describe('extractKeyChangePaths', () => {
   it('should separate a section that carries no resolvable claim from an absent one', () => {
     const read = extractKeyChangePaths(
       body(
-        '- Add a task tier ahead of the two existing ones in `claude-autoship` Step 1.',
+        '- Add a task tier ahead of the two existing ones in `auto-ship` Step 1.',
       ),
       ROOTS,
     )

@@ -37,5 +37,5 @@ Two failures are about stopping rather than about fixing. A session that never c
 ## Out of scope
 
 - A typo fix and a cause already agreed on, where the phases cost more than they return
-- Reviewing a change for defects it has not yet exhibited: `claude-review`
+- Reviewing a change for defects it has not yet exhibited: `review-branch`
 - Deciding whether the architecture should change, which the three-attempt stop hands to the user rather than answering

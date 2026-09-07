@@ -108,17 +108,17 @@ What the cap governs is a second copy of the structure inside a per-domain entry
 
 ## How entries get populated
 
-`claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing entries that reference those files, flat `.claude/context/<domain>.md` or a nested domain's own `.claude/context/<domain>/index.md` and its siblings, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
+`docs-fold` runs at ship time (via `git-ship` or `auto-ship`). It reads the diff, maps changed files to existing entries that reference those files, flat `.claude/context/<domain>.md` or a nested domain's own `.claude/context/<domain>/index.md` and its siblings, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
 
-New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
+New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `standards/context.md`, then `docs-fold` keeps it current on subsequent ships.
 
-The rule governs `claude-docs` and the Claude seeds. It does not reach the tooling stacks, which ship `development.md` and `ci.md` as user-owned seeds under `tooling/base/seeds/.claude/context/`. Those arrive filled rather than generated, so they do not pad the catalog, and `tooling/base/reference.md` owns that decision. Check both seed sources before concluding an entry is absent from a scaffolded project.
+The rule governs `docs-fold` and the Claude seeds. It does not reach the tooling stacks, which ship `development.md` and `ci.md` as user-owned seeds under `tooling/base/seeds/.claude/context/`. Those arrive filled rather than generated, so they do not pad the catalog, and `tooling/base/reference.md` owns that decision. Check both seed sources before concluding an entry is absent from a scaffolded project.
 
 This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
 
 ## Two stale claims a diff-scoped refresh cannot reach
 
-Mapping changed files to the entries that reference them is what makes the refresh affordable, and it misses two shapes. Both are produced by a change that removes a capability, and the `claude-docs` body holds the sweep that catches them, since a session running the refresh holds that skill and reaches no context entry. What sits here is the pair itself and the case that produced them.
+Mapping changed files to the entries that reference them is what makes the refresh affordable, and it misses two shapes. Both are produced by a change that removes a capability, and the `docs-fold` body holds the sweep that catches them, since a session running the refresh holds that skill and reaches no context entry. What sits here is the pair itself and the case that produced them.
 
 The first is the half-rewritten entry. An entry refreshed at the top and left alone below argues both sides of itself, and it reads worse than one nobody touched, because the current opening lends authority to the stale remainder. The entry is in the diff and the refresh passed over it, so nothing reports it. `.claude/context/standards/resolution.md` recorded the closed standards install channel in its opening and described the open one two paragraphs down.
 

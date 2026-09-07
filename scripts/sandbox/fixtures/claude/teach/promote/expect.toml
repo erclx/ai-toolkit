@@ -1,4 +1,4 @@
-# What a correct `/claude-teach promote` run leaves behind.
+# What a correct `/teach-workspace promote` run leaves behind.
 # Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 

@@ -42,7 +42,7 @@ The same PostToolUse block also carries `.claude/hooks/tasks-index.sh`, which re
 
 The hook derives the walk-up boundary from the file path rather than the session, since the board resolves at the main worktree root and a linked worktree would otherwise reject the path, passes `--no-stage` so a hook never touches the git index, and reports both a frontmatter failure and a missing `canon` as `additionalContext`, because no gate stage can fail on a stale index in an ignored folder. Reporting is the point of the hook, so neither failure exits quietly, and the path guard keeps both messages scoped to a task-file edit.
 
-`.claude/hooks/memory-index.sh` sits beside it and does the same job for `.canon/memory/index.md`, which is gitignored for the same reason and reached the same way. The memory folder's index was hand-appended by `claude-memory-capture` until this hook took it, and it had drifted to more rows than files, which is what a hand-maintained catalog does at that size. The two hooks differ only in the path they guard on, so a change to one is owed to the other.
+`.claude/hooks/memory-index.sh` sits beside it and does the same job for `.canon/memory/index.md`, which is gitignored for the same reason and reached the same way. The memory folder's index was hand-appended by `memory-capture` until this hook took it, and it had drifted to more rows than files, which is what a hand-maintained catalog does at that size. The two hooks differ only in the path they guard on, so a change to one is owed to the other.
 
 `.claude/hooks/path-form.sh` closes the same block, handing back the absolute form of a path written from a linked worktree, covered in full in `.claude/context/development/hooks.md`. It reads a `*/.claude/worktrees/*` segment off the write's own path rather than shelling out to git, the same derive-from-the-path precedent as the two index hooks above it.
 
@@ -60,7 +60,7 @@ User-level pieces (attribution, permission `allow` entries, and `.env` denies) l
 
 ## seeds
 
-`canon claude seeds list [--json|--names]` enumerates the seed docs that `canon claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content. Reconciliation is the skill's job (see `claude-seed-sync`).
+`canon claude seeds list [--json|--names]` enumerates the seed docs that `canon claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content. Reconciliation is the skill's job (see `seed-sync`).
 
 The listing reads `planSeeds`, the same function `init` applies, so the two cannot disagree about what a seed install contains. The bash it replaced re-globbed the seeds directory against its own hard-coded subdirectory list, which had drifted: `.claude/context/index.md` was installed by `init` and absent from every listing.
 
@@ -70,7 +70,7 @@ Reports whether each seeded project doc is present, then reconciles `.gitignore`
 
 `canon sync` invokes this command with `CANON_NON_INTERACTIVE=1` when `.claude/` exists in the target, so gitignore reconciliation lands in the combined sync PR alongside other domains. The changed-file tracking in `src/sync/target.ts` watches `.gitignore` for this reason.
 
-Seed audits are not automated. Run the `claude-seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `canon sync` prints a tip reminder at the tail.
+Seed audits are not automated. Run the `seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `canon sync` prints a tip reminder at the tail.
 
 ## setup
 

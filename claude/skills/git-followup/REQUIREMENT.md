@@ -39,5 +39,5 @@ A fix commit answering a review is the sharpest case of the first paragraph, sin
 ## Out of scope
 
 - Opening the pull request, which `git-pr` owns and `git-ship` chains
-- Deciding what to fix from a review, which `claude-address-review` owns. This skill is that flow's push leg and takes the fixes as already made.
+- Deciding what to fix from a review, which `review-address` owns. This skill is that flow's push leg and takes the fixes as already made.
 - Grouping a multi-concern diff, which `git-stage` owns. A follow-up is one concern by definition, which is why this skill stages everything into a single commit.

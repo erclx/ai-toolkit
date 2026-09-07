@@ -265,7 +265,7 @@ function renderTooling(report: CheckReport): void {
 /**
  * Seeds print their own section because no sync command applies them. A `stale`
  * seed is safe to take whole and a `drifted` one holds edits, which is the split
- * `claude-seed-sync` reads to decide what needs a section-level merge.
+ * `seed-sync` reads to decide what needs a section-level merge.
  */
 function renderSeeds(report: CheckReport): void {
   const notable = report.seeds.entries.filter(
@@ -283,7 +283,7 @@ function renderSeeds(report: CheckReport): void {
     logWarn(`${entry.rel} (${entry.state})`)
   }
 
-  logInfo('Run /canon:claude-seed-sync to reconcile these section by section.')
+  logInfo('Run /canon:seed-sync to reconcile these section by section.')
 }
 
 /**
@@ -399,7 +399,7 @@ async function runSync(target: string): Promise<number> {
 
   if (existsSync(join(resolved, '.claude'))) {
     process.stderr.write(
-      `${GREY}Tip: run \`/claude-seed-sync\` to audit seed drift per section, preserving local customizations.${NC}\n`,
+      `${GREY}Tip: run \`/seed-sync\` to audit seed drift per section, preserving local customizations.${NC}\n`,
     )
   }
 

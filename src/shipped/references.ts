@@ -61,7 +61,7 @@ export const REFERENCE_MARKER = 'canon-allow-reference'
  * The leading boundary is what excludes the repair form by construction rather
  * than by exemption, and that is load bearing. A lookbehind rejecting a word
  * character before `#` never matches `erclx/canon#1299`, so a qualified
- * reference passes with no marker, and `claude/skills/claude-worktree/SKILL.md`
+ * reference passes with no marker, and `claude/skills/session-worktree/SKILL.md`
  * already ships `anthropics/claude-code#58345` in exactly that form.
  *
  * The trailing boundary is what the first shape of this pattern lacked, and it
