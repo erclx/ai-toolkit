@@ -1055,13 +1055,15 @@ function selectedSections(opts: ListOptions): {
  * untouched by it.
  */
 function runList(opts: ListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the `--json` path, which returns first and
+  // opens none. One position cannot serve both.
   const mismatch = checkoutMismatchWarning(process.cwd())
-  if (mismatch !== undefined) logWarn(mismatch)
-
   const catalog = buildGovCatalog(PROJECT_ROOT)
   const sections = selectedSections(opts)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(
       `${JSON.stringify({
         ...(sections.stacks ? { stacks: catalog.stacks } : {}),
@@ -1073,6 +1075,7 @@ function runList(opts: ListOptions): number {
   }
 
   intro('canon gov list')
+  if (mismatch !== undefined) logWarn(mismatch)
 
   if (sections.stacks) {
     logStep('Stacks')

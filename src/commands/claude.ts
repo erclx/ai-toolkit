@@ -620,18 +620,21 @@ async function sameContent(src: string, dest: string): Promise<boolean> {
  * human listing stays on the timeline. Only the human mode opens a frame.
  */
 async function runSeedsList(opts: SeedsListOptions): Promise<number> {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the two that return first and open none.
+  // One position cannot serve all three.
   const mismatch = checkoutMismatchWarning(process.cwd())
-  if (mismatch !== undefined) logWarn(mismatch)
-
   const listings = listSeeds(PROJECT_ROOT)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     const withContent = await readSeedContents(listings)
     process.stdout.write(`${JSON.stringify(withContent)}\n`)
     return 0
   }
 
   if (opts.names) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(
       listings.map((listing) => listing.target).join('\n') + '\n',
     )
@@ -640,6 +643,7 @@ async function runSeedsList(opts: SeedsListOptions): Promise<number> {
 
   const { GREY, NC } = palette(process.stderr)
   intro('canon claude')
+  if (mismatch !== undefined) logWarn(mismatch)
   logStep('Seed docs')
   for (const listing of listings) {
     logInfo(`${listing.target} ${GREY}← ${listing.source}${NC}`)
@@ -649,17 +653,20 @@ async function runSeedsList(opts: SeedsListOptions): Promise<number> {
 }
 
 function runSkillsList(opts: SkillsListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the two that return first and open none.
+  // One position cannot serve all three.
   const mismatch = checkoutMismatchWarning(process.cwd())
-  if (mismatch !== undefined) logWarn(mismatch)
-
   const listings = listSkills(PROJECT_ROOT)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(`${JSON.stringify({ skills: listings })}\n`)
     return 0
   }
 
   if (opts.names) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(
       listings.map((listing) => listing.name).join('\n') + '\n',
     )
@@ -667,6 +674,7 @@ function runSkillsList(opts: SkillsListOptions): number {
   }
 
   intro('canon claude')
+  if (mismatch !== undefined) logWarn(mismatch)
   logStep('Plugin skills')
   for (const listing of listings) {
     logInfo(listing.name)

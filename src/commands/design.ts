@@ -41,17 +41,19 @@ export function register(program: Command): void {
 
       // The guard below catches a `PROJECT_ROOT` with no record at all, which
       // is an installed package. It cannot catch a second real checkout that
-      // has one, so the warning runs ahead of it.
+      // has one, so both paths carry the warning. It is a frame-interior line,
+      // so each emits it after its own opener rather than ahead of the branch.
       const mismatch = checkoutMismatchWarning(process.cwd())
-      if (mismatch !== undefined) logWarn(mismatch)
 
       // Both outputs resolve from `PROJECT_ROOT`, which is the installed
       // package directory when the CLI runs out of a target's `node_modules`.
       // The record is the one output that is already committed here and ships
       // with no package, so its absence is what separates the two.
       if (!existsSync(join(PROJECT_ROOT, DESIGN_DOCUMENT))) {
+        process.stderr.write(`${GREY}┌${NC}\n`)
+        if (mismatch !== undefined) logWarn(mismatch)
         process.stderr.write(
-          `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} No ${DESIGN_DOCUMENT} at ${PROJECT_ROOT}. Regen runs in the toolkit checkout, not against a target.\n${GREY}└${NC}\n`,
+          `${GREY}│${NC} ${RED}✗${NC} No ${DESIGN_DOCUMENT} at ${PROJECT_ROOT}. Regen runs in the toolkit checkout, not against a target.\n${GREY}└${NC}\n`,
         )
         process.exitCode = 1
         return
@@ -60,6 +62,7 @@ export function register(program: Command): void {
       process.stderr.write(
         `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}Regenerate design source${NC}\n`,
       )
+      if (mismatch !== undefined) logWarn(mismatch)
       const result = regenDesign(PROJECT_ROOT)
       for (const path of [result.documentPath, result.cssPath]) {
         process.stderr.write(

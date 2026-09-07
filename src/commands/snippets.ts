@@ -42,17 +42,20 @@ export function register(program: Command): void {
  * emitted section headers and the pass-through above it owned the `┌`.
  */
 function runList(opts: ListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the `--json` path, which returns first and
+  // opens none. One position cannot serve both.
   const mismatch = checkoutMismatchWarning(process.cwd())
-  if (mismatch !== undefined) logWarn(mismatch)
-
   const catalog = buildSnippetsCatalog(PROJECT_ROOT)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(`${JSON.stringify(catalog)}\n`)
     return 0
   }
 
   intro('canon snippets list')
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const showCategories = opts.entries !== true
   const showEntries = opts.categories !== true

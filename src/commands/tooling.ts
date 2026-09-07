@@ -180,17 +180,20 @@ export function register(program: Command): void {
  * pass-through loop below skips the `intro` the shared helper carries.
  */
 function runList(opts: ListOptions): number {
+  // The warning is a frame-interior line, so it goes out after `intro` on the
+  // path that opens one and bare on the `--json` path, which returns first and
+  // opens none. One position cannot serve both.
   const mismatch = checkoutMismatchWarning(process.cwd())
-  if (mismatch !== undefined) logWarn(mismatch)
-
   const stacks = buildStackSummaries(PROJECT_ROOT)
 
   if (opts.json) {
+    if (mismatch !== undefined) logWarn(mismatch)
     process.stdout.write(`${JSON.stringify({ stacks })}\n`)
     return 0
   }
 
   intro('canon tooling list')
+  if (mismatch !== undefined) logWarn(mismatch)
   logStep('Stacks')
   for (const summary of stacks) logInfo(describeStack(summary))
   outro()
