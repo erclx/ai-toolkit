@@ -1,0 +1,39 @@
+---
+/**
+ * A labelled group of rows inside a panel.
+ *
+ * The heading is muted and carries no full-width rule, so the rows stay the
+ * focus and the accent is left to the pill on the row itself. `total` is the
+ * true size of the group rather than the number of rows shown, which is what
+ * lets a section sample its rows without misreporting the corpus.
+ */
+interface Props {
+  label: string
+  total?: number
+  shown?: number
+}
+
+const { label, total, shown } = Astro.props
+const count =
+  total === undefined
+    ? null
+    : shown !== undefined && shown < total
+      ? `${shown} of ${total}`
+      : `${total}`
+---
+
+<div class="panel-group mb-3">
+  <div
+    class="mb-0.5 flex items-baseline gap-2.5 text-[length:var(--type-label-size)] tracking-[0.1em] text-(--color-muted) uppercase"
+  >
+    <span>{label}</span>
+    {
+      count && (
+        <span class="tracking-normal text-(--color-text-secondary)">
+          {count}
+        </span>
+      )
+    }
+  </div>
+  <slot />
+</div>

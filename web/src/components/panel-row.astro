@@ -1,0 +1,38 @@
+---
+/**
+ * One row inside a panel: what the thing is called, and the one fact the
+ * section turns on.
+ *
+ * `scoped` decides which of two forms the trailing value takes. A scoped value
+ * is the discriminating one, so it carries the accent pill and the reader's
+ * eye lands on it first; an unscoped value is the ordinary case and stays flat
+ * and muted. That contrast is the whole argument of the rules section, and
+ * drawing both the same way is what the committed frame does wrong.
+ *
+ * The accent here is the structural use `593-landing-page.md` caps at one, and
+ * it stays one: the pill is the same structural mark the rule card border was,
+ * moved rather than joined by a second.
+ */
+interface Props {
+  name: string
+  value: string
+  scoped?: boolean
+}
+
+const { name, value, scoped = false } = Astro.props
+---
+
+<div class="flex items-baseline justify-between gap-4 py-px">
+  <span class="text-(--color-text)">{name}</span>
+  {
+    scoped ? (
+      <span class="shrink-0 rounded-[var(--radius-pill)] border border-(--color-accent) bg-(--color-accent)/15 px-2.5 text-[length:var(--type-label-size)] text-(--color-accent)">
+        {value}
+      </span>
+    ) : (
+      <span class="shrink-0 px-2.5 text-[length:var(--type-label-size)] text-(--color-muted)">
+        {value}
+      </span>
+    )
+  }
+</div>

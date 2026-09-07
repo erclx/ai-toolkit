@@ -1,0 +1,54 @@
+---
+/**
+ * The panel every converted section is drawn in.
+ *
+ * System A, picked on 2026-09-07 over a terminal-native and an editorial
+ * alternative. The window chrome the committed frames carry is deliberately
+ * absent: a capture needs it so a still reads as terminal output, and a page
+ * that already draws its own surfaces reads it as a frame inside a frame,
+ * which was one of the four legibility defects the treatment exists to fix.
+ *
+ * `foot` carries where the content came from. Every section states its own
+ * provenance rather than the page asserting it once, which is what
+ * `internal/rules/claude/593-landing-page.md` requires of a rendered count.
+ */
+interface Props {
+  foot?: string
+  columns?: boolean
+}
+
+const { foot, columns = false } = Astro.props
+---
+
+<div
+  class="rounded-[var(--radius-panel)] border border-(--color-border) bg-(--color-surface) px-5 py-4"
+>
+  <div class={columns ? 'panel-columns' : ''}>
+    <slot />
+  </div>
+  {
+    foot && (
+      <p class="m-0 mt-3 border-t border-(--color-border) pt-3 text-[length:var(--type-label-size)] text-(--color-muted)">
+        {foot}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .panel-columns {
+    column-count: 2;
+    column-gap: 2.5rem;
+  }
+
+  /* A group split across the fold reads as two groups, so it never breaks. */
+  .panel-columns :global(.panel-group) {
+    break-inside: avoid;
+  }
+
+  @media (max-width: 640px) {
+    .panel-columns {
+      column-count: 1;
+    }
+  }
+</style>

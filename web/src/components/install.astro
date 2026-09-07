@@ -1,5 +1,13 @@
 ---
 import { install } from '../content/copy'
+import Panel from './panel.astro'
+
+/**
+ * Replaced `install.png`, which was the one committed frame genuinely short of
+ * pixels: it supplied 0.90 physical pixels for every one a retina display
+ * asked for, against 1.04 for the other four. Commands are also the thing a
+ * reader most wants to select and copy, which a raster cannot offer.
+ */
 ---
 
 <section
@@ -9,16 +17,26 @@ import { install } from '../content/copy'
 >
   <h2 class="text-[length:var(--type-heading-size)]">{install.heading}</h2>
   <p>{install.lede}</p>
-  <pre
-    class="overflow-x-auto rounded-[var(--radius-panel)] bg-(--color-surface) p-4 text-(--color-text)"><code>{install.commands.join('\n')}</code></pre>
-  <img
-    src={install.image.src}
-    alt={install.image.alt}
-    class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
-    loading="lazy"
-  />
-  <p class="text-(--color-text-secondary)">{install.note}</p>
+
+  <Panel foot={install.note}>
+    {
+      install.commands.map((command) => (
+        <div class="flex gap-3 py-0.5">
+          <span aria-hidden="true" class="text-(--color-accent)">
+            $
+          </span>
+          <code class="text-(--color-text)">{command}</code>
+        </div>
+      ))
+    }
+  </Panel>
+
   <p>{install.cliNote}</p>
-  <pre
-    class="overflow-x-auto rounded-[var(--radius-panel)] bg-(--color-surface) p-4 text-(--color-text)"><code>{install.cliCommand}</code></pre>
+
+  <Panel>
+    <div class="flex gap-3">
+      <span aria-hidden="true" class="text-(--color-accent)">$</span>
+      <code class="text-(--color-text)">{install.cliCommand}</code>
+    </div>
+  </Panel>
 </section>

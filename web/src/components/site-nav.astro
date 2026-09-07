@@ -1,0 +1,93 @@
+---
+import { nav } from '../content/copy'
+
+/**
+ * The floating pill, picked on 2026-09-07 over a left rail and a sticky
+ * header. It carries the section links and the theme toggle, which is why the
+ * navigation shape had to be settled before the toggle had anywhere to live.
+ *
+ * The links resolve to the eight section ids. Six of those ids did not exist
+ * before this branch, so three quarters of the page could not be linked to at
+ * all and any navigation would have had nothing to point at.
+ *
+ * The toggle writes the reader's choice to `localStorage` and flips the same
+ * attribute the pre-paint script in `base.astro` sets, so a reload keeps the
+ * choice rather than falling back to the system preference.
+ */
+---
+
+<nav
+  aria-label="Sections"
+  class="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-4"
+>
+  <div
+    class="pointer-events-auto flex items-center gap-1 rounded-[var(--radius-pill)] border border-(--color-border) bg-(--color-chrome)/95 px-2 py-1.5 backdrop-blur"
+  >
+    <a
+      href="#top"
+      class="rounded-[var(--radius-pill)] px-3 py-1 font-semibold text-(--color-accent) no-underline"
+      >{nav.mark}</a
+    >
+    <ul class="m-0 hidden list-none gap-0.5 p-0 sm:flex">
+      {
+        nav.links.map((link) => (
+          <li>
+            <a
+              href={`#${link.id}`}
+              class="block rounded-[var(--radius-pill)] px-3 py-1 text-[length:var(--type-label-size)] text-(--color-text-secondary) no-underline"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <button
+      type="button"
+      class="theme-toggle ml-1 cursor-pointer rounded-[var(--radius-pill)] border-0 bg-transparent px-3 py-1 text-[length:var(--type-label-size)] text-(--color-text-secondary)"
+      aria-label={nav.toggleLabel}
+      aria-pressed="false"
+    >
+      <span aria-hidden="true" class="theme-toggle-glyph">◐</span>
+    </button>
+  </div>
+</nav>
+
+<style>
+  .theme-toggle:hover,
+  nav a:hover {
+    color: var(--color-text);
+  }
+
+  /* 410-a11y: interactive elements take the page focus ring, never none. */
+  .theme-toggle:focus-visible,
+  nav a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.theme-toggle')
+  const root = document.documentElement
+
+  function apply(theme: 'light' | 'dark') {
+    root.setAttribute('data-theme', theme)
+    root.style.colorScheme = theme
+    toggle?.setAttribute('aria-pressed', String(theme === 'light'))
+    try {
+      localStorage.setItem('canon-theme', theme)
+    } catch {
+      // A browser refusing storage still gets the theme for this page view.
+    }
+  }
+
+  toggle?.setAttribute(
+    'aria-pressed',
+    String(root.getAttribute('data-theme') === 'light'),
+  )
+
+  toggle?.addEventListener('click', () => {
+    apply(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light')
+  })
+</script>

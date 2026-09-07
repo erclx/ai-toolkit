@@ -11,17 +11,60 @@ test('renders the eight sections', async ({ page }) => {
   await expect(page.locator('section')).toHaveCount(8)
 })
 
-test('every section image resolves', async ({ page }) => {
+test('no section falls back to a committed raster', async ({ page }) => {
   await page.goto('/')
-  const images = page.locator('img')
-  const count = await images.count()
+  // Every catalog the page shows is rendered from a build-time read now. A
+  // raster reappearing means a section regressed to a picture of its content,
+  // which is soft, carries no links, and cannot reflow.
+  await expect(page.locator('main img')).toHaveCount(0)
+})
+
+test('the rules panel names every domain with its true count', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const groups = page.locator('#catalog .panel-group')
+  // The group structure is complete and the sampling sits one level down. A
+  // flat sample of ten rules renders five of the eight domains and tells the
+  // reader nothing about the three it dropped.
+  const count = await groups.count()
+  expect(count).toBeGreaterThanOrEqual(8)
+  await expect(groups.first()).toContainText(/of \d+/)
+})
+
+test('a path-scoped rule is marked and an always-on rule is not', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const catalog = page.locator('#catalog')
+  await expect(catalog.getByText('every session').first()).toBeVisible()
+  await expect(catalog.getByText('**/*.md').first()).toBeVisible()
+})
+
+test('every nav link resolves to a section on the page', async ({ page }) => {
+  await page.goto('/')
+  const links = page.locator('nav[aria-label="Sections"] a')
+  const count = await links.count()
   expect(count).toBeGreaterThan(0)
   for (let i = 0; i < count; i++) {
-    const src = await images.nth(i).getAttribute('src')
-    expect(src).toBeTruthy()
-    const response = await page.request.get(src as string)
-    expect(response.ok()).toBe(true)
+    const href = await links.nth(i).getAttribute('href')
+    expect(href).toMatch(/^#/)
+    await expect(page.locator(href as string)).toHaveCount(1)
   }
+})
+
+test('the toggle flips the theme and records the choice', async ({ page }) => {
+  await page.goto('/')
+  const root = page.locator('html')
+  const before = await root.getAttribute('data-theme')
+
+  await page.locator('.theme-toggle').click()
+
+  const after = await root.getAttribute('data-theme')
+  expect(after).not.toBe(before)
+  expect(await page.evaluate(() => localStorage.getItem('canon-theme'))).toBe(
+    after,
+  )
 })
 
 test('the rule arrives once its stage scrolls into view', async ({ page }) => {

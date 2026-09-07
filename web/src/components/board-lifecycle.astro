@@ -1,5 +1,19 @@
 ---
 import { boardLifecycle } from '../content/copy'
+import Panel from './panel.astro'
+import PanelGroup from './panel-group.astro'
+import PanelRow from './panel-row.astro'
+
+/**
+ * Replaced `task-board.png`.
+ *
+ * This is the one converted section whose rows are not a catalog read, and it
+ * stays that way rather than pretending otherwise. `.canon/tasks/` is
+ * gitignored, so the board a deploy sees is whatever the build machine happens
+ * to hold, which is neither reproducible nor anybody's business. The rows are
+ * authored, the note under the panel says so, and that is the same admission
+ * the committed frame carried.
+ */
 ---
 
 <section
@@ -11,13 +25,14 @@ import { boardLifecycle } from '../content/copy'
     {boardLifecycle.heading}
   </h2>
   <p>{boardLifecycle.body}</p>
-  <img
-    src={boardLifecycle.image.src}
-    alt={boardLifecycle.image.alt}
-    class="w-full rounded-[var(--radius-frame)] border border-(--color-border)"
-    loading="lazy"
-  />
-  <p class="text-[length:var(--type-label-size)] text-(--color-text-secondary)">
-    {boardLifecycle.note}
-  </p>
+
+  <Panel foot={boardLifecycle.note}>
+    <PanelGroup label="Run now" total={boardLifecycle.rows.length}>
+      {
+        boardLifecycle.rows.map((row) => (
+          <PanelRow name={row.title} value={row.plan} scoped />
+        ))
+      }
+    </PanelGroup>
+  </Panel>
 </section>

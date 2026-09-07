@@ -19,6 +19,24 @@ export const site = {
   origin: 'https://canon.erclx.dev',
 }
 
+export const nav = {
+  mark: 'canon',
+  /**
+   * One entry per section id. The hero and the call to action are reachable
+   * through the mark and the page end rather than taking a link of their own,
+   * which keeps the pill narrow enough to float.
+   */
+  links: [
+    { id: 'agent-view', label: 'Workflow' },
+    { id: 'install', label: 'Install' },
+    { id: 'catalog', label: 'Catalog' },
+    { id: 'rules', label: 'Rules' },
+    { id: 'install-surface', label: 'Targets' },
+    { id: 'board', label: 'Board' },
+  ],
+  toggleLabel: 'Switch between light and dark',
+}
+
 export const footer = {
   // README.md: canon-allow-readme-paraphrase: states what the page is built
   // from, which no single README sentence says. The claim is checked by the
@@ -88,11 +106,6 @@ export const install = {
   cliNote:
     "Several skills call the canon CLI to read catalogs and run installs, and the plugin doesn't put it on your path.",
   cliCommand: 'bun install --global @erclx/canon',
-  image: {
-    src: '/assets/install.png',
-    // README.md: "Adding the canon marketplace and installing the plugin in Claude Code"
-    alt: 'Adding the canon marketplace and installing the plugin in Claude Code',
-  },
 }
 
 export const catalog = {
@@ -108,11 +121,15 @@ export const catalog = {
     'Tooling stacks: golden configs, seeds, and a reference per framework, laid down by canon init',
     'Design system: a DESIGN.md token format, a skill that drafts one, and a render command',
   ],
-  image: {
-    src: '/assets/hero.png',
-    // README.md: "the workflow skills named, and a sample of the rule and standard names"
-    alt: 'The canon catalog, listing skills, governance rules, and standards with the count each ships, the workflow skills named, and a sample of the rule and standard names',
-  },
+  // README.md: "load into a Claude session when a matching path is edited"
+  rulesLede:
+    'Rules load into a Claude session when a matching path is edited. Every domain is listed below with the number of rules it holds, and a sample of each.',
+  /**
+   * Both figures are read at build time and passed in, so the sentence cannot
+   * state a count nothing measured.
+   */
+  rulesProvenance: (total: number, domains: number) =>
+    `All ${domains} domains, a sample of each. ${total} rules, read from the catalog when this page was built.`,
   // README.md: "read from the catalogs when the image is built"
   countNote: 'Read from the catalogs when this page was built.',
 }
@@ -136,19 +153,14 @@ export const targetReceives = {
   heading: 'What a target receives',
   // README.md: "copied into your project and become yours to edit, and some are never copied at all" "A standard stays here and is opened by name, so there is no copy in your repo to drift from this one"
   body: 'Some domains are copied into your project and become yours to edit, and some are never copied at all. A tooling stack lands as real files under version control. A standard stays here and is opened by name, so there is no copy in your repo to drift from this one.',
-  image: {
-    src: '/assets/install-surface.png',
-    // README.md: "the first showing five stacks with their dependency and script counts"
-    alt: 'canon tooling list and canon standards list side by side, the first showing five stacks with their dependency and script counts, the second showing standards against the artifact each governs',
-  },
+  // README.md: canon-allow-readme-paraphrase: names where the two columns came
+  // from. No README sentence states it, because the README shows the same two
+  // catalogs as a rendered frame rather than reading them.
+  provenance:
+    'Both columns are read from the tooling and standards catalogs when this page is built.',
   governance: {
     // README.md: "the glob beside each rule is what decides whether it reaches a session at all" "A rule with a glob loads only when a matching path is edited, and a rule with none loads every session"
     body: 'A rule with a glob loads only when a matching path is edited, and a rule with none loads every session. Stacks compose, so a project inherits every rule its stack depends on.',
-    image: {
-      src: '/assets/governance.png',
-      // README.md: "showing seven stacks with the rules each carries"
-      alt: 'canon gov list, showing seven stacks with the rules each carries and a sample of rules beside the path glob that loads each one',
-    },
   },
 }
 
@@ -161,11 +173,26 @@ export const boardLifecycle = {
   // a synthesized claim with no matching README text, which is what the
   // marker still covers once both borrows above are checked as quotes.
   body: '.canon/tasks/ is gitignored session scratch, one row per task in flight, each naming the files it touches and the plan it runs under. A merge is what closes it, not a checkbox someone remembers to tick.',
-  image: {
-    src: '/assets/task-board.png',
-    // README.md: "one row per task in flight, each naming the files it touches and the plan it runs under"
-    alt: "the task board's Run now table, one row per task in flight, each naming the files it touches and the plan it runs under",
-  },
+  /**
+   * Authored rather than read, which is the one place on this page that is
+   * true. `.canon/tasks/` is gitignored, so the board a deploy would see is
+   * whatever the build machine happens to hold. `note` below says so, which is
+   * the same admission the frame this replaced carried.
+   */
+  rows: [
+    {
+      title: 'v81.0 a commit subject reaches the changelog unspelled',
+      plan: 'title-spelling-check',
+    },
+    {
+      title: 'v80.9 the key changes reader drops a path behind a code span',
+      plan: 'key-changes-span-walk',
+    },
+    {
+      title: 'v75.7 the planner in-flight read goes blind during a wave',
+      plan: 'planner-in-flight-read',
+    },
+  ],
   // README.md: "a hand-taken snapshot rather than something the build reads live, and it goes stale the moment the board moves"
   note: 'A hand-taken snapshot rather than something this build reads live, and it goes stale the moment the board moves.',
 }
