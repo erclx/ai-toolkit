@@ -204,6 +204,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:setup-smoke`           | After `setup-verify` passes, to check the dev and preview servers, end-to-end tests, and the screenshot harness |
 | `canon:claude-design-extract` | Before the first UI feature, to draft `.claude/DESIGN.md`                                                       |
 | `canon:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.canon/diagrams/`                            |
+| `canon:repo-metadata`         | When the GitHub About text, homepage, or topics may have drifted, to reconcile them against the README          |
 
 ### Decide what to build
 
@@ -265,11 +266,13 @@ This section is the corpus the coverage claim is measured against: every name `c
 
 ### Run several tracks at once
 
-| Skill                      | When to use                                                                    |
-| -------------------------- | ------------------------------------------------------------------------------ |
-| `canon:claude-orchestrate` | To assert the control session that owns the queue and reviews each worker's PR |
-| `canon:session-resume`     | At the start of a session, to pick up what a previous one left                 |
-| `canon:session-map`        | At the close of a session, to write the handoff a compaction would destroy     |
+| Skill                      | When to use                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `canon:claude-orchestrate` | To assert the control session that owns the queue and reviews each worker's PR  |
+| `canon:claude-planner`     | To assert the planner role for a cold session writing one plan under one task   |
+| `canon:claude-worker`      | To assert the worker role for a cold session building one branch under one plan |
+| `canon:session-resume`     | At the start of a session, to pick up what a previous one left                  |
+| `canon:session-map`        | At the close of a session, to write the handoff a compaction would destroy      |
 
 ### Keep the project current with the toolkit
 
