@@ -1,4 +1,4 @@
-import { mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync } from 'node:fs'
 import { join, parse } from 'node:path'
 import { execa } from 'execa'
 
@@ -143,6 +143,13 @@ export async function convertToGif(
  * The missing-binary and failure handling matches `convertToMp4` exactly: the
  * recording already succeeded by the time this runs, so an optional step
  * never fails the run.
+ *
+ * A prior extraction's frames are cleared before ffmpeg runs, not left for
+ * `-y` to overwrite. ffmpeg's `-y` only overwrites the indices this run
+ * produces, so a shorter re-extraction against the same video's stable
+ * output path (the plan's declared `output.video`, unchanged across
+ * re-records) would otherwise leave the previous run's tail in place,
+ * sorted into the returned list as if it were still current.
  */
 export async function extractFrames(
   videoPath: string,
@@ -154,6 +161,15 @@ export async function extractFrames(
   const targetDir = outDir ?? dir
   const fps = opts.fps ?? 1
   if (outDir) mkdirSync(outDir, { recursive: true })
+
+  if (existsSync(targetDir)) {
+    for (const stale of new Bun.Glob(`${name}-frame-*.png`).scanSync({
+      cwd: targetDir,
+      onlyFiles: true,
+    })) {
+      rmSync(join(targetDir, stale))
+    }
+  }
 
   const pattern = join(targetDir, `${name}-frame-%03d.png`)
   const result = await execa(
@@ -189,7 +205,7 @@ export async function extractFrames(
  * truncating, so a run producing 1000 or more frames writes `-1000.png`
  * beside `-999.png` and a lexicographic sort reads the wider name first.
  */
-function frameIndex(filename: string): number {
+export function frameIndex(filename: string): number {
   const match = filename.match(/-frame-(\d+)\.png$/)
   return match ? Number(match[1]) : 0
 }

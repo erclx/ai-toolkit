@@ -1,15 +1,14 @@
-import {
-  existsSync,
-  mkdtempSync,
-  rmSync,
-  statSync,
-  writeFileSync,
-} from 'node:fs'
+import { existsSync, mkdtempSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { convertToGif, convertToMp4, extractFrames } from '@/demo/container'
+import {
+  convertToGif,
+  convertToMp4,
+  extractFrames,
+  frameIndex,
+} from '@/demo/container'
 
 async function ffmpegAvailable(): Promise<boolean> {
   const result = await execa('ffmpeg', ['-version'], { reject: false })
@@ -85,18 +84,19 @@ describe('convertToMp4', () => {
         }
       })
 
-      it('should order frames numerically past the three-character padding ffmpeg writes', async () => {
-        writeFileSync(join(root, 'clip-frame-999.png'), '')
-        writeFileSync(join(root, 'clip-frame-1000.png'), '')
+      it('should not return a prior extraction leftover past a shorter one at the same path', async () => {
+        const first = await extractFrames(webmPath, undefined, { fps: 3 })
+        expect(first).toMatchObject({ status: 'extracted' })
+        if (first.status !== 'extracted') return
+        expect(first.framePaths.length).toBeGreaterThan(1)
 
-        const result = await extractFrames(webmPath)
-
-        expect(result).toMatchObject({ status: 'extracted' })
-        if (result.status !== 'extracted') return
-        const names = result.framePaths.map((path) => path.split('/').pop())
-        expect(names.indexOf('clip-frame-999.png')).toBeLessThan(
-          names.indexOf('clip-frame-1000.png'),
-        )
+        const second = await extractFrames(webmPath, undefined, { fps: 1 })
+        expect(second).toMatchObject({ status: 'extracted' })
+        if (second.status !== 'extracted') return
+        expect(second.framePaths.length).toBeLessThan(first.framePaths.length)
+        for (const stale of first.framePaths.slice(second.framePaths.length)) {
+          expect(existsSync(stale)).toBe(false)
+        }
       })
     },
   )
@@ -110,6 +110,22 @@ describe('convertToGif', () => {
     )
 
     expect(result).toEqual({ status: 'skipped', reason: 'converter-missing' })
+  })
+})
+
+describe('frameIndex', () => {
+  it('should sort past the three-character padding ffmpeg writes', () => {
+    const names = [
+      'clip-frame-1000.png',
+      'clip-frame-001.png',
+      'clip-frame-999.png',
+    ]
+
+    expect([...names].sort((a, b) => frameIndex(a) - frameIndex(b))).toEqual([
+      'clip-frame-001.png',
+      'clip-frame-999.png',
+      'clip-frame-1000.png',
+    ])
   })
 })
 
