@@ -8,7 +8,7 @@ description: Drafts a screencast script with pre-seeded beats, defaults, and dec
 ## Guards
 
 - If no topic is provided, stop: `❌ No screencast topic. Describe what you are recording.`
-- Draft, then hand off. Do not edit video or generate captions, and do not drive the application. A recording is another command's job rather than something forbidden: write the draft, name `canon demo compile` as the next step, and stop.
+- Draft, then hand off. Do not edit video or generate captions, and do not drive the application. A recording is another skill's job rather than something forbidden: write the draft, name `canon-record` as the next step, and stop.
 - Stack-agnostic in the draft. Never name a recording tool, an editing tool, a font, or a window manager. Keep selectors, URLs, wait conditions, and timings out of the beats too, since those four are exactly what the compiler adds in a plan of its own. A beat carrying them stops being a document a person can read and edit down.
 
 ## Step 1: read the project context
@@ -159,9 +159,9 @@ Print the file path on its own line and a one-line summary. Do not paraphrase th
 Draft has 5 beats and pre-seeded defaults. Edit the beats and the resolved decisions.
 
 To record it rather than shoot it by hand:
-canon demo compile .canon/tmp/screencast/<slug>.md
+canon-record .canon/tmp/screencast/<slug>.md
 ```
 
-Name the command and stop there. Do not compile the draft, do not run it, and do not generate captions. The operator edits the beats first, and the compiler reports which selectors and URLs they still owe it.
+Name the skill and stop there. Do not compile the draft, do not run it, and do not generate captions. The operator edits the beats first, and the compiler reports which selectors and URLs they still owe it.
 
 Say so plainly if `canon demo compile` is not available, rather than driving the application some other way. The command ships with the CLI and the skills ship with the plugin, so a project carrying one and not the other is a real state.

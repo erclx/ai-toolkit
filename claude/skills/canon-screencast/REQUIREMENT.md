@@ -33,7 +33,7 @@ A draft that names the recording software, the editing software, or the window m
 
 ## Out of scope
 
-- Producing the recording, which stops at the script by design
+- Producing the recording, which `canon-record` owns
 - Refining an existing draft, which is a direct edit of the file
 - Slide decks, which `canon-slides-draft` owns
 - Where the recording ships, which the draft lists and the user decides
