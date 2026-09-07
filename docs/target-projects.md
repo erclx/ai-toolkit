@@ -173,6 +173,25 @@ canon migrate rule-layout --write --json
 
 The first line reports the plan and the second applies it, relocating each rule and carrying an edited one's recorded hash forward so it still reports as edited on the next sync rather than reading clean. Run it once, ahead of `canon gov sync` or `canon gov install`, on any project scaffolded before this move landed.
 
+### Rename the skill citations, once
+
+Twenty-five plugin skills dropped their `claude-` prefix for two-word names, so `canon:claude-docs` answers as `canon:docs-fold` and `canon:claude-tasks` as `canon:task-board`. A project that installed governance or tooling before that release holds files naming the old ones, and the plugin answers to none of them.
+
+Two of those files run rather than sit there. `.husky/post-merge` prints a command for a person to type, and `.claude/hooks/pr-create-log.sh` hands a session a message naming a skill, so a stale copy tells someone to invoke something that no longer exists. A rule under `.claude/rules/canon/core/` names skills too, though a rule is read rather than run.
+
+Resync what the toolkit owns, then sweep what the project wrote:
+
+```bash
+canon gov sync
+canon tooling sync <stack> . --write
+canon migrate skill-names --json
+canon migrate skill-names --write --json
+```
+
+Run the second line once per stack the project holds, since the two hooks above arrive from different ones. The third reports the plan and the fourth applies it.
+
+The order carries the reason. A sync replaces each toolkit-owned copy with one already carrying the new names, and the sweep afterwards reaches the prose the project wrote itself. Sweeping first rewrites those installed files in place, which moves them off the hash the install recorded, so the next sync reads them as edited by the project and leaves them alone.
+
 ### Check first
 
 `canon sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.
