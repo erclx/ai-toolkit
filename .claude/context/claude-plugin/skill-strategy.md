@@ -672,3 +672,11 @@ The two above are the trim candidates this read produces, and neither is a recom
 Nothing here re-verdicts the 67 folders already carrying a row or a narrative mention. A trim candidate hiding in that set is not surfaced, and re-running that census is the cost `.canon/groundwork/31-skill-surface-shape/06-decision.md` and this row's own first finding both priced out.
 
 `wiki/claude/claude-skills.md` covers the Claude Code skill feature itself, and `docs/workflow/visual-design-workflow.md` is the worked example of per-workflow skill recommendations.
+
+## The identity surface is the seventy-fourth skill, and one pick settles the mark and its card together
+
+`identity` covers a project's logo mark and the social card composed from it, reached through `draft-and-pick`'s own render-and-pick loop rather than a second implementation of one. The task filing it measured zero hits for `logo`, `og:image`, `og-image`, or Open Graph across every shipped skill and standard, so a project reaching for either output had nothing to reach for and redid the work by hand each time.
+
+The name passed over two candidates. `logo` names one of the two outputs and leaves the card unaccounted for, and `assets` collides twice, with `canon capture`'s own `DEFAULT_SOURCE = 'assets'` and with this repository's top-level `assets/` folder of README captures. `identity` carries no prefix, on the same reasoning `draft-and-pick` and `restate-plainly` already give for dropping one: it writes candidates to scratch and a final deliverable outside `.claude/`, so it is neither a Claude workflow surface nor a toolkit-subject skill.
+
+One skill covers both outputs rather than two. The mark and the card are one identity rendered twice, and two skills each reading the other's pick can settle on shapes that do not compose. Drafting every arm already inside the card frame is what makes that real rather than aspirational, since the pick settling the mark's shape settles its composition in the same choice.

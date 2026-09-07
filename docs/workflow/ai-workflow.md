@@ -300,6 +300,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:ci-workflow`        | For a GitHub Actions workflow file                                                                |
 | `canon:canon-slides-draft` | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint                             |
 | `canon:canon-screencast`   | For a recording script with beats and defaults already seeded                                     |
+| `canon:identity`           | For a project's logo mark and its social card, drafted through `draft-and-pick`'s pick loop       |
 
 ### Answer a question at any point
 
