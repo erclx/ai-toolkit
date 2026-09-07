@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { isAbsolute, relative, resolve } from 'node:path'
 import { copyPreservingMode } from '@/copy'
+import { checkoutMismatchWarning } from '@/project-root'
 import { findInstalledOrigin, readHistoryIndex } from '@/sync/history'
 import {
   type DomainHashes,
@@ -338,6 +339,9 @@ export async function runDomainSync(
   options: SyncRunOptions,
 ): Promise<number> {
   intro(adapter.banner)
+
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
 
   const resolved = resolve(target)
 

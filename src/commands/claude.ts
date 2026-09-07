@@ -50,7 +50,7 @@ import {
 } from '@/claude/settings'
 import { copyPreservingMode } from '@/copy'
 import { execScript } from '@/exec'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { recordDir } from '@/record-root'
 import { isDirectory, resolveTarget } from '@/target'
 import { injectGitignore, pruneGitignore } from '@/tooling/inject'
@@ -620,6 +620,9 @@ async function sameContent(src: string, dest: string): Promise<boolean> {
  * human listing stays on the timeline. Only the human mode opens a frame.
  */
 async function runSeedsList(opts: SeedsListOptions): Promise<number> {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const listings = listSeeds(PROJECT_ROOT)
 
   if (opts.json) {
@@ -646,6 +649,9 @@ async function runSeedsList(opts: SeedsListOptions): Promise<number> {
 }
 
 function runSkillsList(opts: SkillsListOptions): number {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const listings = listSkills(PROJECT_ROOT)
 
   if (opts.json) {

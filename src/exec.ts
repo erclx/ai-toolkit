@@ -1,11 +1,15 @@
 import { join } from 'node:path'
 import { execa } from 'execa'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
+import { logWarn } from '@/ui'
 
 export async function execScript(
   script: string,
   args: string[],
 ): Promise<void> {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const scriptPath = join(PROJECT_ROOT, 'scripts', script)
   const result = await execa(scriptPath, args, {
     stdio: 'inherit',

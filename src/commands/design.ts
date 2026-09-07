@@ -9,11 +9,11 @@ import {
 import { buildDesignCss } from '@/design/css'
 import { renderDesignDoc } from '@/design/render'
 import { DESIGN_BASE_CSS, DESIGN_DOCUMENT, regenDesign } from '@/design/regen'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { creationRel } from '@/record-root'
 import { recordStamp, runDomainSync } from '@/sync/engine'
 import { resolveTarget } from '@/target'
-import { intro, logAdd, logError, logInfo, outro, palette } from '@/ui'
+import { intro, logAdd, logError, logInfo, logWarn, outro, palette } from '@/ui'
 
 export function register(program: Command): void {
   const design = program
@@ -38,6 +38,12 @@ export function register(program: Command): void {
     )
     .action(() => {
       const { GREEN, GREY, NC, RED, WHITE } = palette(process.stderr)
+
+      // The guard below catches a `PROJECT_ROOT` with no record at all, which
+      // is an installed package. It cannot catch a second real checkout that
+      // has one, so the warning runs ahead of it.
+      const mismatch = checkoutMismatchWarning(process.cwd())
+      if (mismatch !== undefined) logWarn(mismatch)
 
       // Both outputs resolve from `PROJECT_ROOT`, which is the installed
       // package directory when the CLI runs out of a target's `node_modules`.

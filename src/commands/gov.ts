@@ -8,7 +8,7 @@ import {
   type CountsReport,
   scanCounts,
 } from '@/counts/scan'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { creationRel, SCRATCH } from '@/record-root'
 import { createGovAdapter } from '@/gov/adapter'
 import { regenConsumedRules } from '@/gov/consumed'
@@ -203,8 +203,11 @@ export function register(program: Command): void {
         '',
       ].join('\n'),
     )
-    .action(async (opts: RegenOptions) => {
-      process.exitCode = await runRegen(opts)
+    .action(async (opts: RegenOptions, cmd: Command) => {
+      process.exitCode = await runRegen(
+        opts,
+        cmd.getOptionValueSource('root') === 'cli',
+      )
     })
 
   gov
@@ -1052,6 +1055,9 @@ function selectedSections(opts: ListOptions): {
  * untouched by it.
  */
 function runList(opts: ListOptions): number {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const catalog = buildGovCatalog(PROJECT_ROOT)
   const sections = selectedSections(opts)
 
@@ -1092,7 +1098,18 @@ function runList(opts: ListOptions): number {
  * the only work that stage does now. The installed set is readable on disk, so
  * printing it would only add noise to every `bun run check`.
  */
-async function runRegen(opts: RegenOptions): Promise<number> {
+async function runRegen(
+  opts: RegenOptions,
+  rootPassed: boolean,
+): Promise<number> {
+  // An operator naming `--root` names their own target on purpose, so only the
+  // default can silently regenerate against a checkout nobody is standing in.
+  // The value alone cannot separate the two, since the flag carries a default.
+  if (!rootPassed) {
+    const mismatch = checkoutMismatchWarning(process.cwd())
+    if (mismatch !== undefined) logWarn(mismatch)
+  }
+
   const result = await regenConsumedRules(resolve(opts.root ?? PROJECT_ROOT))
 
   if (!result.ok) {

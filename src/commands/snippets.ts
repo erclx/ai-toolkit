@@ -1,9 +1,9 @@
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
-import { PROJECT_ROOT } from '@/project-root'
+import { checkoutMismatchWarning, PROJECT_ROOT } from '@/project-root'
 import { BASE_CATEGORY } from '@/snippets/categories'
 import { buildSnippetsCatalog } from '@/snippets/list'
-import { intro, logInfo, logStep, outro } from '@/ui'
+import { intro, logInfo, logStep, logWarn, outro } from '@/ui'
 
 const PASS_THROUGH_VERBS = ['create'] as const
 
@@ -42,6 +42,9 @@ export function register(program: Command): void {
  * emitted section headers and the pass-through above it owned the `┌`.
  */
 function runList(opts: ListOptions): number {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  if (mismatch !== undefined) logWarn(mismatch)
+
   const catalog = buildSnippetsCatalog(PROJECT_ROOT)
 
   if (opts.json) {
