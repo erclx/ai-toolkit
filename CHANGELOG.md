@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.68.0](https://github.com/erclx/canon/compare/v4.67.0...v4.68.0) (2026-09-07)
+
+
+### Miscellaneous Chores
+
+* release the skill rename ([#1595](https://github.com/erclx/canon/issues/1595)) ([6477a38](https://github.com/erclx/canon/commit/6477a382fce29225c80cc3595e2d95275aefb874))
+
 ## [4.67.0](https://github.com/erclx/canon/compare/v4.66.0...v4.67.0) (2026-09-07)
 
 
