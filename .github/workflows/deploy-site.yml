@@ -46,14 +46,10 @@ jobs:
         run: bun install --frozen-lockfile
 
       # The build runs inside this checkout rather than against a published
-      # package, because `web/src/lib/counts.ts` shells out to `canon gov
-      # counts --json` and the page refuses to build without it. Linking the
-      # local CLI is what makes that verb resolve on PATH, and it also means
-      # the counts on the deployed page are this commit's rather than the last
-      # release's.
-      - name: Link Local CLI
-        run: bun link
-
+      # package, because `web/src/lib/canon-cli.ts` spawns `bun` against this
+      # checkout's own `src/cli.ts` directly rather than resolving `canon` on
+      # PATH, so the counts on the deployed page are this commit's rather than
+      # the last release's.
       - name: Build
         run: bun run web:build
 

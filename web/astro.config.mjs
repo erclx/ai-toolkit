@@ -9,7 +9,9 @@ const portOffset = Number(process.env.WORKTREE_PORT_OFFSET) || 0
 
 export default defineConfig({
   integrations: [react()],
-  site: site.origin,
+  // `ASTRO_SITE` overrides the deployed origin for a staging or preview
+  // build, which is what a bare `site.origin` cannot do.
+  site: process.env.ASTRO_SITE || site.origin,
   server: {
     port: 4321 + portOffset,
   },
