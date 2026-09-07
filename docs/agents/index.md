@@ -16,7 +16,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Context audit checks](context-audit-checks.md): What each non-gating check reports, the unit each checkpoint is measured in, the architecture record's length gate and claim coverage, which folders each check reaches, and what moved to the attribute tier
 - [Context audit](context-audit.md): Running the audit, its flags and folder scope, the exit codes, the citation gate, and the widened gate the seed stage runs
 - [Self-stated counts](counts.md): Reading a sentence that asserts a closed catalog's size, how a match is decided, the plausibility filter that keeps a generic word from matching a subset, and why the sweep reports rather than gates
-- [Demo](demo.md): Compiling a screencast draft into a runnable plan, driving a served application to a recording and a still, the pointer the recording paints, and what each refusal reports
+- [Demo](demo.md): Compiling a screencast draft into a runnable plan, driving a served application to a recording and a still, reading numbered frames back out of a recording, the pointer the recording paints, and what each refusal reports
 - [Docs](docs.md): How canon docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
 - [Driver](driver.md): Walking a page through named interactions, the probe catalog and the false finding each one carries, why viewport heights are never defaulted, and what each refusal reports
 - [Merge gate](gate.md): Running the gate this repository verifies a branch with, what the stage table holds and what stays a script, how the changed set scopes three stages, and why a stage that cannot read its input reports rather than passing

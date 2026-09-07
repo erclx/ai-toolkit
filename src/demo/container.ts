@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync, rmSync } from 'node:fs'
 import { join, parse } from 'node:path'
 import { execa } from 'execa'
 
@@ -19,6 +20,15 @@ export type GifResult =
   | { status: 'converted'; gifPath: string }
   | { status: 'skipped'; reason: 'converter-missing' }
   | { status: 'failed'; reason: string }
+
+export type FramesResult =
+  | { status: 'extracted'; framePaths: string[] }
+  | { status: 'skipped'; reason: 'converter-missing' }
+  | { status: 'failed'; reason: string }
+
+export interface ExtractFramesOptions {
+  readonly fps?: number
+}
 
 /**
  * Writes mp4 beside the webm rather than instead of it, since both stated use
@@ -121,4 +131,89 @@ export async function convertToGif(
     }
   }
   return { status: 'converted', gifPath }
+}
+
+/**
+ * Written beside the video by default, so frames fall under the same
+ * `demos/*.png` gitignore entry the still already uses with no new rule
+ * needed. One frame a second by default, matched to the seconds-to-tens-of-
+ * seconds length a tuned recording runs, without a smarter sampling strategy
+ * nobody has asked for.
+ *
+ * The missing-binary and failure handling matches `convertToMp4` exactly: the
+ * recording already succeeded by the time this runs, so an optional step
+ * never fails the run.
+ *
+ * A prior extraction's frames are cleared before ffmpeg runs, not left for
+ * `-y` to overwrite. ffmpeg's `-y` only overwrites the indices this run
+ * produces, so a shorter re-extraction against the same video's stable
+ * output path (the plan's declared `output.video`, unchanged across
+ * re-records) would otherwise leave the previous run's tail in place,
+ * sorted into the returned list as if it were still current.
+ */
+export async function extractFrames(
+  videoPath: string,
+  outDir?: string,
+  opts: ExtractFramesOptions = {},
+  bin: string = CONVERTER_BIN,
+): Promise<FramesResult> {
+  const { dir, name } = parse(videoPath)
+  const targetDir = outDir ?? dir
+  const fps = opts.fps ?? 1
+  if (outDir) mkdirSync(outDir, { recursive: true })
+
+  if (existsSync(targetDir)) {
+    for (const stale of new Bun.Glob(`${name}-frame-*.png`).scanSync({
+      cwd: targetDir,
+      onlyFiles: true,
+    })) {
+      rmSync(join(targetDir, stale))
+    }
+  }
+
+  const pattern = join(targetDir, `${name}-frame-%03d.png`)
+  const result = await execa(
+    bin,
+    ['-y', '-i', videoPath, '-vf', `fps=${fps}`, pattern],
+    { reject: false },
+  )
+
+  if (result.failed && result.code === 'ENOENT') {
+    return { status: 'skipped', reason: 'converter-missing' }
+  }
+  if (result.exitCode !== 0) {
+    return {
+      status: 'failed',
+      reason: result.stderr?.trim() || `ffmpeg exited ${result.exitCode}`,
+    }
+  }
+
+  return { status: 'extracted', framePaths: collectFrames(targetDir, name) }
+}
+
+/**
+ * The glob-and-sort step `extractFrames` reads its result from, pulled out so
+ * a test can drive it against a directory it wrote by hand rather than
+ * through a real extraction, which is the only way to reach the four-digit
+ * boundary below without an ffmpeg run long enough to produce one.
+ *
+ * ffmpeg's `%03d` pads to three characters and then widens rather than
+ * truncating, so a run producing 1000 or more frames writes `-1000.png`
+ * beside `-999.png`, and a lexicographic sort reads the wider name first.
+ * `frameIndex` sorts on the parsed number instead.
+ */
+export function collectFrames(targetDir: string, name: string): string[] {
+  return [
+    ...new Bun.Glob(`${name}-frame-*.png`).scanSync({
+      cwd: targetDir,
+      onlyFiles: true,
+    }),
+  ]
+    .sort((a, b) => frameIndex(a) - frameIndex(b))
+    .map((frame) => join(targetDir, frame))
+}
+
+function frameIndex(filename: string): number {
+  const match = filename.match(/-frame-(\d+)\.png$/)
+  return match ? Number(match[1]) : 0
 }

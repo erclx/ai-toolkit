@@ -40,6 +40,11 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt:
+      'The video just finished recording. Read it back and tell me what each part shows.',
+    expect: 'canon-frames-read',
+  },
+  {
+    prompt:
       'We need to measure this properly before committing to an approach.',
     expect: 'claude-groundwork',
   },

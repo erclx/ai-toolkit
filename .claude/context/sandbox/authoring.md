@@ -215,3 +215,7 @@ A `log_info` line describing what a downstream skill in a chain does is a claim 
 ### A fixture modeling a timed heuristic has to outrun the window it is staged against
 
 A scenario staging a long-running process for an arm that judges it by waiting a fixed window and then checking whether the process is still alive races that window when the fixture sleeps the same duration. Two independently-scheduled sleeps of equal length finish in whichever order machine load happens to put them in, so the arm reads flaky on the one axis it exists to prove reliable. `claude:setup-smoke`'s `dev` and `preview` fixtures sleep three times the skill's five-second check window for this reason. Stage a timed fixture to outlast its check window by a wide margin rather than matching it.
+
+### A refusal arm that stages nothing still owes a commit call the check
+
+`stage_setup` runs after the seed-injection commit provisioning already made, so an arm that changes nothing on disk of its own hits its own commit call against an empty diff. That exits 1 under `set -e` and aborts the scenario before its `log_step`/`log_info` lines print, leaving the raw "nothing to commit" text as the only surfaced output rather than the framed instructions the arm was written to show. Skip the commit call entirely on an arm whose fixture is the absence of a file, rather than committing an empty change.
