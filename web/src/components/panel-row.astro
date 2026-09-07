@@ -25,9 +25,11 @@ interface Props {
 const { name, value, scoped = false } = Astro.props
 ---
 
-{/* `display: contents` hands the two cells to the group's grid, which is what
+{
+  /* `display: contents` hands the two cells to the group's grid, which is what
     lines every chip in a group up on one edge. As its own flex row each one
-    aligned against the panel instead. */}
+    aligned against the panel instead. */
+}
 <div class="panel-row">
   <span class="text-(--color-text)">{name}</span>
   {
