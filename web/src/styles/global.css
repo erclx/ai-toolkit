@@ -168,13 +168,12 @@
     color: var(--color-text);
   }
 
+  /* The lift and the border carry the hover. Tinting the ground toward the
+     accent mixed a saturated hue into a warm neutral and read as muddy rather
+     than as active. */
   .btn-primary:hover {
     border-color: var(--color-accent);
-    background: color-mix(
-      in srgb,
-      var(--color-accent) 10%,
-      var(--color-chrome)
-    );
+    color: var(--color-text);
   }
 
   .btn:hover {
