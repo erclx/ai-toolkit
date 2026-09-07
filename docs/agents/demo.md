@@ -23,6 +23,8 @@ So `canon demo compile` writes a second artifact rather than adding fields to a 
 
 The plan is committed, not scratch. Its timing is a starting point tuned by watching a recording, and the draft cannot reproduce a tuned value, so a recompile over an existing plan refuses and names `--force`.
 
+`canon-record` is the routed way to run both verbs from a draft path: it compiles only when no plan exists yet, then runs, stopping to report any field still unresolved rather than guessing one.
+
 | Option          | Behavior                                                          |
 | --------------- | ----------------------------------------------------------------- |
 | `--out <dir>`   | Directory the plan and its output paths point at, default `demos` |

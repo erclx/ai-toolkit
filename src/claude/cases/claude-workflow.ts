@@ -81,6 +81,11 @@ export const CLAUDE_WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt:
+      'The screencast draft is finished. Turn it into an actual video now.',
+    expect: 'canon-record',
+  },
+  {
+    prompt:
       'Look over everything that changed on this branch for bugs and edge cases.',
     expect: 'claude-review',
   },
