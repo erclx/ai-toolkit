@@ -24,26 +24,30 @@ Warning and error hold ANSI codes because that is what `scripts/lib/ui.sh` write
 
 Success is the one of the three that does have a rendered equivalent, which is why it carries a hex. `assets/captures/install.html` marks every confirmed step with it, and the shell writes `ANSI 32` for the same role, so the two are one role in two registers rather than one value in two spellings. The hex is what the rendered surface picked and no reading claims the terminal renders that value. It declares `background` alone as its ground, since that is the only role it is drawn on, where every other dark text role is drawn on both.
 
-| Role             | Intent                                         | Value            |
-| ---------------- | ---------------------------------------------- | ---------------- |
-| background       | page canvas                                    | #191512          |
-| surface          | cards, panels, raised blocks                   | #211c19          |
-| chrome           | the window titlebar, one step above the canvas | #241e1a          |
-| border           | every rule and panel edge                      | #2f2823          |
-| text             | headings, counts, emphasized runs              | #f4efe9          |
-| text-body        | default body copy                              | #c9c0b7          |
-| text-secondary   | labels, captions, supporting copy              | #a79d94          |
-| muted            | the faintest step, trailing notes              | #948a81          |
-| accent           | install command, mark, primary action          | #e0724b          |
-| success          | confirmations, rendered and in the terminal    | #61c454          |
-| warning          | terminal cautions                              | ANSI 33          |
-| error            | terminal failures                              | ANSI 31          |
-| light-background | page canvas on a light ground                  | #faf7f2          |
-| light-surface    | cards and panels on a light ground             | #f4efe6          |
-| light-text       | primary text on a light ground                 | #1a1815          |
-| light-muted      | secondary text on a light ground               | #726b62          |
-| light-accent     | links and primary action on light              | #a4471c          |
-| light-border     | rules and panel edges on light                 | #e4dcd0 ? verify |
+| Role                 | Intent                                                | Value            |
+| -------------------- | ----------------------------------------------------- | ---------------- |
+| background           | page canvas                                           | #191512          |
+| surface              | cards, panels, raised blocks                          | #211c19          |
+| chrome               | the window titlebar, one step above the canvas        | #241e1a          |
+| border               | every rule and panel edge                             | #2f2823          |
+| text                 | headings, counts, emphasized runs                     | #f4efe9          |
+| text-body            | default body copy                                     | #c9c0b7          |
+| text-secondary       | labels, captions, supporting copy                     | #a79d94          |
+| muted                | the faintest step, trailing notes                     | #948a81          |
+| accent               | install command, mark, primary action                 | #e0724b          |
+| success              | confirmations, rendered and in the terminal           | #61c454          |
+| warning              | terminal cautions                                     | ANSI 33          |
+| error                | terminal failures                                     | ANSI 31          |
+| light-background     | page canvas on a light ground                         | #faf7f2          |
+| light-surface        | cards and panels on a light ground                    | #f4efe6          |
+| light-chrome         | the window titlebar, one step above the canvas        | #ede4d6          |
+| light-text           | primary text on a light ground                        | #1a1815          |
+| light-text-body      | default body copy on a light ground                   | #3d3630          |
+| light-text-secondary | labels, captions, supporting copy on a light ground   | #5c544b          |
+| light-muted          | secondary text on a light ground                      | #726b62          |
+| light-accent         | links and primary action on light                     | #a4471c          |
+| light-success        | confirmations, rendered and in the terminal, on light | #2d6b22          |
+| light-border         | rules and panel edges on light                        | #e4dcd0 ? verify |
 
 ## Typography
 
