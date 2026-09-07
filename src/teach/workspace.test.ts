@@ -656,6 +656,27 @@ describe('writeStylesheet', () => {
     expect(body).toContain("font-family: 'Cascadia Code';")
   })
 
+  it('aliases the retired palette so an already-written lesson diagram still resolves its fill and stroke', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+
+    const outcome = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!outcome.ok) throw new Error(outcome.message)
+
+    const body = await readFile(join(ROOT, outcome.path), 'utf8')
+
+    for (const retired of [
+      '--panel',
+      '--rule',
+      '--ink',
+      '--ink-soft',
+      '--ink-faint',
+      '--accent',
+      '--accent-bg',
+    ]) {
+      expect(body).toContain(`${retired}: var(`)
+    }
+  })
+
   it('leaves a stylesheet the workspace already carries, since lessons add to it', async () => {
     await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
     const first = await writeStylesheet(ROOT, 'regular-expressions')

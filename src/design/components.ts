@@ -157,6 +157,19 @@ const TEACH_CHROME: Component = {
   --teach-mast-h: 4.4rem;
   --teach-shadow: 0 1px 2px rgba(20, 20, 20, 0.04);
   --color-teach-accent-bg: color-mix(in srgb, var(--color-accent) 14%, var(--color-background));
+
+  /* Aliases for the retired teach palette. Every already-written lesson draws
+     its hand-authored diagrams with fill and stroke values pinned to these
+     names directly in the SVG markup, which this rewrite cannot reach without
+     editing lesson content the same pass that recovered the chrome was asked
+     not to touch. */
+  --panel: var(--color-surface);
+  --rule: var(--color-border);
+  --ink: var(--color-text-body);
+  --ink-soft: var(--color-text-secondary);
+  --ink-faint: var(--color-muted);
+  --accent: var(--color-accent);
+  --accent-bg: var(--color-teach-accent-bg);
 }
 
 @media (prefers-color-scheme: dark) {
