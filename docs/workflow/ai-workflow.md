@@ -204,7 +204,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:setup-smoke`           | After `setup-verify` passes, to check the dev and preview servers, end-to-end tests, and the screenshot harness |
 | `canon:claude-design-extract` | Before the first UI feature, to draft `.claude/DESIGN.md`                                                       |
 | `canon:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.canon/diagrams/`                            |
-| `canon:repo-metadata`         | To reconcile the GitHub About text, homepage, and topics against the README                                     |
+| `canon:repo-metadata`         | When the GitHub About text, homepage, or topics may have drifted, to reconcile them against the README          |
 
 ### Decide what to build
 
