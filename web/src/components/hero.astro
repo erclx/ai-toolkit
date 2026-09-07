@@ -29,14 +29,24 @@ import { hero } from '../content/copy'
 
 <style>
   /*
-   * The proportional family belongs to the headline alone.
+   * The headline speaks in the page's own family.
    *
-   * Set on the section it cascaded into every child, so the subhead and the
-   * call to action rendered sans while the same button in the closing section
-   * rendered mono. Two primary buttons on one page in two typefaces, and
-   * nothing caught it because each looked deliberate on its own.
+   * Measured over the whole page, the proportional family appeared exactly
+   * once in 216 text elements, and one element in a family nothing else uses
+   * is what read as belonging to another design. The same fault had already
+   * been found and fixed on the primary button without anyone noticing the
+   * headline carried it too.
+   *
+   * The size still comes from the display step, so the hero keeps its scale
+   * and only its voice changes. Giving the interface a proportional voice
+   * throughout, with mono kept for what is literally code, is a different and
+   * larger decision that this one does not take.
+   *
+   * A prior cut set the family on the section rather than the heading, and it
+   * cascaded into the subhead and the call to action, leaving the two primary
+   * buttons on the page in two different typefaces.
    */
   .page-display > h1 {
-    font-family: var(--type-page-display-family);
+    font-family: var(--type-body-family);
   }
 </style>
