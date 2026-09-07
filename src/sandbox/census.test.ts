@@ -50,10 +50,10 @@ afterEach(() => {
 describe('listSkills', () => {
   it('should enumerate the shipped skills rather than the internal ones', () => {
     skill('git-commit')
-    skill('claude-docs')
+    skill('docs-fold')
     write('.claude/skills/internal-scripts/SKILL.md', '# internal\n')
 
-    expect(listSkills(root)).toEqual(['claude-docs', 'git-commit'])
+    expect(listSkills(root)).toEqual(['docs-fold', 'git-commit'])
   })
 
   it('should report no skills when the plugin tree is absent', () => {
@@ -63,9 +63,9 @@ describe('listSkills', () => {
 
 describe('skillForScenario', () => {
   it('should pair a scenario to the category-prefixed skill name', () => {
-    const skills = new Set(['claude-docs', 'docs'])
+    const skills = new Set(['git-commit', 'commit'])
 
-    expect(skillForScenario('claude', 'docs', skills)).toBe('claude-docs')
+    expect(skillForScenario('git', 'commit', skills)).toBe('git-commit')
   })
 
   it('should fall back to the bare command when no prefixed skill exists', () => {
@@ -75,7 +75,7 @@ describe('skillForScenario', () => {
   })
 
   it('should pair no skill for a scenario exercising a CLI domain', () => {
-    const skills = new Set(['claude-docs'])
+    const skills = new Set(['docs-fold'])
 
     expect(skillForScenario('infra', 'gov', skills)).toBeUndefined()
   })
@@ -113,30 +113,30 @@ describe('parseExemptions', () => {
 
 describe('collectCensus', () => {
   it('should report a skill whose paired scenario declares an expectation as asserted', () => {
-    skill('claude-docs')
-    scenario('claude', 'docs')
-    declaration('claude', 'docs', 'drift')
+    skill('git-commit')
+    scenario('git', 'commit')
+    declaration('git', 'commit', 'drift')
 
     const report = collectCensus(root)
 
     expect(report.skills[0]).toMatchObject({
-      skill: 'claude-docs',
+      skill: 'git-commit',
       verdict: 'asserted',
-      scenarios: ['claude:docs'],
-      armed: ['claude:docs/drift'],
+      scenarios: ['git:commit'],
+      armed: ['git:commit/drift'],
     })
     expect(report.asserted).toBe(1)
   })
 
   it('should report a paired scenario that declares nothing as should-be-asserted', () => {
-    skill('claude-docs')
-    scenario('claude', 'docs')
+    skill('git-commit')
+    scenario('git', 'commit')
 
     const report = collectCensus(root)
 
     expect(report.skills[0]).toMatchObject({
       verdict: 'should-be-asserted',
-      scenarios: ['claude:docs'],
+      scenarios: ['git:commit'],
       armed: [],
     })
     expect(report.shouldBeAsserted).toBe(1)
@@ -240,7 +240,7 @@ describe('collectCensus', () => {
   })
 
   it('should exclude a scenario driving no skill from the census', () => {
-    skill('claude-docs')
+    skill('docs-fold')
     scenario('infra', 'gov')
     declaration('infra', 'gov', '')
 
@@ -251,11 +251,11 @@ describe('collectCensus', () => {
   })
 
   it('should count a partially armed catalog across the three verdicts', () => {
-    skill('claude-docs')
+    skill('git-commit')
     skill('bash-script')
     skill('canon-cli')
-    scenario('claude', 'docs')
-    declaration('claude', 'docs', 'drift')
+    scenario('git', 'commit')
+    declaration('git', 'commit', 'drift')
     exempt('canon-cli', 'writes nothing')
 
     const report = collectCensus(root)

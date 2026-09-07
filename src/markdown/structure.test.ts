@@ -186,7 +186,7 @@ describe('longestRun', () => {
     const source = `${FRONTMATTER}# CI\n\n${half}\n\n**Testing**\n\n${half}\n`
 
     // The fixture that proved the narrow pattern held this shape out, kept in
-    // place asserting the other direction. `claude-pr-review` writes this
+    // place asserting the other direction. `review-pr` writes this
     // marker into every body it posts, so the break is a shipped seam rather
     // than a hypothetical one.
     expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)
@@ -219,7 +219,7 @@ describe('longestRun', () => {
     const path = '**`src/markdown/structure.ts`**'
     const source = `${FRONTMATTER}# CI\n\n${half}\n\n${path}\n\n${half}\n`
 
-    // 27 characters, so width alone holds it out. `claude-pr-review` heads each
+    // 27 characters, so width alone holds it out. `review-pr` heads each
     // file it reviews this way and those paths run to 70 characters, which is
     // the reach the span test buys that no ceiling can.
     expect(measure(source).longestRun).toBeLessThan(RUN_CHECKPOINT)

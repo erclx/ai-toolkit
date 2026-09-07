@@ -12,7 +12,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 const SCRIPT = join(
   import.meta.dirname,
-  '../claude/skills/claude-orchestrate/scripts/poll.sh',
+  '../claude/skills/role-orchestrator/scripts/poll.sh',
 )
 
 const HEAD = '1111111111111111111111111111111111111111'
@@ -209,7 +209,7 @@ describe('poll', () => {
 
   // The other unmatched case above still carries a `## ` prefix, just not one
   // of the five. This is the shape none of them exercise: no prefix at all,
-  // which is what `claude-address-review`'s folded closing confirmation now
+  // which is what `review-address`'s folded closing confirmation now
   // depends on reaching neither `UNMATCHED` nor any other classification.
   it('should report nothing when a comment carries no heading at all', () => {
     writeThread([], [])

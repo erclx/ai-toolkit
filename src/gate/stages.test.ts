@@ -35,7 +35,7 @@ describe('the shipped-references stage scope', () => {
   it('should fire on every corpus a target reader reaches', () => {
     const scope = scopeOf('shipped-references')
 
-    expect(scope.test('claude/skills/claude-orchestrate/SKILL.md')).toBe(true)
+    expect(scope.test('claude/skills/role-orchestrator/SKILL.md')).toBe(true)
     expect(scope.test('docs/agents/key-changes.md')).toBe(true)
     expect(scope.test('standards/publish.md')).toBe(true)
     expect(scope.test('governance/rules/core/005-behavior.md')).toBe(true)

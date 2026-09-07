@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 # No project copy of the corpus, which is what every target looks like now. The
-# absence forces `claude-review` onto the
+# absence forces `review-branch` onto the
 # `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch name
 # below turns that citation into a report filename a reader can check by eye.
 # `expect.toml` carries that claim as a manual entry rather than an assertion,
@@ -140,7 +140,7 @@ EOF
   log_info "  so review-user-batch.md is evidence the fallback resolved"
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
-  log_info "Action:  /canon:claude-review"
+  log_info "Action:  /canon:review-branch"
   log_info "Expect:  declared in fixtures/claude/review/expect.toml"
   log_info "         Check it with: canon sandbox check claude:review"
   log_info "         One content entry per half. Three claims need a reader."

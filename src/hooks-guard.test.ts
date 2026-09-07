@@ -268,7 +268,7 @@ beforeAll(() => {
         }),
     },
     'pr-create-log.sh': {
-      expect: 'announce it to the controller now, per claude-worker',
+      expect: 'announce it to the controller now, per role-worker',
       payload: (nonce) =>
         payloadFor({
           session_id: nonce,

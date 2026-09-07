@@ -152,10 +152,10 @@ describe('compareKeyChanges', () => {
   it('should let a partial path credit a changed file without ever accusing one', () => {
     const result = read(
       keyChanges(
-        '- Rewrite the addressing ladder in `claude-worker/SKILL.md` to resolve a name at send time.',
+        '- Rewrite the addressing ladder in `role-worker/SKILL.md` to resolve a name at send time.',
         '- Point `references/gone.md` at the standard.',
       ),
-      ['claude/skills/claude-worker/SKILL.md'],
+      ['claude/skills/role-worker/SKILL.md'],
     )
 
     expect(result.kind === 'measured' && result.unnamed).toEqual([])

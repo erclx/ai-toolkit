@@ -60,7 +60,7 @@ Print one grouped proposal block. Omit empty groups.
 
 - docs/<file>.md (<one-line reason>)
 
-## Defer to claude-seed-sync
+## Defer to seed-sync
 
 - docs/<file>.md (matches toolkit base seed)
 

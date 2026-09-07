@@ -37,11 +37,11 @@ Owns the small reusable prompts stored as plain markdown, invoked directly in Cl
 ### What earns a place
 
 - A snippet overlapping a shipped skill keeps its place when the two are reached differently and produce different things:
-  - `claude/feature-recap` emits a verification block to chat and writes nothing, where `claude-docs` mutates tracked planning docs
-  - `claude/decision-memo` answers a should-we question, where `claude-feature` plans a build
+  - `claude/feature-recap` emits a verification block to chat and writes nothing, where `docs-fold` mutates tracked planning docs
+  - `claude/decision-memo` answers a should-we question, where `plan-feature` plans a build
   - `session-notes` emits a paste-anywhere block usable in a chat with no repository behind it
 - An overlap without such a reason loses to the skill, which is what retired the `create-snippet` snippet against the skill of the same name
-- A runbook one skill fires and nothing else reads belongs in that skill's `references/`, not in this catalog. The three orchestrator runbooks moved to `claude/skills/claude-orchestrate/references/` and the `orchestrator` preset retired with them, leaving `essentials` as the only preset.
+- A runbook one skill fires and nothing else reads belongs in that skill's `references/`, not in this catalog. The three orchestrator runbooks moved to `claude/skills/role-orchestrator/references/` and the `orchestrator` preset retired with them, leaving `essentials` as the only preset.
 - The two channels are what forced it: a skill loads live from the plugin root while a snippet is copied by a CLI command, so a skill citing an installed path breaks for a project that added the plugin and ran no install, and nothing reports it. A reference travels with the body that cites it, so long as that body is the only reader.
 - What the move costs is the typed entry point, since a person fires a snippet by path and cannot type a reference, so the skill body routes a request for either compaction side to the runbook that serves it. An invocation word was the first attempt and `standards/skill.md` bans it, because a flag selecting an alternate flow is the shape the model misreads on its way to the vanilla path.
 
@@ -54,9 +54,9 @@ No code filters an internal category out of a publishable one. The plugin symlin
 - A target's `.claude/snippets/` predates this retirement if it exists at all. Nothing writes it now, nothing reads it in preference to the live symlink, and nothing reconciles it against the source. Treat it as a stale copy rather than as the current install surface.
 - The three orchestrator runbooks are the live instance, so a project that installed the `orchestrator` preset in the window it existed still holds all three under `.claude/snippets/claude/` and can delete them once the skill carries the same text
 - The toolkit feedback flow is the `canon-feedback-file` plugin skill plus the `canon feedback` CLI, not a snippet.
-- The memory review phases (challenge, discuss, apply, cleanup) live in the `claude-memory-review` skill body rather than in snippets of their own. Re-ping the skill with the matching phase phrase.
+- The memory review phases (challenge, discuss, apply, cleanup) live in the `memory-review` skill body rather than in snippets of their own. Re-ping the skill with the matching phase phrase.
 
-Counting what depends on a prose contract means scanning `snippets/` alongside `claude/skills/`, since a snippet carries a procedure that reads the same strings a skill does and is invisible to a skills-only grep. The plan for the board-heading contract recorded one consumer of `## Run now` and named the second, `snippets/claude/orchestrator-resume.md`, nowhere. Had the fix moved the dependency out of `claude-orchestrate` rather than into `standards/tasks.md`, the snippet would have been left reading a string no standard fixed. Grep `claude/`, `snippets/`, `governance/`, `standards/`, and `internal/` in one pass and account for every hit, including the ones that turn out to be labels rather than reads. An undercount is the dangerous direction, because it is the count a Files-to-touch list is scoped from.
+Counting what depends on a prose contract means scanning `snippets/` alongside `claude/skills/`, since a snippet carries a procedure that reads the same strings a skill does and is invisible to a skills-only grep. The plan for the board-heading contract recorded one consumer of `## Run now` and named the second, `snippets/claude/orchestrator-resume.md`, nowhere. Had the fix moved the dependency out of `role-orchestrator` rather than into `standards/tasks.md`, the snippet would have been left reading a string no standard fixed. Grep `claude/`, `snippets/`, `governance/`, `standards/`, and `internal/` in one pass and account for every hit, including the ones that turn out to be labels rather than reads. An undercount is the dangerous direction, because it is the count a Files-to-touch list is scoped from.
 
 ## Presets and categories
 

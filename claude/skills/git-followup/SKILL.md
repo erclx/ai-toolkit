@@ -7,7 +7,7 @@ description: Ships a small self-review edit on the current PR branch by staging,
 
 Ship a small self-review edit on the current PR branch in one pass.
 
-When invoked with `reply-owned`, a caller such as `claude-address-review` posts
+When invoked with `reply-owned`, a caller such as `review-address` posts
 its own reply, so skip the comment in step 7. The push and body sync still run.
 
 ## Guards

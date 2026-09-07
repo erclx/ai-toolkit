@@ -57,7 +57,7 @@ OUT="$PROJECT_ROOT/web/src/fixtures/agent-view.json"
 # Re-transcribe this table against a fresh listing rather than editing the
 # generated file.
 #
-# A planner belongs in this table as much as a worker does. `claude-planner`
+# A planner belongs in this table as much as a worker does. `role-planner`
 # forbids entering a worktree, so a planner registers on the default branch at
 # launch and stays there for its whole life, which is why the branch filter this
 # script used to carry dropped every one of them permanently rather than

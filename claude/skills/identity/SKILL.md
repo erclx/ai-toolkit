@@ -16,7 +16,7 @@ One identity rendered twice: the same mark sized down to an icon sequence and co
 
 Read these in parallel, skipping any that do not exist:
 
-- `.claude/DESIGN.md`: the `## Personality`, `## Color`, and `## Typography` sections, the same three cells `claude-design-extract` Step 2 sources from
+- `.claude/DESIGN.md`: the `## Personality`, `## Color`, and `## Typography` sections, the same three cells `design-extract` Step 2 sources from
 - `.claude/REQUIREMENTS.md`: the `## Personality` paragraph, when `.claude/DESIGN.md` carries none
 - `CLAUDE.md`: the project's stated voice, when neither file above carries a personality signal
 
@@ -38,7 +38,7 @@ Announce which of the two decided the sequence.
 
 ## Step 3: detect the write folder
 
-Check for `public/`, `static/`, or a stack-declared asset folder, taking the first that exists. Fall back to the project root when none is detected, mirroring `claude-design-extract`'s own source-versus-greenfield split. Announce the folder so the operator can move the files if the project's own convention differs.
+Check for `public/`, `static/`, or a stack-declared asset folder, taking the first that exists. Fall back to the project root when none is detected, mirroring `design-extract`'s own source-versus-greenfield split. Announce the folder so the operator can move the files if the project's own convention differs.
 
 ## Step 4: name the decision and the arms
 
@@ -82,5 +82,5 @@ Write folder: <detected <path>|defaulted to project root>. Move the files if thi
 Cite these rather than restating them.
 
 - `draft-and-pick` owns Steps 1 through 5 of the render-and-pick loop, cited above
-- `claude-design-extract` owns building `.claude/DESIGN.md`. This skill only reads it.
+- `design-extract` owns building `.claude/DESIGN.md`. This skill only reads it.
 - `canon capture` owns the render mechanics, its font refusal, and its reported dimensions

@@ -1,11 +1,11 @@
 ---
 name: git-worktree
-description: Lists linked worktrees with PR state and cleans up merged ones. Use when asked to "list worktrees", "clean up worktrees", or after shipping a PR to reclaim slots. Do NOT use to enter a worktree from scratch (use `claude-worktree`).
+description: Lists linked worktrees with PR state and cleans up merged ones. Use when asked to "list worktrees", "clean up worktrees", or after shipping a PR to reclaim slots. Do NOT use to enter a worktree from scratch (use `session-worktree`).
 ---
 
 # Git worktree
 
-List linked worktrees with their PR state and remove the merged ones. For entry, use `claude-worktree`.
+List linked worktrees with their PR state and remove the merged ones. For entry, use `session-worktree`.
 
 ## Shipping order
 
@@ -53,7 +53,7 @@ Determine dirtiness: `git -C <path> status --porcelain` non-empty means `dirty`.
 
 Determine current: the row whose `path` equals `git rev-parse --show-toplevel`. Resolve the root rather than comparing `pwd`, which equals the worktree root only when the session sits at the top of it. A session in any subdirectory would match no row, and the current-worktree exclusion in `cleanup` would pass its own worktree into the remove set.
 
-Determine provenance: a non-main row is `foreign` when its `path` does not start with `<MAIN_ROOT>/.claude/worktrees/`. That prefix is the folder `claude-worktree` creates under, a convention of that skill rather than a fact this one owns. A tree an operator registered by hand anywhere else on disk reads as `foreign`. Step 1 has already marked the main row `main`, so it never reaches this test.
+Determine provenance: a non-main row is `foreign` when its `path` does not start with `<MAIN_ROOT>/.claude/worktrees/`. That prefix is the folder `session-worktree` creates under, a convention of that skill rather than a fact this one owns. A tree an operator registered by hand anywhere else on disk reads as `foreign`. Step 1 has already marked the main row `main`, so it never reaches this test.
 
 Determine occupancy: run `canon sessions list --json` once for the whole enumeration, never once per row. Resolve each enumerated row's `path` and each live session's `worktree` field with `realpath` before comparing, since a session registered from a second clone of this repository reports a path under that clone rather than under `MAIN_ROOT`, and a raw string compare would hold nothing back. A row is `occupied` when a resolved `worktree` from any live session equals its resolved `path`. A resolved session `worktree` outside `MAIN_ROOT` names a different checkout, so it clears no row here and marks none as occupied.
 

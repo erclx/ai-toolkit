@@ -154,7 +154,7 @@ printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 
 ### Post the UI checklist
 
-`claude-ui-test` writes a manual checklist to `.canon/tmp/ui-checklist/<slug>.md` at the main worktree root when a change needs visual verification, with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. This step is the file's sole consumer. Resolve the main root the way `claude-worktree` does (`git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`) and check for the file there. A missing file means no checklist was produced, and there is nothing to post.
+`ui-test` writes a manual checklist to `.canon/tmp/ui-checklist/<slug>.md` at the main worktree root when a change needs visual verification, with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. This step is the file's sole consumer. Resolve the main root the way `session-worktree` does (`git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`) and check for the file there. A missing file means no checklist was produced, and there is nothing to post.
 
 When it exists, scan it against `${CLAUDE_SKILL_DIR}/../../standards/publish.md` before posting, the same as the pull request body above. Post it as its own comment on `<number>`, the number the final command above resolved, rather than folding it into the body, since a later push editing the body would overwrite checkboxes a reviewer already ticked:
 
@@ -180,7 +180,7 @@ The `rmdir` is a no-op when another branch's pending checklist still sits in the
 
 Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. `${CLAUDE_SKILL_DIR}/REQUIREMENT.md` states why: a lookup that resolves by branch alone can return a closed pull request sharing that head, so the number is resolved once and reused rather than re-derived.
 
-The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.canon/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
+The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.canon/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. `plan-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
 
 ```bash
 canon tasks pull-request <number> --plan feature-<slug> --json
@@ -188,7 +188,7 @@ canon tasks pull-request <number> --plan feature-<slug> --json
 
 The slug is a guess at which plan this branch carries rather than a fact about the task, which is why the verb re-checks it against the board and refuses instead of writing on a near miss. A branch whose slug names no plan file falls to the silent skip below, the same as one whose plan no task cites.
 
-The verb resolves the board at the main worktree root in-process, adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already carries, and corrects the number in place when the line exists. This is the route because the write is an edit inside an existing file, which the file-editing tools refuse from a linked worktree and which no shell stream editor may make. That root is the one `claude-worktree` resolves on entry.
+The verb resolves the board at the main worktree root in-process, adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already carries, and corrects the number in place when the line exists. This is the route because the write is an edit inside an existing file, which the file-editing tools refuse from a linked worktree and which no shell stream editor may make. That root is the one `session-worktree` resolves on entry.
 
 Skip this silently when the record is `ok: false` and `reason` is `no-board`, `no-match`, or `ambiguous`. Those are the three cases a guessed write would compound: no board, no task naming the plan, or more than one. One task, one pull request, and a wrong match archives the wrong task unattended once the branch merges. Report any other refusal rather than swallowing it.
 

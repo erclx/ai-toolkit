@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 # No project copy of the corpus, for the same reason `claude/review.sh` carries
-# none. The absent project copy forces `claude-ui-test` onto the
+# none. The absent project copy forces `ui-test` onto the
 # `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch name
 # below turns that citation into a checklist filename a reader can check by eye.
 # `expect.toml` carries that claim as a manual entry rather than an assertion,
@@ -146,7 +146,7 @@ EOF
   log_info "run reported, and a correct run says the scaffold is missing rather"
   log_info "than building a Vite app to get green."
   log_info ""
-  log_info "Action:  /canon:claude-ui-test I added a filter input and an empty state to TaskList, and restyled its spacing"
+  log_info "Action:  /canon:ui-test I added a filter input and an empty state to TaskList, and restyled its spacing"
   log_info "Expect:  declared in fixtures/claude/ui-test/expect.toml"
   log_info "         Check it with: canon sandbox check claude:ui-test"
 }

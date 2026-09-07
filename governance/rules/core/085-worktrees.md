@@ -6,7 +6,7 @@ description: Route tracked-file writes and shared session scratch correctly from
 
 ## Entering a worktree
 
-- Implementation work runs in a linked worktree. From the main worktree, enter one with `/claude-worktree` before editing tracked files for a feature.
+- Implementation work runs in a linked worktree. From the main worktree, enter one with `/session-worktree` before editing tracked files for a feature.
 
 ## Shared session scratch
 

@@ -36,7 +36,7 @@ gh issue view <n> --json title,body,labels --jq '"\(.title)\n\n\(.body)"'
 Classify against the toolkit's own surfaces. Score in this order and stop at the first match:
 
 1. **Direct fix.** One surface, one file, no architectural choice. A typo, a stale reference, a one-line rule or doc correction, a single wording fix. Route straight to the edit.
-2. **Plan-worthy.** Multiple files, a new skill or rule, a behavior change, or a cross-surface move. Route to `claude-feature`.
+2. **Plan-worthy.** Multiple files, a new skill or rule, a behavior change, or a cross-surface move. Route to `plan-feature`.
 3. **Needs clarification.** The observed and expected behavior conflict or the surface is unnamed. Comment on the issue asking for the missing detail, then skip it.
 
 State the class and the one-line reason per issue before routing. Do not batch unrelated fixes into one branch.
@@ -44,7 +44,7 @@ State the class and the one-line reason per issue before routing. Do not batch u
 ## Step 3: route
 
 - Direct fix: rename the branch to a conventional name (invoke `git-branch`), make the edit, then open the PR with `git-pr`.
-- Plan-worthy: invoke `claude-feature` with the issue body as the feature description. Let it write the plan and stop. Hand the plan slug back to the user. Do not implement.
+- Plan-worthy: invoke `plan-feature` with the issue body as the feature description. Let it write the plan and stop. Hand the plan slug back to the user. Do not implement.
 - Needs clarification: run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the question first, since it reaches the remote with nothing else checking it and this scan is the only gate. Then `gh issue comment <n> --body "<one question>"`, and move on.
 
 Match one issue to one branch and one PR. A single feedback issue is a single unit of work.
@@ -60,4 +60,4 @@ Link every fix back to its issue so the queue drains on merge.
 ## Notes
 
 - The `feedback` label is what `canon feedback --github` and the `toolkit-feedback.yml` issue form both apply. An issue without it does not surface here by design.
-- This skill routes, it does not reimplement. `claude-feature` owns planning, `git-pr` owns the PR body, `git-branch` owns the branch name. Do not duplicate their logic.
+- This skill routes, it does not reimplement. `plan-feature` owns planning, `git-pr` owns the PR body, `git-branch` owns the branch name. Do not duplicate their logic.

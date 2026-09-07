@@ -290,6 +290,6 @@ EOF
   log_info "  TaskList.tsx has no empty state (wireframes/ describes one)"
   log_info "  TaskList.tsx has no error state"
   log_info "  AddTaskModal.tsx has two primary buttons. Cancel should be secondary"
-  log_info "Action:  /claude-ux-audit"
+  log_info "Action:  /ux-audit"
   log_info "Expect:  observations grouped by surface, written to .canon/review/ux-audit-<slug>.md"
 }

@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 # No project copy of the corpus, matching `claude/review.sh` and
-# `claude/ui-test.sh`. The absent project copy forces `claude-memory-review` onto
+# `claude/ui-test.sh`. The absent project copy forces `memory-review` onto
 # the `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch
 # staged below turns that citation into a proposal filename a reader can check by
 # eye. `expect.toml` carries that claim as a manual entry rather than an
@@ -18,7 +18,7 @@ stage_setup() {
 
 # Sample Project
 
-Task API used as the fixture for /canon:claude-memory-review.
+Task API used as the fixture for /canon:memory-review.
 
 ## Behavior
 
@@ -184,7 +184,7 @@ EOF
   log_info "  so memory-review-memory-sweep.md is evidence the fallback resolved"
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
-  log_info "Action:  /canon:claude-memory-review"
+  log_info "Action:  /canon:memory-review"
   log_info "Expect:  declared in fixtures/claude/memory-review/expect.toml"
   log_info "         Check it with: canon sandbox check claude:memory-review"
   log_info "         Interactively, respond 'all' to exercise the apply path, after"

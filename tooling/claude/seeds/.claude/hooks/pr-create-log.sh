@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Reminds a worker session of the pull-request announcement it owes and logs
-# the creation as a denominator for the miss rate `claude-worker` cannot
+# the creation as a denominator for the miss rate `role-worker` cannot
 # measure on its own. Follows path-form.sh's precedent: a PostToolUse hook
 # returning hookSpecificOutput.additionalContext is the shipped route back
 # into a session's own turn.
@@ -51,5 +51,5 @@ mkdir -p "$log_dir"
 session=$(printf '%s' "$input" | jq -r '.session_id // "unknown"')
 printf -- '- %s session=%s pr=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$session" "$url" >>"$log_dir/log.md"
 
-msg="Pull request $url just opened. If this session holds a worker's channel obligation, announce it to the controller now, per claude-worker."
+msg="Pull request $url just opened. If this session holds a worker's channel obligation, announce it to the controller now, per role-worker."
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'

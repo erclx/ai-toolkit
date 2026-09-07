@@ -111,7 +111,7 @@ EOF
 
     log_step "Scenario ready: autoship happy path"
     log_info "Context: main, with an approved plan staged for feat/add-farewell and one seeded memory entry"
-    log_info "Action:  /claude-autoship"
+    log_info "Action:  /auto-ship"
     log_info "Expect:  implements farewell fn, verify passes, review runs, PR marked draft and read back"
     log_info "         Step 4 runs test-order in the worktree and reports clean, since the"
     log_info "         branch is taken fresh off main and carries no commit of its own yet"
@@ -183,11 +183,11 @@ EOF
 
     log_step "Scenario ready: autoship informational prose diff"
     log_info "Context: main, with a plan staged for feat/expand-intro touching only docs/intro.md"
-    log_info "Action:  /claude-autoship"
+    log_info "Action:  /auto-ship"
     log_info "Expect:  implements prose update, verify passes, REVIEW IS SKIPPED, PR marked draft and read back"
     log_info "         Step 4 runs test-order in the worktree and reports clean on an empty range"
     log_info "         docs/ is outside every behavior path, so both classifier tests pass"
-    log_info "         autoship Step 6 should print the skip rationale rather than invoking claude-review"
+    log_info "         autoship Step 6 should print the skip rationale rather than invoking review-branch"
     log_info "         pen is empty, so capture and Propose no-op and the fourth output line is omitted"
     ;;
   "prose-executable")
@@ -265,12 +265,12 @@ EOF
 
     log_step "Scenario ready: autoship executable prose diff"
     log_info "Context: main, with a plan staged for feat/tighten-deploy-check touching only a SKILL.md body"
-    log_info "Action:  /claude-autoship"
+    log_info "Action:  /auto-ship"
     log_info "Expect:  implements the stop condition, verify passes, REVIEW RUNS, PR marked draft and read back"
     log_info "         Step 4 runs test-order in the worktree and reports clean, since the branch"
     log_info "         carries no commit and the diff names no TypeScript either way"
     log_info "         the diff is all markdown, so the extension test passes and the path test fails"
-    log_info "         .claude/skills/ is a behavior path, so Step 6 must invoke claude-review"
+    log_info "         .claude/skills/ is a behavior path, so Step 6 must invoke review-branch"
     log_info "         a skipped review here is the defect this arm exists to catch"
     ;;
   "test-order-violation")
@@ -382,7 +382,7 @@ EOF
     log_info "Context: local main sits two commits ahead of origin/main. src/shout.ts landed"
     log_info "         first and src/shout.test.ts landed after it, so the pair reads as"
     log_info "         implementation-first. A plan for a genuinely new whisper module is staged."
-    log_info "Action:  /claude-autoship"
+    log_info "Action:  /auto-ship"
     log_info "Expect:  Step 4 reports one finding, naming src/shout.ts and the reason that the"
     log_info "         implementation reached history before the test covering it, then CONTINUES"
     log_info "         the chain reaches review and opens a draft PR anyway, since the verb"

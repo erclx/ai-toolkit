@@ -30,5 +30,5 @@ Without this skill, a session implementing a planned change writes the test afte
 ## Out of scope
 
 - Finding the cause of an unexplained failure: `canon:systematic-debugging`
-- Confirming visual output after a change lands: `070-planning.md` states the order and `claude-ui-test` covers it
-- The mechanical audit of whether an implementation reached history ahead of its test: `canon gov test-order`, invoked from `claude-autoship`
+- Confirming visual output after a change lands: `070-planning.md` states the order and `ui-test` covers it
+- The mechanical audit of whether an implementation reached history ahead of its test: `canon gov test-order`, invoked from `auto-ship`

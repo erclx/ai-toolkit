@@ -36,5 +36,5 @@ The queue also fails to drain even when the work ships. A fix merged with no lin
 ## Out of scope
 
 - Filing new feedback: `canon-feedback-file`
-- Writing the plan a plan-worthy issue needs: `claude-feature`
+- Writing the plan a plan-worthy issue needs: `plan-feature`
 - Triage of issues carrying any other label, which surface here by design only under the feedback label

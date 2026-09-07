@@ -156,7 +156,7 @@ describe('classifySpan', () => {
       'oven-sh/setup-bun@v2',
       '@/lib/utils',
       '~/.claude/projects/',
-      '/claude-worktree',
+      '/session-worktree',
       'file://',
     ]) {
       expect(classifySpan(span)).toBeUndefined()

@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-worker` run leaves behind when the session finds
+# What a correct `/canon:role-worker` run leaves behind when the session finds
 # work that needs a new board row. Read by `canon sandbox check`. Patterns use
 # TOML literal strings so a regex needs no backslash escaping.
 
@@ -8,7 +8,7 @@
 # afterwards because a reverted row is a well-formed board. A second added a row
 # and labelled it with an identifier another row already held. Both are
 # gitignored surfaces, so no history holds what was overwritten, and the rule
-# against the write sat inside `claude-orchestrate`, which no worker loads.
+# against the write sat inside `role-orchestrator`, which no worker loads.
 
 # Every top-level key sits above the first `[[content]]` block. A bare key below
 # one belongs to that table in TOML, so an array written at the bottom parses

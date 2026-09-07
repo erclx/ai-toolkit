@@ -44,12 +44,12 @@ Capture opens the ship chain and propose closes it. The cost of review is re-der
 
 ### The loop
 
-1. **Capture** with `/claude-memory-capture`. Classifies session patterns as `feedback`, `project`, `user`, or `reference`, routes a project fact naming a context entry to that entry, and writes the rest as files. The ship skills run it first, because a routed fact edits a tracked file and has to reach the branch before the commit steps.
-2. **Propose** with `/claude-memory-review`, run last by `claude-autoship` and `git-ship` and skipped when capture wrote no file. A ship caller scopes it to that session's captures. Run standalone it sweeps the whole pen, which is what lets cross-session duplicates merge into one rule. Writes `.canon/review/memory-review-<branch>.md` with a `Decision:` slot and a proposed fix per item.
-3. **Apply** with `/claude-memory-review` after reviewing the receipt. Apply mutates tracked files, so it runs in a worktree and ships as its own commit, separate from the feature. A feature reviewer should not have to vet a change to how the agent operates.
-4. **Challenge, Discuss, Cleanup** by re-pinging `/claude-memory-review` with the matching phase phrase. Challenge applies absorbed, delta, and generality tests to promote items. Discuss writes `Take:` lines for question decisions. Cleanup deletes one receipt and touches no entry, since Apply is the only phase that moves one.
+1. **Capture** with `/memory-capture`. Classifies session patterns as `feedback`, `project`, `user`, or `reference`, routes a project fact naming a context entry to that entry, and writes the rest as files. The ship skills run it first, because a routed fact edits a tracked file and has to reach the branch before the commit steps.
+2. **Propose** with `/memory-review`, run last by `auto-ship` and `git-ship` and skipped when capture wrote no file. A ship caller scopes it to that session's captures. Run standalone it sweeps the whole pen, which is what lets cross-session duplicates merge into one rule. Writes `.canon/review/memory-review-<branch>.md` with a `Decision:` slot and a proposed fix per item.
+3. **Apply** with `/memory-review` after reviewing the receipt. Apply mutates tracked files, so it runs in a worktree and ships as its own commit, separate from the feature. A feature reviewer should not have to vet a change to how the agent operates.
+4. **Challenge, Discuss, Cleanup** by re-pinging `/memory-review` with the matching phase phrase. Challenge applies absorbed, delta, and generality tests to promote items. Discuss writes `Take:` lines for question decisions. Cleanup deletes one receipt and touches no entry, since Apply is the only phase that moves one.
 
-The skill detects the phase from the user's phrasing and the review file state. Capture writes the information at ship, Propose writes the fix at ship, and Apply is the only gated step. See `claude/skills/claude-memory-review/SKILL.md` for the phase-by-phase contract.
+The skill detects the phase from the user's phrasing and the review file state. Capture writes the information at ship, Propose writes the fix at ship, and Apply is the only gated step. See `claude/skills/memory-review/SKILL.md` for the phase-by-phase contract.
 
 ### Index and location
 

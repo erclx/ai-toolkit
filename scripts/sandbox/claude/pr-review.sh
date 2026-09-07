@@ -176,7 +176,7 @@ stage_setup() {
 
     log_step "Scenario ready: PR review from an independent session"
     log_info "Context: open draft PR on feat/create-endpoint, project docs present"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  reviews the PR diff against docs, posts findings to the PR via gh pr review --comment"
     log_info "         opens the comment with the ## Review heading"
     log_info "         writes the body to .canon/tmp/pr-review/body-<number>-<short-sha>.md"
@@ -218,7 +218,7 @@ EOF
 
     log_step "Scenario ready: close-out on a PR that already carries a review"
     log_info "Context: open PR on feat/create-endpoint with a posted ## Review and one commit since"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  finds the prior review's commit via gh pr view --json reviews"
     log_info "         reads only fix(api) reject an empty task title, not the whole change"
     log_info "         confirms the empty-title finding landed"
@@ -256,7 +256,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
 
     log_step "Scenario ready: a second pass at a head the first pass already covered"
     log_info "Context: open PR with a posted ## Review, a ## Review response, and no commit since"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  finds the prior review's commit and sees it equal to headRefOid"
     log_info "         reads the ## Review response rather than a delta, which spans nothing"
     log_info "         names the body body-<number>-<short-sha>-r<comment-id>.md, id off the comment url"
@@ -297,7 +297,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
 
     log_step "Scenario ready: a re-run after a close-out already answered the thread"
     log_info "Context: open PR whose newest pass is ## Review closed, with no response after it"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  sees the prior commit equal to headRefOid and scopes responses to the prior pass"
     log_info "         derives nothing, since every response pre-dates the close-out"
     log_info "         stops in Step 2, before reading a diff or writing a body, with"
@@ -311,7 +311,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
 
     log_step "Scenario ready: a body carrying ## For the reviewer, no other finding"
     log_info "Context: open draft PR on feat/reviewer-request, one confirmable bullet, clean diff"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  reads ## For the reviewer bounded to its own bullets, answers it from the diff"
     log_info "         posts a **For the reviewer** block carrying the answer"
     log_info "         posts under ## Review closed, since the bullet is answered and nothing else is owed"
@@ -346,7 +346,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
 
     log_step "Scenario ready: a late finding under a reply heading outside ## Review response"
     log_info "Context: open PR with a posted ## Review and a ## Post-review findings reply, no commit since"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  finds the prior review's commit and sees it equal to headRefOid"
     log_info "         reads the ## Post-review findings comment rather than refusing in Step 2"
     log_info "         names the body body-<number>-<short-sha>-r<comment-id>.md, id off the comment url"
@@ -419,7 +419,7 @@ EOF
 
     log_step "Scenario ready: a moved head whose standing verdict is already a close-out"
     log_info "Context: open PR carrying ## Review, then ## Review closed, then one commit raising nothing"
-    log_info "Action:  /claude-pr-review"
+    log_info "Action:  /review-pr"
     log_info "Expect:  sees the prior commit reach the head, so the unchanged-head stop does not fire"
     log_info "         reads the refactor commit alone and raises no finding on it"
     log_info "         reads the standing verdict as ## Review closed and rewrites that comment"

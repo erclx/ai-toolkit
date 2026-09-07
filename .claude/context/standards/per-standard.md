@@ -18,7 +18,7 @@ What each one settled belongs here rather than in the file itself, which states 
 
 ## The plan standard
 
-`standards/plan.md` fixes the section list, the suggested-and-answer contract, and the lifecycle from `.canon/plans/` to `.canon/plans/archive/`. `claude-feature` defined that shape inside its own body and two more skills consumed it, which is past the second-case bar, so the body now cites the standard and `claude-autoship` and `claude-docs` each point at the half they read.
+`standards/plan.md` fixes the section list, the suggested-and-answer contract, and the lifecycle from `.canon/plans/` to `.canon/plans/archive/`. `plan-feature` defined that shape inside its own body and two more skills consumed it, which is past the second-case bar, so the body now cites the standard and `auto-ship` and `docs-fold` each point at the half they read.
 
 The section markers are mixed on purpose, `## Summary` as a heading and the other four as bold labels, because that is what the corpus writes. Across 178 archived plans, `Summary` is a heading in 176 and a label in none, while `Files to touch` is a label in 146 against 21 headings and the other three split the same way.
 
@@ -46,7 +46,7 @@ Reading the phrase also means reading the `Questions` section rather than the fi
 
 ## The branch standard's description cap
 
-The cap reads 2 words as the target with 4 as the ceiling, widened from 3 on 2026-09-06 so that a branch derived from a plan filename is not renamed at ship. A rename there is a third derivation on top of the two `canon tasks plan-branch` exists to collapse, and it parts the branch slug from the plan slug that `claude-worktree` tier 1 and `git-pr`'s fallback plan lookup both read back to find the plan.
+The cap reads 2 words as the target with 4 as the ceiling, widened from 3 on 2026-09-06 so that a branch derived from a plan filename is not renamed at ship. A rename there is a third derivation on top of the two `canon tasks plan-branch` exists to collapse, and it parts the branch slug from the plan slug that `session-worktree` tier 1 and `git-pr`'s fallback plan lookup both read back to find the plan.
 
 The operator took it as a three-way call. Tightening `standards/plan.md` to three-word slugs was the second option and it moves the same problem onto 94 of 565 existing plans, 90 of them at four words. Changing neither and letting the verb flag a non-conforming description was the third, which leaves `git-branch` renaming a conforming slug anyway.
 
@@ -76,7 +76,7 @@ The two failures share a cause rather than an author error. Both were written du
 
 The block now opens with a stamp bullet reading Measured against `<commit>` on <YYYY-MM-DD>, and the standard says a worker re-tests before honoring it. A fetch paired with a log from the stamp to `origin/main`, scoped to the paths the constraint names, answers the test in one command, which is the bar the stamp had to clear, since a stamp a reader cannot act on costs a line per plan and saves nothing.
 
-Two halves of that command carry the weight. The pathspec makes the read decisive, because a squashed merge carries a pull request number in its subject and the constraint names its track by work and file set. The fetch keeps the test honest, because a remote-tracking ref left behind reports fewer merges than have landed and hands back the dead-reads-as-live answer the stamp exists to remove. `claude-tasks` already pairs a fetch with a log in one command for the same reason.
+Two halves of that command carry the weight. The pathspec makes the read decisive, because a squashed merge carries a pull request number in its subject and the constraint names its track by work and file set. The fetch keeps the test honest, because a remote-tracking ref left behind reports fewer merges than have landed and hands back the dead-reads-as-live answer the stamp exists to remove. `task-board` already pairs a fetch with a log in one command for the same reason.
 
 One stamp covers the block however many tracks the constraints below it name, since a plan is written against the tree once. The stamp takes its own leading bullet rather than fusing to the first constraint, which is what leaves a two-track block with no question about which constraint the commit applies to.
 
@@ -86,13 +86,13 @@ Naming the tracks in the stamp beside the commit was the other candidate. The bl
 
 An unstamped constraint reads as unverified rather than as live, which is what covers the plans already in the queue. Restamping them is a sweep over files a worker may already hold, and confirming one without a stamp costs that worker the open pull request list, since the log has no commit to anchor against.
 
-The rule sits in `standards/plan.md` with `claude-orchestrate` naming the stamp alone, because a worker running the planning skill in its own branch writes constraints too. Stating the obligation in both bodies puts one behavior in two places that ship on different cadences, and stating it only in the orchestrator covers one of the two plan authors.
+The rule sits in `standards/plan.md` with `role-orchestrator` naming the stamp alone, because a worker running the planning skill in its own branch writes constraints too. Stating the obligation in both bodies puts one behavior in two places that ship on different cadences, and stating it only in the orchestrator covers one of the two plan authors.
 
 No check parses the block. Nothing reads a plan's constraints today, and a validator over prose is a larger question than the line this answers, so the rule holds by being read.
 
 ## The memory standard
 
-`standards/memory.md` fixes the filename and its type prefix, the frontmatter, the body shape each type carries, links between entries, and the lifecycle. The format sat in three places, as eight bullets in `CLAUDE.md`, the write format in `claude-memory-capture`, and the retire rule in `claude-memory-review`.
+`standards/memory.md` fixes the filename and its type prefix, the frontmatter, the body shape each type carries, links between entries, and the lifecycle. The format sat in three places, as eight bullets in `CLAUDE.md`, the write format in `memory-capture`, and the retire rule in `memory-review`.
 
 `CLAUDE.md` keeps two bullets, the write location because `.canon/memory/` rather than `~/.claude/projects/` is project policy, and the routing rule because it has to fire before an entry is written at all rather than once the standard is opened.
 
@@ -182,7 +182,7 @@ The first pass resolved the binary at the caller's working directory alone, and 
 
 `standards/glossary.md` governs a glossary wherever it sits, which is why the format left `standards/teach.md` rather than staying inside it. A workspace glossary is promotable, so the shape has to travel with the file, and a rule stated in the standard over the folder it started in reaches nothing once it lands somewhere else. `teach.md` keeps the requirement that the file exists and yields the entry shape, which is the boundary declared from both sides.
 
-The same reasoning is what moved it out of `teach.md` and into a standard of its own on 2026-08-20, since a promotion lands the file at a path no glob covers and `claude-teach` is the one surface driving every such move. It shipped at `standards/bundled/glossary.md` first and reached `claude-teach` through a fan-out copy, moving to the flat root once that route retired. Both readers name the skill rather than a path regardless of which route carried the file: `teach.md` because the file a promotion lands has no fixed address to point at, and `561-teach.md` because it ships with the CLI while the reference ships with the plugin, so it carries the report-the-gap instruction `500-prose` already uses across that split.
+The same reasoning is what moved it out of `teach.md` and into a standard of its own on 2026-08-20, since a promotion lands the file at a path no glob covers and `teach-workspace` is the one surface driving every such move. It shipped at `standards/bundled/glossary.md` first and reached `teach-workspace` through a fan-out copy, moving to the flat root once that route retired. Both readers name the skill rather than a path regardless of which route carried the file: `teach.md` because the file a promotion lands has no fixed address to point at, and `561-teach.md` because it ships with the CLI while the reference ships with the plugin, so it carries the report-the-gap instruction `500-prose` already uses across that split.
 
 The format came from the external source the teaching surface was built against rather than from the one glossary-shaped page already here, which is the more specified of the two: it adds a term only once the material has used it, picks one word per concept and lists the rejected synonyms as aliases to avoid, and requires the glossary's own terms inside other definitions. `wiki/concepts/rule-writing-vocabulary.md` then departs on one rule and states the departure in its own intro, since a bank drawn from every session that produced a term has no first appearance to name and its use-when line carries what a reader came for instead. Recording the exception on the page rather than in the standard is what `standards/standard.md` already requires, since a standard citing a real file goes stale the moment that file moves.
 

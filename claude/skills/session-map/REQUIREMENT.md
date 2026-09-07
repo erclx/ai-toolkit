@@ -51,7 +51,7 @@ A body that restates the sections, the frontmatter, or the numbered steps become
 ## Out of scope
 
 - Reading a handoff back at the start of the next session: `session-resume`
-- Routing a session fact to the context entry that owns it, and writing what no entry owns to the memory folder: `claude-memory-capture`
-- The sections a role adds over the core three, which belong to that role's own surface. `claude-orchestrate` owns the orchestrator's and cites this route for the generic half.
+- Routing a session fact to the context entry that owns it, and writing what no entry owns to the memory folder: `memory-capture`
+- The sections a role adds over the core three, which belong to that role's own surface. `role-orchestrator` owns the orchestrator's and cites this route for the generic half.
 - Validating a written map against the standard, which no record kind covers, so a conforming shape rests on the standard being followed
 - Firing the write without being asked, which is a question about what the harness supports and is measured on its own track

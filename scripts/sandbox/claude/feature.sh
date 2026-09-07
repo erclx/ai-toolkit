@@ -132,7 +132,7 @@ EOF
 
     log_step "Scenario ready: feature planning (full mode)"
     log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and .canon/tasks/ present"
-    log_info "Action:  /claude-feature (reference the task in .canon/tasks/)"
+    log_info "Action:  /plan-feature (reference the task in .canon/tasks/)"
     log_info "Expect:  plan written to .canon/plans/feature-<slug>.md with files to touch, risks, and questions, each question carrying a Suggested line and an Answer slot, and v01.0-due-dates.md's Plan: line points at it"
     ;;
   "small")
@@ -209,7 +209,7 @@ EOF
 
     log_step "Scenario ready: feature planning (small mode)"
     log_info "Context: prose-only repo, single README task, decoy DESIGN and wireframes/ with sentinel text"
-    log_info "Action:  /claude-feature (reference the task in .canon/tasks/)"
+    log_info "Action:  /plan-feature (reference the task in .canon/tasks/)"
     log_info "Expect:  chat-only output, NO .canon/plans/ file written, decoys NOT surfaced"
     ;;
   "multi-concern")
@@ -275,7 +275,7 @@ EOF
 
     log_step "Scenario ready: feature planning (multi-concern)"
     log_info "Context: two unrelated tasks in .canon/tasks/, one API change and one prose edit"
-    log_info "Action:  /claude-feature 'add pagination to /users and tighten the docs intro'"
+    log_info "Action:  /plan-feature 'add pagination to /users and tighten the docs intro'"
     log_info "Expect:  two plan files in .canon/plans/, one per concern, not a single bundled slug, and each task's Plan: line points at its own plan"
     ;;
   "constraint")
@@ -351,7 +351,7 @@ EOF
 
     log_step "Scenario ready: feature planning (constraint)"
     log_info "Context: docs/reference.md split into a folder, cited by docs/onboarding.md and .claude/context/pipeline.md"
-    log_info "Action:  /claude-feature 'split docs/reference.md per the task. Constraint: leave .claude/context/pipeline.md alone.'"
+    log_info "Action:  /plan-feature 'split docs/reference.md per the task. Constraint: leave .claude/context/pipeline.md alone.'"
     log_info "Expect:  the plan's Constraints entry resolves both acts for pipeline.md, forbidding conforming it to the new shape and requiring its citations of the deleted path be retargeted, and v01.0-reference-split.md's Plan: line points at the plan"
     ;;
   *)

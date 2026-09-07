@@ -84,7 +84,7 @@ if [ -n "$numbers" ]; then
 
     message=$(printf '%s' "$record" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
     printf '\n📋 Task not archived for #%s: %s\n' "$number" "${message:-$reason}"
-    printf 'Run /claude-tasks to resolve it by hand.\n\n'
+    printf 'Run /task-board to resolve it by hand.\n\n'
   done
 fi
 

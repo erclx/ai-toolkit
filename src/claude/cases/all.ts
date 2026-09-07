@@ -1,9 +1,9 @@
 import type { SkillCase } from '@/claude/skills-rank'
 import { AUTHORING_CASES } from '@/claude/cases/authoring'
-import { CLAUDE_WORKFLOW_CASES } from '@/claude/cases/claude-workflow'
 import { GIT_CASES } from '@/claude/cases/git'
 import { MISC_CASES } from '@/claude/cases/misc'
 import { SETUP_CASES } from '@/claude/cases/setup'
+import { WORKFLOW_CASES } from '@/claude/cases/workflow'
 
 /**
  * The full routing case corpus, one file per domain so a description change
@@ -16,7 +16,7 @@ import { SETUP_CASES } from '@/claude/cases/setup'
  * for the extraction arm this corpus replaces as the shipped measure.
  */
 export const SKILL_CASES: readonly SkillCase[] = [
-  ...CLAUDE_WORKFLOW_CASES,
+  ...WORKFLOW_CASES,
   ...GIT_CASES,
   ...SETUP_CASES,
   ...AUTHORING_CASES,

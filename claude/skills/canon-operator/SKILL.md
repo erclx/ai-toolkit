@@ -1,6 +1,6 @@
 ---
 name: canon-operator
-description: Front door to the toolkit in a target project. Orients on the toolkit's own docs and live `canon` catalogs, then runs or routes any toolkit operation from a plain-language intent. Use when you want one entry point instead of picking a specific setup or sync skill, or when asked to "use the toolkit", "what can the toolkit do", "sync my standards", "install rules", or "help me set up this project". User-invoked only. Defers first-time scaffold to setup-init and seed drift to claude-seed-sync.
+description: Front door to the toolkit in a target project. Orients on the toolkit's own docs and live `canon` catalogs, then runs or routes any toolkit operation from a plain-language intent. Use when you want one entry point instead of picking a specific setup or sync skill, or when asked to "use the toolkit", "what can the toolkit do", "sync my standards", "install rules", or "help me set up this project". User-invoked only. Defers first-time scaffold to setup-init and seed drift to seed-sync.
 disable-model-invocation: true
 ---
 
@@ -50,7 +50,7 @@ The two can name different rows, and a reply answers both rather than picking on
 - First-time scaffold of a fresh project: hand off to `setup-init`
 - Governance rules for the project stack: hand off to `setup-gov`
 - Bootstrap the `index.md` system: hand off to `setup-indexes`
-- Seed or standards drift in `CLAUDE.md` or `.claude/` preambles: hand off to `claude-seed-sync`
+- Seed or standards drift in `CLAUDE.md` or `.claude/` preambles: hand off to `seed-sync`
 - Install one snippet, standard, or rule: run the domain `install` command
 - Sync one domain or every installed domain: run `canon <domain> sync` or `canon sync`
 - Fix only the ignore entries of the installed stack: run `canon tooling inject --gitignore <stack>`
@@ -77,7 +77,7 @@ A lifecycle row and these offers fire together on a project carrying a context f
 - A record folder present under `.claude/`, one of `plans`, `groundwork`, `intake`, or `memory`: offer `canon records validate <kind>` for each one found
 - Markdown that git lists: offer `canon markdown audit`
 - TypeScript or shell source present: offer `canon comments scan`
-- A `package.json` script that serves an interface, one of `dev`, `preview`, `serve`, or `start`: offer `claude-ux-measure`
+- A `package.json` script that serves an interface, one of `dev`, `preview`, `serve`, or `start`: offer `ux-measure`
 
 An audit offered against a surface the target lacks reports an empty run as a finding, which is the same defect as never offering it at all. Check the surface before naming the command.
 
@@ -104,5 +104,5 @@ The comparison needs the earlier report. When `## Diagnose` was skipped because 
 ## Boundaries
 
 - Run `canon`. Never reimplement its install or sync logic, and never edit managed files like rules, configs, or seeds by hand.
-- Hand off the deep flows. Do not duplicate `setup-init` detection or `claude-seed-sync` part-diffing inline.
+- Hand off the deep flows. Do not duplicate `setup-init` detection or `seed-sync` part-diffing inline.
 - Resolve names from catalogs at runtime. A hardcoded name is a bug.

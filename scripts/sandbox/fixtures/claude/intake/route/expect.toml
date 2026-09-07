@@ -1,4 +1,4 @@
-# What a correct `/claude-intake` run leaves behind on the route arm.
+# What a correct `/plan-intake` run leaves behind on the route arm.
 # Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
@@ -21,7 +21,7 @@ absent = [".canon/intake", ".canon/plans", ".canon/groundwork"]
 # The guard names its destination. A refusal that stops without routing leaves
 # the operator where the groundwork guard already leaves them, which is the loop
 # this skill closes.
-reply = ["claude-groundwork"]
+reply = ["plan-groundwork"]
 
 manual = [
   "The refusal turns on the question needing a measurement rather than on its length. Semantic: a run that declined because the prompt was short passes every assertion here.",

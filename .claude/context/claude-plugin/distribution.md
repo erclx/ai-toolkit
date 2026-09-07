@@ -29,11 +29,11 @@ The two-branch citation that preceded it needed a rule about what the fallback t
 
 Only `${CLAUDE_SKILL_DIR}` survives to the model. Measured across three probe skills in a project with no `.claude/`, the body arrived with that variable already expanded to an absolute path, while `${CLAUDE_PLUGIN_ROOT}` reached the model as a literal string and a bare `../../` arrived unresolved. The latter two happened to work because the model inferred a base, which is the inference `standards/skill.md` bans a bare relative path to avoid.
 
-A guard on a standard's presence names the file under the plugin root rather than a directory in the target. `create-skill` and `claude-standards-audit` each carried a directory guard that refused to run in a project holding the file by the other route.
+A guard on a standard's presence names the file under the plugin root rather than a directory in the target. `create-skill` and `standards-audit` each carried a directory guard that refused to run in a project holding the file by the other route.
 
 ### The first executable in a skill
 
-`claude-orchestrate/scripts/` holds the only non-markdown files any skill ships, `poll.sh` and `watch.sh`, so a plugin that carried prose alone now carries code a target runs. It sits in `scripts/` rather than beside the runbook that invokes it, because `standards/skill.md` splits a skill folder by role and assigns `references/` to detail and `scripts/` to deterministic operations.
+`role-orchestrator/scripts/` holds the only non-markdown files any skill ships, `poll.sh` and `watch.sh`, so a plugin that carried prose alone now carries code a target runs. It sits in `scripts/` rather than beside the runbook that invokes it, because `standards/skill.md` splits a skill folder by role and assigns `references/` to detail and `scripts/` to deterministic operations.
 
 Three stages had to reach a tree that had never held a shell file. `check:shell` globs `claude`, and so do both shfmt stages behind `format` and `check:format`. Adding it to the linter alone leaves the file checked and never formatted, which fails nothing while it happens to be clean and drifts silently on its next edit. The boundary walk needed no change, since it reads every file rather than every markdown file.
 

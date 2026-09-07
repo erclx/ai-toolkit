@@ -26,7 +26,7 @@ const HEADING = /^#{1,6}\s/
  * run and a false one shortens every run around it until the measure stops
  * reporting, which is the dearer of the two.
  *
- * A colon ends most markers and not all of them. `claude-pr-review` writes
+ * A colon ends most markers and not all of them. `review-pr` writes
  * three colon-less ones into every body it posts and a bold path heading for
  * each file it reviews, so requiring the colon held a real seam out. Two
  * signals stand in where the colon is absent, because the shape a marker has to

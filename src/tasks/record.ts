@@ -311,7 +311,7 @@ export async function recordPullRequest(
 
 /**
  * Records a plan's path on the task it belongs to, as the task's `Plan:` line.
- * `claude-feature` runs this right after the plan file lands, resolving the
+ * `plan-feature` runs this right after the plan file lands, resolving the
  * reference the same two ways `canon tasks plan-answers` does, through
  * `planCandidates`, so a bare slug and a board-relative path both resolve.
  *
@@ -346,7 +346,7 @@ export async function recordPlan(
 }
 
 /**
- * Marks the named outcomes `[x]` in place. `claude-docs` runs this against a
+ * Marks the named outcomes `[x]` in place. `docs-fold` runs this against a
  * board it can read and cannot edit from a linked worktree, and the positions
  * come from the read it already made.
  */

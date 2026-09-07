@@ -186,7 +186,7 @@ export function resolvePlanReference(
   }
 
   // An archived plan answers every question and would report as launchable, so
-  // the name would clear a dispatch that `claude-autoship` Step 1 then refuses
+  // the name would clear a dispatch that `auto-ship` Step 1 then refuses
   // as already-shipped work. Catching it here is a step earlier than the worker.
   // Both roots, for the reason `resolveLivePlan` carries: the reference is a
   // string a caller wrote, and one spelling the root this tree has since left is

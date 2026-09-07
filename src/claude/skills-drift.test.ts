@@ -62,12 +62,12 @@ describe('parseMovedBodies', () => {
       '',
       'claude/skills/git-pr/SKILL.md',
       'claude/skills/bash-script/SKILL.md',
-      'claude/skills/claude-docs/SKILL.md',
+      'claude/skills/docs-fold/SKILL.md',
     ].join('\n')
 
     expect(parseMovedBodies(output).map((entry) => entry.name)).toEqual([
       'bash-script',
-      'claude-docs',
+      'docs-fold',
       'git-pr',
     ])
   })
@@ -76,7 +76,7 @@ describe('parseMovedBodies', () => {
     const output = [
       FIRST,
       '',
-      'claude/skills/claude-orchestrate/references/orchestrator-poll.md',
+      'claude/skills/role-orchestrator/references/orchestrator-poll.md',
       'claude/skills/git-commit/SKILL.md',
     ].join('\n')
 

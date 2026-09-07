@@ -35,7 +35,7 @@ A worker's reply reads as done when it is not. One pull request's fix for two mi
 - Merge anything, in either role, at any size. The operator holds that gate over every role rather than as a setting on a wave.
 - Reimplement what `canon targets list`, `canon targets pulls`, or `canon sessions list --repository` already answers. Each is a shipped verb this body reads under `CANON_NON_INTERACTIVE=1`.
 - Restate the in-target diagnosis and routing that `canon-operator` owns, or the review, address, and worktree procedures the three skills named below own
-- Read or write this repository's task board. The board is `claude-orchestrate`'s subject and a wave is not a row on it.
+- Read or write this repository's task board. The board is `role-orchestrator`'s subject and a wave is not a row on it.
 - Bound the review and address loop with a count. The bound was declined with its failure mode stated, and what guards the loop is the orchestrator reviewing every round itself.
 - Edit a managed file in a target by hand rather than through the `canon` verb that owns it
 - Be a skill nothing invokes but its author typing the name. Nothing else routes to it, since it carries `disable-model-invocation: true` and no sibling body names it, so a wave that only ever runs when somebody types the name is the signal that the loop never replaced the hand-driven pass it was built against.
@@ -50,10 +50,10 @@ A worker's reply reads as done when it is not. One pull request's fix for two mi
 
 ## Out of scope
 
-- This repository's own board, queue, and worker dispatch, which `claude-orchestrate` holds
-- The role a session building one branch under one plan in this repository takes, which `claude-worker` holds. A rollout worker does not take it, since that body resolves session scratch against a main worktree root a target does not carry.
-- Entering the worktree, which `claude-worktree` owns, including the branch collision tests it runs before entry
+- This repository's own board, queue, and worker dispatch, which `role-orchestrator` holds
+- The role a session building one branch under one plan in this repository takes, which `role-worker` holds. A rollout worker does not take it, since that body resolves session scratch against a main worktree root a target does not carry.
+- Entering the worktree, which `session-worktree` owns, including the branch collision tests it runs before entry
 - Diagnosing what a target is behind on and routing each finding to its command, which `canon-operator` owns
-- Posting a review to a pull request and moving its heading, which `claude-pr-review` owns
-- Answering a posted review inside the target, which `claude-address-review` owns
+- Posting a review to a pull request and moving its heading, which `review-pr` owns
+- Answering a posted review inside the target, which `review-address` owns
 - The commit and the pull request mechanics, which the `git-*` family owns

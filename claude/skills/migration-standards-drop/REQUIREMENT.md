@@ -47,7 +47,7 @@ The last is the name map. `prose` split into `markdown.md` plus the `write-human
 - Classifying `CLAUDE.md` sections into the three-tier model: `migration-claude-md`
 - Relocating `docs/` files by audience: `migration-context`
 - Splitting a retired `.claude/` file into the folder that replaced it, which pairs one file against one folder rather than dropping a corpus: `migration-superseded`
-- Reconciling a seed file against its source section by section: `claude-seed-sync`
+- Reconciling a seed file against its source section by section: `seed-sync`
 - Applying the drop and the sweep, which the user does after reviewing
 
 ## Why it ships while its consumer row is parked

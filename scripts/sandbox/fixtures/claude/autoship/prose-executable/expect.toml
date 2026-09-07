@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-autoship` run leaves behind on the
+# What a correct `/canon:auto-ship` run leaves behind on the
 # prose-executable arm. Read by `canon sandbox check`. Patterns use TOML literal
 # strings so a regex needs no backslash escaping.
 
@@ -13,7 +13,7 @@
 # in at 116. The two disagree on how much this chain costs, which is one more
 # reason no ceiling is declared here yet rather than a reason to average them.
 
-# `claude-review` writes this file when it runs. A classifier that reads the
+# `review-branch` writes this file when it runs. A classifier that reads the
 # markdown extension alone and skips despite the behavior path never creates
 # it.
 paths = [".canon/review/branch/review-tighten-deploy-check.md"]
@@ -27,15 +27,15 @@ manual = [
 ]
 
 # A first pass on 2026-08-30 reddened here: reply passed, paths failed, since
-# claude-review never ran despite the behavior path this arm stages. That
-# defect was fixed on `claude-autoship` itself rather than here, and a second
+# review-branch never ran despite the behavior path this arm stages. That
+# defect was fixed on `auto-ship` itself rather than here, and a second
 # defect sat behind it: the chain wrote this receipt at Step 5 and its own
-# `claude-docs` sweep deleted it at Step 7, so the assertion could only pass on
-# a run the chain stopped early. `claude/skills/claude-docs/SKILL.md:248` fixed
+# `docs-fold` sweep deleted it at Step 7, so the assertion could only pass on
+# a run the chain stopped early. `claude/skills/docs-fold/SKILL.md:248` fixed
 # that half, leaving the current branch's receipt in place for the sweep that
 # runs one branch later.
 #
 # A second pass on 2026-08-31, driven against both fixes merged, passed clean:
-# the classifier read the behavior path and called for review, `claude-review`
+# the classifier read the behavior path and called for review, `review-branch`
 # wrote this file reporting no findings, and the chain reached Step 7 and
 # opened `erclx/aitk-sandbox#24` as a draft. 116 turns, $1.71.

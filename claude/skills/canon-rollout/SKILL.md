@@ -1,6 +1,6 @@
 ---
 name: canon-rollout
-description: Takes one toolkit change out to every consuming project and brings each to a mergeable pull request. Carries an orchestrator role that enumerates the targets, dispatches a worker into each, reviews every pull request, and routes what each review posts, and a worker role that builds inside one target and answers its review. Use when asked to "roll this out to the targets", "take this change to every project", "run a rollout wave", "update the consuming projects", or when a session was dispatched into a target by a wave. Do NOT use for this repository's own board, which is `claude-orchestrate`, and merge nothing.
+description: Takes one toolkit change out to every consuming project and brings each to a mergeable pull request. Carries an orchestrator role that enumerates the targets, dispatches a worker into each, reviews every pull request, and routes what each review posts, and a worker role that builds inside one target and answers its review. Use when asked to "roll this out to the targets", "take this change to every project", "run a rollout wave", "update the consuming projects", or when a session was dispatched into a target by a wave. Do NOT use for this repository's own board, which is `role-orchestrator`, and merge nothing.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ This skill runs outward. Every other skill for operating on a target assumes the
 
 One wave takes one toolkit change to every target and ends with a pull request per target for a person to merge. Two roles carry three phases over one target list. The orchestrator enumerates, dispatches, reviews, and routes. The worker holds one target from the worktree entry to the merge of the branch it opened.
 
-`claude-orchestrate` owns this repository's own board and is a different subject. Read nothing from `.canon/tasks/` here and write nothing to it.
+`role-orchestrator` owns this repository's own board and is a different subject. Read nothing from `.canon/tasks/` here and write nothing to it.
 
 ## Take a role before anything else
 
@@ -19,7 +19,7 @@ One wave takes one toolkit change to every target and ends with a pull request p
 
 The role is read off the prompt because nothing else carries it. A dispatched worker starts in the target's own checkout, which is a repository like any other from the session's side, so a test on the working directory answers the same for a worker in a target and an operator who invoked this from one. Reading the role wrong in that direction starts a second wave from inside a consuming project, which is why the dispatch below names the role and the path both rather than relying on either alone.
 
-Do not invoke `canon:claude-worker` from either role. That body states the role for a session building one branch under one plan in this repository, and it resolves session scratch against a main worktree root a target does not carry, so a rollout worker reading it hunts for a plan nobody wrote.
+Do not invoke `canon:role-worker` from either role. That body states the role for a session building one branch under one plan in this repository, and it resolves session scratch against a main worktree root a target does not carry, so a rollout worker reading it hunts for a plan nobody wrote.
 
 ## Guards
 
@@ -71,7 +71,7 @@ Report each dispatch by naming the target, the clone, the branch, the model, and
 ## Phase 2: review every pull request
 
 1. Poll. Run `canon targets pulls --json`, naming the wave's clones as arguments to read those alone. A target comes back as `read` with a `pulls` array or as `refused` with a `reason`, and a refusal is not a target with no work. Reading a failed query as no open work reports a target as done having read nothing.
-2. Review here, in this session. Invoke `canon:claude-pr-review` and redirect every call that body makes, since it resolves a pull request from the repository the session stands in and this session stands in the toolkit. Every call takes a redirect, and the ones that silently answer about the wrong repository are worse than the ones that fail:
+2. Review here, in this session. Invoke `canon:review-pr` and redirect every call that body makes, since it resolves a pull request from the repository the session stands in and this session stands in the toolkit. Every call takes a redirect, and the ones that silently answer about the wrong repository are worse than the ones that fail:
    - `--repo <owner>/<name>` on `gh pr view`, `gh pr diff`, and `gh pr review`, where it is a global flag.
    - `-C <clone>` on `git fetch origin pull/<n>/head`, `git merge-base`, `git diff`, `git log`, `git show`, and `git grep`.
    - `GH_REPO=<owner>/<name>` on any `gh api repos/{owner}/{repo}/...` call, which is the close-out route. `gh api` takes no `--repo` flag and fills those placeholders from the working directory or from that variable, so the one call a flag cannot redirect is the one that edits a review in place.
@@ -88,7 +88,7 @@ Report each dispatch by naming the target, the clone, the branch, the model, and
 
 1. Address every finding whatever its severity. A minor is a finding, and a reviewer calling one non-blocking does not close the pass that raised it.
 2. Resolve who holds the branch before dispatching anybody. Run `canon sessions list --branch chore/agents --repository <clone> --json` and read the count rather than the first row.
-   - A live session holds it: send that session the findings and name `canon:claude-address-review` for it to run, which is step 6 of `## The worker role` and the step that session already stands at. Never name this skill in that message. This body carries `disable-model-invocation: true`, which blocks the `Skill` tool rather than only suppressing an auto-trigger, and a session acting on an inbound message reaches a skill that way and no other, so a message naming this one halts the address leg with the branch built and the findings unread. A launch prompt is the one route to a flagged body, which is why the dispatch above names this skill and this message must not. Assuming the worker was gone is what one hand-driven pass got wrong. All four sessions that opened those pull requests were still alive holding their worktrees hours later, and of two fresh addressers sent over them, one refused on the worktree lock and one cut a second worktree on the same branch, which would have put two sessions pushing to one ref.
+   - A live session holds it: send that session the findings and name `canon:review-address` for it to run, which is step 6 of `## The worker role` and the step that session already stands at. Never name this skill in that message. This body carries `disable-model-invocation: true`, which blocks the `Skill` tool rather than only suppressing an auto-trigger, and a session acting on an inbound message reaches a skill that way and no other, so a message naming this one halts the address leg with the branch built and the findings unread. A launch prompt is the one route to a flagged body, which is why the dispatch above names this skill and this message must not. Assuming the worker was gone is what one hand-driven pass got wrong. All four sessions that opened those pull requests were still alive holding their worktrees hours later, and of two fresh addressers sent over them, one refused on the worktree lock and one cut a second worktree on the same branch, which would have put two sessions pushing to one ref.
    - No live session holds it: dispatch a fresh worker into that clone and brief it with the findings, since it holds none of the reasoning behind the diff.
    - More than one row: report the ambiguity and stop rather than picking among candidates.
 3. Re-review when the answer lands, scoped to the commits added since. A worker's reply never closes a target. One fix for two minor findings closed both and introduced four more, every one of them in prose that fix added, and a loop trusting the reply merges that.
@@ -100,11 +100,11 @@ Report each dispatch by naming the target, the clone, the branch, the model, and
 One session, one target, from the worktree entry to the merge of the branch it opened. It diagnoses, implements, opens the pull request, and answers what the review posts. It reviews nothing and it merges nothing.
 
 1. Confirm the clone is current. Fetch, then compare against the origin's default branch. Report a checkout that is behind and stop, rather than branching from a stale base.
-2. Enter a worktree. Invoke `canon:claude-worktree chore/agents`, which takes the branch as its tier 0 argument and enters a linked worktree inside this target. Branching in the checkout itself is what this avoids, since the operator may be working in it.
+2. Enter a worktree. Invoke `canon:session-worktree chore/agents`, which takes the branch as its tier 0 argument and enters a linked worktree inside this target. Branching in the checkout itself is what this avoids, since the operator may be working in it.
 3. Diagnose and repair. Invoke `canon:canon-operator`, which reads `canon sync --check . --json` and routes each finding to the command or the skill that owns it. Do not restate that routing here and do not edit a managed file by hand.
 4. Commit and open the pull request through `canon:git-commit` and `canon:git-pr`, handing each the fixed shape above rather than taking the title the generator derives from the diff.
 5. Announce as the pull request opens, carrying its URL, its number, and the branch, to whoever dispatched this session. That transition is the one moment only this session can observe.
-6. Answer the review. Invoke `canon:claude-address-review`, which pulls the findings and the CI state on this branch's open pull request, fixes each in the working tree, replies, and pushes. Answer every finding whatever its severity.
+6. Answer the review. Invoke `canon:review-address`, which pulls the findings and the CI state on this branch's open pull request, fixes each in the working tree, replies, and pushes. Answer every finding whatever its severity.
 7. Stop there. Do not mark the pull request ready, do not merge, and do not declare the review closed. A narrow re-review posts `## Review closed`.
 
 Send a block out as a message before it becomes an interactive prompt. A session already waiting on input never reaches the tool round an inbound message drains at, so an answer relayed afterwards arrives under the open question and changes nothing.

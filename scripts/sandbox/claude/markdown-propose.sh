@@ -62,7 +62,7 @@ EOF
   log_info "  cannot be deleted and has no source anywhere in the tree, so"
   log_info "  its replacement has to be invented."
   log_info ""
-  log_info "Action:  /canon:claude-markdown-propose screen CLAUDE.md and"
+  log_info "Action:  /canon:markdown-propose screen CLAUDE.md and"
   log_info "         docs/overview.md for inflated claims and propose fixes,"
   log_info "         as the inflated-claims proposal"
   log_info "Expect:  declared in fixtures/claude/markdown-propose/expect.toml"

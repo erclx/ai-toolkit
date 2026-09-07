@@ -15,7 +15,7 @@ Governs a learning workspace under `.canon/teach/<nn>-<topic>/`: folder layout, 
 
 Does not govern:
 
-- The frontmatter, entry shape, and ordering of the glossary the workspace holds: the `claude-teach` skill, which carries that reference
+- The frontmatter, entry shape, and ordering of the glossary the workspace holds: the `teach-workspace` skill, which carries that reference
 - What a lesson teaches, how it sequences difficulty, and what makes one worth returning to, which belong to the surface driving the workspace
 - Where a durable page goes once it leaves the workspace, which belongs to the routing test the destination surface states
 - One question measured in depth before anyone can plan against it: `groundwork.md`
@@ -113,7 +113,7 @@ Take the date and the rung from what the surface driving the workspace reports r
 
 ## GLOSSARY.md
 
-Required in every workspace, holding one entry per term the subject defines. The glossary reference the `canon:claude-teach` skill carries fixes what an entry looks like, how the file orders and groups them, and which terms it carries, so this standard states only that the file exists and sits at the workspace root. That reference ships with the plugin rather than installing here, because a promoted glossary keeps its shape wherever it lands and no project folder covers every destination. Say so and stop rather than working the shape from memory when the project has no plugin to read it from.
+Required in every workspace, holding one entry per term the subject defines. The glossary reference the `canon:teach-workspace` skill carries fixes what an entry looks like, how the file orders and groups them, and which terms it carries, so this standard states only that the file exists and sits at the workspace root. That reference ships with the plugin rather than installing here, because a promoted glossary keeps its shape wherever it lands and no project folder covers every destination. Say so and stop rather than working the shape from memory when the project has no plugin to read it from.
 
 Name the lesson or reference page a term first appears in as that reference requires. A workspace is the case it was written for, so a glossary here has a first appearance to name.
 

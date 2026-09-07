@@ -109,8 +109,8 @@ describe('planRename', () => {
     const entry = planRename(
       [
         source(
-          'claude/skills/claude-docs/SKILL.md',
-          'name: claude-docs\nrun canon:claude-docs',
+          'claude/skills/claude-docs/SKILL.md', // canon-keep-retired
+          'name: claude-docs\nrun canon:claude-docs', // canon-keep-retired
         ),
       ],
       SKILL_NAME_RULES,

@@ -22,7 +22,7 @@ Claude Code reads both and writes the implementation. Works for CLI tools, inter
 
 The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template with a starting set of roles, and `standards/design.md` carries the same tables under `## Template` with placeholder rows. The column headers are what the renderer parses, so they stay verbatim in either, while the rows and values are the project's own.
 
-The `canon:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `canon design render` writes an HTML plus CSS preview to `.canon/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
+The `canon:design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `canon design render` writes an HTML plus CSS preview to `.canon/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
 
 A project wanting the toolkit's own values rather than its own runs `canon design install`, which copies one stylesheet to `.claude/design/base.css` carrying the token set as custom properties and two components built on them. That file is toolkit-owned and `canon design sync` refreshes it, so a project overrides a value in `.claude/design/project/` instead, which sync never touches. Nothing arrives without that install, and the two channels are independent: a record drafted by the extract skill is the project's own, and the installed stylesheet is the toolkit's.
 
@@ -31,14 +31,14 @@ A cell no source anchors ends in `? verify`, and the preview shows that marker b
 ### Tools
 
 - None beyond Claude Code itself
-- Playwright CLI optional for verifying form submissions and interactive surfaces. See [`claude-ui-test`](../../claude/skills/claude-ui-test/SKILL.md).
+- Playwright CLI optional for verifying form submissions and interactive surfaces. See [`ui-test`](../../claude/skills/ui-test/SKILL.md).
 
 ### Skills
 
-- `canon:claude-design-extract` to draft `.claude/DESIGN.md`, from existing project signals or from requirements alone on day one
-- `canon:claude-ui-test` for e2e test generation after UI changes
-- `canon:claude-ux-audit` for UX gap detection on existing surfaces
-- `canon:claude-ux-measure` for what a running surface costs to paint, read against published thresholds
+- `canon:design-extract` to draft `.claude/DESIGN.md`, from existing project signals or from requirements alone on day one
+- `canon:ui-test` for e2e test generation after UI changes
+- `canon:ux-audit` for UX gap detection on existing surfaces
+- `canon:ux-measure` for what a running surface costs to paint, read against published thresholds
 - `canon:draft-and-pick` for a call settled by looking, drafting several candidates onto one page and taking your pick
 - `canon:identity` to draft a project's logo mark and compose it into an icon sequence and a social card, through `draft-and-pick`'s own render-and-pick loop
 - Anthropic's `frontend-design` plugin optional for light visual steering

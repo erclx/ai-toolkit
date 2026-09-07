@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-ui-test` run leaves behind on the default arm.
+# What a correct `/canon:ui-test` run leaves behind on the default arm.
 # Read by `canon sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 #

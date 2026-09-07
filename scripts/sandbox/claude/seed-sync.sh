@@ -43,6 +43,6 @@ EOF
 
   log_step "Scenario ready: seed sync with seed drift"
   log_info "Context: project with installed seeds, CLAUDE.md truncated, one Context bullet mutated"
-  log_info "Action:  /claude-seed-sync"
+  log_info "Action:  /seed-sync"
   log_info "Expect:  drift report covering the seeds, scope table grouped by source"
 }

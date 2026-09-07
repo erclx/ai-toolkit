@@ -9,36 +9,36 @@ Claude Code includes built-in features that overlap with some toolkit skills. Th
 
 ## Code review
 
-| Aspect   | Claude Code Review (built-in)                   | `claude-review` skill                                                             |
+| Aspect   | Claude Code Review (built-in)                   | `review-branch` skill                                                             |
 | -------- | ----------------------------------------------- | --------------------------------------------------------------------------------- |
 | What     | Managed service that reviews PRs on GitHub      | Local skill that reviews diffs in terminal                                        |
-| Trigger  | Auto on PR push, or `@claude review` on a PR    | `/claude-review` in a Claude Code session                                         |
+| Trigger  | Auto on PR push, or `@claude review` on a PR    | `/review-branch` in a Claude Code session                                         |
 | Context  | Reads the full repo on Anthropic infrastructure | Reads project docs (REQUIREMENTS, ARCHITECTURE) plus auto-loaded `.claude/rules/` |
 | Output   | Inline PR comments with severity tags           | Terminal findings grouped by file                                                 |
 | Best for | Post-push review on GitHub                      | Pre-push local review aware of project docs and governance                        |
 
-Use both: run `claude-review` locally before pushing, then let Code Review catch anything on the PR.
+Use both: run `review-branch` locally before pushing, then let Code Review catch anything on the PR.
 
 The table covers the pre-push half and stops there. Two more surfaces meet on the pull request itself, and the closing skill-verdict batch measured that gap on 2026-08-28.
 
-The `/code-review` slash command takes a pull request number, a branch, or a path, runs at a chosen effort level, and posts findings back with `--comment` as inline comments or, under `ultra`, with `--post` as one comment from the operator's own account. `claude-pr-review` reaches the same moment and posts under `## Review` while a finding is open and `## Review closed` once a pass carries none.
+The `/code-review` slash command takes a pull request number, a branch, or a path, runs at a chosen effort level, and posts findings back with `--comment` as inline comments or, under `ultra`, with `--post` as one comment from the operator's own account. `review-pr` reaches the same moment and posts under `## Review` while a finding is open and `## Review closed` once a pass carries none.
 
-What separates them is the re-review contract rather than the review. `claude-pr-review` scopes a first pass to the whole change and every later pass to the commits added since, reads the task board for cross-feature context, and refuses a close-out that repeats one already standing. `/code-review` reviews the target it is handed each time and keeps no state between passes.
+What separates them is the re-review contract rather than the review. `review-pr` scopes a first pass to the whole change and every later pass to the commits added since, reads the task board for cross-feature context, and refuses a close-out that repeats one already standing. `/code-review` reviews the target it is handed each time and keeps no state between passes.
 
-Use `claude-pr-review` where an orchestrator and a worker trade passes on one pull request, since the heading state is what tells the next pass which half to read. Use `/code-review` for a one-shot read on a pull request nobody is iterating on.
+Use `review-pr` where an orchestrator and a worker trade passes on one pull request, since the heading state is what tells the next pass which half to read. Use `/code-review` for a one-shot read on a pull request nobody is iterating on.
 
 ## Planning
 
-| Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                                                                                                              |
+| Aspect     | Plan mode                                        | Ultraplan                                               | `plan-feature` skill                                                                                                                                                |
 | ---------- | ------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                                                                                                           |
-| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                                                                                                                   |
+| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/plan-feature`                                                                                                                                                     |
 | Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: summary, files to touch, risks, and questions that each carry a suggested answer                                                                 |
 | Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, the task board, and the relevant `.claude/wireframes/<surface>.md`. Coding rules in `.claude/rules/` auto-load |
 
-Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.
+Plan mode is a permission mode that restricts Claude to read-only exploration. `plan-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `plan-feature` for a scoped proposal grounded in your project docs.
 
-`claude-groundwork` sits ahead of all three. It runs before a topic is ready to plan, and its output is a scratch folder that can conclude in doing nothing. Reach for it when the current state is unmeasured and more than one approach is live, then run `claude-feature` on the decision it produces.
+`plan-groundwork` sits ahead of all three. It runs before a topic is ready to plan, and its output is a scratch folder that can conclude in doing nothing. Reach for it when the current state is unmeasured and more than one approach is live, then run `plan-feature` on the decision it produces.
 
 ### Groundwork experiments
 
@@ -59,7 +59,7 @@ The built-in delegates to a project skill when it finds one, so the two compose 
 
 ## Background session isolation
 
-Claude Code isolates a `claude --bg` session into its own `.claude/worktrees/` entry automatically, but only lazily: the move happens right before the session's first file edit rather than at dispatch. `claude-autoship` Step 0 calls `EnterWorktree` through `claude-worktree` ahead of any edit tool, so a worker dispatched through the ship chain never observes the built-in trigger firing at all. Its own explicit move always lands first.
+Claude Code isolates a `claude --bg` session into its own `.claude/worktrees/` entry automatically, but only lazily: the move happens right before the session's first file edit rather than at dispatch. `auto-ship` Step 0 calls `EnterWorktree` through `session-worktree` ahead of any edit tool, so a worker dispatched through the ship chain never observes the built-in trigger firing at all. Its own explicit move always lands first.
 
 A session read taken in the first seconds after dispatch, before either mechanism has moved it, reports the main worktree as `cwd` and `main` as the branch regardless of which one would have isolated it. That reading settles nothing about whether the built-in default is active, only that neither mechanism has run yet.
 

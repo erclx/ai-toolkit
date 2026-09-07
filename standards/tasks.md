@@ -47,7 +47,7 @@ The handoff takes one file per session for the reason a task does. A single shar
 
 The catalog is the one reader that filters nothing, so it carries a row per sibling alongside the tasks. That is what a folder catalog is for, and the handoffs are what make it worth stating: a board accumulates one row per session that ever wrote one, with nothing pruning them. Anything reading the catalog as the backlog therefore does its own filtering, and a reader that takes every row as a task reports the handoffs as queued work.
 
-The `claude-tasks` skill creates and archives task files, and the archive carries the task's plan with it. `claude-docs` marks outcomes `[x]` in an existing file. Neither does the other's job.
+The `task-board` skill creates and archives task files, and the archive carries the task's plan with it. `docs-fold` marks outcomes `[x]` in an existing file. Neither does the other's job.
 
 ## Ordering
 
@@ -219,9 +219,9 @@ A project that archived plans before the folder nested under `.canon/plans/` hol
 
 One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
-`canon tasks plan-link <task> <plan>` writes or corrects the `Plan:` line, mirroring how `canon tasks pull-request` writes its own. `claude-feature` calls it right after the plan file lands, when an existing task names the feature, so the line is a mechanical write rather than hand-edited markdown.
+`canon tasks plan-link <task> <plan>` writes or corrects the `Plan:` line, mirroring how `canon tasks pull-request` writes its own. `plan-feature` calls it right after the plan file lands, when an existing task names the feature, so the line is a mechanical write rather than hand-edited markdown.
 
-`Groundwork:` points at `../groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
+`Groundwork:` points at `../groundwork/<slug>/`, the folder `plan-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
 
 `Intake:` points at `../intake/<slug>/`, the folder an intake pass fills. Use it rather than `Groundwork:`, because a groundwork track measures one question in depth while an intake dispositions many across a tree, and one key covering both loses which kind of pass produced the task. The line names the folder rather than an item inside it. A task routinely promotes several items at once, so an anchored line would name one and drop the rest, and the item numbers belong in that task's `## Findings`.
 

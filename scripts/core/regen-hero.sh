@@ -180,13 +180,13 @@ const sample = (names) => {
 // reading as an all-`claude-` catalog, which is the failure the sampler above
 // was written against.
 const FEATURED_SKILLS = [
-  "claude-feature",
-  "claude-groundwork",
-  "claude-intake",
-  "claude-orchestrate",
-  "claude-autoship",
-  "claude-pr-review",
-  "claude-tasks",
+  "plan-feature",
+  "plan-groundwork",
+  "plan-intake",
+  "role-orchestrator",
+  "auto-ship",
+  "review-pr",
+  "task-board",
   "git-ship",
   "setup-init",
   "systematic-debugging",

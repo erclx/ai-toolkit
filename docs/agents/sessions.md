@@ -42,7 +42,7 @@ A bare run reports every repository and carries a `repository` field on each row
 
 The match can return more than one session. Read the count rather than the first row, since nothing stops two sessions holding one branch, and a caller that treats the result as singular picks among candidates without knowing it.
 
-Resolution reads a session's registered `cwd`, taken at whatever `locate()` finds there rather than wherever it has since worked. That registration updates whenever the harness enters a worktree: a worker dispatched onto `main` re-registers at its own branch once `claude-autoship` Step 0 runs. What stays fixed is a session moved by shell command, `cd` or `git -C` against another root, with no worktree entry behind it, so it answers only for the branch its last registered `cwd` sits in.
+Resolution reads a session's registered `cwd`, taken at whatever `locate()` finds there rather than wherever it has since worked. That registration updates whenever the harness enters a worktree: a worker dispatched onto `main` re-registers at its own branch once `auto-ship` Step 0 runs. What stays fixed is a session moved by shell command, `cd` or `git -C` against another root, with no worktree entry behind it, so it answers only for the branch its last registered `cwd` sits in.
 
 A session whose `cwd` reflects a harness worktree entry, at launch or mid-session, resolves fully, covering every dispatched worker once Step 0 runs. A zero for a different branch it is genuinely working on is not evidence the branch is unclaimed, only that a shell-moved registration cannot see it.
 

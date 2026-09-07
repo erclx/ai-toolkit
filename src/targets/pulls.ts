@@ -7,8 +7,8 @@ const GH_TIMEOUT_MS = 30_000
 /**
  * The two headings a review pass posts under.
  *
- * Owned by `claude-pr-review`, which states the full set once, and pinned here
- * the way `claude-orchestrate/scripts/poll.sh` pins them. All three surfaces
+ * Owned by `review-pr`, which states the full set once, and pinned here
+ * the way `role-orchestrator/scripts/poll.sh` pins them. All three surfaces
  * ship separately, so a heading added in that skill goes stale here with
  * nothing comparing the copies.
  */

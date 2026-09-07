@@ -54,7 +54,7 @@ The last failure is a section no route reaches. `## Route` maps an intent or a d
 ## Out of scope
 
 - First-time scaffold of a fresh project: `setup-init`
-- Seed and preamble drift in installed files: `claude-seed-sync`
+- Seed and preamble drift in installed files: `seed-sync`
 - Governance rule install and index bootstrap: `setup-gov` and `setup-indexes`
 - What a given sync overwrites once it runs: `canon-cli`
 

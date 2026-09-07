@@ -99,7 +99,7 @@ function owesNoBullet(path: string): boolean {
  * names.
  *
  * An unanchored claim matches on a segment-anchored suffix, which is what lets
- * `claude-worker/SKILL.md` credit `claude/skills/claude-worker/SKILL.md`. That
+ * `role-worker/SKILL.md` credit `claude/skills/role-worker/SKILL.md`. That
  * asymmetry is deliberate: a partial spelling can confirm a changed file was
  * named and never accuse one of being absent, because nothing here separates a
  * path written short from a path written wrong.

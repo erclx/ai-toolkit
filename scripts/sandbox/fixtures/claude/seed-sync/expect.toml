@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-seed-sync` run leaves behind on the default arm,
+# What a correct `/canon:seed-sync` run leaves behind on the default arm,
 # through the propose pass alone. Read by `canon sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 #

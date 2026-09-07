@@ -1,4 +1,4 @@
-Produce a decision memo for a research or should-we question. This is the decision-heavy counterpart to `claude-feature`, which plans a build. Write one file per independent concern under `.canon/plans/feature-<slug>.md`, or answer inline when the plan is small. Use the same plans folder as `claude-feature`.
+Produce a decision memo for a research or should-we question. This is the decision-heavy counterpart to `plan-feature`, which plans a build. Write one file per independent concern under `.canon/plans/feature-<slug>.md`, or answer inline when the plan is small. Use the same plans folder as `plan-feature`.
 
 Read the current state from the code and docs before recommending. Do not assume it.
 

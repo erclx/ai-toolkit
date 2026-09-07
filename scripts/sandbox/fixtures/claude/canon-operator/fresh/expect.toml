@@ -33,7 +33,7 @@ reply = ["setup-init"]
 
 # Prose the checker cannot assert, each with the reason it stays here.
 manual = [
-  "The reply does not route to `claude-seed-sync`. Semantic: a negative substring passes on every reply that phrases the wrong route differently, and the positive above already fails a reply that named only the seed skill",
+  "The reply does not route to `seed-sync`. Semantic: a negative substring passes on every reply that phrases the wrong route differently, and the positive above already fails a reply that named only the seed skill",
   "The three `canon docs` calls ran before anything was decided. Unwired: the claim is about which commands were invoked, which the envelope does not carry",
   "Nothing was installed inline. Semantic: a handoff to `setup-init` may legitimately continue into that skill and write the whole scaffold, so no path or scope assertion separates the router doing the work from the router routing to something that does it",
 ]

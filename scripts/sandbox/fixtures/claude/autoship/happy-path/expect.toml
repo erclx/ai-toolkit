@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-autoship` run leaves behind on the happy-path
+# What a correct `/canon:auto-ship` run leaves behind on the happy-path
 # arm, once Step 7 and what follows it have run. Read by `canon sandbox check`.
 # Patterns use TOML literal strings so a regex needs no backslash escaping.
 
@@ -7,7 +7,7 @@
 # green gate both read the run as clean. Steps 1 through 6 already have their
 # own arms, `prose-informational` and `prose-executable` beside this one among
 # them, so this declares only what a run reaching Step 7 leaves that one
-# halting before it would not: the completion line `claude-autoship`'s own
+# halting before it would not: the completion line `auto-ship`'s own
 # Output contract mandates.
 
 # No max_turns yet. A real pass on 2026-08-30 came in at 74 turns, well past
@@ -26,5 +26,5 @@ reply = ["Autoshipped (draft)"]
 manual = [
   "The pull request itself opened, and opened as a draft. Unwired: the sandbox tree and the reply text are what expect.toml can read, and confirming the PR object needs a gh call this declaration has no channel for.",
   "Capture found something worth persisting and Step 9 ran Propose over the pen, leaving a receipt at .canon/review/memory/memory-review-add-farewell.md. Judgment: the fixture's plan carries no Risks or Questions and the run is a single headless pass with no user exchange, so a correct run may just as well report 'Nothing worth capturing' and skip Step 9, and either shape is consistent with a working chain.",
-  "docs-sync and claude-docs left the tree exactly where a run with no public docs and no owning task would leave it. Semantic: both skills sync against what a session finds, and a project this small may give either nothing to change, so an assertion pinned to a specific edit would fail a correct run that found none to make.",
+  "docs-sync and docs-fold left the tree exactly where a run with no public docs and no owning task would leave it. Semantic: both skills sync against what a session finds, and a project this small may give either nothing to change, so an assertion pinned to a specific edit would fail a correct run that found none to make.",
 ]

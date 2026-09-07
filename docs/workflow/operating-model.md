@@ -25,10 +25,10 @@ The split is by vantage, not by capability. All three are Claude Code sessions.
 | Worker       | One cold worktree session per feature | Implement, self-check, open PR, answer the orchestrator | Write the shared board, merge     |
 
 Each role is asserted explicitly rather than inferred. The orchestrator loads
-`claude-orchestrate` at the start of its session, a worker loads `claude-worker`,
-which `claude-autoship` invokes at Step 0 so a dispatched build and a
+`role-orchestrator` at the start of its session, a worker loads `role-worker`,
+which `auto-ship` invokes at Step 0 so a dispatched build and a
 hand-launched one reach it on the same path, and a planner loads
-`claude-planner` from the launch that dispatches it. All three are framing and
+`role-planner` from the launch that dispatches it. All three are framing and
 boundaries rather than logic.
 
 The planner is the one role the orchestrator also performs. Per-row planning
@@ -77,12 +77,12 @@ start, and only a count of the defect's extent decides how big it is.
 
 One feature travels this path end to end.
 
-1. The next feature is planned with `claude-feature`, writing a plan to `.canon/plans/`. The orchestrator runs it warm when the row turns on a contract other features consume or a shared wiring seam, and dispatches a planner under `claude-planner` otherwise. A cold planner measures the row against the tree rather than trusting what the row claims, and it reads what is in flight by composing the live session roster with open pull requests. A bare branch or worktree is not evidence on its own, since this repository leaves both behind after a squash merge.
-2. Orchestrator checks the plan waits on nobody, checks the branch is unclaimed, and checks the plan's file set is disjoint from every track in flight, then dispatches a background worker with `claude --bg` against the plan, naming the branch and the model on the launch rather than leaving the worker to derive either. No count caps how many run at once. The branch travels as the argument to the worker's own worktree call, which is the one place the name is read rather than inferred. It falls back to naming the invocation for a human to run through `claude-worktree` and `claude-autoship` when the plan still waits on an answer only the operator can give, the check refuses, the sets overlap, or a stated reason serializes the plan behind a track already in flight. Either way, the worker enters its own worktree, builds, self-checks, opens a PR, and stops at the PR boundary.
-3. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
-4. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target then with `canon sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.
-5. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds anything and under `## Review closed` when it finds nothing, so a reader learns from the heading whether work is still owed and takes the merge decision from the counts on the line under it. A pass finding nothing where a close-out already stands rewrites that comment to cover what it read rather than posting a second one, so the thread carries one live verdict. Repeat from step 4 until a pass closes the review.
-6. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
+1. The next feature is planned with `plan-feature`, writing a plan to `.canon/plans/`. The orchestrator runs it warm when the row turns on a contract other features consume or a shared wiring seam, and dispatches a planner under `role-planner` otherwise. A cold planner measures the row against the tree rather than trusting what the row claims, and it reads what is in flight by composing the live session roster with open pull requests. A bare branch or worktree is not evidence on its own, since this repository leaves both behind after a squash merge.
+2. Orchestrator checks the plan waits on nobody, checks the branch is unclaimed, and checks the plan's file set is disjoint from every track in flight, then dispatches a background worker with `claude --bg` against the plan, naming the branch and the model on the launch rather than leaving the worker to derive either. No count caps how many run at once. The branch travels as the argument to the worker's own worktree call, which is the one place the name is read rather than inferred. It falls back to naming the invocation for a human to run through `session-worktree` and `auto-ship` when the plan still waits on an answer only the operator can give, the check refuses, the sets overlap, or a stated reason serializes the plan behind a track already in flight. Either way, the worker enters its own worktree, builds, self-checks, opens a PR, and stops at the PR boundary.
+3. Orchestrator reviews the PR with `review-pr` and posts findings to it.
+4. Orchestrator tells the session holding that branch to run `review-address` once the pass posted a finding at any severity, resolving the target then with `canon sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `review-pr` states that threshold and the heading follows it, so an open heading is itself the signal to send.
+5. Orchestrator closes the review out with `review-pr` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds anything and under `## Review closed` when it finds nothing, so a reader learns from the heading whether work is still owed and takes the merge decision from the counts on the line under it. A pass finding nothing where a close-out already stands rewrites that comment to cover what it read rather than posting a second one, so the thread carries one live verdict. Repeat from step 4 until a pass closes the review.
+6. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `review-address`, which rebases whether or not the review left anything open.
 
 There is no loop construct here. Each worker is a single build that halts at the
 PR. The merge stays a manual human gate. Reliability comes from the plan being
@@ -94,8 +94,8 @@ from merging promptly so the next PR does not rot against a moving main.
 The worker's self-review and the orchestrator's review are not the same pass run
 twice. They differ by vantage.
 
-- Worker self-review, inside `claude-autoship`: the session that wrote the code. Its job is "did I build the plan and does it pass?" Mechanical, and structurally blind to its own misreadings, because the same misreading wrote both the code and the review. This is the green gate that decides whether the PR opens.
-- Orchestrator review, via `claude-pr-review`: a fresh session with cross-feature context (the board, a sibling PR in flight, a downstream contract). Its job is "is this right and does it fit?" It can question the plan itself. This is the merge gate.
+- Worker self-review, inside `auto-ship`: the session that wrote the code. Its job is "did I build the plan and does it pass?" Mechanical, and structurally blind to its own misreadings, because the same misreading wrote both the code and the review. This is the green gate that decides whether the PR opens.
+- Orchestrator review, via `review-pr`: a fresh session with cross-feature context (the board, a sibling PR in flight, a downstream contract). Its job is "is this right and does it fit?" It can question the plan itself. This is the merge gate.
 
 They collide only if the worker also runs a deep pass. Keep the worker's review
 light and let the orchestrator own the deep, independent one. The human read at
@@ -111,9 +111,9 @@ the body rather than on a file. See
 
 ## The review channel
 
-Findings travel on the PR. `claude-pr-review` posts them there.
-`claude-address-review` reads them back, fixes each, replies or resolves the
-threads, and pushes a follow-up. `claude-pr-review` then runs again, reading only
+Findings travel on the PR. `review-pr` posts them there.
+`review-address` reads them back, fixes each, replies or resolves the
+threads, and pushes a follow-up. `review-pr` then runs again, reading only
 what the follow-up added.
 
 Both halves of that loop key on a commit rather than on the pull request object,
@@ -175,18 +175,18 @@ a delta and names its body from that response instead of from a tree that did no
 change.
 
 A branch that stopped merging while the review was open is the worker's problem
-to close. `claude-address-review` rebases onto `origin/main` between the fixes
+to close. `review-address` rebases onto `origin/main` between the fixes
 and the push, so one force-push carries both and the reviewer reads one delta.
 The staleness test sits ahead of the no-findings guard, so a branch whose review
 closed clean and then went stale still rebases when the skill is invoked. The
 re-read costs a full pass rather than a delta, since the prior reviewed commit no
-longer reaches the head, and `claude-pr-review` detects that itself.
+longer reaches the head, and `review-pr` detects that itself.
 
 The heading carries the state rather than the pass number. A pass carrying
 anything owed takes `## Review` and a pass carrying nothing takes
 `## Review closed`, so a thread can be scanned for what still owes work without
 opening a comment. One threshold governs the heading and the dispatch alike, and
-`claude-pr-review` is where it is stated, so every other surface cites that skill
+`review-pr` is where it is stated, so every other surface cites that skill
 rather than restating the grades.
 
 The merge decision comes off the counts on the summary line, since an open

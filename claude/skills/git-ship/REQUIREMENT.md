@@ -9,7 +9,7 @@ description: What the ship chain is for, the gaps it closes, and why it does not
 
 Without this skill, the post-feature sequence runs from memory. Doc sync gets skipped, so the pull request ships with planning docs describing the previous scope, or it runs after staging has already closed and its output never reaches a commit. Chaining by hand is also where a session narrates between steps, which turns one flow into a conversation and invites a decision at every boundary.
 
-The sequence also reaches the remote on work nothing re-checked. This skill is the resume point `claude-autoship` names at four of its stop points, including the one a failed verify takes, so the fix the user makes by hand after that stop is pushed with no suite run against it. Every branch shipped so far passed that verify on its first attempt, which is why the path has produced no instance rather than being closed.
+The sequence also reaches the remote on work nothing re-checked. This skill is the resume point `auto-ship` names at four of its stop points, including the one a failed verify takes, so the fix the user makes by hand after that stop is pushed with no suite run against it. Every branch shipped so far passed that verify on its first attempt, which is why the path has produced no instance rather than being closed.
 
 ## Must
 
@@ -38,5 +38,5 @@ The sequence also reaches the remote on work nothing re-checked. This skill is t
 
 ## Out of scope
 
-- Implementation and review, which `claude-autoship` chains ahead of this same sequence. That skill is the full pipeline and this one is the resume point after a stop, which is why the two overlap by design. Verification is the one of the three that belongs on both, since a resume point that trusts the caller's verify trusts a run that stopped.
+- Implementation and review, which `auto-ship` chains ahead of this same sequence. That skill is the full pipeline and this one is the resume point after a stop, which is why the two overlap by design. Verification is the one of the three that belongs on both, since a resume point that trusts the caller's verify trusts a run that stopped.
 - The behavior of each step, owned by the skill invoked. This skill owns the order and nothing else.

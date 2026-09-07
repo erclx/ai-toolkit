@@ -119,7 +119,7 @@ describe('referencesIn', () => {
   it('should pass the qualified form a shipped body already carries', () => {
     expect(
       referencesIn(
-        'claude/skills/claude-worktree/SKILL.md',
+        'claude/skills/session-worktree/SKILL.md',
         'Tracked upstream as `anthropics/claude-code#58345`, closed as not planned.',
         noDocsRoot,
       ),
@@ -176,7 +176,7 @@ describe('referencesIn', () => {
 
   it('should report every token on a line rather than the line once', () => {
     const found = referencesIn(
-      'claude/skills/claude-orchestrate/references/orchestrator-poll.md',
+      'claude/skills/role-orchestrator/references/orchestrator-poll.md',
       'Measured on `#1299`, where a pass written against `5653721` landed stamped `a5ceb40`.',
       noDocsRoot,
     )
@@ -347,13 +347,13 @@ describe('referencesIn', () => {
     it('should report a bare standards/ path that resolves against the checkout', () => {
       expect(
         referencesIn(
-          'claude/skills/claude-orchestrate/references/orchestrator-parked.md',
+          'claude/skills/role-orchestrator/references/orchestrator-parked.md',
           'since `standards/tasks.md` fixes that file as unordered',
           root,
         ),
       ).toEqual([
         {
-          file: 'claude/skills/claude-orchestrate/references/orchestrator-parked.md',
+          file: 'claude/skills/role-orchestrator/references/orchestrator-parked.md',
           line: 1,
           kind: 'standards-path',
           text: 'standards/tasks.md',
@@ -391,7 +391,7 @@ describe('referencesIn', () => {
     it('should pass the resolving ${CLAUDE_SKILL_DIR} form the layout standard requires', () => {
       expect(
         referencesIn(
-          'claude/skills/claude-orchestrate/references/orchestrator-parked.md',
+          'claude/skills/role-orchestrator/references/orchestrator-parked.md',
           'since `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` fixes that file as unordered',
           root,
         ),
@@ -411,7 +411,7 @@ describe('referencesIn', () => {
     it("should pass a bare standards/ path cited from a skill's own REQUIREMENT.md, which a maintainer reads rather than a session", () => {
       expect(
         referencesIn(
-          'claude/skills/claude-tasks/REQUIREMENT.md',
+          'claude/skills/task-board/REQUIREMENT.md',
           'Read `standards/tasks.md` before writing a case.',
           root,
         ),

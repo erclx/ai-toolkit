@@ -1,4 +1,4 @@
-# What a correct `/canon:claude-worker` run leaves behind when the plan in hand
+# What a correct `/canon:role-worker` run leaves behind when the plan in hand
 # carries a question the session may not answer. Read by `canon sandbox check`.
 # Patterns use TOML literal strings so a regex needs no backslash escaping.
 
