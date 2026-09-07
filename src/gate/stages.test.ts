@@ -71,7 +71,7 @@ describe('the readme-citations stage scope', () => {
   it('should not fire on an unrelated web/ path', () => {
     const scope = scopeOf('readme-citations')
 
-    expect(scope.test('web/src/components/Hero.astro')).toBe(false)
+    expect(scope.test('web/src/components/hero.astro')).toBe(false)
     expect(scope.test('docs/agents/readme.md')).toBe(false)
   })
 })
