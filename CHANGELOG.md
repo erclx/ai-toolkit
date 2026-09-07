@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.67.0](https://github.com/erclx/canon/compare/v4.66.0...v4.67.0) (2026-09-07)
+
+
+### Features
+
+* **cli:** parameterize the rename engine and add migrate skill-names ([#1591](https://github.com/erclx/canon/issues/1591)) ([728ae70](https://github.com/erclx/canon/commit/728ae702a9496b2ea96f9d4113547a82a771d8af))
+
+
+### Bug Fixes
+
+* **teach:** restore chrome css and diagram fills from tracked source ([#1593](https://github.com/erclx/canon/issues/1593)) ([0009814](https://github.com/erclx/canon/commit/000981498a68a9226b7f8a0ee9919a416007c308))
+
 ## [4.66.0](https://github.com/erclx/canon/compare/v4.65.0...v4.66.0) (2026-09-07)
 
 
