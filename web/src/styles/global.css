@@ -152,8 +152,7 @@
       var(--shadow-action);
     transition:
       transform 0.18s ease,
-      box-shadow 0.18s ease,
-      border-color 0.18s ease;
+      box-shadow 0.18s ease;
   }
 
   /* The primary leads on its border and its label rather than on a fill, which
@@ -168,13 +167,16 @@
     color: var(--color-text);
   }
 
-  /* The lift and the border carry the hover. Tinting the ground toward the
-     accent mixed a saturated hue into a warm neutral and read as muddy rather
-     than as active. */
-  .btn-primary:hover {
-    border-color: var(--color-accent);
-    color: var(--color-text);
-  }
+  /*
+   * Hover is the lift alone.
+   *
+   * Two color treatments were tried and both were wrong. Tinting the ground
+   * toward the accent mixed a saturated hue into a warm neutral and read as
+   * muddy; brightening the label to the text color washed the accent out of
+   * the primary action, so the button lost the one thing marking it primary at
+   * the moment a reader reached for it. The depth change says pressable
+   * without repainting anything.
+   */
 
   .btn:hover {
     transform: translateY(-1px);
