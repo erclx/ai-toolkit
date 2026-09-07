@@ -118,14 +118,28 @@ A linked worktree is a second working directory over one repository, and every e
 
 Report the state on one line. Do not install. Entering a worktree to read is as common as entering one to run, and an install is slow, needs a network, and picks an ecosystem on the session's behalf.
 
-Read the worktree root and evaluate node and python independently, each emitting its own line regardless of the other's state:
+Read the worktree root and evaluate node and python independently against a literal presence test, each emitting its own line regardless of the other's state:
 
-- Node. `package.json` present, `node_modules/` missing: `Dependencies are not installed. Run <install> before any build, test, or server command.` Take `<install>` from the lockfile beside the manifest, and use `bun install` when no lockfile names one. `package.json` present with `node_modules/` alongside it: `Node dependencies are installed.`
-- Python. A `pyproject.toml` or `requirements.txt` present, `.venv/` missing: `No virtual environment. Create and populate one before running anything.` Either manifest present with `.venv/` alongside it: `Python dependencies are installed.`
+- Node. `[ -f package.json ] && [ ! -d node_modules ]`: `Dependencies are not installed. Run <install> before any build, test, or server command.` `[ -f package.json ] && [ -d node_modules ]`: `Node dependencies are installed.`
+- Python. `{ [ -f pyproject.toml ] || [ -f requirements.txt ]; } && [ ! -d .venv ]`: `No virtual environment. Create and populate one before running anything.` `{ [ -f pyproject.toml ] || [ -f requirements.txt ]; } && [ -d .venv ]`: `Python dependencies are installed.`
+
+`[ -d node_modules ]` reads a symlinked `node_modules` as present, which is the correct read rather than a regression.
 
 Name the ecosystem in both installed lines rather than leaving `Dependencies are installed.` unqualified. Both checks can fire on one project, so an unqualified line reported the same sentence twice for a dual-root project with both folders present, and a reader could not tell which half each line answered.
 
-Emit the closing line only when neither manifest is present, tested directly rather than reached by falling through the two checks above unmatched: `No package manifest, so there is nothing to install.` A dual-root project matches both checks above, and a fallthrough test would route it here by accident.
+Take `<install>` from the lockfile beside the manifest, checked in this order, first match wins:
+
+| Lockfile                  | Install command |
+| ------------------------- | --------------- |
+| `bun.lock` or `bun.lockb` | `bun install`   |
+| `pnpm-lock.yaml`          | `pnpm install`  |
+| `yarn.lock`               | `yarn install`  |
+| `package-lock.json`       | `npm install`   |
+| none of the above         | `bun install`   |
+
+The order matters only when more than one lockfile sits beside the manifest, such as a project mid-migration between package managers. A fixed order is what removes the ambiguity there, and bun sits first in it so the common case, a project carrying no competing lockfile at all, never depends on the order.
+
+Emit the closing line only on its own direct test, run ahead of the two checks above rather than reached by falling through them unmatched: `[ ! -f package.json ] && [ ! -f pyproject.toml ] && [ ! -f requirements.txt ]`: `No package manifest, so there is nothing to install.` A dual-root project matches both checks above, and a fallthrough test would route it here by accident.
 
 The closing line is what keeps the step honest on a stack this skill cannot read. Entry is not stack-aware, and silence is indistinguishable from a check that passed.
 

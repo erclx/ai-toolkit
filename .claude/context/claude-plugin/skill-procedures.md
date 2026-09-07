@@ -1,6 +1,6 @@
 ---
 title: Shared skill procedures
-description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the review classifier that became data a verb parses, the core.bare repair carried at two points, the dependency-check step that misreports on an empty node_modules/, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
+description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the review classifier that became data a verb parses, the core.bare repair carried at two points, the dependency-check step's literal presence test and lockfile table, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
 ---
 
 # Shared skill procedures
@@ -111,9 +111,11 @@ Repairing only after entry would still admit a repository broken by an earlier s
 
 Both call sites confirm the repository's common dir is named `.git` before writing, which separates the defect from a genuinely bare repository that keeps its objects at the root and would be broken by the repair. The skill states the upstream issue inline rather than pointing at `wiki/claude/claude-worktrees.md`, since a shipped skill runs where no `wiki/` path resolves and `check-skill-paths.sh` fails the build on one.
 
-### Step 6's dependency check is unprescribed, and a broken one still ships
+### Step 6's dependency check is a literal test, not a description
 
-`claude-worktree` Step 6 names the two output lines a Node presence check must produce but prescribes no command for producing them, so each entering session composes its own test. One such test, piping `ls node_modules` through `head -1` and branching on the pipe's exit status, reports installed unconditionally: `head` succeeds on empty input regardless of what `ls` found. Measured 2026-09-07 in a freshly entered `.claude/worktrees/bootstrap-arm-fixture/`: that composed check reported dependencies installed while `node_modules/` was absent, and `bun run check`'s format stage then failed on a missing `prettier-plugin-astro` until `bun install` ran by hand. The fix belongs in Step 6 itself, prescribing a command rather than leaving one to each session's judgment.
+`claude-worktree` Step 6 used to name the two output lines a Node presence check must produce without prescribing a command for producing either, so each entering session composed its own test. One such test, piping `ls node_modules` through `head -1` and branching on the pipe's exit status, reported installed unconditionally: `head` succeeds on empty input regardless of what `ls` found. Measured 2026-09-07 in a freshly entered `.claude/worktrees/bootstrap-arm-fixture/`: that composed check reported dependencies installed while `node_modules/` was absent, and `bun run check`'s format stage then failed on a missing `prettier-plugin-astro` until `bun install` ran by hand.
+
+The step carries the test itself now. Node and python each read against a literal `[ -f ... ]` / `[ -d ... ]` pair, and the closing "no manifest" line takes its own direct test, run ahead of both rather than reached by falling through them unmatched. `<install>` resolves off a fixed four-row lockfile table, `bun.lock` or `bun.lockb`, `pnpm-lock.yaml`, `yarn.lock`, then `package-lock.json`, checked in that order and falling back to `bun install` when none match. A literal shell test rather than a `canon` verb, since directory presence is not a judgment call and the body ships to a target that may hold no `canon` binary on PATH at all.
 
 ### The branch worktree entry hands to the ship chain
 
