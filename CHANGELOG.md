@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.69.0](https://github.com/erclx/canon/compare/v4.68.0...v4.69.0) (2026-09-08)
+
+
+### Features
+
+* **cli:** warn on checkout mismatch in feedback and gate run ([#1597](https://github.com/erclx/canon/issues/1597)) ([09f93c1](https://github.com/erclx/canon/commit/09f93c140bab52dd58c3296d70efa37583890930))
+* **hooks:** update the marketplace plugin cache from post-merge on skew ([#1601](https://github.com/erclx/canon/issues/1601)) ([44a6aa9](https://github.com/erclx/canon/commit/44a6aa95e562904a69ac1a88dab0c255897fbd02))
+* **teach:** group the rendered glossary by lesson ([#1600](https://github.com/erclx/canon/issues/1600)) ([200d585](https://github.com/erclx/canon/commit/200d58533e73ef76f5392fc83c84ccda93ec6e53))
+
+
+### Bug Fixes
+
+* **sandbox:** attribute escapes to concurrent sessions, record dead runs ([#1602](https://github.com/erclx/canon/issues/1602)) ([d3886c0](https://github.com/erclx/canon/commit/d3886c0b9e6987078818d9732f5a1a3b192b983b))
+* **sandbox:** restore the 14 unpaired arm-to-skill pairings ([#1603](https://github.com/erclx/canon/issues/1603)) ([e0f683d](https://github.com/erclx/canon/commit/e0f683d02b09f59dfcae1ab62086ac893d4d9ed1))
+
 ## [4.68.0](https://github.com/erclx/canon/compare/v4.67.0...v4.68.0) (2026-09-07)
 
 
