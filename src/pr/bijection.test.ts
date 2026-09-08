@@ -202,6 +202,31 @@ describe('compareKeyChanges', () => {
     expect(result.kind === 'measured' && result.unmet).toEqual([])
     expect(result.kind === 'measured' && result.unnamed).toEqual([])
   })
+
+  it('should downgrade an unmet-bound claim to unresolved when the evidence could not be read', () => {
+    const result = compareKeyChanges({
+      body: keyChanges(
+        '- Move `claude/skills/identity/` to `claude/skills/draft-identity/`.',
+      ),
+      changed: ['claude/skills/draft-identity/SKILL.md'],
+      roots: treeRoots(TRACKED, ['claude/skills/draft-identity/SKILL.md']),
+      evidenceUnread: true,
+    })
+
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+    expect(result.kind === 'measured' && result.unresolved).toMatchObject([
+      { path: 'claude/skills/identity/' },
+    ])
+    expect(result.kind === 'measured' && result.evidenceUnread).toBe(true)
+  })
+
+  it('should report evidenceUnread false on an ordinary measured pass', () => {
+    const result = read(keyChanges('- Add `src/pr/paths.ts`.'), [
+      'src/pr/paths.ts',
+    ])
+
+    expect(result.kind === 'measured' && result.evidenceUnread).toBe(false)
+  })
 })
 
 describe('treeRoots', () => {

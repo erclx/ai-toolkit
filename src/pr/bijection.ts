@@ -54,6 +54,14 @@ export interface BijectionReport {
    * branch author.
    */
   readonly incidental: readonly string[]
+  /**
+   * True when the rename or `.gitignore`-addition evidence could not be read.
+   *
+   * A claim `unmet` would otherwise carry is downgraded to `unresolved`
+   * instead, since the unread evidence might have credited it and this
+   * comparison has no way to tell a stale claim from one it could not check.
+   */
+  readonly evidenceUnread: boolean
 }
 
 export type Bijection =
@@ -71,6 +79,16 @@ export interface BijectionInput {
   readonly renames?: readonly RenamePair[]
   /** A pattern newly added to `.gitignore`, crediting a claim naming it as the `.gitignore` change it is. */
   readonly ignoreAdditions?: readonly string[]
+  /**
+   * True when the caller could not read the rename or ignore-addition
+   * evidence, rather than reading it and finding neither.
+   *
+   * The two states produce the same empty `renames`/`ignoreAdditions`, so
+   * this is the only way `compareKeyChanges` can tell a claim that is
+   * genuinely stale from one the evidence might have credited had the read
+   * succeeded.
+   */
+  readonly evidenceUnread?: boolean
 }
 
 /**
@@ -176,6 +194,7 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
 
   const renames = input.renames ?? []
   const ignoreAdditions = input.ignoreAdditions ?? []
+  const evidenceUnread = input.evidenceUnread ?? false
 
   const unmet: PathClaim[] = []
   const unresolved: PathClaim[] = []
@@ -193,7 +212,7 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
       continue
     }
 
-    if (claim.anchored && claim.leading) unmet.push(claim)
+    if (claim.anchored && claim.leading && !evidenceUnread) unmet.push(claim)
     else unresolved.push(claim)
   }
 
@@ -208,6 +227,7 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     unresolved,
     unnamed: reached.filter((path) => !owesNoBullet(path)),
     incidental: reached.filter(owesNoBullet),
+    evidenceUnread,
   }
 }
 

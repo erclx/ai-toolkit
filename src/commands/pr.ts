@@ -298,6 +298,7 @@ interface PullRequestRead {
   readonly number: number | undefined
   readonly renames: readonly RenamePair[]
   readonly ignoreAdditions: readonly string[]
+  readonly evidenceUnread: boolean
 }
 
 type SourceRead =
@@ -374,6 +375,7 @@ async function readFromApi(
         number: row.number,
         renames: evidence.renames,
         ignoreAdditions: evidence.ignoreAdditions,
+        evidenceUnread: evidence.unread,
       },
     }
   } catch {
@@ -389,6 +391,14 @@ async function readFromApi(
  * later in `runKeyChanges`, and the `gh api …/files` call besides it only on
  * the pass that already has something to double-check, the same trade the
  * `gh-truncated` pagination fallback makes.
+ *
+ * `unread` separates a read that failed from one that succeeded and found
+ * neither, which an empty `renames`/`ignoreAdditions` cannot do on its own.
+ * `listFilesByPage` above refuses the whole comparison on exactly this
+ * ground: a set known to be short would let a correct bullet accuse a file
+ * nobody changed. This carries the same refusal as a flag rather than a
+ * refused `Bijection`, since the base comparison can still run and most
+ * claims never touch a rename or a `.gitignore` line at all.
  */
 async function resolveApiEvidence(
   cwd: string,
@@ -399,12 +409,13 @@ async function resolveApiEvidence(
 ): Promise<{
   readonly renames: readonly RenamePair[]
   readonly ignoreAdditions: readonly string[]
+  readonly unread: boolean
 }> {
-  const empty = { renames: [], ignoreAdditions: [] }
-  if (number === undefined) return empty
+  const clean = { renames: [], ignoreAdditions: [], unread: false }
+  const unread = { renames: [], ignoreAdditions: [], unread: true }
 
   const tracked = await listRepositoryFiles(cwd)
-  if (tracked === undefined) return empty
+  if (tracked === undefined) return unread
 
   const probe = compareKeyChanges({
     body,
@@ -412,7 +423,15 @@ async function resolveApiEvidence(
     roots: treeRoots(tracked, changed),
     ...(head !== undefined && { head }),
   })
-  if (probe.kind !== 'measured' || probe.unmet.length === 0) return empty
+  // A refusal here means there is no claim to credit at all, and a clean
+  // pass means every claim already resolved without the extra evidence, so
+  // neither case leaves anything for unread evidence to have mattered to.
+  if (probe.kind !== 'measured' || probe.unmet.length === 0) return clean
+
+  // Only past this point does a missing pull request number become a real
+  // gap: there is a claim the probe could not credit, and no number to fetch
+  // the evidence that might explain it.
+  if (number === undefined) return unread
 
   // No `--jq` filter here, unlike `listFilesByPage` above. Shaping each row to
   // {filename, previous_filename, status, patch} would make `--paginate`
@@ -425,7 +444,7 @@ async function resolveApiEvidence(
     '--paginate',
     `repos/{owner}/{repo}/pulls/${number}/files`,
   ])
-  if (stdout === null) return empty
+  if (stdout === null) return unread
 
   let rows: readonly {
     readonly filename: string
@@ -436,7 +455,7 @@ async function resolveApiEvidence(
   try {
     rows = JSON.parse(stdout)
   } catch {
-    return empty
+    return unread
   }
 
   const renames = rows
@@ -450,7 +469,7 @@ async function resolveApiEvidence(
   const ignoreAdditions =
     ignoreRow?.patch !== undefined ? parseIgnoreAdditions(ignoreRow.patch) : []
 
-  return { renames, ignoreAdditions }
+  return { renames, ignoreAdditions, unread: false }
 }
 
 /**
@@ -535,6 +554,7 @@ async function readFromFile(
       number: undefined,
       renames: renames ?? [],
       ignoreAdditions: ignoreAdditions ?? [],
+      evidenceUnread: renames === undefined || ignoreAdditions === undefined,
     },
   }
 }
@@ -564,6 +584,7 @@ async function runKeyChanges(
     roots: treeRoots(tracked, source.source.changed),
     renames: source.source.renames,
     ignoreAdditions: source.source.ignoreAdditions,
+    evidenceUnread: source.source.evidenceUnread,
     ...(source.source.head !== undefined && { head: source.source.head }),
   })
 
@@ -575,6 +596,11 @@ async function runKeyChanges(
       report.head === undefined ? '' : ` at ${report.head.slice(0, 8)}`
     }`,
   )
+  if (report.evidenceUnread) {
+    logWarn(
+      'Rename or .gitignore-addition evidence could not be read, so a claim it might have credited or accused landed in unresolved rather than unmet.',
+    )
+  }
 
   logStep(report.unmet.length === 0 ? 'Claimed' : 'Unmet')
   if (report.unmet.length === 0) {
@@ -640,6 +666,7 @@ async function runKeyChanges(
         unnamed: report.unnamed,
         incidental: report.incidental,
         unresolved: report.unresolved,
+        evidenceUnread: report.evidenceUnread,
       })}\n`,
     )
   }
