@@ -305,7 +305,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:draft-slides`      | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint                             |
 | `canon:draft-screencast`  | For a recording script with beats and defaults already seeded                                     |
 | `canon:record-screencast` | For compiling and running a screencast draft into a recording and a still                         |
-| `canon:identity`          | For a project's logo mark and its social card, drafted through `draft-and-pick`'s pick loop       |
+| `canon:draft-identity`    | For a project's logo mark and its social card, drafted through `draft-and-pick`'s pick loop       |
 
 ### Answer a question at any point
 
