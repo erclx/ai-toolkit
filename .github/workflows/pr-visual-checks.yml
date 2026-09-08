@@ -132,9 +132,17 @@ jobs:
       # job on its own commit. Swapping in a personal token to make checks
       # run on the pushed commit removes that guarantee and reopens the loop
       # the moment a capture is not byte-identical.
+      #
+      # HUSKY=0 skips this checkout's own git hooks for the commit and the
+      # push, since bun install already ran the prepare script that wires
+      # them up. The pre-push hook runs bun run check, whose Formatting
+      # stage shells out to shfmt, a binary this job never installs, and
+      # this pull request's own Verify job already runs the gate this hook
+      # would repeat.
       - name: Commit the baseline if it moved
         env:
           HEAD_REF: ${{ github.head_ref }}
+          HUSKY: '0'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
