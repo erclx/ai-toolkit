@@ -8,6 +8,8 @@ import { recordDir, recordDirs } from '@/record-root'
 const TASKS = 'tasks'
 const PLANS = 'plans'
 const ARCHIVE = 'archive'
+const DECLINED = 'declined'
+const BACKLOG = 'backlog.md'
 
 /**
  * Siblings that sit on the board without being tasks: the generated index, the
@@ -48,6 +50,21 @@ export const ARCHIVE_REFUSALS = [
 
 export type ArchiveRefusal = (typeof ARCHIVE_REFUSALS)[number]
 
+/**
+ * Kept apart from `ARCHIVE_REFUSALS` on purpose. `archive` and `decline`
+ * answer different questions, shipped versus decided-against, and a shared
+ * refusal set would let one archive a task that cannot yet ship or decline
+ * one that already has.
+ */
+export const DECLINE_REFUSALS = [
+  'no-board',
+  'no-match',
+  'ambiguous',
+  'bad-input',
+] as const
+
+export type DeclineRefusal = (typeof DECLINE_REFUSALS)[number]
+
 export type TaskSelector =
   | { readonly kind: 'stem'; readonly stem: string }
   | { readonly kind: 'pull-request'; readonly number: number }
@@ -80,6 +97,27 @@ export interface ArchiveRefused {
 
 export type ArchiveOutcome = ArchiveSuccess | ArchiveRefused
 
+export interface DeclineSuccess {
+  readonly ok: true
+  readonly stem: string
+  readonly from: string
+  readonly to: string
+  readonly priorityRowRemoved: boolean
+  readonly backlogRowRemoved: boolean
+  readonly indexRegenerated: boolean
+  /** Undefined when the task cited no live plan, or when another task still holds it. */
+  readonly plan: PlanMove | undefined
+}
+
+export interface DeclineRefused {
+  readonly ok: false
+  readonly reason: DeclineRefusal
+  readonly message: string
+  readonly detail: readonly string[]
+}
+
+export type DeclineOutcome = DeclineSuccess | DeclineRefused
+
 export interface TaskOutcomes {
   readonly open: readonly string[]
   readonly closed: readonly string[]
@@ -92,6 +130,10 @@ export function tasksDir(root: string): string {
 
 export function archiveDir(root: string): string {
   return recordDir(root, TASKS, ARCHIVE)
+}
+
+export function declinedDir(root: string): string {
+  return recordDir(root, TASKS, DECLINED)
 }
 
 export const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
@@ -239,6 +281,62 @@ export function retargetPlanLine(text: string, target: string): string {
 }
 
 /**
+ * Builds the `Declined:` line recording why a task was decided against and by
+ * whom. Free prose after the colon, since the line names no file to link,
+ * unlike `planLine`.
+ */
+export function declineLine(reason: string, by: string, date: string): string {
+  return `Declined: ${reason}, ${by} on ${date}`
+}
+
+/**
+ * Lines a `Declined:` line anchors after, mirroring `record.ts`'s
+ * `ORIGIN_PREFIXES` with `Pull request:` folded in, since a decline can follow
+ * a pull request that never merged.
+ */
+const DECLINE_ANCHOR_PREFIXES = [
+  'Plan:',
+  'Groundwork:',
+  'Intake:',
+  'Issue:',
+  'Pull request:',
+] as const
+
+function lastAnchorLine(lines: readonly string[]): number | undefined {
+  let found: number | undefined
+
+  for (const [index, line] of lines.entries()) {
+    if (DECLINE_ANCHOR_PREFIXES.some((prefix) => line.startsWith(prefix))) {
+      found = index
+    }
+  }
+
+  return found
+}
+
+/**
+ * Places the `Declined:` line after the origin lines a task carries, the same
+ * scan-and-anchor shape `writePullRequestLine` carries. A decline runs once
+ * per task, so there is no existing line to correct, unlike the
+ * add/correct/unchanged shape a write safe to run twice needs.
+ */
+function insertDeclinedLine(text: string, line: string): string {
+  const lines = text.split('\n')
+  const anchor = lastAnchorLine(lines)
+
+  if (anchor !== undefined) {
+    lines.splice(anchor + 1, 0, line)
+    return lines.join('\n')
+  }
+
+  const heading = lines.findIndex((entry) => entry.startsWith('# '))
+  if (heading === -1) return `${line}\n${text}`
+
+  lines.splice(heading + 1, 0, '', line)
+  return lines.join('\n')
+}
+
+/**
  * Drops the archived task's row from the ordering table. Rows are matched by
  * the link they carry rather than by a line pattern, because a row holds links
  * and prose that a stream edit against it would rewrite in place.
@@ -265,6 +363,27 @@ function isRowFor(line: string, target: string): boolean {
 
   const [, first] = trimmed.split('|')
   return first !== undefined && first.includes(target)
+}
+
+/**
+ * Drops the declined task's bullet from the backlog. A backlog line is a
+ * bullet carrying a link rather than a table row, so the match is a bullet
+ * prefix and the link target rather than `isRowFor`'s pipe-delimited cell.
+ */
+export function removeBacklogRow(
+  text: string,
+  stem: string,
+): { readonly text: string; readonly removed: boolean } {
+  const target = `](${stem}.md)`
+  const lines = text.split('\n')
+  const kept = lines.filter((line) => !isBulletFor(line, target))
+
+  return { text: kept.join('\n'), removed: kept.length !== lines.length }
+}
+
+function isBulletFor(line: string, target: string): boolean {
+  const trimmed = line.trimStart()
+  return /^[-*]\s/.test(trimmed) && trimmed.includes(target)
 }
 
 /**
@@ -481,11 +600,20 @@ async function matchByPullRequest(
   return read.filter((entry) => entry.number === number).map(({ stem }) => stem)
 }
 
-function refuse(
-  reason: ArchiveRefusal,
+/**
+ * Generic over the refusal vocabulary so `archiveTask` and `declineTask` share
+ * one builder despite answering with two disjoint reason sets.
+ */
+function refuse<Reason extends string>(
+  reason: Reason,
   message: string,
   detail: readonly string[] = [],
-): ArchiveRefused {
+): {
+  readonly ok: false
+  readonly reason: Reason
+  readonly message: string
+  readonly detail: readonly string[]
+} {
   return { ok: false, reason, message, detail }
 }
 
@@ -689,4 +817,79 @@ async function clearPriorityRow(dir: string, stem: string): Promise<boolean> {
   if (removed) await writeFile(path, text)
 
   return removed
+}
+
+async function clearBacklogRow(dir: string, stem: string): Promise<boolean> {
+  const path = join(dir, BACKLOG)
+  if (!existsSync(path)) return false
+
+  const { text, removed } = removeBacklogRow(await readFile(path, 'utf8'), stem)
+  if (removed) await writeFile(path, text)
+
+  return removed
+}
+
+/**
+ * Declines one task as a single unit: the move, the ordering-or-backlog row
+ * removal, and the index regen. Unlike `archiveTask`, it carries no
+ * outcome-state gate, since a task decided against can sit at any outcome
+ * state, and the two never share a refusal set for the reason
+ * `DECLINE_REFUSALS` states.
+ */
+export async function declineTask(
+  root: string,
+  stem: string,
+  reason: string,
+  by: string,
+): Promise<DeclineOutcome> {
+  const dir = tasksDir(root)
+
+  if (!existsSync(dir)) {
+    return refuse('no-board', `No task board at ${relative(root, dir)}.`)
+  }
+
+  const stems = await listTaskStems(dir)
+  if (!stems.includes(stem)) {
+    const unmatched = describeUnmatchedStem(stems, stem)
+    return refuse(unmatched.reason, unmatched.message, unmatched.detail)
+  }
+
+  const from = join(dir, `${stem}.md`)
+  const text = await readFile(from, 'utf8')
+
+  const plan = await planToArchive(dir, root, stem, text)
+  const destination = declinedDir(root)
+  const to = join(destination, `${stem}.md`)
+
+  // The plan moves first, the same order archiveTask uses, so the retarget
+  // written below describes a file already at its new path.
+  if (plan) {
+    await mkdir(dirname(plan.to), { recursive: true })
+    await rename(plan.from, plan.to)
+  }
+
+  await mkdir(destination, { recursive: true })
+  await rename(from, to)
+
+  const date = new Date().toISOString().slice(0, 10)
+  const declined = insertDeclinedLine(text, declineLine(reason, by, date))
+  const final = plan
+    ? retargetPlanLine(declined, linkTo(destination, plan.to))
+    : declined
+  await writeFile(to, final)
+
+  const priorityRowRemoved = await clearPriorityRow(dir, stem)
+  const backlogRowRemoved = await clearBacklogRow(dir, stem)
+  const regen = await regenOne(dir, { dryRun: false })
+
+  return {
+    ok: true,
+    stem,
+    from,
+    to,
+    priorityRowRemoved,
+    backlogRowRemoved,
+    indexRegenerated: regen.action === 'written',
+    plan,
+  }
 }

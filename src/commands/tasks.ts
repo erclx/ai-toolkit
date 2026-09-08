@@ -1,11 +1,15 @@
 import { relative } from 'node:path'
 import type { Command } from 'commander'
+import { execa } from 'execa'
+import { gitEnv } from '@/git-env'
 import { type AnswersOutcome, planAnswers } from '@/tasks/answers'
 import { type BranchOutcome, planBranch } from '@/tasks/branch'
 import {
   type ArchiveOutcome,
   archiveTask,
   type CitationOutcome,
+  type DeclineOutcome,
+  declineTask,
   type PlanCitations,
   planCitations,
 } from '@/tasks/archive'
@@ -44,9 +48,19 @@ import { mainWorktreeRoot } from '@/worktree'
 /** Returned when the board carries a finding, which is the gating result. */
 const EXIT_FINDINGS = 2
 
+/** Matches `trunk.ts`'s bound on a git subprocess this verb also shells out to. */
+const GIT_TIMEOUT_MS = 10_000
+
 interface ArchiveCommandOptions {
   readonly json?: boolean
   readonly pullRequest?: string
+  readonly root?: string
+}
+
+interface DeclineCommandOptions {
+  readonly by?: string
+  readonly json?: boolean
+  readonly reason?: string
   readonly root?: string
 }
 
@@ -132,6 +146,39 @@ export function register(program: Command): void {
     )
     .action(async (task: string | undefined, opts: ArchiveCommandOptions) => {
       process.exitCode = await runArchive(task, opts)
+    })
+
+  tasks
+    .command('decline')
+    .description(
+      'Move a task decided against into .canon/tasks/declined/, recording why',
+    )
+    .argument('<task>', 'Task filename stem, as in v28.1-trigger-escalation')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--reason <text>', 'Why the task was decided against')
+    .option('--by <name>', 'Who decided, defaulting to git config user.name')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Unlike archive, decline carries no outcome-state gate: a task can be',
+        'decided against at any outcome state, and the two never share a',
+        'refusal set since they answer different questions.',
+        '',
+        'Exit codes:',
+        '  0  the task was declined',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'Examples:',
+        '  canon tasks decline v28.1-trigger-escalation --reason "superseded by v30.2" # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task',
+        '  canon tasks decline v28.1-trigger-escalation --reason "no longer needed" --by Alex --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (task: string, opts: DeclineCommandOptions) => {
+      process.exitCode = await runDecline(task, opts)
     })
 
   tasks
@@ -938,7 +985,7 @@ function reportValidation(
     intro('canon tasks validate')
     logStep('Board')
     logInfo(
-      `${outcome.rows} row(s) across the readiness groups, ${outcome.backlog} backlog line(s), ${outcome.tasks} task file(s)`,
+      `${outcome.rows} row(s) across the readiness groups, ${outcome.backlog} backlog line(s), ${outcome.tasks} task file(s), ${outcome.declined} declined`,
     )
 
     logStep(outcome.findings.length === 0 ? 'Clean' : 'Findings')
@@ -994,6 +1041,7 @@ function reportValidation(
         rows: outcome.rows,
         backlog: outcome.backlog,
         tasks: outcome.tasks,
+        declined: outcome.declined,
         findings: outcome.findings,
         untested: outcome.untested,
         claims: outcome.claims,
@@ -1144,5 +1192,134 @@ function recordFor(
       : null,
     closed: outcome.closed,
     cut: outcome.cut,
+  }
+}
+
+/**
+ * Reads the local `git config user.name` when `--by` names nobody. `--root`
+ * scopes the read so it answers for the board's own repository rather than
+ * whatever the ambient environment points at, mirroring `trunk.ts`'s guard.
+ */
+async function resolveBy(
+  root: string,
+  by: string | undefined,
+): Promise<string | undefined> {
+  if (by) return by
+
+  const result = await execa('git', ['-C', root, 'config', 'user.name'], {
+    reject: false,
+    timeout: GIT_TIMEOUT_MS,
+    env: gitEnv(),
+    extendEnv: false,
+  })
+
+  const name = result.exitCode === 0 ? result.stdout.trim() : ''
+  return name.length > 0 ? name : undefined
+}
+
+async function runDecline(
+  task: string,
+  opts: DeclineCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+
+  if (!opts.reason) {
+    return reportDecline(
+      {
+        ok: false,
+        reason: 'bad-input',
+        message: 'No reason named. Pass --reason <text>.',
+        detail: [],
+      },
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const by = await resolveBy(root, opts.by)
+
+  if (!by) {
+    return reportDecline(
+      {
+        ok: false,
+        reason: 'bad-input',
+        message:
+          'No decider named. Pass --by <name> or set git config user.name.',
+        detail: [],
+      },
+      emitJson,
+      root,
+    )
+  }
+
+  const outcome = await declineTask(root, task, opts.reason, by)
+
+  return reportDecline(outcome, emitJson, root)
+}
+
+function reportDecline(
+  outcome: DeclineOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify(declineRecordFor(outcome, root))}\n`)
+    return outcome.ok ? 0 : 1
+  }
+
+  intro('canon tasks decline')
+
+  if (!outcome.ok) {
+    logStep('Refused')
+    logError(outcome.message)
+    if (outcome.detail.length > 0) pipeOutput(outcome.detail.join('\n'))
+    outro()
+    return 1
+  }
+
+  logStep('Declined')
+  logRemove(relative(root, outcome.from))
+  logAdd(relative(root, outcome.to))
+  if (outcome.plan) {
+    logRemove(relative(root, outcome.plan.from))
+    logAdd(relative(root, outcome.plan.to))
+    logInfo('retargeted the Plan: line')
+  }
+  if (outcome.priorityRowRemoved) logInfo('cleared the ordering row')
+  if (outcome.backlogRowRemoved) logInfo('cleared the backlog row')
+  if (outcome.indexRegenerated) logInfo('regenerated index.md')
+  outro()
+
+  return 0
+}
+
+function declineRecordFor(
+  outcome: DeclineOutcome,
+  root: string,
+): Record<string, unknown> {
+  if (!outcome.ok) {
+    return {
+      ok: false,
+      reason: outcome.reason,
+      message: outcome.message,
+      detail: outcome.detail,
+    }
+  }
+
+  return {
+    ok: true,
+    task: outcome.stem,
+    from: relative(root, outcome.from),
+    to: relative(root, outcome.to),
+    priorityRowRemoved: outcome.priorityRowRemoved,
+    backlogRowRemoved: outcome.backlogRowRemoved,
+    indexRegenerated: outcome.indexRegenerated,
+    plan: outcome.plan
+      ? {
+          from: relative(root, outcome.plan.from),
+          to: relative(root, outcome.plan.to),
+        }
+      : null,
   }
 }

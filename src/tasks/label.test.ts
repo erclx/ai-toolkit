@@ -128,4 +128,34 @@ describe('nextLabel', () => {
     assertOk(outcome)
     expect(outcome.label).toBe('v08.2')
   })
+
+  it('should read a label held only in the declined folder', async () => {
+    await seed(join(ROOT, '.canon', 'tasks'))
+    await seed(join(ROOT, '.canon', 'tasks', 'declined'), 'v09.3-declined-work')
+
+    const outcome = await nextLabel(ROOT)
+
+    assertOk(outcome)
+    expect(outcome.label).toBe('v09.4')
+  })
+
+  it('should take the true maximum across the archive and declined folders both', async () => {
+    await seed(join(ROOT, '.canon', 'tasks'), 'v02.0-first')
+    await seed(join(ROOT, '.canon', 'tasks', 'archive'), 'v02.1-second')
+    await seed(join(ROOT, '.canon', 'tasks', 'declined'), 'v07.3-far-ahead')
+
+    const outcome = await nextLabel(ROOT)
+
+    assertOk(outcome)
+    expect(outcome.label).toBe('v07.4')
+  })
+
+  it('should tolerate an absent declined folder', async () => {
+    await seed(join(ROOT, '.canon', 'tasks'), 'v05.0-solo-target')
+
+    const outcome = await nextLabel(ROOT)
+
+    assertOk(outcome)
+    expect(outcome.label).toBe('v05.1')
+  })
 })

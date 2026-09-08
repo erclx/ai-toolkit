@@ -72,6 +72,36 @@ Skills branch on the reason rather than on the exit code:
 canon tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .reason end'
 ```
 
+## Decline
+
+`canon tasks decline <task>` moves a task decided against from `.canon/tasks/` into `.canon/tasks/declined/`, clears whichever of `priority.md` or `backlog.md` holds its row, and regenerates the board index. Unlike `canon tasks archive`, it carries no outcome-state gate: a task can be decided against at any outcome state.
+
+```bash
+canon tasks decline v28.1-trigger-escalation --reason "superseded by v30.2" # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
+canon tasks decline v28.1-trigger-escalation --reason "no longer needed" --by Alex --json
+```
+
+| Option            | Behavior                                          |
+| ----------------- | ------------------------------------------------- |
+| `--reason <text>` | Why the task was decided against, required        |
+| `--by <name>`     | Who decided, defaulting to `git config user.name` |
+| `--json`          | Emit a machine-readable record on stdout          |
+| `--root <path>`   | Board root, defaulting to the main worktree       |
+
+Exit codes: `0` declined, `1` refused. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, or `bad-input`. `bad-input` covers a missing `--reason` and a `--by` that resolves to nobody, git config included.
+
+`DECLINE_REFUSALS` is kept apart from archive's own refusal set on purpose. Archive and decline answer different questions, shipped versus decided-against, and a shared gate would let one archive a task that cannot yet ship or decline one that already has.
+
+The decision is written onto the task as a `Declined: <reason>, <who> on <YYYY-MM-DD>` line, anchored the same way `Pull request:` is, after the last origin line the task carries.
+
+The task carries its plan with it the same way archive does, when the declining task is the last live citation. A declined task's plan lands in `.canon/plans/archive/`, indistinguishable from a shipped one by folder alone. The task file under `.canon/tasks/declined/` is what records which it was.
+
+Skills branch on the reason rather than on the exit code, the same rule `canon tasks archive` states:
+
+```bash
+canon tasks decline v28.1-trigger-escalation --reason "superseded by v30.2" --json | jq -r 'if .ok then .task else .reason end' # canon-allow-reference: illustrates the stem-selection form, not a citation of a real task
+```
+
 ## Plan citations
 
 `canon tasks plan-citations <stem>` answers where a task's plan sits and which other live tasks hold it. It reports and never writes.
@@ -244,7 +274,7 @@ Seven checks run. Plan and Collisions reach one half each of the `## Run now` te
 | Grouping   | A task carrying a row in more than one readiness group, or on both surfaces                                             |
 | Ordering   | A `## Needs a plan` row whose stated position disagrees with where it actually sits, or which states no position at all |
 | Collisions | Two `## Run now` rows whose Touches columns name a path in common                                                       |
-| Blockers   | A parked row whose blocker has stopped holding, or whose cited task resolves nowhere                                    |
+| Blockers   | A parked row whose blocker has stopped holding, whose cited task resolves nowhere, or whose cited task was declined     |
 
 Shape runs before any other check reads a row, since a row failing it carries no dependable fields for the rest to check. A blank or prose line closes the table above it, so the walk treats the next pipe line as a fresh header candidate rather than as a continuation. That candidate counts as a header only when the line behind it is a separator carrying the same cell count, and one that fails is `row-untabled`, stranded behind a table that already closed. Cell count still has to match the header on every row that clears that test, and a row whose count disagrees is `row-misshapen`, the shape a dropped pipe or a merged column produces.
 
@@ -264,7 +294,20 @@ The collision check is the one a person cannot run by eye. Paths come from the b
 
 Where a directory holds the other row's file, the finding names the row that claimed it, reading `both touch src/tasks, which v2.0-second claims as a folder.` The shared strings alone leave an over-broad cell and a genuine overlap identical, which is how a correct report was once read as the verb comparing folders rather than files. <!-- canon-allow-reference: illustrates the finding's own sentence shape, not a citation of a real task -->
 
-The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or by its work reaching the trunk, and a collision is settled by nothing under `## Run now` still holding the file the cell cites.
+The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or by its work reaching the trunk, and a collision is settled by nothing under `## Run now` still holding the file the cell cites. A cited task resolving under `.canon/tasks/declined/` instead reports separately as `blocker-declined`, since a decided-against task is neither the shipped work `blocker-settled` reports nor the dangling pointer `blocker-unresolved` reports.
+
+```json
+{
+  "findings": [
+    {
+      "kind": "blocker-declined",
+      "group": "Up next",
+      "subject": "v50.6-a-standard-no-skill-reads", // canon-allow-reference: shows the subject field's real vXX.Y-slug shape, not a citation of a real task
+      "message": "waits on v9.0-superseded, which was declined." // canon-allow-reference: illustrates the finding's own sentence shape, not a citation of a real task
+    }
+  ]
+}
+```
 
 A closed outcome is not the fact the dependency half needs. The ship chain marks outcomes as its first step and opens the pull request several steps later, so a check reading the checkbox reports the row settled while the branch is still in review. A live task therefore settles the row only once it closed every outcome and carries a `Pull request:` line the trunk holds. One that names no pull request, and one whose number no trunk ref could answer for, land in the untested array below rather than being settled or left silent.
 
@@ -272,7 +315,7 @@ The trunk is read as the clone already holds it, `origin/main` first and local `
 
 Both halves gate on a citation inside the `Waiting on` cell, never on the columns beside it. The board format gives a collision cell the file held by the running task, so a row whose cell names no file was parked by something else, and testing its Touches column instead reports a cleared collision on a row no collision ever parked while counting that row as re-tested. A cited task is a bare sibling link, the way the Task column spells one, so a pointer into another folder names a plan rather than a task and settles nothing. A cited task carrying no outcome box settles nothing either, since a file the check could not parse is not evidence of a finished one.
 
-A citation resolving in neither the board nor the archive is `blocker-unresolved` rather than a settled row. Reading an absent file as archived states a specific fact about a file nobody ever wrote, which is what a renamed task or a typo produces, and only a task that genuinely closed releases the row waiting on it.
+A citation resolving in none of the board, the archive, or the declined folder is `blocker-unresolved` rather than a settled row. Reading an absent file as archived or declined states a specific fact about a file nobody ever wrote, which is what a renamed task or a typo produces, and only a task that genuinely closed or was genuinely declined releases the row waiting on it.
 
 The other three kinds rest on a person's judgment, so a row neither half reached lands in a second array rather than in the findings:
 

@@ -3,6 +3,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import {
   archiveDir,
+  declinedDir,
   isReservedStem,
   readOutcomes,
   readPlanTarget,
@@ -47,6 +48,7 @@ export const FINDING_KINDS = [
   'touches-collided',
   'blocker-settled',
   'blocker-unresolved',
+  'blocker-declined',
 ] as const
 
 export type FindingKind = (typeof FINDING_KINDS)[number]
@@ -124,6 +126,7 @@ export interface ValidateReport {
   readonly rows: number
   readonly backlog: number
   readonly tasks: number
+  readonly declined: number
   readonly findings: readonly Finding[]
   readonly untested: readonly Untested[]
   readonly claims: readonly FolderClaim[]
@@ -970,6 +973,20 @@ async function checkCitedTask(
       return settled(group, subject, `waits on ${cited}, which is archived.`)
     }
 
+    if (existsSync(join(declinedDir(root), `${cited}.md`))) {
+      return {
+        findings: [
+          {
+            kind: 'blocker-declined',
+            group,
+            subject,
+            message: `waits on ${cited}, which was declined.`,
+          },
+        ],
+        untested: [],
+      }
+    }
+
     return {
       findings: [
         {
@@ -1158,6 +1175,10 @@ export async function validateBoard(
     : []
 
   const stems = await listTaskStems(dir)
+  const declinedPath = declinedDir(root)
+  const declined = existsSync(declinedPath)
+    ? await listTaskStems(declinedPath)
+    : []
   const parked = await checkParked(rows, root, trunk)
 
   const findings = [
@@ -1175,6 +1196,7 @@ export async function validateBoard(
     rows: rows.length,
     backlog: backlog.length,
     tasks: stems.length,
+    declined: declined.length,
     findings,
     untested: parked.untested,
     claims: checkFolderClaims(rows, root),

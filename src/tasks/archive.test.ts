@@ -6,11 +6,15 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   archiveDir,
   archiveTask,
+  declinedDir,
+  declineLine,
+  declineTask,
   describeUnmatchedStem,
   planCitations,
   readOutcomes,
   readPlanTarget,
   readPullRequest,
+  removeBacklogRow,
   removePriorityRow,
   retargetPlanLine,
   tasksDir,
@@ -542,6 +546,172 @@ describe('archiveTask', () => {
       ok: true,
       priorityRowRemoved: false,
     })
+  })
+})
+
+describe('declineLine', () => {
+  it('should build the reason, who, and date into one line', () => {
+    expect(declineLine('superseded by v30.2', 'Alex', '2026-09-08')).toBe(
+      'Declined: superseded by v30.2, Alex on 2026-09-08',
+    )
+  })
+})
+
+describe('removeBacklogRow', () => {
+  it('should drop the bullet linking to the declined task', () => {
+    const text = [
+      '- [v28.1 escalation](v28.1-trigger-escalation.md)',
+      '- [v32.1 globs](v32.1-sync-glob-narrowing.md)',
+    ].join('\n')
+
+    const result = removeBacklogRow(text, 'v28.1-trigger-escalation')
+
+    expect(result.removed).toBe(true)
+    expect(result.text).not.toContain('v28.1-trigger-escalation.md')
+    expect(result.text).toContain('v32.1-sync-glob-narrowing.md')
+  })
+
+  it('should report nothing removed when no bullet matches', () => {
+    const text = '- [v32.1 globs](v32.1-sync-glob-narrowing.md)'
+
+    expect(removeBacklogRow(text, 'v28.1-trigger-escalation').removed).toBe(
+      false,
+    )
+  })
+
+  it('should leave prose naming the task untouched', () => {
+    const text = 'The v28.1-trigger-escalation.md track runs first.'
+
+    expect(removeBacklogRow(text, 'v28.1-trigger-escalation')).toEqual({
+      text,
+      removed: false,
+    })
+  })
+})
+
+describe('declineTask', () => {
+  it('should move a task carrying an open outcome, unlike archive', async () => {
+    const stem = await seedTask({
+      outcomes: '- [ ] Outcome: still pending',
+    })
+
+    const result = await declineTask(ROOT, stem, 'superseded by v30.2', 'Alex')
+
+    expect(result.ok).toBe(true)
+    expect(existsSync(join(tasksDir(ROOT), `${stem}.md`))).toBe(false)
+    expect(existsSync(join(declinedDir(ROOT), `${stem}.md`))).toBe(true)
+  })
+
+  it('should move a task carrying no outcomes at all, unlike archive', async () => {
+    const stem = await seedTask({ outcomes: '- A note, not an outcome' })
+
+    expect(
+      await declineTask(ROOT, stem, 'no longer needed', 'Alex'),
+    ).toMatchObject({ ok: true })
+  })
+
+  it('should write the Declined: line under the origin lines', async () => {
+    const stem = await seedTask()
+
+    await declineTask(ROOT, stem, 'superseded by v30.2', 'Alex')
+
+    const text = await readFile(join(declinedDir(ROOT), `${stem}.md`), 'utf8')
+    expect(text).toMatch(
+      /^Declined: superseded by v30\.2, Alex on \d{4}-\d{2}-\d{2}$/m,
+    )
+  })
+
+  it('should refuse a stem that is not on the board', async () => {
+    await seedTask()
+
+    expect(
+      await declineTask(ROOT, 'v99.9-absent', 'no longer needed', 'Alex'),
+    ).toMatchObject({ ok: false, reason: 'no-match' })
+  })
+
+  it('should refuse when the board does not exist', async () => {
+    expect(
+      await declineTask(ROOT, 'v28.1-anything', 'no longer needed', 'Alex'),
+    ).toMatchObject({ ok: false, reason: 'no-board' })
+  })
+
+  it('should clear the row from the ordering file when present', async () => {
+    const stem = await seedTask()
+    const priority = join(tasksDir(ROOT), 'priority.md')
+    await writeFile(
+      priority,
+      `| Task | Touches |\n| ---- | ------- |\n| [v28.1](${stem}.md) | \`src/\` |\n`,
+    )
+
+    const result = await declineTask(ROOT, stem, 'no longer needed', 'Alex')
+
+    expect(result).toMatchObject({ ok: true, priorityRowRemoved: true })
+    expect(await readFile(priority, 'utf8')).not.toContain(`${stem}.md`)
+  })
+
+  it('should clear the bullet from the backlog when present', async () => {
+    const stem = await seedTask()
+    const backlog = join(tasksDir(ROOT), 'backlog.md')
+    await writeFile(backlog, `- [v28.1](${stem}.md)\n`)
+
+    const result = await declineTask(ROOT, stem, 'no longer needed', 'Alex')
+
+    expect(result).toMatchObject({ ok: true, backlogRowRemoved: true })
+    expect(await readFile(backlog, 'utf8')).not.toContain(`${stem}.md`)
+  })
+
+  it('should clear neither surface when the row sits on neither', async () => {
+    const stem = await seedTask()
+
+    expect(
+      await declineTask(ROOT, stem, 'no longer needed', 'Alex'),
+    ).toMatchObject({
+      ok: true,
+      priorityRowRemoved: false,
+      backlogRowRemoved: false,
+    })
+  })
+
+  it('should carry a solo plan into the archive the same way archive does', async () => {
+    const plan = await seedPlan()
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+
+    const result = await declineTask(ROOT, stem, 'no longer needed', 'Alex')
+
+    expect(result).toMatchObject({
+      ok: true,
+      plan: { from: plan, to: archivedPlan() },
+    })
+    expect(existsSync(plan)).toBe(false)
+    expect(existsSync(archivedPlan())).toBe(true)
+  })
+
+  it('should leave a plan another live task still cites', async () => {
+    const plan = await seedPlan()
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+    await seedTask({
+      stem: 'v28.2-sibling',
+      plan: '../plans/feature-trigger.md',
+    })
+
+    const result = await declineTask(ROOT, stem, 'no longer needed', 'Alex')
+
+    expect(result).toMatchObject({ ok: true })
+    expect(result.ok && result.plan).toBeUndefined()
+    expect(existsSync(plan)).toBe(true)
+  })
+
+  it('should point the declined task at the archived plan', async () => {
+    await seedPlan()
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+
+    await declineTask(ROOT, stem, 'no longer needed', 'Alex')
+
+    expect(
+      await readFile(join(declinedDir(ROOT), `${stem}.md`), 'utf8'),
+    ).toContain(
+      'Plan: [feature-trigger](../../plans/archive/feature-trigger.md)',
+    )
   })
 })
 
