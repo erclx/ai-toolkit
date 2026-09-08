@@ -14,6 +14,7 @@ import {
   planCitations,
 } from '@/tasks/archive'
 import { type LabelOutcome, nextLabel } from '@/tasks/label'
+import { type Claim, planReach, type ReachOutcome } from '@/tasks/reach'
 import {
   type CloseOutcome,
   closeOutcomes,
@@ -80,6 +81,12 @@ interface AnswersCommandOptions {
 }
 
 interface BranchCommandOptions {
+  readonly json?: boolean
+  readonly root?: string
+}
+
+interface ReachCommandOptions {
+  readonly base?: string
   readonly json?: boolean
   readonly root?: string
 }
@@ -324,6 +331,45 @@ export function register(program: Command): void {
     )
     .action(async (plan: string, opts: BranchCommandOptions) => {
       process.exitCode = await runBranch(plan, opts)
+    })
+
+  tasks
+    .command('plan-reach')
+    .description('Read a branch back against what was declared about it')
+    .argument('<plan>', 'Plan path or its slug, as in dispatch-answer-gate')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--base <ref>', 'Far side of the range, defaulting to the trunk')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the reach was read and no other track claims a changed path',
+        '  1  refused as no-plan, archived, bad-input, no-base, or no-diff',
+        '  2  read, and another live plan or Run now row claims a path',
+        '',
+        'It reports claimed first and undeclared second. A claimed path is one',
+        'another track holds and is the half worth acting on; an undeclared one',
+        'is a path this plan never named, which the ship chain writes on nearly',
+        'every branch. It reports and never gates, so branch on the record',
+        'rather than on the exit code, which a shell function wrapping canon',
+        'can flatten to zero.',
+        '',
+        'The range is read at the current directory and the plans and board at',
+        'the board root, so a linked worktree reads its own branch against the',
+        'shared records. It reads only what is written down, so the plan and',
+        'row counts say how much was there to compare against.',
+        '',
+        'Examples:',
+        '  canon tasks plan-reach dispatch-answer-gate',
+        '  canon tasks plan-reach dispatch-answer-gate --base origin/main --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (plan: string, opts: ReachCommandOptions) => {
+      process.exitCode = await runReach(plan, opts)
     })
 
   tasks
@@ -959,6 +1005,96 @@ function reportBranch(
   outro()
 
   return EXIT_FINDINGS
+}
+
+async function runReach(
+  plan: string,
+  opts: ReachCommandOptions,
+): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  // The range belongs to the checkout the caller stands in, which is the linked
+  // worktree holding the branch on every dispatched run. The board root is the
+  // main worktree, where reading a range measures the trunk against itself.
+  const outcome = await planReach(root, plan, {
+    repo: process.cwd(),
+    ref: opts.base,
+  })
+
+  return reportReach(outcome, opts.json ?? false, root)
+}
+
+function describeReachClaim(claim: Claim): string {
+  const held =
+    claim.declaration === claim.path
+      ? claim.holder
+      : `${claim.holder}, under ${claim.declaration}`
+
+  return `${claim.path} is held by ${held} (${claim.source})`
+}
+
+/**
+ * Leads with the claimed list because it is the short one. Over the wave this
+ * verb was filed against, undeclared paths ran 22 of 26 on one branch and 18 of
+ * 25 on another, so a report opening on that list is noise a reader skips past
+ * and the crossing underneath it goes with them.
+ */
+function reportReach(
+  outcome: ReachOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: outcome.reason, message: outcome.message })}\n`,
+      )
+      return 1
+    }
+
+    intro('canon tasks plan-reach')
+    logStep('Refused')
+    logError(outcome.message)
+    outro()
+    return 1
+  }
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ...outcome, root })}\n`)
+    return outcome.claimed.length === 0 ? 0 : EXIT_FINDINGS
+  }
+
+  intro('canon tasks plan-reach')
+
+  logStep(outcome.claimed.length === 0 ? 'Uncontested' : 'Claimed')
+  if (outcome.claimed.length === 0) {
+    logInfo('no other live plan or Run now row holds a path this branch wrote')
+  } else {
+    for (const claim of outcome.claimed) logWarn(describeReachClaim(claim))
+  }
+
+  logStep('Undeclared')
+  if (outcome.undeclared.length === 0) {
+    logInfo(
+      `${outcome.plan} declared every one of the ${outcome.changed} paths`,
+    )
+  } else {
+    for (const path of outcome.undeclared) logInfo(path)
+    logInfo(
+      `${outcome.undeclared.length} of ${outcome.changed} path(s) this plan did not name, which the ship chain's own steps account for on most branches`,
+    )
+  }
+
+  // The counts are the report's own bound. A verb reading what is written down
+  // sees no hand-launched track and no track without a plan, so a clear reading
+  // over nothing compared against would otherwise read as a proof.
+  logStep('Compared against')
+  logInfo(
+    `${outcome.plans} other live plan(s) and ${outcome.rows} Run now row(s)${outcome.board ? '' : ', with no board on disk to read'}`,
+  )
+
+  outro()
+
+  return outcome.claimed.length === 0 ? 0 : EXIT_FINDINGS
 }
 
 function reportValidation(
