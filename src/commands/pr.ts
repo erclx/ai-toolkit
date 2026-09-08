@@ -18,6 +18,7 @@ import {
 import { type CheckRunListing, collapseChecks } from '@/pr/checks'
 import { type HeadRefusal, resolveHead, resolveTip } from '@/pr/head'
 import { KEY_CHANGES } from '@/pr/paths'
+import { type ReviewListing, resolveReviewScope } from '@/pr/review-scope'
 import { intro, logInfo, logStep, logWarn, outro, plural } from '@/ui'
 
 const GH_TIMEOUT_MS = 30_000
@@ -49,7 +50,12 @@ interface ReadOptions {
 }
 
 /** Why a head-sensitive read produced no answer about a commit. */
-type PullRefusal = 'gh-missing' | 'gh-failed' | 'no-branch' | 'runs-unreadable'
+type PullRefusal =
+  | 'gh-missing'
+  | 'gh-failed'
+  | 'no-branch'
+  | 'runs-unreadable'
+  | 'reviews-unreadable'
 
 /** What a reader does about each way the two sha-keyed verbs produced nothing. */
 const PULL_REFUSALS: Record<PullRefusal | HeadRefusal, string> = {
@@ -67,6 +73,8 @@ const PULL_REFUSALS: Record<PullRefusal | HeadRefusal, string> = {
     'The pull request object reported no head commit, so there is nothing to compare the tip against.',
   'runs-unreadable':
     'The check runs for this commit could not be read. An empty answer here would report a commit as having no check rather than as unread, so nothing is reported.',
+  'reviews-unreadable':
+    'The reviews on this pull request could not be read. An empty answer here would report a reviewed pull request as never reviewed, which routes the next pass to the whole change, so nothing is reported.',
 }
 
 /** Why the read produced no comparison, ahead of the ones the compare owns. */
@@ -235,6 +243,47 @@ export function register(program: Command): void {
     )
     .action(async (number: string | undefined, opts: ReadOptions) => {
       process.exitCode = await runChecks(number, opts)
+    })
+
+  pr.command('review-state')
+    .description('Report the commit and instant the last review pass covered')
+    .argument('[number]', 'Pull request to read, defaulting to this branch')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Repository to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'A review carries two stamps GitHub writes at submission: `commit.oid`',
+        'names whatever the head was at that instant and `submittedAt` names the',
+        'instant itself. Neither describes the commit the reviewing session read.',
+        'A push landing inside the compose window moves `commit.oid` onto a commit',
+        'nobody reviewed, and the next pass then scopes its delta past that work',
+        'and reports it covered.',
+        '',
+        '`review-pr` writes the commit it read and the instant it read it as a',
+        'marker on the last line of every body it posts. This is the one place',
+        'that marker is parsed, so `review-pr` and the orchestrator poll read one',
+        'answer rather than carrying a copy of the format each.',
+        '',
+        'Read `source` before trusting the rest:',
+        '  marker    the pass wrote its own read-time record, which is authority',
+        '  fallback  a pass posted before the marker shipped, off GitHub stamps',
+        '  none      the thread carries no pass, so the next one is a first pass',
+        '',
+        'Exit codes:',
+        '  0  the thread was read, whether it carries a pass or not',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'Examples:',
+        '  canon pr review-state',
+        '  canon pr review-state 1341 --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (number: string | undefined, opts: ReadOptions) => {
+      process.exitCode = await runReviewState(number, opts)
     })
 }
 
@@ -761,6 +810,86 @@ async function runChecks(
         ...(identity.number !== undefined && { number: identity.number }),
         branch: identity.branch,
         ...reading,
+      })}\n`,
+    )
+  }
+
+  return 0
+}
+
+async function runReviewState(
+  number: string | undefined,
+  opts: ReadOptions,
+): Promise<number> {
+  const root = resolve(opts.root ?? process.cwd())
+  const emitJson = opts.json ?? false
+
+  intro('canon pr review-state')
+
+  if (Bun.which('gh') === null) {
+    return refuseWith('gh-missing', PULL_REFUSALS['gh-missing'], emitJson, root)
+  }
+
+  const args = ['pr', 'view']
+  if (number !== undefined) args.push(number)
+  // `number` rides along so the record names the pull request a caller that
+  // passed no argument was answered about. The comment families the poll reads
+  // stay out of the query, since nothing here parses one and a listing the
+  // caller discards is a payload paid for twice.
+  args.push('--json', 'number,reviews')
+
+  const stdout = await gh(root, args)
+  if (stdout === null) {
+    return refuseWith('gh-failed', PULL_REFUSALS['gh-failed'], emitJson, root)
+  }
+
+  let listing: ReviewListing & { number?: number }
+  try {
+    listing = JSON.parse(stdout)
+  } catch {
+    return refuseWith(
+      'reviews-unreadable',
+      PULL_REFUSALS['reviews-unreadable'],
+      emitJson,
+      root,
+    )
+  }
+
+  const scope = resolveReviewScope(listing)
+
+  logStep('Scope')
+  logInfo(
+    listing.number === undefined
+      ? 'the pull request on this branch'
+      : `#${listing.number}`,
+  )
+
+  if (scope.source === 'none') {
+    logStep('First pass')
+    logInfo('the thread carries no review, so nothing has been covered yet')
+  } else if (scope.source === 'marker') {
+    logStep(scope.state === 'open' ? 'Open' : 'Closed')
+    logInfo(
+      `the last pass read ${scope.commit?.slice(0, 8)} at ${scope.readAt}, which is what it covered`,
+    )
+  } else {
+    logStep(scope.state === 'open' ? 'Open' : 'Closed')
+    // Named rather than folded into the line above, since the whole point of
+    // the marker is that these two fields describe the submission and not the
+    // read, and a caller cannot tell the two apart from the values alone.
+    logWarn(
+      `the last pass carries no read-time marker, so ${scope.commit === undefined ? 'no commit' : scope.commit.slice(0, 8)} and ${scope.submittedAt ?? 'no instant'} come off GitHub's submission stamps. A push inside that pass's compose window is invisible here.`,
+    )
+  }
+
+  outro()
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        ...(listing.number !== undefined && { number: listing.number }),
+        ...scope,
       })}\n`,
     )
   }
