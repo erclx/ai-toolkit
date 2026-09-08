@@ -23,9 +23,10 @@ Some decisions are settled by looking rather than by reasoning, and no draft is 
 
 ## Step 2: author the candidate set as one page
 
-Write every arm side by side on one self-contained HTML page at `<dest>/candidates.html`.
+Write every arm side by side on one self-contained HTML page at `<dest>/candidates.html`, and write each arm again as its own self-contained whole-page file at `<dest>/arms/arm-<id>.html`. Clear `<dest>/arms/` first on every pass through this step, including from Step 5's loop, so a file left behind by a wider earlier round never survives into a narrower one.
 
-- One page, never one file per arm. The comparison is the artifact, and several images handed over separately ask the operator to hold the differences in memory.
+- One page for the pick, never a set of separate images handed to the operator to compare from memory. The comparison they judge is `candidates.html`, which Step 3 renders and Step 4 asks about. The per-arm files exist only for Step 6's archival capture, once the pick is made, and only the last pass through this step is what Step 6 finds there.
+- Wrap each arm's markup in the same class on both files, chosen once per run and reused everywhere, so one selector addresses an arm on the combined page and on its own standalone file alike.
 - Label each arm on the page with its id and its cost, so the render carries what the question will ask about.
 - Inline every style, script, and asset the page needs. The render reads the file off disk, so a page reaching for a build step or a network font renders without it and the arms differ by something nobody chose.
 - Declare a font stack the machine resolves, such as `system-ui` behind a generic fallback. The render refuses a page that would rewrap against a substitute rather than shipping a false comparison, so a page naming no font at all is refused on whatever the default resolves to.
@@ -65,10 +66,13 @@ Put the choice to the operator through the structured question surface, per `.cl
 ## Step 6: close
 
 1. Apply the winning arm to the real surface, in one change.
-2. Close out whatever document stated the decision as open, in the same change, naming the arm that won and the ones that stayed defensible. A pick that changes a surface and records nothing about why leaves the next reader to re-derive it from a diff, and the losing arms are gone by the next step where `<dest>` is deleted. Skip this where nothing stated the decision.
-3. Delete `<dest>` and every losing arm with it, when `<dest>` is the scratch path. A variant left behind there is a second design nobody maintains. Leave `<dest>` in place when it is a live track's `evidence/<slug>/`: `plan-groundwork`'s write scope treats evidence as durable rather than as scratch a session may delete, and the render a decision file cites has to stay where that file points.
-4. Report `<dest>` as still standing when the scratch-path delete is refused, naming the path for the operator to remove, rather than closing on a report the tree contradicts. The pick is applied either way, so the run has done its work and the folder is what outlives it.
-5. Report every surface that changed, each on its own line, and name the arm that won by its id and its cost.
+2. Close out whatever document stated the decision as open, in the same change, naming the arm that won and the ones that stayed defensible. A pick that changes a surface and records nothing about why leaves the next reader to re-derive it from a diff. Skip this where nothing stated the decision.
+3. Batch-capture the final round's arm files, when `<dest>` is the scratch path: `canon capture <dest>/arms --selector <wrapper-class> --out <archive-dir>`, naming Step 2's chosen class. This is the directory-batch convention `draft-identity` Step 6 already uses.
+4. Resolve `<archive-dir>` as `.canon/review/evidence/<slug>/` against the main worktree root, per `.claude/rules/canon/core/085-worktrees.md`, never against a linked worktree this run happens to be building in. The capture is what keeps every arm past the pick, the losing ones included, as a durable revert record distinct from the live comparison page.
+5. Delete `<dest>` and every file inside it, when `<dest>` is the scratch path, now that every arm sits at the durable path above. A variant left behind there is a second design nobody maintains.
+6. Leave `<dest>` in place when it is a live track's `evidence/<slug>/`: `plan-groundwork`'s write scope treats evidence as durable rather than as scratch a session may delete, and the arms already sit at a durable path there.
+7. Report `<dest>` as still standing when the scratch-path delete is refused, naming the path for the operator to remove, rather than closing on a report the tree contradicts. The pick is applied either way, so the run has done its work and the folder is what outlives it.
+8. Report every surface that changed, each on its own line, name the arm that won by its id and its cost, and report the archival path from Step 3 where it ran.
 
 ## Reading a measurement
 
