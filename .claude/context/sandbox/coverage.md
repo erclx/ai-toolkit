@@ -33,7 +33,7 @@ The rule explains the arms already written as well as the next ones. Every skill
 
 ### The task board arms
 
-`claude/tasks.sh` carries two arms, split because create and archive have disjoint preconditions and one arm running both would assert the second against a tree the first mutated. Both stage the board rather than inheriting one, since `SANDBOX_INJECT_SEEDS` drops `.canon/tasks/` and fills it with nothing but the seeded `index.md`.
+`claude/task-board.sh` carries two arms, split because create and archive have disjoint preconditions and one arm running both would assert the second against a tree the first mutated. Both stage the board rather than inheriting one, since `SANDBOX_INJECT_SEEDS` drops `.canon/tasks/` and fills it with nothing but the seeded `index.md`.
 
 The two arms cover different things, and the split follows what already has a test. `canon tasks archive` is a typed verb whose refusals `src/tasks/archive.test.ts` covers at 27 tests, so the archive arm stages a board that satisfies every gate and asserts the successful move. An arm asserting that the command refuses an open outcome would re-test a unit test through a model session at a dollar a run. The create path has no CLI verb at all, so the skill writes the file from `standards/tasks.md` and the whole of that arm is prose with nothing underneath it.
 
@@ -47,7 +47,7 @@ Neither arm asserts `.canon/tasks/index.md`. A hook regenerates it, so an assert
 
 ### The intake arms
 
-`claude/intake.sh` is the clearest case the blast-radius rule selects. The folder it writes is gitignored in every target, so no check in this repository or in a consuming one ever reads its shape, and a run that files a dump into the wrong numbering leaves a record cited for weeks with nothing reporting the drift.
+`claude/plan-intake.sh` is the clearest case the blast-radius rule selects. The folder it writes is gitignored in every target, so no check in this repository or in a consuming one ever reads its shape, and a run that files a dump into the wrong numbering leaves a record cited for weeks with nothing reporting the drift.
 
 The `file` arm pins the slug through the invocation rather than letting the run derive it. `paths` and `content` both match an exact path, so a slug taken from the dump's wording would leave every assertion naming a folder that may not exist. What that gives up is one line of the body against the whole of the folder shape, and the numbering still gets asserted, since the index links its cluster files and the pattern requires a two-digit number and a domain name in each link.
 
@@ -159,7 +159,7 @@ An arm that staged the state without asserting it would have shipped a step that
 
 ### The orchestrate arm scores a routing decision on three reply pins
 
-`claude/orchestrate.sh` drives a skill that reads a board and reports state, so it is proposal-only and inherits what the superseded arm generalized. Three `reply` pins carry the verdict and two `absent` entries carry the tree, and nothing asserts that the staged board is still staged, since a pin over provisioning counts the same as a real one and is what makes a coverage number lie.
+`claude/role-orchestrator.sh` drives a skill that reads a board and reports state, so it is proposal-only and inherits what the superseded arm generalized. Three `reply` pins carry the verdict and two `absent` entries carry the tree, and nothing asserts that the staged board is still staged, since a pin over provisioning counts the same as a real one and is what makes a coverage number lie.
 
 The pins split the skill's one routing decision. `.canon/plans/feature-log-entry.md` proves the run opened the plans folder rather than reporting the task board alone, and `auto-ship` is the route a task with a plan earns. That route is spelled without a leading slash, because a session invoking through the plugin writes `/canon:auto-ship`, which carries the bare name and not the slashed one. `Next:` asserts the output contract's last slot and neither the singleness the scenario expects nor the route it names, which are the fourth and fifth of seven `manual` entries.
 
@@ -179,7 +179,7 @@ Escapes on two of the three runs named three files between them, every one of th
 
 ### The groundwork arms assert nothing and refuse the bare prompt
 
-`scripts/sandbox/fixtures/claude/groundwork/` does not exist, so every `claude:groundwork` arm returns `state: unchecked` with nothing asserted and a verdict from it confirms only that the session completed.
+`scripts/sandbox/fixtures/claude/plan-groundwork/` does not exist, so every `claude:plan-groundwork` arm returns `state: unchecked` with nothing asserted and a verdict from it confirms only that the session completed.
 
 What the three arms reach is narrower than the skill. `open`, `resume`, and `decline` cover creating a track, continuing one, and refusing one, and none of them runs a spike or produces an artifact, so the write-scope rule sending evidence to `evidence/` inside a track and an input to the fixtures path has no arm that exercises it. A branch changing that rule ships with a green run behind it that never reached the behavior.
 
@@ -201,7 +201,7 @@ The other thing it does not reach is the catalog. No shipped skill body invokes 
 
 ### The port-offset arm scores a number the skill reads rather than states
 
-`claude:worktree/port-offset` is the first armed arm on a scenario that carried five manual ones, so `session-worktree` moves to `asserted` while four of its arms score nothing. Read the verdict as covering the one arm rather than the skill.
+`claude:session-worktree/port-offset` is the first armed arm on a scenario that carried five manual ones, so `session-worktree` moves to `asserted` while four of its arms score nothing. Read the verdict as covering the one arm rather than the skill.
 
 The arm stages the web layer's port helper into the target and pins the reply to `Port offset 27`, which is the cksum of the worktree folder name modulo the band of 50, plus one. Pinning the number rather than its shape is what separates a session that read the helper from one that printed a plausible integer, and the arm can pin it because the folder name is derived from the plan the branch matches rather than chosen by the run. The dependency line above it lands on the last of Step 6's four bullets, since the arm seeds no manifest inside the worktree and no other arm reaches that bullet.
 
@@ -211,7 +211,7 @@ What the arm cannot reach is the refusal branch the same change added to the ski
 
 ### The repeat-close-out arm scores a thread shape no assertion kind reads
 
-`claude/pr-review.sh` gained a `repeat-close-out` arm on 2026-08-28, seeding a `## Review`, then a `## Review closed`, then one commit that raises nothing, which is the state a pass has to meet without posting a second close-out. Seven assertions run locally and four sit in `manual`, because the outcome the arm exists to score is the shape of a remote thread and no assertion kind reads one.
+`claude/review-pr.sh` gained a `repeat-close-out` arm on 2026-08-28, seeding a `## Review`, then a `## Review closed`, then one commit that raises nothing, which is the state a pass has to meet without posting a second close-out. Seven assertions run locally and four sit in `manual`, because the outcome the arm exists to score is the shape of a remote thread and no assertion kind reads one.
 
 What the local file proves is that a body was written under `## Review closed` naming what this pass covered. Whether a second close-out was posted beside the standing one is invisible to it, which is the whole defect, so the asserted count here is narrower than the behavior verified and a reader should take it that way.
 
@@ -229,7 +229,7 @@ The cap stays at 30 against a 10-to-15 spread. Identical assertions across a 50 
 
 ### The prompt sets the working directory, and two arms over one tree is what that buys
 
-The runner takes the prompt as a free argument and a session's `Bash` working directory persists across calls, so a prompt opening with `cd vendor` puts every git read the skill makes inside the submodule. `claude:worktree` is the first scenario to use that: `submodule` runs from inside the submodule and asserts the guard, `submodule-root` runs from the superproject root over the same staged tree and asserts that the guard stays silent. Both pass at 4 asserted and 0 failed.
+The runner takes the prompt as a free argument and a session's `Bash` working directory persists across calls, so a prompt opening with `cd vendor` puts every git read the skill makes inside the submodule. `claude:session-worktree` is the first scenario to use that: `submodule` runs from inside the submodule and asserts the guard, `submodule-root` runs from the superproject root over the same staged tree and asserts that the guard stays silent. Both pass at 4 asserted and 0 failed.
 
 This was first written the other way, as an arm whose guard no headless run could reach, and the reason given was that the runner starts every session at the sandbox root. That half is true and the conclusion did not follow, since the default is not a refusal. Nothing was tried before the note was written, and a review asking whether it had been is what separated the two. Read a claim that the harness cannot drive something as owing one attempt.
 
@@ -307,4 +307,6 @@ The `create-*` family is the opposite case: all four of `create-rule`, `create-s
 
 `draft-docs`, `draft-context`, `draft-wireframes`, and `draft-readme` each carry a real scenario under `scripts/sandbox/docs/`, provisioning the state its skill needs and printing an `Expect:` line per guard branch. `docs/draft.sh` paired `docs-draft` on the `<category>-<command>` spelling, which was the skill's name before `#1566` renamed the family verb-first, and the bare-`<command>` fallback misses too, since the bare command is `draft` rather than the compound skill name. `canon sandbox coverage --skills --json` reports all four `should-be-asserted` with an empty `scenarios` array, unable to see a scenario that exists under a name the pairing rule no longer reaches. The rename moved the skill and left the pairing rule reading its old name.
 
-The shape scales with the rename and nothing in `bun run check` reports it. Moving 25 skills off the `claude-` prefix while leaving `scripts/sandbox/claude/` arm names alone dropped 14 pairings in one branch, ten of them carrying declared expectations, so the skills census fell from 26 asserted to 16 of 78. The `Sandbox coverage` gate stage stayed green the whole time, since it counts scenarios that declare an expectation rather than skills a scenario reaches, and the two numbers move independently. Eight further arms survived on the bare-`<command>` fallback, because a name such as `design-extract` or `ux-audit` came out of the rename equal to its own arm, which is what makes the loss partial and therefore quiet. Renaming an arm to match its skill is the repair, and it needs no change to `skillForScenario` and no move of the category folder.
+The shape scaled with the rename and nothing in `bun run check` reported it. Moving 25 skills off the `claude-` prefix while leaving `scripts/sandbox/claude/` arm names alone dropped 14 pairings in one branch, ten of them carrying declared expectations, so the skills census fell from 26 asserted to 16 of 78. The `Sandbox coverage` gate stage stayed green the whole time, since it counted scenarios that declare an expectation rather than skills a scenario reaches, and the two numbers moved independently. Eight further arms survived on the bare-`<command>` fallback, because a name such as `design-extract` or `ux-audit` came out of the rename equal to its own arm, which is what made the loss partial and therefore quiet. Renaming the 14 arms and their fixture folders to match their skills was the repair, needing no change to `skillForScenario` and no move of any category folder, and it restored the census to 26 of 78. `SANDBOX_ASSERTED_FLOOR` in `src/gate/measures.ts` now pins that count, so a future rename dropping a pairing fails the push it ships on rather than passing one silently.
+
+The repair's own citation sweep undercounted for the same reason the pairing rule did: a regex anchored on `claude/<name>(\.sh|/)` or `claude:<name>` misses a `stage_fixtures claude <name> <arm> <stage>` call, which is a space-separated positional argument rather than either anchored form, and misses prose that names a scenario bare, with no path or colon in front of it. Both forms carry a real citation. The first breaks an arm's fixture staging at run time when the fixture folder underneath it moves and the call site does not follow. The second leaves a reader-facing sentence naming a scenario that no longer resolves, with no run-time break to surface it. A rename's sweep has to grep for both shapes and re-read the narrative surrounding any hit, since the two anchored patterns alone miss both.

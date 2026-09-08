@@ -149,7 +149,7 @@ A demoted assertion is never inverted into `absent`. Where a claim genuinely can
 
 A bare key below a `[[content]]` header belongs to that table, not to the document. `claude/ui-test` shipped its `max_turns` and all five `manual` entries under its last content block, so the ceiling never asserted, the entries never reached the unchecked count, and `canon sandbox coverage` read the arm as armed throughout. `contentArray` now throws on any key beside `path` and `pattern`, which is the only level that can see the difference.
 
-An arm over a step that reports rather than writes needs `reply`, because every tree assertion it can make is a negative and a declaration of only negatives passes hardest on the skip it exists to detect. `claude:docs/anchor-sweep` pins a record that has to survive the run byte-identical, which a run where the step never fired satisfies perfectly. Two `reply` substrings are what separate the two. The same shape reaches any arm whose subject decides not to write.
+An arm over a step that reports rather than writes needs `reply`, because every tree assertion it can make is a negative and a declaration of only negatives passes hardest on the skip it exists to detect. `claude:docs-fold/anchor-sweep` pins a record that has to survive the run byte-identical, which a run where the step never fired satisfies perfectly. Two `reply` substrings are what separate the two. The same shape reaches any arm whose subject decides not to write.
 
 ### Naming and staging a scenario
 

@@ -9,7 +9,7 @@ use_config() {
 
 # Both arms stage from heredocs rather than through `stage_fixtures`. The tree is
 # a board, a plan, and one source file, so there is no staging logic to separate
-# from content, and `claude/orchestrate.sh` beside this one reads the same way.
+# from content, and `claude/role-orchestrator.sh` beside this one reads the same way.
 stage_common_board() {
   cat <<'EOF' >CLAUDE.md
 # Habit Tracker
@@ -147,8 +147,8 @@ EOF
     log_info "Action:  /canon:role-worker"
     log_info "Expect:  reports the row for the controlling session and writes neither board file,"
     log_info "         naming that it cannot pick a free label without reading every task and archive entry"
-    log_info "Assert:  declared in fixtures/claude/worker/board-write/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:worker board-write"
+    log_info "Assert:  declared in fixtures/claude/role-worker/board-write/expect.toml"
+    log_info "         Check it with: canon sandbox check claude:role-worker board-write"
     ;;
   "ambiguous-plan")
     stage_common_board
@@ -209,8 +209,8 @@ EOF
     log_info "Action:  /canon:role-worker"
     log_info "Expect:  halts on the question and reports it upward rather than picking a format,"
     log_info "         and writes no src/export.ts"
-    log_info "Assert:  declared in fixtures/claude/worker/ambiguous-plan/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:worker ambiguous-plan"
+    log_info "Assert:  declared in fixtures/claude/role-worker/ambiguous-plan/expect.toml"
+    log_info "         Check it with: canon sandbox check claude:role-worker ambiguous-plan"
     ;;
   esac
 }

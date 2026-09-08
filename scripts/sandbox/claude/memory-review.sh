@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-# No project copy of the corpus, matching `claude/review.sh` and
+# No project copy of the corpus, matching `claude/review-branch.sh` and
 # `claude/ui-test.sh`. The absent project copy forces `memory-review` onto
 # the `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch
 # staged below turns that citation into a proposal filename a reader can check by

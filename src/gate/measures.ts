@@ -111,6 +111,17 @@ export const GOV_EXPECTED_UNREFERENCED = ['260-shadcn', '320-tanstack-query']
 export const SANDBOX_UNDECLARED_CEILING = 47
 
 /**
+ * Skills the sandbox skill census reports `asserted`, taken from `canon
+ * sandbox coverage --skills` against a clean tree. A dropped pairing lowers
+ * this directly, unlike the ceiling above, which a rename can starve without
+ * moving: fourteen arms drifted off their skill's name in one branch and the
+ * scenario-level ceiling stayed green throughout, since it counts scenarios
+ * declaring an expectation rather than skills a scenario reaches. Lowering
+ * this floor is a deliberate edit that says which skill lost its arm and why.
+ */
+export const SANDBOX_ASSERTED_FLOOR = 26
+
+/**
  * The retained counts the audit stage compares each run against. Spelled here
  * rather than derived, because this stage only ever names the file in a remedy
  * a reader has to be able to open, and `canon audits run` owns writing it.
@@ -740,10 +751,45 @@ export const sandboxCoverage: Measure = async (ctx) => {
     }
   }
 
+  const scenarioEmission = info(
+    `${armed} of ${total} scenarios declare expectations, ${undeclared} undeclared against a ceiling of ${SANDBOX_UNDECLARED_CEILING}`,
+  )
+
+  const skillsRun = await ctx.cli(['sandbox', 'coverage', '--skills', '--json'])
+
+  if (skillsRun.exitCode !== 0) {
+    return {
+      emissions: [scenarioEmission],
+      unmeasured: `The skill census did not report (exit ${skillsRun.exitCode}). It ships in the checkout beside the scenario report, so a run that does not report is a broken command rather than an absent census.`,
+    }
+  }
+
+  const skillsRecord = parseJson(skillsRun.stdout) as
+    | { asserted?: unknown; totalSkills?: unknown }
+    | undefined
+  const asserted = skillsRecord?.asserted
+  const totalSkills = skillsRecord?.totalSkills
+
+  if (typeof asserted !== 'number' || typeof totalSkills !== 'number') {
+    return {
+      emissions: [scenarioEmission],
+      failure:
+        'The skill census carried no asserted total, so the stage measured nothing. Run bun src/cli.ts sandbox coverage --skills --json.',
+    }
+  }
+
+  if (asserted < SANDBOX_ASSERTED_FLOOR) {
+    return {
+      emissions: [scenarioEmission],
+      failure: `${asserted} of ${totalSkills} skills asserted, under the floor of ${SANDBOX_ASSERTED_FLOOR}. A rename or a moved arm likely dropped a skill's pairing; repair the arm's filename against its skill and say which skill lost its arm, or lower SANDBOX_ASSERTED_FLOOR in src/gate/measures.ts.`,
+    }
+  }
+
   return {
     emissions: [
+      scenarioEmission,
       info(
-        `${armed} of ${total} scenarios declare expectations, ${undeclared} undeclared against a ceiling of ${SANDBOX_UNDECLARED_CEILING}`,
+        `${asserted} of ${totalSkills} skills asserted, against a floor of ${SANDBOX_ASSERTED_FLOOR}`,
       ),
     ],
   }

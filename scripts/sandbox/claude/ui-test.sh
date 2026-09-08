@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-# No project copy of the corpus, for the same reason `claude/review.sh` carries
+# No project copy of the corpus, for the same reason `claude/review-branch.sh` carries
 # none. The absent project copy forces `ui-test` onto the
 # `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch name
 # below turns that citation into a checklist filename a reader can check by eye.

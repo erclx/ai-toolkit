@@ -14,6 +14,9 @@ import {
   clientCommandCitations,
   readmeCitations,
   recordIdempotence,
+  SANDBOX_ASSERTED_FLOOR,
+  SANDBOX_UNDECLARED_CEILING,
+  sandboxCoverage,
   shippedReferences,
 } from '@/gate/measures'
 import { REFERENCE_MARKER } from '@/shipped/references'
@@ -656,6 +659,77 @@ describe('readmeCitations', () => {
     const report = await readmeCitations(context())
 
     expect(report.failure).toBeUndefined()
+  })
+})
+
+describe('sandboxCoverage', () => {
+  const context = (
+    scenario: Partial<CommandResult>,
+    skills?: Partial<CommandResult>,
+  ): MeasureContext => ({
+    root: '/nowhere',
+    ci: false,
+    run: () => {
+      throw new Error('sandboxCoverage reads the CLI and nothing else')
+    },
+    cli: async (argv) => {
+      const base = { exitCode: 0, stdout: '', stderr: '', all: '' }
+      return argv.includes('--skills')
+        ? { ...base, ...skills }
+        : { ...base, ...scenario }
+    },
+  })
+
+  const scenarioReport = (
+    total: number,
+    armed: number,
+  ): Partial<CommandResult> => ({
+    stdout: `${JSON.stringify({ totalScenarios: total, armedScenarios: armed })}\n`,
+  })
+
+  const skillCensus = (
+    totalSkills: number,
+    asserted: number,
+  ): Partial<CommandResult> => ({
+    stdout: `${JSON.stringify({ totalSkills, asserted })}\n`,
+  })
+
+  const cleanScenario = scenarioReport(77, 77 - SANDBOX_UNDECLARED_CEILING)
+
+  it('passes at or above both the undeclared ceiling and the asserted floor', async () => {
+    const report = await sandboxCoverage(
+      context(cleanScenario, skillCensus(78, SANDBOX_ASSERTED_FLOOR)),
+    )
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toBeUndefined()
+    expect(report.emissions).toHaveLength(2)
+  })
+
+  it('fails on a scenario-coverage failure exactly as today', async () => {
+    const report = await sandboxCoverage(
+      context(scenarioReport(77, 77 - SANDBOX_UNDECLARED_CEILING - 1)),
+    )
+
+    expect(report.failure).toContain('over the ceiling')
+  })
+
+  it('fails when the skills call reports asserted under the floor', async () => {
+    const report = await sandboxCoverage(
+      context(cleanScenario, skillCensus(78, SANDBOX_ASSERTED_FLOOR - 1)),
+    )
+
+    expect(report.failure).toContain('under the floor')
+    expect(report.failure).toContain(String(SANDBOX_ASSERTED_FLOOR))
+  })
+
+  it('reads an unmeasured result when the skills call exits non-zero', async () => {
+    const report = await sandboxCoverage(
+      context(cleanScenario, { exitCode: 1 }),
+    )
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toContain('exit 1')
   })
 })
 

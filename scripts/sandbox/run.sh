@@ -288,7 +288,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    run.sh git:commit \"/canon:git-commit\""
-  echo -e "${GREY}│${NC}    run.sh claude:feature \"/canon:plan-feature add a widget\" small"
+  echo -e "${GREY}│${NC}    run.sh claude:plan-feature \"/canon:plan-feature add a widget\" small"
   echo -e "${GREY}└${NC}"
   exit 0
 }

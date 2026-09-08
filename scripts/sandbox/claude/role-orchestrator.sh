@@ -110,5 +110,5 @@ EOF
   log_info "         order read from priority.md rather than inferred from index.md,"
   log_info "         log-entry ready to hand to a worker (has plan), streak-view needs /plan-feature first,"
   log_info "         a single Next action, and In review omitted (no open PRs in this fixture)"
-  log_info "Assert:  declared in fixtures/claude/orchestrate/expect.toml"
+  log_info "Assert:  declared in fixtures/claude/role-orchestrator/expect.toml"
 }

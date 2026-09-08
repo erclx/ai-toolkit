@@ -17,7 +17,7 @@ stage_setup() {
 
   case "$SELECTED_OPTION" in
   "file")
-    stage_fixtures claude intake file 01-initial
+    stage_fixtures claude plan-intake file 01-initial
     git add . && git commit -m "feat(cli): build and serve commands" --no-verify -q
 
     log_step "Scenario ready: a brain dump filed into an intake folder"
@@ -29,8 +29,8 @@ stage_setup() {
     log_info "  One item needs three builds measured, so it belongs to groundwork"
     log_info ""
     log_info "Action:  /canon:plan-intake file notes/dump.md as the cli-cleanup intake"
-    log_info "Expect:  declared in fixtures/claude/intake/file/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:intake file"
+    log_info "Expect:  declared in fixtures/claude/plan-intake/file/expect.toml"
+    log_info "         Check it with: canon sandbox check claude:plan-intake file"
     log_info "         A folder at .canon/intake/01-cli-cleanup/ with 00-overview.md"
     log_info "         carrying frontmatter, a date, and links to numbered cluster"
     log_info "         files named for their domain. Every write lands inside the"
@@ -38,7 +38,7 @@ stage_setup() {
     log_info "         Five expectations need a reader and report as unchecked."
     ;;
   "route")
-    stage_fixtures claude intake route 01-initial
+    stage_fixtures claude plan-intake route 01-initial
     git add . && git commit -m "feat(cli): build command" --no-verify -q
 
     log_step "Scenario ready: intake refuses a question that needs measuring"
@@ -47,8 +47,8 @@ stage_setup() {
     log_info ""
     log_info "Action:  /canon:plan-intake should we move the CLI onto a real argument"
     log_info "         parser, and what does it cost in bundle size"
-    log_info "Expect:  declared in fixtures/claude/intake/route/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:intake route"
+    log_info "Expect:  declared in fixtures/claude/plan-intake/route/expect.toml"
+    log_info "         Check it with: canon sandbox check claude:plan-intake route"
     log_info "         The skill declines and routes to /plan-groundwork."
     log_info "         NO folder under .canon/intake/, .canon/plans/, or"
     log_info "         .canon/groundwork/."

@@ -43,7 +43,7 @@ The pair it replaced took the staged set when that set was non-empty and `git di
 
 The classifier one step earlier already diffed the base against the working tree, which is the disagreement that decided the shape of the fix: two steps in one chain answered differently about what the branch was, and one range is what makes them agree. The base equalling HEAD stopped being an unusable case in the same change, since `git diff <base>` degenerates there to `git diff HEAD` and reads the branch whole rather than half of it.
 
-The correction is prose in a skill body rather than a verb, so nothing stops a later editor reintroducing the staged-first arm. Moving it behind a `canon` verb was the alternative and it loses on the two-speeds lag `.claude/ARCHITECTURE.md` records, since the skill ships with the plugin and a verb reaches a target only once a release publishes it. The sandbox arm is what carries the cost instead: `claude:review` now stages a bug in each of the four halves and asserts one content entry per half, so a report naming the committed file alone goes red.
+The correction is prose in a skill body rather than a verb, so nothing stops a later editor reintroducing the staged-first arm. Moving it behind a `canon` verb was the alternative and it loses on the two-speeds lag `.claude/ARCHITECTURE.md` records, since the skill ships with the plugin and a verb reaches a target only once a release publishes it. The sandbox arm is what carries the cost instead: `claude:review-branch` now stages a bug in each of the four halves and asserts one content entry per half, so a report naming the committed file alone goes red.
 
 ## The narrower test autoship carries
 

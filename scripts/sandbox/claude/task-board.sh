@@ -17,7 +17,7 @@ stage_setup() {
 
   case "$SELECTED_OPTION" in
   "create")
-    stage_fixtures claude tasks create 01-initial
+    stage_fixtures claude task-board create 01-initial
     git add . && git commit -m "feat(api): serve the task list" --no-verify -q
 
     log_step "Scenario ready: a task written onto a board that already has three"
@@ -27,8 +27,8 @@ stage_setup() {
     log_info ""
     log_info "Action:  /canon:task-board create a task for the CSV export endpoint,"
     log_info "         from the plan at .canon/plans/feature-csv-export.md"
-    log_info "Expect:  declared in fixtures/claude/tasks/create/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:tasks create"
+    log_info "Expect:  declared in fixtures/claude/task-board/create/expect.toml"
+    log_info "         Check it with: canon sandbox check claude:task-board create"
     log_info "         A v04.0 task carrying both frontmatter fields, a Plan: link"
     log_info "         relative to the board, an open outcome, and a test strategy."
     log_info "         The label is proposed from the board, not from a version file."
@@ -36,10 +36,10 @@ stage_setup() {
     log_info "         Two expectations need a reader and report as unchecked."
     ;;
   "archive")
-    stage_fixtures claude tasks archive 01-initial
+    stage_fixtures claude task-board archive 01-initial
     git add . && git commit -m "feat(api): serve the task list" --no-verify -q
 
-    stage_fixtures claude tasks archive 02-rate-limit
+    stage_fixtures claude task-board archive 02-rate-limit
     git add . && git commit -m "feat(api): rate limit the task endpoints (#41)" --no-verify -q
 
     log_step "Scenario ready: one shipped task archived off a two-task board"
@@ -54,8 +54,8 @@ stage_setup() {
     log_info "from the Pull request: line and the local log rather than origin/main."
     log_info ""
     log_info "Action:  /canon:task-board archive v01.0-rate-limit"
-    log_info "Expect:  declared in fixtures/claude/tasks/archive/expect.toml"
-    log_info "         Check it with: canon sandbox check claude:tasks archive"
+    log_info "Expect:  declared in fixtures/claude/task-board/archive/expect.toml"
+    log_info "         Check it with: canon sandbox check claude:task-board archive"
     log_info "         The task moved under .canon/tasks/archive/ and its plan"
     log_info "         under .canon/plans/archive/, the archived task's Plan: line"
     log_info "         retargeted a folder deeper, its ordering row cleared, and"
