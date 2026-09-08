@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.71.0](https://github.com/erclx/canon/compare/v4.70.0...v4.71.0) (2026-09-08)
+
+
+### Features
+
+* **deploy:** add cloudflare stack and deploy-cloudflare skill ([#1612](https://github.com/erclx/canon/issues/1612)) ([599e906](https://github.com/erclx/canon/commit/599e906cd8e73a3e7c49e01cd76d626fc8855e9a))
+* **web:** capture the landing page and gate its visual checks ([#1614](https://github.com/erclx/canon/issues/1614)) ([877e908](https://github.com/erclx/canon/commit/877e908cc1f9885beb340e3c463b9d3b8dc87fbb))
+
 ## [4.70.0](https://github.com/erclx/canon/compare/v4.69.0...v4.70.0) (2026-09-08)
 
 
