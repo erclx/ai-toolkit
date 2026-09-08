@@ -29,7 +29,17 @@ reader scanning the thread finds the current verdict where the last one sat.
 
 ## Step 1: resolve the PR and read context
 
-Resolve the PR: `gh pr view --json number,headRefName,headRefOid,title,body` for the current branch, or use a PR number the user names. Take `<headRefOid>` from `canon pr head <number> --json`, off that record's `tip`, and fall back to the `headRefOid` field above when no record comes back, which is a target whose CLI predates the verb. The first seven characters are `<short-sha>`, which names the body file in Step 4.
+Capture `<read-at>` first, ahead of every read this pass makes:
+
+```bash
+date -u +%Y-%m-%dT%H:%M:%SZ
+```
+
+Everything from that line to the post is the compose window, and a commit pushed inside it is one this pass never saw. Stamping the body with the instant the window opened is what leaves that commit outside the covered range, so the next pass reads it rather than assuming it covered. Taking the stamp later, at the head resolution below or at Step 4 where the body is composed, claims a stretch this pass had already stopped reading through.
+
+Then resolve the PR: `gh pr view --json number,headRefName,headRefOid,title,body` for the current branch, or use a PR number the user names. Take `<headRefOid>` from `canon pr head <number> --json`, off that record's `tip`, and fall back to the `headRefOid` field above when no record comes back, which is a target whose CLI predates the verb. The first seven characters are `<short-sha>`, which names the body file in Step 4.
+
+`<headRefOid>` and `<read-at>` travel together into Step 4's marker, and neither is re-derived after this point. Re-reading the head later in the pass would name a commit this pass did not review, which is the defect the marker exists against, reached from the inside.
 
 Read these in parallel from the project root, skipping any that do not exist:
 
@@ -46,14 +56,26 @@ Coding standards from `.claude/rules/` are auto-loaded by Claude Code.
 Find the commit the last pass covered and the verdict it posted:
 
 ```bash
-gh pr view <number> --json reviews --jq '[.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | select(. != null) | ((.commit.oid // "") + "\t" + (.body | split("\n")[0] | rtrimstr("\r")))'
+canon pr review-state <number> --json
 ```
 
-The two fields are `<prior-oid>` and `<prior-heading>`. The commit scopes the read below and the heading feeds the repeat guard at the end of this step, so one query answers both rather than two reads of the same review. Keep the `select(. != null)` guard, since the string concatenation aborts jq on the null an empty selection returns, and an aborted command reaches the session as an error rather than as the empty result the first-pass branch reads.
+The fields are `<prior-oid>` off `commit`, `<prior-heading>` off `heading`, and `<prior-at>` off `readAt // submittedAt`. The commit scopes the read below, the heading feeds the repeat guard at the end of this step, and the instant scopes the reply query further down, so one call answers all three rather than three reads of the same review. Branch on the record rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
+
+`source` says which stamp answered. `marker` is the pass's own read-time record and is the authority. `fallback` is a pass posted before this mechanism shipped, so its commit is whatever the head was when GitHub recorded the review rather than what that session read, and a push inside its compose window is invisible. `none` is a thread carrying no pass at all.
+
+Do not read `commit.oid` or `submittedAt` off `gh pr view --json reviews` here. Both are stamped at submission, so a push landing between a pass's read and its post moves them onto a commit that pass never saw, and this step then scopes the delta past it and reports it covered. That fired for real on a pull request in this toolkit on 2026-09-07, and what it skipped was a genuine fix.
+
+A target whose CLI predates the verb meets a missing subcommand rather than a record. Fall back there to the jq below, which reads the stamps and carries the defect above, and say the fallback answered so a reader can tell a marker read from a stamped one:
+
+```bash
+gh pr view <number> --json reviews --jq '[.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | select(. != null) | ((.commit.oid // "") + "\t" + (.body | split("\n")[0] | rtrimstr("\r")) + "\t" + (.submittedAt // ""))'
+```
+
+The three fields are `<prior-oid>`, `<prior-heading>`, and `<prior-at>`. Keep the `select(. != null)` guard, since the string concatenation aborts jq on the null an empty selection returns, and an aborted command reaches the session as an error rather than as the empty result the first-pass branch reads.
 
 Match the first line for equality against the two headings this skill posts. A prefix test also matches `## Review response` and any heading merely starting with those words, which would scope the pass to whatever commit that comment carried. The `\r` trim covers a body composed in the GitHub web editor, which stores CRLF.
 
-An empty result is a first pass. Read the whole change:
+A `source` of `none`, or an empty result from the fallback, is a first pass. Read the whole change:
 
 ```bash
 gh pr diff <number>
@@ -82,8 +104,10 @@ On exit zero, review `<prior-oid>..<headRefOid>` and nothing else. `git diff` an
 A commit is its own ancestor, so an unchanged head passes that test too, with an empty range. When `<prior-oid>` equals `<headRefOid>`, decide whether this pass has anything to add before reading anything else, since the empty range itself cannot answer that:
 
 ```bash
-gh pr view <number> --json reviews,comments --jq '([.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .submittedAt) as $prior | [.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response" or . == "## Rebase" or . == "## Post-review findings") | select(.createdAt > $prior)] | last | .url // empty | split("-") | last'
+gh pr view <number> --json comments --jq '[.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response" or . == "## Rebase" or . == "## Post-review findings") | select(.createdAt > "<prior-at>")] | last | .url // empty | split("-") | last'
 ```
+
+`<prior-at>` is the instant Step 2 resolved above, which is the prior pass's `readAt` where it wrote one. Reading `submittedAt` off the thread here instead is the same submission-time defect on the time axis: a reply posted inside that pass's compose window sorts before the stamp and reads as already answered, when in fact the pass had stopped reading before it landed.
 
 Scope the replies to those newer than the prior pass, never to every reply the thread carries. A pass answering the newest reply and a pass answering an older one derive the same third segment (Step 4), so an unscoped read hands a re-run after a close-out the name its own prior pass already wrote. That is the collision this case exists to prevent, reached without a rebase or an error.
 
@@ -164,6 +188,8 @@ X critical, Y should-fix, Z minor. Reviewed against project docs and the board.
 - bounded confirmation.
 
 🤖 Reviewed by Claude Code
+
+<!-- review-pr: commit=<headRefOid> read-at=<read-at> -->
 ```
 
 A stale ticked box goes in a `**PR body**` block, in place of a `**`path/to/file.ext`**` block and ahead of every one of those, since it precedes the code the diff carries rather than sitting inside it.
@@ -182,6 +208,8 @@ Re-reviewed `<short-sha>`, N commits since the prior pass. X critical, Y should-
 - **should-fix**: what breaks and the fix, in two or three sentences.
 
 🤖 Reviewed by Claude Code
+
+<!-- review-pr: commit=<headRefOid> read-at=<read-at> -->
 ```
 
 A Testing box the Step 3 check raised goes in a `**Testing**` block placed after the file blocks, one bullet per box, each quoting the box and naming what would drive it. It carries no severity and enters no count, and it is still something owed, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. Say so on the summary line as `plus N testing question(s)`, since the three counts read as zero and would otherwise report the pass as silent.
@@ -228,6 +256,22 @@ The `What is right` section is optional, capped at three bullets, and included o
 
 Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
+### The marker every body carries
+
+End every body with this line, carrying `<headRefOid>` and `<read-at>` from Step 1 verbatim:
+
+```markdown
+<!-- review-pr: commit=<headRefOid> read-at=<read-at> -->
+```
+
+Every body this step writes carries it, with no exception: the full body under either heading, both ✅ close-out lines, a withdrawal body, and the `PUT` rewrite at the end of this step. A body missing it reads as a pre-marker pass, so the next reader falls back to the stamps and the pass loses the coverage it actually had.
+
+It is what the review is scoped from. GitHub stamps `commit.oid` and `submittedAt` when a review is submitted, not when it was read, so a push landing in the compose window moves both onto a commit this pass never opened and the next pass reads that commit as covered. The marker is the read-time record those two fields are not, and `canon pr review-state` is the one place it is parsed, so Step 2 here and the orchestrator poll read one answer rather than each carrying a copy of the format.
+
+Write it as a comment rather than as prose so a reader of the thread never meets it. HTML comments render as nothing on GitHub, which is why the fact travels here rather than in a footer line a person would have to be told to ignore.
+
+It is inert data, so the `publish.md` scan below and `canon labels scan` have nothing to fire on. Confirm that against the posted body rather than assuming it, since a phase label or a board identifier appearing inside a commit sha is not a shape either scan was written against.
+
 Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.canon/tmp/`, so this scan is the only gate ahead of the post. A finding phrased against an internal phase label is what the label half of the scan catches here. This repository reads the same text again once posted, on `phase-label-gate.yml`'s `pull_request_review` trigger, which is what closes the gap this scan leaves open for a review a person writes and posts by hand with no scripted step in front of it. That workflow now reaches every target on the `base` stack, seeded at `tooling/base/configs/.github/workflows/phase-label-gate.yml` invoking the published CLI rather than this checkout's own source tree, so a target's coverage extends past this pre-post scan to the same post-trigger re-read this repository gets.
 
 Do not run the command below when `<prior-heading>` from Step 2 reads `## Review closed` and this pass carries nothing owed. That pass replaces the standing comment rather than adding one, under `### A close-out that repeats the standing one` at the end of this step. Posting first and reaching that section afterward leaves two close-outs both naming the new head, which is worse than the pair the guard exists against.
@@ -250,6 +294,8 @@ A pass carrying only minors is an ordinary finding-carrying pass, so it takes th
 - **minor**: finding, and the fix it wants.
 
 🤖 Reviewed by Claude Code
+
+<!-- review-pr: commit=<headRefOid> read-at=<read-at> -->
 ```
 
 A pass that closed by withdrawing a finding rather than by reading its fix takes neither ✅ line, per the withdrawal rule in Step 3. Both claim a fix landed, and the second names it, so posting either over a withdrawal credits work nobody did on the one comment a reader treats as the verdict. Write the withdrawal and the fact that settled it in place of the canned line, keeping the heading and the footer.
@@ -278,9 +324,9 @@ gh api -X PUT repos/{owner}/{repo}/pulls/<number>/reviews/<review-id> -F body=@<
 
 The guard fires on `## Review closed` alone. Two open passes carry different findings and both are worth reading, so a repeated `## Review` posts normally. A pass carrying anything owed posts normally too, under `## Review`, which is what keeps a finding raised after a close-out from being swallowed by the guard that exists for a silent one.
 
-What the rewrite costs is the review's `commit.oid`, which `PUT` leaves at the commit the standing close-out was first submitted against. Step 2's `<prior-oid>` and the prior commit `poll.sh` derives both read that field, so the next pass reads a range wider than its delta and its commit count spans back to the pinned commit rather than covering the delta.
+The rewrite used to cost the review's `commit.oid`, which `PUT` leaves pinned at the commit the standing close-out was first submitted against. Step 2's `<prior-oid>` and the prior commit `poll.sh` derives both read that field, so the next pass read a range wider than its delta, and the poll's `SEEN` branch, which fires on `prior` equalling the head, could never be reached at all: an out-of-band pass reported as `MOVED` for the rest of the pull request's life.
 
-The poll's `SEEN` branch is the sharper half. It fires on `prior` equalling the head, which a pinned `commit.oid` never reaches, so an out-of-band pass over this pull request reports as `MOVED` for the rest of its life and never as already covered. That is one wasted dispatch per head move rather than a repeating one, since the poll gates its report on the head it wrote to its own baseline and not on `prior`. Each cost errs toward more reading, so neither is repaired here.
+The marker closes both, because `PUT` replaces the body and the marker is in it. The rewritten close-out carries the commit this pass read rather than the one the comment was first submitted against, and every reader now takes that in preference to the pinned field. The one thing `PUT` still cannot move is `submittedAt`, which stays at the original submission and is what the poll's age test reads, so a rewritten close-out ages from when it first landed rather than from when it was last rewritten. That is the correct reading for a thread waiting on a human, which is the question the age test asks.
 
 ## Step 5: output
 
