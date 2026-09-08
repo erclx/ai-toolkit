@@ -1,3 +1,4 @@
+import type { RenamePair } from '@/git-files'
 import { extractKeyChangePaths, KEY_CHANGES, type PathClaim } from '@/pr/paths'
 
 /**
@@ -66,6 +67,10 @@ export interface BijectionInput {
   readonly roots: ReadonlySet<string>
   readonly head?: string
   readonly title?: string
+  /** A rename's source path credits a claim naming it, without ever counting as a changed file. */
+  readonly renames?: readonly RenamePair[]
+  /** A pattern newly added to `.gitignore`, crediting a claim naming it as the `.gitignore` change it is. */
+  readonly ignoreAdditions?: readonly string[]
 }
 
 /**
@@ -92,6 +97,28 @@ const INCIDENTAL: readonly RegExp[] = [
 
 function owesNoBullet(path: string): boolean {
   return INCIDENTAL.some((pattern) => pattern.test(path))
+}
+
+/** Drops a directory claim's trailing slash so it compares against a raw `.gitignore` pattern. */
+function withoutTrailingSlash(path: string): string {
+  return path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+/**
+ * Whether a claim names a pattern newly added to `.gitignore`.
+ *
+ * Compared with the trailing slash both sides may or may not carry stripped,
+ * since a bullet spells a folder pattern the way `.gitignore` itself does
+ * (`web/screenshots/`) and the diff line carries the identical text.
+ */
+function coversIgnoreAddition(
+  claim: PathClaim,
+  ignoreAdditions: readonly string[],
+): boolean {
+  const named = withoutTrailingSlash(claim.path)
+  return ignoreAdditions.some(
+    (pattern) => withoutTrailingSlash(pattern) === named,
+  )
 }
 
 /**
@@ -147,6 +174,9 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     return { kind: 'refused', reason: 'no-section' }
   if (read.claims.length === 0) return { kind: 'refused', reason: 'no-claims' }
 
+  const renames = input.renames ?? []
+  const ignoreAdditions = input.ignoreAdditions ?? []
+
   const unmet: PathClaim[] = []
   const unresolved: PathClaim[] = []
   const named = new Set<string>()
@@ -155,6 +185,14 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     const hits = input.changed.filter((path) => covers(claim, path))
     for (const path of hits) named.add(path)
     if (hits.length > 0) continue
+
+    if (renames.some((rename) => covers(claim, rename.from))) continue
+
+    if (coversIgnoreAddition(claim, ignoreAdditions)) {
+      named.add('.gitignore')
+      continue
+    }
+
     if (claim.anchored && claim.leading) unmet.push(claim)
     else unresolved.push(claim)
   }

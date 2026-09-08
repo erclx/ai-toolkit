@@ -6,7 +6,11 @@ import { execa } from 'execa'
 import { gitEnv } from '@/git-env'
 import {
   listChangedFiles,
+  listIgnoreAdditions,
+  listRenames,
   listRepositoryFiles,
+  parseIgnoreAdditions,
+  type RenamePair,
   resolveBaseRef,
 } from '@/git-files'
 import {
@@ -292,6 +296,8 @@ interface PullRequestRead {
   readonly changed: readonly string[]
   readonly head: string | undefined
   readonly number: number | undefined
+  readonly renames: readonly RenamePair[]
+  readonly ignoreAdditions: readonly string[]
 }
 
 type SourceRead =
@@ -349,18 +355,102 @@ async function readFromApi(
       return { kind: 'refused', reason: 'gh-truncated' }
     }
 
+    const body = row.body ?? ''
+    const sorted = [...changed].sort()
+    const evidence = await resolveApiEvidence(
+      cwd,
+      body,
+      sorted,
+      row.headRefOid,
+      row.number,
+    )
+
     return {
       kind: 'read',
       source: {
-        body: row.body ?? '',
-        changed: [...changed].sort(),
+        body,
+        changed: sorted,
         head: row.headRefOid,
         number: row.number,
+        renames: evidence.renames,
+        ignoreAdditions: evidence.ignoreAdditions,
       },
     }
   } catch {
     return { kind: 'refused', reason: 'gh-failed' }
   }
+}
+
+/**
+ * A rename's source path and a `.gitignore` addition, fetched only when a
+ * first pass with neither already reports an unmet claim.
+ *
+ * The probe pays for a repository listing this read takes again a moment
+ * later in `runKeyChanges`, and the `gh api …/files` call besides it only on
+ * the pass that already has something to double-check, the same trade the
+ * `gh-truncated` pagination fallback makes.
+ */
+async function resolveApiEvidence(
+  cwd: string,
+  body: string,
+  changed: readonly string[],
+  head: string | undefined,
+  number: number | undefined,
+): Promise<{
+  readonly renames: readonly RenamePair[]
+  readonly ignoreAdditions: readonly string[]
+}> {
+  const empty = { renames: [], ignoreAdditions: [] }
+  if (number === undefined) return empty
+
+  const tracked = await listRepositoryFiles(cwd)
+  if (tracked === undefined) return empty
+
+  const probe = compareKeyChanges({
+    body,
+    changed,
+    roots: treeRoots(tracked, changed),
+    ...(head !== undefined && { head }),
+  })
+  if (probe.kind !== 'measured' || probe.unmet.length === 0) return empty
+
+  // No `--jq` filter here, unlike `listFilesByPage` above. Shaping each row to
+  // {filename, previous_filename, status, patch} would make `--paginate`
+  // concatenate one filtered value per page rather than one combined array,
+  // and gh's own pretty-printing of an object result (unlike the scalar
+  // strings `--jq '.[].filename'` yields) is not guaranteed to stay
+  // line-parseable. Parsing the raw paginated array is safe under both.
+  const stdout = await gh(cwd, [
+    'api',
+    '--paginate',
+    `repos/{owner}/{repo}/pulls/${number}/files`,
+  ])
+  if (stdout === null) return empty
+
+  let rows: readonly {
+    readonly filename: string
+    readonly previous_filename?: string
+    readonly status: string
+    readonly patch?: string
+  }[]
+  try {
+    rows = JSON.parse(stdout)
+  } catch {
+    return empty
+  }
+
+  const renames = rows
+    .filter(
+      (row): row is typeof row & { previous_filename: string } =>
+        row.status === 'renamed' && row.previous_filename !== undefined,
+    )
+    .map((row) => ({ from: row.previous_filename, to: row.filename }))
+
+  const ignoreRow = rows.find((row) => row.filename === '.gitignore')
+  const ignoreAdditions =
+    ignoreRow?.patch !== undefined ? parseIgnoreAdditions(ignoreRow.patch) : []
+
+  return { renames, ignoreAdditions }
 }
 
 /**
@@ -430,10 +520,11 @@ async function readFromFile(
     return { kind: 'refused', reason: 'unreadable-changes' }
   }
 
-  const head = await $`git -C ${root} rev-parse HEAD`
-    .env(gitEnv())
-    .quiet()
-    .nothrow()
+  const [head, renames, ignoreAdditions] = await Promise.all([
+    $`git -C ${root} rev-parse HEAD`.env(gitEnv()).quiet().nothrow(),
+    listRenames(root, resolved),
+    listIgnoreAdditions(root, resolved),
+  ])
 
   return {
     kind: 'read',
@@ -442,6 +533,8 @@ async function readFromFile(
       changed,
       head: head.exitCode === 0 ? head.text().trim() : undefined,
       number: undefined,
+      renames: renames ?? [],
+      ignoreAdditions: ignoreAdditions ?? [],
     },
   }
 }
@@ -469,6 +562,8 @@ async function runKeyChanges(
     body: source.source.body,
     changed: source.source.changed,
     roots: treeRoots(tracked, source.source.changed),
+    renames: source.source.renames,
+    ignoreAdditions: source.source.ignoreAdditions,
     ...(source.source.head !== undefined && { head: source.source.head }),
   })
 

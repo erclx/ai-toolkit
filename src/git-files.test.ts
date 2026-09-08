@@ -4,7 +4,12 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { gitEnv } from '@/git-env'
-import { listChangedFiles, resolveBaseRef } from '@/git-files'
+import {
+  listChangedFiles,
+  listIgnoreAdditions,
+  listRenames,
+  resolveBaseRef,
+} from '@/git-files'
 
 let ROOT: string
 
@@ -121,5 +126,56 @@ describe('listChangedFiles', () => {
     const changed = await listChangedFiles(ROOT, base)
 
     expect(changed).toEqual(['src/draft.ts', 'src/parser.ts'])
+  })
+})
+
+describe('listRenames', () => {
+  it('should report a git-detected rename with its old and new path', async () => {
+    const base = git('rev-parse', 'HEAD').trim()
+    git('mv', 'README.md', 'GUIDE.md')
+    git('commit', '-m', 'chore: rename readme')
+
+    const renames = await listRenames(ROOT, base)
+
+    expect(renames).toEqual([{ from: 'README.md', to: 'GUIDE.md' }])
+  })
+
+  it('should return no renames when nothing was renamed', async () => {
+    const base = git('rev-parse', 'HEAD').trim()
+    commit('chore: add a file', { 'src/new.ts': 'code' })
+
+    const renames = await listRenames(ROOT, base)
+
+    expect(renames).toEqual([])
+  })
+})
+
+describe('listIgnoreAdditions', () => {
+  it('should report added patterns and exclude a comment line above them', async () => {
+    commit('chore: seed gitignore', { '.gitignore': 'node_modules/' })
+    const base = git('rev-parse', 'HEAD').trim()
+
+    commit('chore: ignore captures', {
+      '.gitignore': [
+        'node_modules/',
+        '',
+        '# generated captures',
+        'web/screenshots/',
+        'web/evidence/',
+      ].join('\n'),
+    })
+
+    const additions = await listIgnoreAdditions(ROOT, base)
+
+    expect(additions).toEqual(['web/screenshots/', 'web/evidence/'])
+  })
+
+  it('should return no additions when .gitignore did not change', async () => {
+    const base = git('rev-parse', 'HEAD').trim()
+    commit('chore: unrelated change', { 'src/other.ts': 'code' })
+
+    const additions = await listIgnoreAdditions(ROOT, base)
+
+    expect(additions).toEqual([])
   })
 })

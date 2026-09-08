@@ -1,7 +1,8 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { execa } from 'execa'
+import { dirname, join } from 'node:path'
+import { execa, execaSync } from 'execa'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 const REPO_ROOT = join(import.meta.dirname, '..', '..')
@@ -66,5 +67,93 @@ describe('canon pr key-changes --body resolution', () => {
     ])
 
     expect(reason).toBe('unreadable-body')
+  })
+})
+
+describe('canon pr key-changes credits a rename source and a .gitignore addition', () => {
+  let repoRoot: string
+
+  function git(...args: string[]): string {
+    return execaSync('git', ['-C', repoRoot, ...args], {
+      env: {
+        GIT_AUTHOR_NAME: 'Test',
+        GIT_AUTHOR_EMAIL: 'test@example.com',
+        GIT_COMMITTER_NAME: 'Test',
+        GIT_COMMITTER_EMAIL: 'test@example.com',
+      },
+    }).stdout
+  }
+
+  function write(path: string, body: string): void {
+    const full = join(repoRoot, path)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, `${body}\n`)
+  }
+
+  function commit(message: string, files: Record<string, string>): void {
+    for (const [path, body] of Object.entries(files)) write(path, body)
+    git('add', '--all')
+    git('commit', '-m', message)
+  }
+
+  beforeEach(() => {
+    repoRoot = mkdtempSync(join(tmpdir(), 'canon-pr-key-changes-'))
+    git('init', '--initial-branch=main')
+    git('config', 'user.email', 'test@example.com')
+    git('config', 'user.name', 'Test')
+    git('config', 'diff.renames', 'true')
+    commit('chore: init', {
+      'README.md': 'seed',
+      '.gitignore': 'node_modules/',
+    })
+  })
+
+  afterEach(() => {
+    rmSync(repoRoot, { recursive: true, force: true })
+  })
+
+  it('should carry unmet through neither a move bullet nor an ignore bullet', async () => {
+    const base = git('rev-parse', 'HEAD').trim()
+
+    git('mv', 'README.md', 'GUIDE.md')
+    commit('feat: rename readme and ignore captures', {
+      '.gitignore': ['node_modules/', 'web/screenshots/', 'web/evidence/'].join(
+        '\n',
+      ),
+    })
+
+    writeFileSync(
+      join(repoRoot, 'body.md'),
+      [
+        '## Key Changes',
+        '',
+        '- Move `README.md` to `GUIDE.md`.',
+        '- Ignore `web/screenshots/` and `web/evidence/`.',
+        '',
+      ].join('\n'),
+    )
+
+    const result = await execa(
+      process.execPath,
+      [
+        CLI,
+        'pr',
+        'key-changes',
+        '--json',
+        '--body',
+        'body.md',
+        '--base',
+        base,
+        '--root',
+        repoRoot,
+      ],
+      { cwd: repoRoot, reject: false, timeout: RUN_TIMEOUT_MS },
+    )
+
+    const record = JSON.parse(result.stdout) as {
+      unmet?: readonly { path: string }[]
+    }
+
+    expect(record.unmet).toEqual([])
   })
 })
