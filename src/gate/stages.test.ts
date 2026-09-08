@@ -76,6 +76,21 @@ describe('the readme-citations stage scope', () => {
   })
 })
 
+describe('the visual-path-globs stage scope', () => {
+  it('should fire on either file the glob copy can drift between', () => {
+    const scope = scopeOf('visual-path-globs')
+
+    expect(scope.test('.github/workflows/deploy-site.yml')).toBe(true)
+    expect(scope.test('.github/workflows/pr-visual-checks.yml')).toBe(true)
+  })
+
+  it('should not fire on an unrelated workflow', () => {
+    const scope = scopeOf('visual-path-globs')
+
+    expect(scope.test('.github/workflows/verify.yml')).toBe(false)
+  })
+})
+
 describe('the client-command-citations stage', () => {
   it('should register the measure unscoped, so no changed-file pattern skips it', () => {
     const stage = STAGES.find(

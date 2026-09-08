@@ -17,6 +17,11 @@ web/dist/
 web/.astro/
 web/playwright-report/
 web/test-results/
+# screenshot.ts's own sweep. Batch D copies its two `home` cases into
+# assets/captures/home/ before committing, so nothing here is ever the
+# committed baseline.
+web/screenshots/
+web/evidence/
 
 # Demos
 # `canon demo run` writes four files beside the plan it drove. The plan is

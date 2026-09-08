@@ -1,0 +1,137 @@
+name: PR Visual Checks
+# canon-no-seed: builds and captures this checkout's own landing page. Seeding
+# it as-is would have a target run these two jobs against a page it never
+# built and push a commit no branch of its own asked for.
+
+on:
+  pull_request:
+    paths:
+      # Mirrors deploy-site.yml's own list. A page whose numbers are read at
+      # build time goes stale when a catalog moves, not only when web/ is
+      # edited, so the catalogs it reads are on this list beside the page
+      # itself. Question 2 in .canon/plans/archive/feature-render-visibility.md
+      # names the two literal copies rather than a single shared source.
+      - 'web/**'
+      - 'assets/**'
+      - 'src/design/**'
+      - 'governance/rules/**'
+      - 'standards/**'
+      - 'snippets/**'
+      - 'claude/skills/**'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  e2e:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright System Dependencies
+        run: bunx playwright install-deps chromium firefox webkit
+
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package.json') }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install chromium firefox webkit
+
+      - name: Run E2E Tests
+        run: bun run web:e2e
+
+      - name: Upload E2E Report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          retention-days: 7
+
+  capture:
+    name: 📸 Landing Page Capture
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright System Dependencies
+        run: bunx playwright install-deps chromium
+
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package.json') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install chromium
+
+      - name: Build
+        run: bun run web:build
+
+      # `tooling/web/configs/e2e/screenshot.ts` is reused as is (Constraints,
+      # .canon/plans/archive/feature-render-visibility.md). This checkout has no
+      # web/package.json, so the preview server and the two cases run against
+      # the root-level scripts rather than through screenshot.sh, which assumes
+      # a per-project `bun run build`/`bun run preview` pair.
+      - name: Serve and capture
+        working-directory: web
+        run: |
+          (cd .. && bun run web:preview) &
+          for _ in $(seq 1 40); do
+            curl -sSf http://localhost:4321/ >/dev/null 2>&1 && break
+            sleep 0.25
+          done
+          curl -sSf http://localhost:4321/ >/dev/null 2>&1 || {
+            echo "Preview server not responding on port 4321 after 10s." >&2
+            exit 1
+          }
+          SCREENSHOT_BASE_URL=http://localhost:4321 bun ../tooling/web/configs/e2e/screenshot.ts
+
+      - name: Update the committed baseline
+        run: |
+          mkdir -p assets/captures/home
+          cp web/screenshots/localhost/home/default.png assets/captures/home/light.png
+          cp web/screenshots/localhost/home/dark.png assets/captures/home/dark.png
+
+      - name: Commit the baseline if it moved
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/captures/home
+          if git diff --cached --quiet; then
+            echo "No change in the captured baseline."
+            exit 0
+          fi
+          git commit -m "chore(web): update the landing page capture baseline"
+          git push origin "HEAD:${{ github.head_ref }}"

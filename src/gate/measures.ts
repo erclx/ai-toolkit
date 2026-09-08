@@ -709,6 +709,72 @@ export const readmeCitations: Measure = async (ctx) => {
 }
 
 /**
+ * `deploy-site.yml` and `pr-visual-checks.yml` each carry their own literal
+ * copy of the eight path globs a landing-page change should trigger on, per
+ * Question 2 in `.canon/plans/archive/feature-render-visibility.md`. A YAML
+ * anchor cannot cross files here, so the two copies are read live and compared
+ * rather than one asserting a literal the other could drift behind unnoticed,
+ * mirroring how `web/e2e/home.spec.ts`'s rule-group test already reads live.
+ */
+export const visualPathGlobs: Measure = async (ctx) => {
+  const deployPath = '.github/workflows/deploy-site.yml'
+  const visualPath = '.github/workflows/pr-visual-checks.yml'
+  const deployFile = join(ctx.root, deployPath)
+  const visualFile = join(ctx.root, visualPath)
+
+  if (!existsSync(deployFile) || !existsSync(visualFile)) {
+    return {
+      emissions: [],
+      unmeasured: `${deployPath} or ${visualPath} is absent, so no path list was compared.`,
+    }
+  }
+
+  const deploy = Bun.YAML.parse(readFileSync(deployFile, 'utf8')) as {
+    readonly on?: { readonly push?: { readonly paths?: readonly string[] } }
+  }
+  const visual = Bun.YAML.parse(readFileSync(visualFile, 'utf8')) as {
+    readonly on?: {
+      readonly pull_request?: { readonly paths?: readonly string[] }
+    }
+  }
+
+  const deployPaths = deploy.on?.push?.paths ?? []
+  const visualPaths = visual.on?.pull_request?.paths ?? []
+
+  if (deployPaths.length === 0 || visualPaths.length === 0) {
+    return {
+      emissions: [],
+      unmeasured: `${deployPath} or ${visualPath} carries no path list to compare.`,
+    }
+  }
+
+  const onlyDeploy = deployPaths.filter((path) => !visualPaths.includes(path))
+  const onlyVisual = visualPaths.filter((path) => !deployPaths.includes(path))
+
+  if (onlyDeploy.length === 0 && onlyVisual.length === 0) {
+    return {
+      emissions: [
+        info(
+          `${deployPaths.length} path glob(s) agree between ${deployPath} and ${visualPath}`,
+        ),
+      ],
+    }
+  }
+
+  return {
+    emissions: [
+      ...onlyDeploy.map((path) =>
+        warn(`${deployPath} carries ${path}, absent from ${visualPath}`),
+      ),
+      ...onlyVisual.map((path) =>
+        warn(`${visualPath} carries ${path}, absent from ${deployPath}`),
+      ),
+    ],
+    failure: `${deployPath} and ${visualPath} carry different path globs. Bring the two lists back into agreement.`,
+  }
+}
+
+/**
  * `canon sandbox coverage` moves only when a person runs it, so a scenario added
  * with no expectation ships unnoticed.
  *

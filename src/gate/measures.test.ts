@@ -18,6 +18,7 @@ import {
   SANDBOX_UNDECLARED_CEILING,
   sandboxCoverage,
   shippedReferences,
+  visualPathGlobs,
 } from '@/gate/measures'
 import { REFERENCE_MARKER } from '@/shipped/references'
 import { README_PARAPHRASE_MARKER } from '@/web/readme-citations'
@@ -736,3 +737,94 @@ describe('sandboxCoverage', () => {
 function digest(content: string): string {
   return new Bun.CryptoHasher('sha256').update(content).digest('hex')
 }
+
+describe('visualPathGlobs', () => {
+  let root: string
+
+  const refuse = () => {
+    throw new Error('visualPathGlobs runs no command')
+  }
+
+  const context = (): MeasureContext => ({
+    root,
+    ci: false,
+    run: refuse,
+    cli: refuse,
+  })
+
+  const write = (path: string, content: string): void => {
+    const full = join(root, path)
+    mkdirSync(join(full, '..'), { recursive: true })
+    writeFileSync(full, content)
+  }
+
+  const deploy = (paths: readonly string[]): string =>
+    [
+      'on:',
+      '  push:',
+      '    paths:',
+      ...paths.map((path) => `      - '${path}'`),
+    ].join('\n')
+
+  const visual = (paths: readonly string[]): string =>
+    [
+      'on:',
+      '  pull_request:',
+      '    paths:',
+      ...paths.map((path) => `      - '${path}'`),
+    ].join('\n')
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'canon-visual-path-globs-'))
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  it('reports unmeasured when deploy-site.yml is absent', async () => {
+    write('.github/workflows/pr-visual-checks.yml', visual(['web/**']))
+
+    const report = await visualPathGlobs(context())
+
+    expect(report.failure).toBeUndefined()
+    expect(report.unmeasured).toContain('is absent')
+  })
+
+  it('reports unmeasured when pr-visual-checks.yml is absent', async () => {
+    write('.github/workflows/deploy-site.yml', deploy(['web/**']))
+
+    const report = await visualPathGlobs(context())
+
+    expect(report.unmeasured).toContain('is absent')
+  })
+
+  it('passes when the two glob lists agree', async () => {
+    const paths = ['web/**', 'assets/**']
+    write('.github/workflows/deploy-site.yml', deploy(paths))
+    write('.github/workflows/pr-visual-checks.yml', visual(paths))
+
+    const report = await visualPathGlobs(context())
+
+    expect(report.failure).toBeUndefined()
+    expect(report.emissions[0]?.text).toContain('agree')
+  })
+
+  it('fails when a glob was added to one file and not the other', async () => {
+    write(
+      '.github/workflows/deploy-site.yml',
+      deploy(['web/**', 'assets/**', 'src/design/**']),
+    )
+    write(
+      '.github/workflows/pr-visual-checks.yml',
+      visual(['web/**', 'assets/**']),
+    )
+
+    const report = await visualPathGlobs(context())
+
+    expect(report.failure).toContain('carry different path globs')
+    expect(report.emissions.map((e) => e.text).join('\n')).toContain(
+      'src/design/**',
+    )
+  })
+})

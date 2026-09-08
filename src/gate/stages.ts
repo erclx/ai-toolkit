@@ -12,6 +12,7 @@ import {
   shippedReferences,
   standardCriteria,
   unreferencedRules,
+  visualPathGlobs,
 } from '@/gate/measures'
 import { SHIPPED_CORPORA } from '@/shipped/references'
 
@@ -423,6 +424,16 @@ export const STAGES: readonly Stage[] = [
     scope: /^(web\/src\/content\/copy\.ts|README\.md)$/,
     skipped: 'Neither copy.ts nor README.md changed, so no citation was read',
     checks: [{ kind: 'measure', measure: readmeCitations }],
+  },
+  {
+    // Scoped to the two files carrying the literal path-glob copy, so an edit
+    // to either one runs the check.
+    id: 'visual-path-globs',
+    label: 'Visual check path globs',
+    scope: /^\.github\/workflows\/(deploy-site|pr-visual-checks)\.yml$/,
+    skipped:
+      'Neither deploy-site.yml nor pr-visual-checks.yml changed, so no path list was compared',
+    checks: [{ kind: 'measure', measure: visualPathGlobs }],
   },
   {
     id: 'seed-standards',
