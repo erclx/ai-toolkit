@@ -1,9 +1,9 @@
 ---
-name: canon-frames-read
+name: read-frames
 description: Why a recording gets read back through numbered frames rather than left for a person to open, and why the report stops at description and never reaches a verdict
 ---
 
-# Canon frames read requirement
+# Read frames requirement
 
 ## Gap
 

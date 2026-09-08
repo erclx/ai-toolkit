@@ -1,9 +1,9 @@
 ---
-name: canon-frames-read
-description: Pulls numbered still frames from a recorded video through `canon demo frames`, reads each one with the Read tool, and reports one plain description per frame. Never judges the recording, since a frame read is evidence rather than a verdict. Use when asked to "check the recording", "read the demo frames", "see what the video shows", or right after `canon demo run` writes a video and nobody has opened it yet. Do NOT use to record the video, which is `canon-record`, or to state whether the recording looks correct or broken, which is out of scope for every surface in the toolkit today.
+name: read-frames
+description: Pulls numbered still frames from a recorded video through `canon demo frames`, reads each one with the Read tool, and reports one plain description per frame. Never judges the recording, since a frame read is evidence rather than a verdict. Use when asked to "check the recording", "read the demo frames", "see what the video shows", or right after `canon demo run` writes a video and nobody has opened it yet. Do NOT use to record the video, which is `record-screencast`, or to state whether the recording looks correct or broken, which is out of scope for every surface in the toolkit today.
 ---
 
-# Canon frames read
+# Read frames
 
 ## Guards
 

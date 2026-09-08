@@ -54,7 +54,7 @@ export function register(program: Command): void {
   demo
     .command('compile')
     .description('Turn a screencast draft into a plan a run can drive')
-    .argument('<draft>', 'Screencast draft written by canon-screencast')
+    .argument('<draft>', 'Screencast draft written by draft-screencast')
     .helpOption('-h, --help', 'Show this help message')
     .option('-o, --out <dir>', 'Directory the plan is written to', DEFAULT_OUT)
     .option('-s, --slug <slug>', 'Plan name, defaulting to the draft filename')

@@ -41,7 +41,7 @@ export const WORKFLOW_CASES: readonly SkillCase[] = [
   {
     prompt:
       'The video just finished recording. Read it back and tell me what each part shows.',
-    expect: 'canon-frames-read',
+    expect: 'read-frames',
   },
   {
     prompt:
@@ -87,7 +87,7 @@ export const WORKFLOW_CASES: readonly SkillCase[] = [
   {
     prompt:
       'The screencast draft is finished. Turn it into an actual video now.',
-    expect: 'canon-record',
+    expect: 'record-screencast',
   },
   {
     prompt:
@@ -96,7 +96,7 @@ export const WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt: 'Draft me a script with beats for a screencast recording.',
-    expect: 'canon-screencast',
+    expect: 'draft-screencast',
   },
   {
     prompt:
@@ -105,7 +105,7 @@ export const WORKFLOW_CASES: readonly SkillCase[] = [
   },
   {
     prompt: 'Turn this topic into a slide deck I can render.',
-    expect: 'canon-slides-draft',
+    expect: 'draft-slides',
   },
   {
     prompt:

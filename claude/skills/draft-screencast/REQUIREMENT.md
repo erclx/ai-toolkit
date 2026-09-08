@@ -1,9 +1,9 @@
 ---
-name: canon-screencast
+name: draft-screencast
 description: Why a recording script ships pre-seeded rather than blank, what the four discovery questions buy, and why the draft stays stack-agnostic
 ---
 
-# Canon screencast requirement
+# Draft screencast requirement
 
 ## Gap
 
@@ -33,7 +33,7 @@ A draft that names the recording software, the editing software, or the window m
 
 ## Out of scope
 
-- Producing the recording, which `canon-record` owns
+- Producing the recording, which `record-screencast` owns
 - Refining an existing draft, which is a direct edit of the file
-- Slide decks, which `canon-slides-draft` owns
+- Slide decks, which `draft-slides` owns
 - Where the recording ships, which the draft lists and the user decides

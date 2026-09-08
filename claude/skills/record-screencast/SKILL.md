@@ -1,13 +1,13 @@
 ---
-name: canon-record
-description: Drives a screencast draft through to a recording. Compiles it with `canon demo compile` when no plan exists yet at the default path, skipping compile when one is already there, then runs `canon demo run` once nothing is unresolved. Reports every unresolved field from the compile or run record and stops rather than guessing one. Use when asked to "record the screencast", "run the demo", "compile and record this draft", or right after `canon-screencast` prints its next-step line. Do NOT use to draft the beats, which is `canon-screencast`, or to fill in a plan's target or URL, which is the operator's own edit.
+name: record-screencast
+description: Drives a screencast draft through to a recording. Compiles it with `canon demo compile` when no plan exists yet at the default path, skipping compile when one is already there, then runs `canon demo run` once nothing is unresolved. Reports every unresolved field from the compile or run record and stops rather than guessing one. Use when asked to "record the screencast", "run the demo", "compile and record this draft", or right after `draft-screencast` prints its next-step line. Do NOT use to draft the beats, which is `draft-screencast`, or to fill in a plan's target or URL, which is the operator's own edit.
 ---
 
-# Canon record
+# Record screencast
 
 ## Guards
 
-- If no draft path is given, stop: `❌ No draft path. Pass the path canon-screencast printed.`
+- If no draft path is given, stop: `❌ No draft path. Pass the path draft-screencast printed.`
 - Never guess or fill an unresolved field, a target, a URL, or anything else the compile or run record names. Report it and stop. Filling one in reproduces the failure `canon demo run`'s `plan-unresolved` reason exists to catch, one layer up where nothing enforces it.
 - Never pass `--force` to compile. A plan already at the default output path may carry timing tuned by hand, and the draft cannot reproduce that, so leave it untouched.
 - Drive the application through `canon demo run` alone. Never open a browser, click through the app, or write to the output paths some other way.

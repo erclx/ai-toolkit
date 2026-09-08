@@ -289,23 +289,23 @@ This section is the corpus the coverage claim is measured against: every name `c
 
 ### Generate an artifact on demand
 
-| Skill                      | When to use                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------- |
-| `canon:create-rule`        | For a project-specific governance rule the toolkit does not ship                                  |
-| `canon:create-skill`       | For a new `SKILL.md`                                                                              |
-| `canon:create-snippet`     | For a reusable prompt                                                                             |
-| `canon:create-standard`    | For a new authoring convention                                                                    |
-| `canon:draft-docs`         | For a brand-new `docs/*.md` page, drafted against `standards/docs.md`                             |
-| `canon:draft-context`      | For a brand-new `.claude/context/<domain>.md` entry, drafted against `standards/context.md`       |
-| `canon:draft-wireframes`   | For a brand-new `.claude/wireframes/<surface>.md` file, drafted against `standards/wireframes.md` |
-| `canon:draft-readme`       | For a project's `README.md`, drafted against `standards/readme.md`                                |
-| `canon:bash-script`        | For an interactive, human-facing shell tool                                                       |
-| `canon:bash-cli-script`    | For a non-interactive automation, CI, or pipeline script                                          |
-| `canon:ci-workflow`        | For a GitHub Actions workflow file                                                                |
-| `canon:canon-slides-draft` | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint                             |
-| `canon:canon-screencast`   | For a recording script with beats and defaults already seeded                                     |
-| `canon:canon-record`       | For compiling and running a screencast draft into a recording and a still                         |
-| `canon:identity`           | For a project's logo mark and its social card, drafted through `draft-and-pick`'s pick loop       |
+| Skill                     | When to use                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `canon:create-rule`       | For a project-specific governance rule the toolkit does not ship                                  |
+| `canon:create-skill`      | For a new `SKILL.md`                                                                              |
+| `canon:create-snippet`    | For a reusable prompt                                                                             |
+| `canon:create-standard`   | For a new authoring convention                                                                    |
+| `canon:draft-docs`        | For a brand-new `docs/*.md` page, drafted against `standards/docs.md`                             |
+| `canon:draft-context`     | For a brand-new `.claude/context/<domain>.md` entry, drafted against `standards/context.md`       |
+| `canon:draft-wireframes`  | For a brand-new `.claude/wireframes/<surface>.md` file, drafted against `standards/wireframes.md` |
+| `canon:draft-readme`      | For a project's `README.md`, drafted against `standards/readme.md`                                |
+| `canon:bash-script`       | For an interactive, human-facing shell tool                                                       |
+| `canon:bash-cli-script`   | For a non-interactive automation, CI, or pipeline script                                          |
+| `canon:ci-workflow`       | For a GitHub Actions workflow file                                                                |
+| `canon:draft-slides`      | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint                             |
+| `canon:draft-screencast`  | For a recording script with beats and defaults already seeded                                     |
+| `canon:record-screencast` | For compiling and running a screencast draft into a recording and a still                         |
+| `canon:identity`          | For a project's logo mark and its social card, drafted through `draft-and-pick`'s pick loop       |
 
 ### Answer a question at any point
 
@@ -314,7 +314,7 @@ This section is the corpus the coverage claim is measured against: every name `c
 | `canon:canon-cli`           | Before running an unfamiliar verb, a sync, or an install, to learn which command to run, which reference doc covers it, or what it overwrites, merges, or leaves alone |
 | `canon:index-lookup`        | To find where a topic is documented across the tracked `index.md` catalogs                                                                                             |
 | `canon:youtube-transcripts` | When a video transcript is wanted in the repo as context                                                                                                               |
-| `canon:canon-frames-read`   | To read a recorded demo back frame by frame and report what each one shows, with no verdict on whether the recording looks right                                       |
+| `canon:read-frames`         | To read a recorded demo back frame by frame and report what each one shows, with no verdict on whether the recording looks right                                       |
 | `canon:teach-workspace`     | To learn a subject across sessions, in a workspace that holds the progress                                                                                             |
 | `canon:write-human`         | Before drafting or revising prose, for voice, rhythm, and density                                                                                                      |
 | `canon:restate-plainly`     | When an answer or a document has to be read again in plain words                                                                                                       |
