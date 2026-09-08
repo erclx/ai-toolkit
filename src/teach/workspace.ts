@@ -42,8 +42,19 @@ export const TEACH_ASSETS = 'assets'
  * The one stylesheet every lesson in a workspace links. The name is fixed here
  * rather than chosen per lesson, because the second lesson has to reach the
  * file the first one wrote and a name composed twice is a name that can differ.
+ * This file is workspace-owned: `writeStylesheet` writes it once and leaves it
+ * alone, since a lesson adds its own rules here. It imports `TEACH_STYLESHEET_BASE`
+ * for the tokens and components, which is the half a resync may always replace.
  */
 export const TEACH_STYLESHEET = 'course.css'
+
+/**
+ * The seeded half of a workspace's styling, imported by `TEACH_STYLESHEET`.
+ * `writeStylesheet` rewrites this file from the design source on every call,
+ * since nothing workspace-authored lives in it, which is what lets a design
+ * token move without a `--force` flag discarding a workspace's lesson rules.
+ */
+export const TEACH_STYLESHEET_BASE = 'base.css'
 
 /**
  * The mission heading whose list a session reads as exit criteria. The writer,
@@ -1001,31 +1012,40 @@ export interface StylesheetWritten {
   readonly slug: string
   /** Relative to the root, so a caller prints a path a reader can open. */
   readonly path: string
-  /** False when the workspace already held one and this call left it alone. */
+  /** Relative to the root, the re-synced seed `path` imports. */
+  readonly basePath: string
+  /** False when the workspace already held `path` and this call left it alone. */
   readonly written: boolean
 }
 
 export type StylesheetOutcome = StylesheetWritten | TeachRefused
 
-const STYLESHEET_BANNER = [
+const STYLESHEET_BASE_BANNER = [
   'Seeded by `canon teach stylesheet` from the design source in',
-  'src/design/tokens.ts. The tokens and the two components below are the',
-  'system this workspace renders in. Add lesson rules under them and read a',
-  'value through its custom property rather than restating the hex, which is',
-  'what let one workspace fork the palette from every other.',
+  'src/design/tokens.ts, and rewritten on every call. The tokens and the two',
+  'components below are the system this workspace renders in. Read a value',
+  'through its custom property rather than restating the hex, which is what',
+  'let one workspace fork the palette from every other. Add lesson rules to',
+  `${TEACH_STYLESHEET} instead, which imports this file and is never rewritten.`,
 ].join('\n   ')
 
+const stylesheetSeed = (): string =>
+  `@import url('./${TEACH_STYLESHEET_BASE}');\n`
+
 /**
- * Writes a workspace's one stylesheet from the design source.
+ * Writes a workspace's stylesheet pair from the design source.
  *
- * Every workspace used to carry a hand-authored copy, which is how the course
- * palette forked once per workspace. The name is fixed at `TEACH_STYLESHEET`
- * and the folder at `TEACH_ASSETS` for the same reason a second lesson has to
- * reach the file the first one wrote, and this is what puts the values in it.
+ * Every workspace used to carry one hand-authored file, which is how the
+ * course palette forked once per workspace. The names are fixed at
+ * `TEACH_STYLESHEET` and `TEACH_STYLESHEET_BASE`, and the folder at
+ * `TEACH_ASSETS`, for the same reason a second lesson has to reach the files
+ * the first one wrote and names composed twice can differ.
  *
- * An existing stylesheet is left alone rather than replaced. A workspace adds
- * lesson rules to this file as it goes, so overwriting would discard them, and
- * `--force` is the caller saying it wants the seed back.
+ * `TEACH_STYLESHEET_BASE` carries the tokens and the components and is
+ * rewritten every call, since nothing workspace-authored lives in it.
+ * `TEACH_STYLESHEET` imports it, carries a workspace's own lesson rules, and
+ * is written once and left alone, since overwriting it would discard them.
+ * `--force` is the caller saying it wants that file's seed back too.
  */
 export async function writeStylesheet(
   root: string,
@@ -1036,22 +1056,39 @@ export async function writeStylesheet(
   if (!found.ok) return found
 
   const workspace = found.workspace
-  const rel = join(workspace.path, TEACH_ASSETS, TEACH_STYLESHEET)
+  const assetsDir = join(workspace.path, TEACH_ASSETS)
+  const baseRel = join(assetsDir, TEACH_STYLESHEET_BASE)
+  const rel = join(assetsDir, TEACH_STYLESHEET)
+  const basePath = join(root, baseRel)
   const path = join(root, rel)
 
-  if (existsSync(path) && !force) {
-    return { ok: true, slug: workspace.slug, path: rel, written: false }
-  }
-
-  await mkdir(join(root, workspace.path, TEACH_ASSETS), { recursive: true })
+  await mkdir(join(root, assetsDir), { recursive: true })
   await writeFile(
-    path,
+    basePath,
     buildDesignCss(undefined, {
-      banner: STYLESHEET_BANNER,
+      banner: STYLESHEET_BASE_BANNER,
       embedFonts: TEACH_FONT_FACES,
       components: TEACH_STYLESHEET_COMPONENTS,
     }),
   )
 
-  return { ok: true, slug: workspace.slug, path: rel, written: true }
+  if (existsSync(path) && !force) {
+    return {
+      ok: true,
+      slug: workspace.slug,
+      path: rel,
+      basePath: baseRel,
+      written: false,
+    }
+  }
+
+  await writeFile(path, stylesheetSeed())
+
+  return {
+    ok: true,
+    slug: workspace.slug,
+    path: rel,
+    basePath: baseRel,
+    written: true,
+  }
 }

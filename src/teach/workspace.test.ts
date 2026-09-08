@@ -625,13 +625,13 @@ describe('writeStylesheet', () => {
     expect(outcome.ok).toBe(false)
   })
 
-  it('seeds a workspace from the design source rather than from a hand copy', async () => {
+  it('seeds the base file from the design source rather than from a hand copy', async () => {
     await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
 
     const outcome = await writeStylesheet(ROOT, 'regular-expressions')
     if (!outcome.ok) throw new Error(outcome.message)
 
-    const body = await readFile(join(ROOT, outcome.path), 'utf8')
+    const body = await readFile(join(ROOT, outcome.basePath), 'utf8')
 
     expect(outcome.written).toBe(true)
     expect(body).toContain('--color-accent: #e0724b;')
@@ -646,7 +646,7 @@ describe('writeStylesheet', () => {
     const outcome = await writeStylesheet(ROOT, 'regular-expressions')
     if (!outcome.ok) throw new Error(outcome.message)
 
-    const body = await readFile(join(ROOT, outcome.path), 'utf8')
+    const body = await readFile(join(ROOT, outcome.basePath), 'utf8')
 
     expect(body).toContain('.bar {')
     expect(body).toContain('.quiz')
@@ -662,7 +662,7 @@ describe('writeStylesheet', () => {
     const outcome = await writeStylesheet(ROOT, 'regular-expressions')
     if (!outcome.ok) throw new Error(outcome.message)
 
-    const body = await readFile(join(ROOT, outcome.path), 'utf8')
+    const body = await readFile(join(ROOT, outcome.basePath), 'utf8')
 
     for (const retired of [
       '--panel',
@@ -677,22 +677,51 @@ describe('writeStylesheet', () => {
     }
   })
 
-  it('leaves a stylesheet the workspace already carries, since lessons add to it', async () => {
+  it('imports the base file from the workspace-owned stylesheet on first write', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+
+    const outcome = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!outcome.ok) throw new Error(outcome.message)
+
+    expect(await readFile(join(ROOT, outcome.path), 'utf8')).toBe(
+      "@import url('./base.css');\n",
+    )
+  })
+
+  it('leaves a workspace-owned stylesheet alone, since lessons add to it', async () => {
     await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
     const first = await writeStylesheet(ROOT, 'regular-expressions')
     if (!first.ok) throw new Error(first.message)
 
-    await writeFile(join(ROOT, first.path), '.lesson { color: red }\n')
+    await writeFile(
+      join(ROOT, first.path),
+      "@import url('./base.css');\n\n.lesson { color: red }\n",
+    )
     const second = await writeStylesheet(ROOT, 'regular-expressions')
     if (!second.ok) throw new Error(second.message)
 
     expect(second.written).toBe(false)
     expect(await readFile(join(ROOT, second.path), 'utf8')).toBe(
-      '.lesson { color: red }\n',
+      "@import url('./base.css');\n\n.lesson { color: red }\n",
     )
   })
 
-  it('takes the seed back over an existing file when forced', async () => {
+  it('resyncs the base file even when the workspace-owned stylesheet is left alone', async () => {
+    await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
+    const first = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!first.ok) throw new Error(first.message)
+
+    await writeFile(join(ROOT, first.basePath), '/* stale */\n')
+    const second = await writeStylesheet(ROOT, 'regular-expressions')
+    if (!second.ok) throw new Error(second.message)
+
+    expect(second.written).toBe(false)
+    expect(await readFile(join(ROOT, second.basePath), 'utf8')).toContain(
+      '--color-accent:',
+    )
+  })
+
+  it('takes the seed back over an existing workspace-owned stylesheet when forced', async () => {
     await seed('01-regular-expressions', { 'MISSION.md': '# Mission\n' })
     const first = await writeStylesheet(ROOT, 'regular-expressions')
     if (!first.ok) throw new Error(first.message)
@@ -702,8 +731,8 @@ describe('writeStylesheet', () => {
     if (!forced.ok) throw new Error(forced.message)
 
     expect(forced.written).toBe(true)
-    expect(await readFile(join(ROOT, forced.path), 'utf8')).toContain(
-      '--color-accent:',
+    expect(await readFile(join(ROOT, forced.path), 'utf8')).toBe(
+      "@import url('./base.css');\n",
     )
   })
 
