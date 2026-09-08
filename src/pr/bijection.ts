@@ -1,3 +1,4 @@
+import type { RenamePair } from '@/git-files'
 import { extractKeyChangePaths, KEY_CHANGES, type PathClaim } from '@/pr/paths'
 
 /**
@@ -53,6 +54,14 @@ export interface BijectionReport {
    * branch author.
    */
   readonly incidental: readonly string[]
+  /**
+   * True when the rename or `.gitignore`-addition evidence could not be read.
+   *
+   * A claim `unmet` would otherwise carry is downgraded to `unresolved`
+   * instead, since the unread evidence might have credited it and this
+   * comparison has no way to tell a stale claim from one it could not check.
+   */
+  readonly evidenceUnread: boolean
 }
 
 export type Bijection =
@@ -66,6 +75,20 @@ export interface BijectionInput {
   readonly roots: ReadonlySet<string>
   readonly head?: string
   readonly title?: string
+  /** A rename's source path credits a claim naming it, without ever counting as a changed file. */
+  readonly renames?: readonly RenamePair[]
+  /** A pattern newly added to `.gitignore`, crediting a claim naming it as the `.gitignore` change it is. */
+  readonly ignoreAdditions?: readonly string[]
+  /**
+   * True when the caller could not read the rename or ignore-addition
+   * evidence, rather than reading it and finding neither.
+   *
+   * The two states produce the same empty `renames`/`ignoreAdditions`, so
+   * this is the only way `compareKeyChanges` can tell a claim that is
+   * genuinely stale from one the evidence might have credited had the read
+   * succeeded.
+   */
+  readonly evidenceUnread?: boolean
 }
 
 /**
@@ -92,6 +115,28 @@ const INCIDENTAL: readonly RegExp[] = [
 
 function owesNoBullet(path: string): boolean {
   return INCIDENTAL.some((pattern) => pattern.test(path))
+}
+
+/** Drops a directory claim's trailing slash so it compares against a raw `.gitignore` pattern. */
+function withoutTrailingSlash(path: string): string {
+  return path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+/**
+ * Whether a claim names a pattern newly added to `.gitignore`.
+ *
+ * Compared with the trailing slash both sides may or may not carry stripped,
+ * since a bullet spells a folder pattern the way `.gitignore` itself does
+ * (`web/screenshots/`) and the diff line carries the identical text.
+ */
+function coversIgnoreAddition(
+  claim: PathClaim,
+  ignoreAdditions: readonly string[],
+): boolean {
+  const named = withoutTrailingSlash(claim.path)
+  return ignoreAdditions.some(
+    (pattern) => withoutTrailingSlash(pattern) === named,
+  )
 }
 
 /**
@@ -147,6 +192,10 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     return { kind: 'refused', reason: 'no-section' }
   if (read.claims.length === 0) return { kind: 'refused', reason: 'no-claims' }
 
+  const renames = input.renames ?? []
+  const ignoreAdditions = input.ignoreAdditions ?? []
+  const evidenceUnread = input.evidenceUnread ?? false
+
   const unmet: PathClaim[] = []
   const unresolved: PathClaim[] = []
   const named = new Set<string>()
@@ -155,7 +204,15 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     const hits = input.changed.filter((path) => covers(claim, path))
     for (const path of hits) named.add(path)
     if (hits.length > 0) continue
-    if (claim.anchored && claim.leading) unmet.push(claim)
+
+    if (renames.some((rename) => covers(claim, rename.from))) continue
+
+    if (coversIgnoreAddition(claim, ignoreAdditions)) {
+      named.add('.gitignore')
+      continue
+    }
+
+    if (claim.anchored && claim.leading && !evidenceUnread) unmet.push(claim)
     else unresolved.push(claim)
   }
 
@@ -170,6 +227,7 @@ export function compareKeyChanges(input: BijectionInput): Bijection {
     unresolved,
     unnamed: reached.filter((path) => !owesNoBullet(path)),
     incidental: reached.filter(owesNoBullet),
+    evidenceUnread,
   }
 }
 

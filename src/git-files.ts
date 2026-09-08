@@ -68,6 +68,75 @@ export async function listChangedFiles(
   return [...new Set(paths.filter(Boolean))].sort()
 }
 
+/** A file's old and new path across a git-detected rename. */
+export interface RenamePair {
+  readonly from: string
+  readonly to: string
+}
+
+/**
+ * Every rename `base..working tree` carries, read through the same similarity
+ * detection `git diff -M` applies by default (50%).
+ *
+ * A move heavy enough on rewritten content to fall under that floor reports
+ * as a plain delete and add rather than a rename, which is not a defect this
+ * reads around: the diff genuinely does not carry the file a claim citing the
+ * old path describes.
+ *
+ * Returns undefined when git cannot answer, matching `listChangedFiles`.
+ */
+export async function listRenames(
+  root: string,
+  base: string,
+): Promise<RenamePair[] | undefined> {
+  const output = await git(root, ['diff', '--name-status', '-M', base])
+  if (output === undefined) return undefined
+
+  const renames: RenamePair[] = []
+  for (const line of output.split('\n')) {
+    if (line === '') continue
+    const [status, from, to] = line.split('\t')
+    if (status === undefined || !status.startsWith('R')) continue
+    if (from === undefined || to === undefined) continue
+    renames.push({ from, to })
+  }
+  return renames
+}
+
+/**
+ * Added, non-comment lines from a unified diff hunk touching `.gitignore`.
+ *
+ * Shared between a local `git diff` and a patch string GitHub returns inline
+ * for the same file, so the two evidence sources read one pattern the same
+ * way.
+ */
+export function parseIgnoreAdditions(diffText: string): string[] {
+  const patterns: string[] = []
+  for (const line of diffText.split('\n')) {
+    if (!line.startsWith('+') || line.startsWith('+++')) continue
+    const pattern = line.slice(1).trim()
+    if (pattern === '' || pattern.startsWith('#')) continue
+    patterns.push(pattern)
+  }
+  return patterns
+}
+
+/**
+ * Every pattern a branch added to `.gitignore` since `base`.
+ *
+ * `-U0` keeps the hunk to changed lines alone, which is all a claim needs.
+ *
+ * Returns undefined when git cannot answer, matching `listChangedFiles`.
+ */
+export async function listIgnoreAdditions(
+  root: string,
+  base: string,
+): Promise<string[] | undefined> {
+  const output = await git(root, ['diff', '-U0', base, '--', '.gitignore'])
+  if (output === undefined) return undefined
+  return parseIgnoreAdditions(output)
+}
+
 /**
  * Lists the files under `root`: tracked, plus untracked files git does not
  * ignore. The untracked half is what keeps a file added on this branch in scope

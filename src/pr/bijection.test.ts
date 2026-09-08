@@ -172,6 +172,61 @@ describe('compareKeyChanges', () => {
 
     expect(result.kind === 'measured' && result.head).toBe('abc1234')
   })
+
+  it("should credit a claim naming a rename's source path (#1611)", () => {
+    const result = compareKeyChanges({
+      body: keyChanges(
+        '- Move `claude/skills/identity/` to `claude/skills/draft-identity/`.',
+      ),
+      changed: ['claude/skills/draft-identity/SKILL.md'],
+      roots: treeRoots(TRACKED, ['claude/skills/draft-identity/SKILL.md']),
+      renames: [
+        {
+          from: 'claude/skills/identity/SKILL.md',
+          to: 'claude/skills/draft-identity/SKILL.md',
+        },
+      ],
+    })
+
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+  })
+
+  it('should credit a claim naming an added .gitignore pattern (#1614)', () => {
+    const result = compareKeyChanges({
+      body: keyChanges('- Ignore `web/screenshots/` and `web/evidence/`.'),
+      changed: ['.gitignore'],
+      roots: treeRoots(TRACKED, ['.gitignore']),
+      ignoreAdditions: ['web/screenshots/', 'web/evidence/'],
+    })
+
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+    expect(result.kind === 'measured' && result.unnamed).toEqual([])
+  })
+
+  it('should downgrade an unmet-bound claim to unresolved when the evidence could not be read', () => {
+    const result = compareKeyChanges({
+      body: keyChanges(
+        '- Move `claude/skills/identity/` to `claude/skills/draft-identity/`.',
+      ),
+      changed: ['claude/skills/draft-identity/SKILL.md'],
+      roots: treeRoots(TRACKED, ['claude/skills/draft-identity/SKILL.md']),
+      evidenceUnread: true,
+    })
+
+    expect(result.kind === 'measured' && result.unmet).toEqual([])
+    expect(result.kind === 'measured' && result.unresolved).toMatchObject([
+      { path: 'claude/skills/identity/' },
+    ])
+    expect(result.kind === 'measured' && result.evidenceUnread).toBe(true)
+  })
+
+  it('should report evidenceUnread false on an ordinary measured pass', () => {
+    const result = read(keyChanges('- Add `src/pr/paths.ts`.'), [
+      'src/pr/paths.ts',
+    ])
+
+    expect(result.kind === 'measured' && result.evidenceUnread).toBe(false)
+  })
 })
 
 describe('treeRoots', () => {
