@@ -37,6 +37,8 @@ The gate is `SANDBOX_UNDECLARED_CEILING` in `src/gate/measures.ts`, an absolute 
 
 Raising the number is a deliberate edit, which is the point. A branch shipping an unarmed scenario has to say in the diff which one and why, rather than watching a percentage drift down over several merges with no single commit responsible.
 
+`SANDBOX_ASSERTED_FLOOR`, also in `src/gate/measures.ts`, gates the same command's `--skills` census on `asserted` rather than on the scenario count above. A floor is the right shape here for the reason a floor was wrong for the scenario count: a dropped skill-to-scenario pairing lowers `asserted` directly, where an unarmed scenario left the declared count untouched. `#1594` renamed 25 shipped skills off the `claude-` prefix and left the sandbox arm filenames alone, dropping 14 pairings in one branch and falling the census from 26 asserted to 16 of 78, while the Sandbox coverage stage stayed green throughout, since it counts scenarios declaring an expectation rather than skills a scenario reaches. The floor is what closes that gap: a future rename dropping a pairing now fails the push it ships on, rather than passing one silently the way this one did.
+
 A coverage command that exits non-zero fails the stage under CI and warns on a contributor's machine. The scenario tree ships in the checkout, so a runner that cannot read it has a broken command rather than an absent tree, and taking the skip there would report the pass the stage exists to withhold. That is the split Manifest validation below already draws for an absent `claude` binary, and it is now the sequencer's rule for every stage rather than a branch these two carry on their own.
 
 ## Manifest validation
