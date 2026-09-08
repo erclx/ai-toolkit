@@ -133,6 +133,40 @@ describe('resolveReviewScope', () => {
     expect(scope.source).toBe('fallback')
   })
 
+  it('should ignore a marker a body displays on its own line', () => {
+    // The shape the inline case above does not reach. A fenced block trims to
+    // exactly the pattern, so a body that shows the format and carries no
+    // marker of its own would otherwise hand the next reader a covered commit
+    // taken from an illustration.
+    const shown = `## Review
+
+- **should-fix**: end the body with the marker:
+
+\`\`\`markdown
+${marker(READ)}
+\`\`\`
+
+🤖 Reviewed by Claude Code`
+
+    const scope = resolveReviewScope({ reviews: [review(shown)] })
+
+    expect(scope.commit).toBe(STAMPED)
+    expect(scope.source).toBe('fallback')
+  })
+
+  it('should ignore a marker sitting above the footer rather than below it', () => {
+    const misplaced = `## Review
+
+${marker(READ)}
+
+🤖 Reviewed by Claude Code`
+
+    const scope = resolveReviewScope({ reviews: [review(misplaced)] })
+
+    expect(scope.commit).toBe(STAMPED)
+    expect(scope.source).toBe('fallback')
+  })
+
   it('should fall back when the marker carries an unreadable instant', () => {
     const scope = resolveReviewScope({
       reviews: [

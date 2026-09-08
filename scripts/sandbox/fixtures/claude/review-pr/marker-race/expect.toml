@@ -14,6 +14,16 @@
 # machine's PATH, so a run against a global install predating that verb takes the
 # skill's own fallback, reads `commit.oid`, and fails every assertion below for a
 # release reason rather than a skill one. Run it against a released binary.
+#
+# Nothing surfaces that the first such run is owed. Coverage counts an arm by
+# whether it carries an `expect.toml`, so this one reads as armed from the day it
+# lands and no verb separates an arm that cannot pass yet from one nobody has
+# driven. The operator authorizes the spend and a session performs it, per the
+# eval rule, so the trigger is a person deciding to and the durable record is a
+# task row rather than anything in this file. Confirm the verb is on PATH before
+# reading a failure here as the skill's:
+#
+#   canon pr review-state --help
 
 # The same absence every arm asserts: no target here installed the corpus, so
 # the skill's own `references` route is the only one left and a local copy

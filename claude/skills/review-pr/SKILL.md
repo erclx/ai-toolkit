@@ -266,6 +266,8 @@ End every body with this line, carrying `<headRefOid>` and `<read-at>` from Step
 
 Every body this step writes carries it, with no exception: the full body under either heading, both ✅ close-out lines, a withdrawal body, and the `PUT` rewrite at the end of this step. A body missing it reads as a pre-marker pass, so the next reader falls back to the stamps and the pass loses the coverage it actually had.
 
+Last is load-bearing rather than tidy. `canon pr review-state` reads the last non-empty line and searches nowhere else, so a marker written above the footer is a marker the next pass does not see. That position is also what lets a finding quote the format safely, including inside a fenced block, since a quotation is never the line the reader takes.
+
 It is what the review is scoped from. GitHub stamps `commit.oid` and `submittedAt` when a review is submitted, not when it was read, so a push landing in the compose window moves both onto a commit this pass never opened and the next pass reads that commit as covered. The marker is the read-time record those two fields are not, and `canon pr review-state` is the one place it is parsed, so Step 2 here and the orchestrator poll read one answer rather than each carrying a copy of the format.
 
 Write it as a comment rather than as prose so a reader of the thread never meets it. HTML comments render as nothing on GitHub, which is why the fact travels here rather than in a footer line a person would have to be told to ignore.

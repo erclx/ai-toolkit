@@ -62,10 +62,15 @@ export interface ReviewListing {
 /**
  * The marker `review-pr` appends as the last line of every body it posts.
  *
- * Anchored to a whole line so a marker quoted inside a finding cannot be read
- * as the pass's own. The sha is bounded at git's own abbreviation range rather
- * than pinned to 40, since an abbreviated sha still names a commit and refusing
- * one drops the pass back to the stamp this exists to replace.
+ * The sha is bounded at git's own abbreviation range rather than pinned to 40,
+ * since an abbreviated sha still names a commit and refusing one drops the pass
+ * back to the stamp this exists to replace.
+ *
+ * Anchoring to a whole line is not on its own what keeps a quoted marker out.
+ * It stops the inline form, where the surrounding backticks leave the trimmed
+ * line unmatchable, and a marker shown alone inside a fenced block trims to
+ * exactly this pattern. Position is what separates the two, which is why
+ * `markerOf` reads one line rather than searching.
  */
 const MARKER =
   /^<!--\s*review-pr:\s*commit=([0-9a-f]{7,40})\s+read-at=(\S+)\s*-->$/
@@ -95,29 +100,35 @@ function headingOf(body: string): ReviewHeading | undefined {
  * The marker a body carries, or undefined when it carries none this reader
  * trusts.
  *
- * Read from the last matching line rather than from the final line of the file,
- * so a trailing newline or a stray blank line does not lose it. A `PUT` rewrite
- * replaces the whole body, so a rewritten close-out carries exactly one marker
- * and it names the commit the rewriting pass read rather than the commit the
- * comment was first submitted against.
+ * The last non-empty line and no other. Searching the body for the last match
+ * instead reads a marker the body was displaying rather than claiming: a pass
+ * that shows the format on its own line inside a fenced block, and carries no
+ * marker of its own because it predates this shipping, would hand the next
+ * reader a covered commit taken from an illustration. That is the defect this
+ * module exists to close, arriving by another route and just as silently.
+ *
+ * Position costs nothing, since Step 4 of `review-pr` puts the marker on the
+ * last line of every body it writes, the `PUT` rewrite included. Trailing blank
+ * lines are skipped rather than read as an absent marker, which is the one
+ * thing the search was buying.
  */
 function markerOf(
   body: string,
 ): { commit: string; readAt: string } | undefined {
-  let found: { commit: string; readAt: string } | undefined
+  const lines = body.split('\n')
 
-  for (const line of body.split('\n')) {
-    const match = MARKER.exec(line.trim())
-    if (match === null) continue
+  let index = lines.length - 1
+  while (index >= 0 && (lines[index] ?? '').trim() === '') index -= 1
+  if (index < 0) return undefined
 
-    const [, commit, readAt] = match
-    if (commit === undefined || readAt === undefined) continue
-    if (!ISO_8601.test(readAt)) continue
+  const match = MARKER.exec((lines[index] ?? '').trim())
+  if (match === null) return undefined
 
-    found = { commit, readAt }
-  }
+  const [, commit, readAt] = match
+  if (commit === undefined || readAt === undefined) return undefined
+  if (!ISO_8601.test(readAt)) return undefined
 
-  return found
+  return { commit, readAt }
 }
 
 /**

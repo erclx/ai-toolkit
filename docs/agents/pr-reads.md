@@ -50,6 +50,8 @@ A push landing in that window moves both onto a commit nobody reviewed. The next
 
 Both values are taken at the top of the pass rather than at the post, so the compose window falls outside what the marker claims. An HTML comment renders as nothing on GitHub, so a reader of the thread never meets it.
 
+The last non-empty line is where it has to sit, and the reader looks nowhere else. Searching a body for the last match instead reads a marker the body was displaying rather than claiming, since a fenced block showing the format on its own line trims to exactly the pattern, and a pass carrying no marker of its own would then hand the next reader a commit taken from an illustration. That is the same defect through a second door, so position rather than shape is what separates a claim from a quotation.
+
 `canon pr review-state` is the only parser of that format. Two parsers was the alternative, one in the shipped skill body and one in the orchestrator poll's jq, and those two ship on different cadences, so a format change to either would leave the other reading a reviewed commit as unreviewed.
 
 `source` on the record says which reading answered, and a caller checks it before trusting the rest:
