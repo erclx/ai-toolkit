@@ -1,0 +1,5 @@
+[stack]
+name = "cloudflare"
+extends = ""
+runtime = "bun"
+scaffold = ""
