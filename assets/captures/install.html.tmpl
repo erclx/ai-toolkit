@@ -57,12 +57,19 @@
          speaking this system's palette, so they stay literal. Promoting them to
          roles would put three colors in the record that no surface of ours ever
          chose. The green matches the success role by coincidence of the chrome
-         being imitated, not by derivation from it. */
+         being imitated, not by derivation from it. Named here rather than left
+         as bare hex so the two shared with the other three templates read as
+         one value repeated, not four independent guesses. */
+      :root {
+        --chrome-dot-red: #ec6a5e;
+        --chrome-dot-yellow: #f4bf50;
+        --key-color: #d2a8ff;
+      }
       .red {
-        background: #ec6a5e;
+        background: var(--chrome-dot-red);
       }
       .yellow {
-        background: #f4bf50;
+        background: var(--chrome-dot-yellow);
       }
       .green {
         background: #61c454;
@@ -98,9 +105,11 @@
 
       /* One surface asks for this and the record holds no role for it. A role
          invented for a single reader is a value nothing derives from, so it
-         stays literal until a second surface needs it. */
+         stays literal until a second surface needs it. Named above with the
+         dots for the same reason: one place to read the value, not a hex
+         buried in a selector. */
       .key {
-        color: #d2a8ff;
+        color: var(--key-color);
       }
       .blank {
         display: block;

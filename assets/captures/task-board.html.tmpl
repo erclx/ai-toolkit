@@ -69,12 +69,17 @@
 
       /* The three dots imitate somebody else's window chrome rather than
          speaking this system's palette, so they stay literal, exactly as
-         install.html.tmpl states for the same three. */
+         install.html.tmpl states for the same three. Named here for the same
+         reason install.html.tmpl names them. */
+      :root {
+        --chrome-dot-red: #ec6a5e;
+        --chrome-dot-yellow: #f4bf50;
+      }
       .red {
-        background: #ec6a5e;
+        background: var(--chrome-dot-red);
       }
       .yellow {
-        background: #f4bf50;
+        background: var(--chrome-dot-yellow);
       }
       .green {
         background: #61c454;
