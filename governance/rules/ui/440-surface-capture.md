@@ -34,5 +34,6 @@ paths:
 
 - Do not commit the sweep. It stays ignored.
 - Commit a flagged case's evidence output so the pull request carries the comparison, rather than attaching it by hand.
+- Route a flagged case's evidence into a project's own already-established convention for committing that same comparison, instead of a separate evidence folder, when one exists. Only an established convention already committing the same comparison qualifies, not a preference for skipping a second folder.
 - Commit an evidence case for the first time only after running the capture twice with no code change between the runs and confirming the two outputs are byte-identical.
 - Recommitting an unbounded sweep on every run reaches a gigabyte of repository history inside a hundred merges. A small, committed evidence set is what a reviewer needs and what lets GitHub draw its own before-and-after comparison on the pull request.
