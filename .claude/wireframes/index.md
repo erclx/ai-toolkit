@@ -7,6 +7,6 @@ subtitle: Per-surface layout and interaction reference
 
 Per-surface layout and interaction reference
 
-- [Landing page](landing-page.md): The one public route at canon.erclx.dev, its nine sections, and the behavior each carries
+- [Landing page](landing-page.md): The one public route at canon.erclx.dev, its ten sections, and the behavior each carries
 - [Slides](slides.md): The nine slide layouts a .claude/SLIDES.md deck selects through its layout field
 - [Teach](teach/index.md): The teach root, contents, and lesson pages, plus the chrome they share

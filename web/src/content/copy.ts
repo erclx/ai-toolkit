@@ -35,6 +35,7 @@ export const nav = {
     { id: 'install-surface', label: 'Targets' },
     { id: 'board', label: 'Board' },
     { id: 'design-preview', label: 'Tokens' },
+    { id: 'teach-preview', label: 'Teach' },
   ],
   toggleLabel: 'Switch between light and dark',
 }
@@ -208,6 +209,16 @@ export const designPreview = {
   // format and the command rather than a page wiring them into an iframe.
   citation:
     'Rendered from .claude/DESIGN.md by canon design render, embedded live rather than captured.',
+}
+
+export const teachPreview = {
+  heading: 'It teaches, too',
+  // README.md: canon-allow-readme-paraphrase: names the teach workspace shown
+  // below, a domain README.md's "What is inside" list never mentions, so the
+  // section has no phrase there to quote.
+  lede: 'A learning workspace is a folder under .canon/teach/, opened, resourced, and quizzed through the same CLI as everything else on this page. This one lesson teaches how the rule three sections up actually reaches a session.',
+  citation:
+    'A real workspace, rendered on its own isolated navigation so it links to nothing else.',
 }
 
 export const callToAction = {
