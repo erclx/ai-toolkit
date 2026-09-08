@@ -167,7 +167,7 @@ EOF
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request" "late-finding" "repeat-close-out"
+  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request" "late-finding" "repeat-close-out" "marker-race"
 
   case "$SELECTED_OPTION" in
   "first-pass")
@@ -425,6 +425,62 @@ EOF
     log_info "         reads the standing verdict as ## Review closed and rewrites that comment"
     log_info "         through gh api -X PUT rather than posting a second close-out beside it"
     log_info "         leaves the thread with one ## Review closed, does NOT merge"
+    ;;
+
+  "marker-race")
+    log_step "Configuring pr-review marker-race environment ($ANCHOR_REPO)"
+    seed_reviewable_pr
+
+    # What the seeded pass read, captured before the push below. Everything
+    # between these two lines is the compose window, which is the stretch the
+    # real race lives in and the one nothing about GitHub's own stamps records.
+    READ_SHA=$(git rev-parse HEAD)
+    READ_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+    # The push that lands inside that window. It is the same fix the close-out
+    # arm seeds, so what the delta raises is the pass's own call and this arm
+    # asserts only that the pass reached the delta at all.
+    cat <<'EOF' >src/tasks.ts
+export function createTask(title: string) {
+  return { id: crypto.randomUUID(), title };
+}
+
+export function handleCreate(body: { title: string }) {
+  if (!body.title.trim()) {
+    throw new Error("title is required");
+  }
+  return createTask(body.title);
+}
+EOF
+
+    git add . && git commit -m "fix(api): reject an empty task title" --no-verify -q
+    git push origin HEAD -q
+
+    # Posted after that push, so GitHub stamps commit.oid with the new head
+    # while the marker names the commit the pass actually read. That is the
+    # race reproduced exactly rather than waited for, and it is why this arm
+    # needs no timing.
+    gh pr review "$PR_URL" --comment --body "## Review
+
+0 critical, 1 should-fix, 0 minor. Reviewed against project docs and the board.
+
+**\`src/tasks.ts\`**
+
+- **should-fix**: \`handleCreate\` does not reject an empty title, so a blank task is created. Guard the title before calling \`createTask\`.
+
+🤖 Reviewed by Claude Code
+<!-- review-pr: commit=$READ_SHA read-at=$READ_AT -->" 2>/dev/null ||
+      log_info "Could not seed the raced pass. Post one manually before testing."
+
+    log_step "Scenario ready: a pass whose stamp and whose marker name different commits"
+    log_info "Context: open PR whose only review carries commit.oid at the head and a marker one commit behind"
+    log_info "Action:  /review-pr"
+    log_info "Expect:  reads the covered commit off the marker via canon pr review-state"
+    log_info "         sees it behind the head, so the unchanged-head stop does NOT fire"
+    log_info "         reads fix(api) reject an empty task title as the delta"
+    log_info "         writes a body carrying its own commit= read-at= marker on the last line"
+    log_info "         a pass reading commit.oid instead stops with 'The head is unchanged' and posts nothing"
+    log_info "Assert:  declared in fixtures/claude/review-pr/marker-race/expect.toml"
     ;;
 
   *)
