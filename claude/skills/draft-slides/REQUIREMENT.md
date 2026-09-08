@@ -1,9 +1,9 @@
 ---
-name: canon-slides-draft
+name: draft-slides
 description: Why the skill owns deck content and the CLI owns layout, and why one render is read back before the deck is called done
 ---
 
-# Canon slides draft requirement
+# Draft slides requirement
 
 ## Gap
 
@@ -36,4 +36,4 @@ Reimplementing spacing and palette logic is the failure that survives the sessio
 - Rendering, which the CLI owns end to end
 - The palette and the type scale, which live in the CLI rather than in the source
 - Writing the content the deck is about, which the caller brings
-- Recording a demo, which `canon-screencast` owns
+- Recording a demo, which `draft-screencast` owns

@@ -18,13 +18,13 @@ canon demo frames demos/inline-edit.webm --fps 2
 
 ## The draft and the plan are different files
 
-`canon-screencast` drafts beats for a person. A beat carries what is on screen, one verb, what to watch for, an emphasis, and a caption, and none of that names a selector, a URL, a wait condition, or a timing. Those four are what an executor needs and what would ruin the draft, since the format is pre-seeded so the operator edits down rather than fills blanks.
+`draft-screencast` drafts beats for a person. A beat carries what is on screen, one verb, what to watch for, an emphasis, and a caption, and none of that names a selector, a URL, a wait condition, or a timing. Those four are what an executor needs and what would ruin the draft, since the format is pre-seeded so the operator edits down rather than fills blanks.
 
 So `canon demo compile` writes a second artifact rather than adding fields to a beat. It maps each beat's verb to a step, seeds the timing, marks which beat the still comes from, and leaves the target and the URL empty for a person to fill. The report names every field it could not supply.
 
 The plan is committed, not scratch. Its timing is a starting point tuned by watching a recording, and the draft cannot reproduce a tuned value, so a recompile over an existing plan refuses and names `--force`.
 
-`canon-record` is the routed way to run both verbs from a draft path: it compiles only when no plan exists yet, then runs, stopping to report any field still unresolved rather than guessing one.
+`record-screencast` is the routed way to run both verbs from a draft path: it compiles only when no plan exists yet, then runs, stopping to report any field still unresolved rather than guessing one.
 
 | Option          | Behavior                                                          |
 | --------------- | ----------------------------------------------------------------- |
@@ -64,7 +64,7 @@ A step waits on its `waitFor` selector becoming visible and then holds for its o
 | `--fps <n>`       | Frames extracted per second of video, default `1`        |
 | `--json`          | Add a record on stdout carrying every frame path written |
 
-`canon-frames-read` is the routed way to call this verb and read the frames back: it runs the verb, reads each returned frame with the Read tool, and reports one plain description per frame. It never renders a verdict, since a frame read is evidence a person weighs rather than a pass or fail this toolkit states on their behalf.
+`read-frames` is the routed way to call this verb and read the frames back: it runs the verb, reads each returned frame with the Read tool, and reports one plain description per frame. It never renders a verdict, since a frame read is evidence a person weighs rather than a pass or fail this toolkit states on their behalf.
 
 ## The pointer is painted inside the page
 

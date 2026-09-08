@@ -54,7 +54,7 @@ A `toc` slide renders a clickable contents list. The render builds the navigatio
 
 ## Draft skill
 
-`canon:canon-slides-draft` drafts `.claude/SLIDES.md` from a topic, picks a layout per slide from the catalog, and shells out to the render command. The skill owns the deck content and the design choices encoded in the source. It never reimplements layout or styling, which live in the CLI.
+`canon:draft-slides` drafts `.claude/SLIDES.md` from a topic, picks a layout per slide from the catalog, and shells out to the render command. The skill owns the deck content and the design choices encoded in the source. It never reimplements layout or styling, which live in the CLI.
 
 After the first render it runs a one-pass quality check: convert the deck to images with `soffice` and `pdftoppm`, inspect every slide with fresh eyes for overlap, overflow, and contrast, fix once, and stop. The image pass is skipped with a note when those tools are absent.
 

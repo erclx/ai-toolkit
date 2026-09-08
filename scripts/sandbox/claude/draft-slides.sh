@@ -37,7 +37,7 @@ EOF
 
     log_step "Scenario ready: slides draft (with project context)"
     log_info "Context: ledger CLI v1 with REQUIREMENTS and CLAUDE.md present"
-    log_info "Action:  /canon:canon-slides-draft 'ledger v1 overview deck'"
+    log_info "Action:  /canon:draft-slides 'ledger v1 overview deck'"
     log_info "Expect:  .claude/SLIDES.md drafted with a bold non-blue palette and varied layouts, then rendered to .canon/review/slides/, with a one-pass QA check"
     ;;
   "bare")
@@ -51,7 +51,7 @@ EOF
 
     log_step "Scenario ready: slides draft (no project context)"
     log_info "Context: bare repo, no CLAUDE.md or REQUIREMENTS"
-    log_info "Action:  /canon:canon-slides-draft 'toolbox launch deck'"
+    log_info "Action:  /canon:draft-slides 'toolbox launch deck'"
     log_info "Expect:  draft falls back to a generic palette and layouts, deck still renders, no software or font names leak into content"
     ;;
   *)

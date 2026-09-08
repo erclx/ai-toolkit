@@ -1,9 +1,9 @@
 ---
-name: canon-slides-draft
+name: draft-slides
 description: Drafts a `.claude/SLIDES.md` source from a topic, picks a layout per slide, then renders it to PowerPoint via `canon slides render`. Use when asked to "draft slides", "make a deck", "build a presentation", "turn this into slides", or "render a SLIDES.md". Holds the deck design rules. Do NOT reimplement render logic. The CLI owns layout and styling. Assumes the `canon` CLI is on PATH.
 ---
 
-# Slides draft
+# Draft slides
 
 Author a `SLIDES.md` source, then shell out to `canon slides render`. The CLI owns all layout and styling. This skill owns content and the design choices encoded in the source.
 

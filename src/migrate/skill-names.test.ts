@@ -4,7 +4,7 @@ import { SKILL_NAME_MAP, SKILL_NAME_RULES } from '@/migrate/skill-names'
 
 describe('SKILL_NAME_MAP', () => {
   it('should carry one row for every prefixed skill', () => {
-    expect(Object.keys(SKILL_NAME_MAP)).toHaveLength(25)
+    expect(Object.keys(SKILL_NAME_MAP)).toHaveLength(29)
   })
 
   it('should retire the prefix on every row', () => {
@@ -110,6 +110,24 @@ describe('renameText under the skill preset', () => {
       'run aitk gov sync',
     )
   })
+
+  it('should rewrite the two canon- names that join the draft- family', () => {
+    expect(
+      renameText(
+        'canon:canon-screencast and canon:canon-slides-draft',
+        SKILL_NAME_RULES,
+      ),
+    ).toBe('canon:draft-screencast and canon:draft-slides')
+  })
+
+  it('should rewrite the two canon- names that take a standalone verb-first name', () => {
+    expect(
+      renameText(
+        'canon:canon-record and canon:canon-frames-read',
+        SKILL_NAME_RULES,
+      ),
+    ).toBe('canon:record-screencast and canon:read-frames')
+  })
 })
 
 describe('renamePath under the skill preset', () => {
@@ -138,6 +156,12 @@ describe('renamePath under the skill preset', () => {
     expect(
       renamePath('wiki/claude/claude-worktrees.md', SKILL_NAME_RULES),
     ).toBe('wiki/claude/claude-worktrees.md')
+  })
+
+  it('should move the sandbox arm script named for the skill it drives', () => {
+    expect(
+      renamePath('scripts/sandbox/claude/canon-record.sh', SKILL_NAME_RULES),
+    ).toBe('scripts/sandbox/claude/record-screencast.sh')
   })
 })
 

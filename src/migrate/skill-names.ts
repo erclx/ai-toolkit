@@ -2,7 +2,8 @@ import { defineRenameRules, type RenameRules } from '@/migrate/rename'
 
 /**
  * The twenty-five shipped skills that carried a `claude-` prefix, and the
- * two-word name each takes instead.
+ * two-word name each takes instead, plus the four that carried a `canon-`
+ * prefix naming a subject other than the toolkit itself.
  *
  * The plugin namespace already resolves every one of them as `canon:<name>`,
  * so the prefix bought grouping rather than uniqueness, and the grouping it
@@ -10,6 +11,15 @@ import { defineRenameRules, type RenameRules } from '@/migrate/rename'
  * what the skill does. The prefixes that replace it name a phase or a role, so
  * a listing groups the review triple, the three planning skills, and the three
  * session roles together.
+ *
+ * The four `canon-` rows split the same way rather than sharing one
+ * replacement prefix. `canon-screencast` and `canon-slides-draft` draft a
+ * document, which is what the `draft-` family already means across its other
+ * members, so they join it as `draft-screencast` and `draft-slides`.
+ * `canon-record` and `canon-frames-read` are not drafting anything, so each
+ * takes a standalone verb-first name, `record-screencast` and `read-frames`,
+ * reading in sequence with `draft-screencast` as one three-step pipeline with
+ * no prefix forcing that reading.
  *
  * Every name takes two words. Ten of these would have landed as a bare single
  * word under a plain strip, and a bare word such as `review` or `docs` is a
@@ -41,6 +51,10 @@ export const SKILL_NAME_MAP: Readonly<Record<string, string>> = {
   'claude-ux-measure': 'ux-measure',
   'claude-worker': 'role-worker',
   'claude-worktree': 'session-worktree',
+  'canon-screencast': 'draft-screencast',
+  'canon-slides-draft': 'draft-slides',
+  'canon-record': 'record-screencast',
+  'canon-frames-read': 'read-frames',
 }
 
 /**

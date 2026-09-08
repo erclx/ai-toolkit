@@ -121,11 +121,11 @@ EOF
 
     git add . && git commit -m "feat(demo): cold-open draft and a resolved plan" --no-verify -q
 
-    log_step "Scenario ready: run a resolved plan (canon-record)"
+    log_step "Scenario ready: run a resolved plan (record-screencast)"
     log_info "Context: .canon/tmp/screencast/cold-open.md paired with demos/cold-open.json, already compiled and fully filled"
     log_info "Before:  bun install, then bunx playwright install chromium. Neither is seeded, since a sandbox provisions files and cannot fetch a browser."
     log_info "Before:  serve board.html on port 4173, e.g. python3 -m http.server 4173, since the plan's url points there"
-    log_info "Action:  /canon:canon-record .canon/tmp/screencast/cold-open.md"
+    log_info "Action:  /canon:record-screencast .canon/tmp/screencast/cold-open.md"
     log_info "Expect:  demos/cold-open.json already exists, so the session skips canon demo compile entirely and never touches the plan"
     log_info "Expect:  canon demo run drives the page and reports the webm, the mp4 if ffmpeg is on PATH, and the still, each on its own line"
     ;;
@@ -198,9 +198,9 @@ EOF
 
     git add . && git commit -m "feat(demo): empty-state-tour draft and a plan missing its url" --no-verify -q
 
-    log_step "Scenario ready: refuse an unresolved plan (canon-record)"
+    log_step "Scenario ready: refuse an unresolved plan (record-screencast)"
     log_info "Context: .canon/tmp/screencast/empty-state-tour.md paired with demos/empty-state-tour.json, already compiled but url is still empty"
-    log_info "Action:  /canon:canon-record .canon/tmp/screencast/empty-state-tour.md"
+    log_info "Action:  /canon:record-screencast .canon/tmp/screencast/empty-state-tour.md"
     log_info "Expect:  demos/empty-state-tour.json already exists, so the session skips canon demo compile and calls canon demo run directly"
     log_info "Expect:  the run refuses with reason plan-unresolved, the session reports url as the missing field, and it stops"
     log_info "Expect:  no browser launch, no guessed url, and no edit to demos/empty-state-tour.json"

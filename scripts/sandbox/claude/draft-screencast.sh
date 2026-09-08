@@ -65,7 +65,7 @@ EOF
 
     log_step "Scenario ready: screencast draft (with project context)"
     log_info "Context: notes app v2 launch with REQUIREMENTS, .canon/tasks/, and CLAUDE.md present"
-    log_info "Action:  /canon:canon-screencast 'v2 inline edit launch'"
+    log_info "Action:  /canon:draft-screencast 'v2 inline edit launch'"
     log_info "Expect:  4 discovery questions with seeded defaults, then draft to .canon/tmp/screencast/<slug>.md with 8 sections and 5 pre-seeded beats"
     log_info "Expect:  the closing block names canon demo compile as the next step and the session stops there rather than compiling or recording"
     ;;
@@ -80,7 +80,7 @@ EOF
 
     log_step "Scenario ready: screencast draft (no project context)"
     log_info "Context: bare repo, no CLAUDE.md or .canon/tasks/"
-    log_info "Action:  /canon:canon-screencast 'cli onboarding walkthrough'"
+    log_info "Action:  /canon:draft-screencast 'cli onboarding walkthrough'"
     log_info "Expect:  discovery falls back to generic defaults and the draft is still written"
     log_info "Expect:  no recording tool, editing tool, font, or window manager inside the draft, and no selector, URL, or timing on a beat"
     ;;
