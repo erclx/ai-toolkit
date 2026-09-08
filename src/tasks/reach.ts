@@ -32,16 +32,39 @@ export interface ReachRefused {
 }
 
 /**
- * One changed path another track already holds, carrying who holds it and the
- * declaration that matched. A count alone leaves the reader diffing two file
+ * One surface holding a path: a live plan, named by its filename stem, or a
+ * `## Run now` row, named by its task label.
+ */
+export interface Holder {
+  readonly name: string
+  readonly source: 'plan' | 'row'
+  readonly declaration: string
+  /**
+   * Whether a holding plan also carries a row in `## Run now`, and undefined on
+   * a row holder, which is one by construction.
+   *
+   * A plan with no row is the shape a plan nobody archived takes, and it is
+   * also the shape of one whose task is merely not dispatched yet, so this
+   * narrows a reader's search rather than answering it. Testing whether the
+   * holder is genuinely in flight would put a second liveness reading here
+   * beside the dispatch gate's own, which the report declines.
+   */
+  readonly rowed?: boolean
+}
+
+/**
+ * One changed path other tracks already hold, carrying every holder and the
+ * declaration each matched on. A count alone leaves the reader diffing two file
  * lists by eye to find which pair collided.
+ *
+ * Grouped by path rather than by holder. The two sources are read separately
+ * and stay separate inside `holders`, since a board cell and a plan's own list
+ * answer different questions, but one track carrying both reported the same
+ * path twice under two names before this, and the report leads on this list.
  */
 export interface Claim {
   readonly path: string
-  /** The holding plan's filename stem, or the holding row's task label. */
-  readonly holder: string
-  readonly source: 'plan' | 'row'
-  readonly declaration: string
+  readonly holders: readonly Holder[]
 }
 
 export interface ReachReport {
@@ -205,7 +228,10 @@ async function otherPlans(
 async function dispatchRows(
   root: string,
   own: string,
-): Promise<{ read: boolean; rows: { label: string; touches: string[] }[] }> {
+): Promise<{
+  read: boolean
+  rows: { label: string; plan: string | undefined; touches: string[] }[]
+}> {
   const ordering = orderingPath(root)
   if (!existsSync(ordering)) return { read: false, rows: [] }
 
@@ -219,33 +245,48 @@ async function dispatchRows(
       .filter((row) => row.plan === undefined || stemOf(row.plan) !== ownStem)
       .map((row) => ({
         label: row.label,
+        plan: row.plan === undefined ? undefined : stemOf(row.plan),
         touches: [...(row.touches ?? [])],
       })),
   }
 }
 
-function claimsFor(
+/**
+ * Every holder of one path, plans first. Returning a list rather than a claim
+ * per source is what keeps a track carrying both a plan and a row from reading
+ * as two tracks in a report that leads on this list.
+ */
+function holdersOf(
   path: string,
   plans: readonly { stem: string; declared: readonly string[] }[],
-  rows: readonly { label: string; touches: readonly string[] }[],
-): Claim[] {
-  const claims: Claim[] = []
+  rows: readonly {
+    label: string
+    plan: string | undefined
+    touches: readonly string[]
+  }[],
+): Holder[] {
+  const holders: Holder[] = []
 
   for (const plan of plans) {
     const declaration = plan.declared.find((entry) => covers(entry, path))
     if (declaration !== undefined) {
-      claims.push({ path, holder: plan.stem, source: 'plan', declaration })
+      holders.push({
+        name: plan.stem,
+        source: 'plan',
+        declaration,
+        rowed: rows.some((row) => row.plan === plan.stem),
+      })
     }
   }
 
   for (const row of rows) {
     const declaration = row.touches.find((entry) => covers(entry, path))
     if (declaration !== undefined) {
-      claims.push({ path, holder: row.label, source: 'row', declaration })
+      holders.push({ name: row.label, source: 'row', declaration })
     }
   }
 
-  return claims
+  return holders
 }
 
 /**
@@ -305,7 +346,8 @@ export async function planReach(
   const undeclared: string[] = []
 
   for (const path of changed) {
-    claimed.push(...claimsFor(path, plans, board.rows))
+    const holders = holdersOf(path, plans, board.rows)
+    if (holders.length > 0) claimed.push({ path, holders })
     if (!declared.some((entry) => covers(entry, path))) undeclared.push(path)
   }
 

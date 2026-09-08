@@ -203,7 +203,7 @@ canon tasks plan-reach dispatch-answer-gate --base origin/main --json
 
 The record carries `claimed`, `undeclared`, `declared`, `base`, `changed`, `plans`, `rows`, and `board`. Exit codes: `0` read with nothing claimed, `1` refused with `no-plan`, `archived`, `bad-input`, `no-base`, or `no-diff`, `2` read with a claim standing. Branch on the record rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
 
-`claimed` leads because it is the short list and the one worth acting on. Each entry names the path, the plan stem or row label holding it, and the declaration that matched, so a folder claim reports which folder rather than leaving the reader to find it. `undeclared` is every changed path this plan never named, which runs long on an ordinary branch: over the wave this verb was filed against, it ran 22 of 26 paths on one pull request and 18 of 25 on another. Those are the ship chain's own writes rather than scope creep, since the sync skills reach a context entry and the public docs, and the check stages regenerate what they assert.
+`claimed` leads because it is the short list and the one worth acting on. It carries one entry per path, each holding a `holders` list, so a track carrying both a live plan and a `## Run now` row reads as one holder rather than two. A holder names itself, its `source` of `plan` or `row`, and the `declaration` it matched on, so a folder claim reports which folder rather than leaving the reader to find it. A plan holder also carries `rowed`, whether that plan has a row in `## Run now` at all: a plan with no row is the shape a plan nobody archived takes, and equally the shape of one whose task has yet to be dispatched, so it narrows the reader's search rather than answering it. `undeclared` is every changed path this plan never named, which runs long on an ordinary branch: over the wave this verb was filed against, it ran 22 of 26 paths on one pull request and 18 of 25 on another. Those are the ship chain's own writes rather than scope creep, since the sync skills reach a context entry and the public docs, and the check stages regenerate what they assert.
 
 A declaration is a backticked span standing as an entry's subject, ahead of the colon opening its reason. Reading every span was the alternative and it reports pairs that were never going to collide, since a reason routinely cites a file the entry is not about: measured over the same wave, the subject rule reports 6 crossing pairs against 14 for every span. Both sides of a rename declare, since both sit ahead of the colon.
 
@@ -216,7 +216,7 @@ A claim is only as current as the folder it was read from, and the live folder h
 `canon:git-ship` runs it at step 5, after `git add -A` and before the commit grouping. That is the first point the branch is whole and the last before a pull request exists to carry the answer.
 
 ```bash
-canon tasks plan-reach dispatch-answer-gate --json | jq -r '.claimed[] | "\(.path) held by \(.holder)"'
+canon tasks plan-reach dispatch-answer-gate --json | jq -r '.claimed[] | "\(.path) held by \([.holders[].name] | join(", "))"'
 ```
 
 ## Plan link

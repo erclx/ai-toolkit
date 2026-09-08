@@ -174,9 +174,14 @@ describe('planReach', () => {
     expect(outcome.claimed).toEqual([
       {
         path: 'src/b.ts',
-        holder: 'feature-theirs',
-        source: 'plan',
-        declaration: 'src/b.ts',
+        holders: [
+          {
+            name: 'feature-theirs',
+            source: 'plan',
+            declaration: 'src/b.ts',
+            rowed: false,
+          },
+        ],
       },
     ])
   })
@@ -204,11 +209,68 @@ describe('planReach', () => {
     expect(outcome.claimed).toEqual([
       {
         path: 'src/b.ts',
-        holder: 't1',
-        source: 'row',
-        declaration: 'src/b.ts',
+        holders: [{ name: 't1', source: 'row', declaration: 'src/b.ts' }],
       },
     ])
+  })
+
+  it('should report one claim when a plan and its row hold the same path', async () => {
+    await writePlan('mine', ['`src/a.ts`: mine.'])
+    await writePlan('theirs', ['`src/b.ts`: theirs.'])
+    await writeBoard([
+      '| [t1](t1.md) | `src/b.ts` | [t1](../plans/feature-theirs.md) |',
+    ])
+    changed.mockResolvedValue(['src/b.ts'])
+
+    const outcome = await planReach(ROOT, 'mine')
+
+    assertOk(outcome)
+    expect(outcome.claimed).toHaveLength(1)
+    expect(outcome.claimed[0]?.holders.map((held) => held.source)).toEqual([
+      'plan',
+      'row',
+    ])
+  })
+
+  it('should mark a holding plan that carries a dispatch row', async () => {
+    await writePlan('mine', ['`src/a.ts`: mine.'])
+    await writePlan('theirs', ['`src/b.ts`: theirs.'])
+    await writeBoard([
+      '| [t1](t1.md) | `src/c.ts` | [t1](../plans/feature-theirs.md) |',
+    ])
+    changed.mockResolvedValue(['src/b.ts'])
+
+    const outcome = await planReach(ROOT, 'mine')
+
+    assertOk(outcome)
+    expect(outcome.claimed[0]?.holders[0]?.rowed).toBe(true)
+  })
+
+  it('should mark a holding plan that carries no dispatch row', async () => {
+    await writePlan('mine', ['`src/a.ts`: mine.'])
+    await writePlan('theirs', ['`src/b.ts`: theirs.'])
+    await writeBoard([
+      '| [t1](t1.md) | `src/c.ts` | [t1](../plans/feature-other.md) |',
+    ])
+    changed.mockResolvedValue(['src/b.ts'])
+
+    const outcome = await planReach(ROOT, 'mine')
+
+    assertOk(outcome)
+    expect(outcome.claimed[0]?.holders[0]?.rowed).toBe(false)
+  })
+
+  it('should report one claim per path when two plans hold it', async () => {
+    await writePlan('mine', ['`src/a.ts`: mine.'])
+    await writePlan('theirs', ['`src/b.ts`: theirs.'])
+    await writePlan('others', ['`src/b.ts`: also theirs.'])
+    changed.mockResolvedValue(['src/b.ts'])
+
+    const outcome = await planReach(ROOT, 'mine')
+
+    assertOk(outcome)
+    expect(outcome.claimed).toHaveLength(1)
+    expect(outcome.claimed[0]?.holders).toHaveLength(2)
   })
 
   it('should skip the Run now row pointing at the branch own plan', async () => {

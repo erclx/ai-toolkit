@@ -14,7 +14,12 @@ import {
   planCitations,
 } from '@/tasks/archive'
 import { type LabelOutcome, nextLabel } from '@/tasks/label'
-import { type Claim, planReach, type ReachOutcome } from '@/tasks/reach'
+import {
+  type Claim,
+  type Holder,
+  planReach,
+  type ReachOutcome,
+} from '@/tasks/reach'
 import {
   type CloseOutcome,
   closeOutcomes,
@@ -1023,13 +1028,26 @@ async function runReach(
   return reportReach(outcome, opts.json ?? false, root)
 }
 
-function describeReachClaim(claim: Claim): string {
-  const held =
-    claim.declaration === claim.path
-      ? claim.holder
-      : `${claim.holder}, under ${claim.declaration}`
+/**
+ * Names a holder, the declaration it matched on when that is wider than the
+ * path, and whether a holding plan carries a dispatch row. A plan with no row
+ * is the shape a plan nobody archived takes, which is what sends a reader to
+ * check the holder rather than treating the claim as a live collision.
+ */
+function describeHolder(claim: Claim, holder: Holder): string {
+  const under =
+    holder.declaration === claim.path ? '' : `, under ${holder.declaration}`
+  const rowed = holder.source === 'plan' && !holder.rowed ? ', no row' : ''
 
-  return `${claim.path} is held by ${held} (${claim.source})`
+  return `${holder.name} (${holder.source}${under}${rowed})`
+}
+
+function describeReachClaim(claim: Claim): string {
+  const holders = claim.holders
+    .map((holder) => describeHolder(claim, holder))
+    .join(' and ')
+
+  return `${claim.path} is held by ${holders}`
 }
 
 /**
