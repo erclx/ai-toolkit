@@ -384,6 +384,7 @@ async function runStylesheet(
         root,
         slug: outcome.slug,
         path: outcome.path,
+        basePath: outcome.basePath,
         written: outcome.written,
       })}\n`,
     )
@@ -393,6 +394,7 @@ async function runStylesheet(
   intro('canon teach stylesheet')
   logStep(outcome.written ? 'Written' : 'Already present, left alone')
   logInfo(outcome.path)
+  logInfo(outcome.basePath)
   outro()
   return 0
 }

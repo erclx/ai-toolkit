@@ -17,6 +17,17 @@ web/dist/
 web/.astro/
 web/playwright-report/
 web/test-results/
+# screenshot.ts's own sweep. web/evidence/ is `440-surface-capture.md`'s own
+# per-case evidence output, and this departs from that rule on purpose: the
+# PR-triggered capture job already copies the two `home` cases into
+# assets/captures/home/ before committing, which is this repository's one
+# committed-baseline convention (every other generated frame the page or
+# README depends on lives there too, per Question 1 in
+# .canon/plans/archive/feature-render-visibility.md), so a second, separately
+# named copy under web/evidence/ would give a reviewer the same comparison
+# twice rather than a comparison the generic path does not already carry.
+web/screenshots/
+web/evidence/
 
 # Demos
 # `canon demo run` writes four files beside the plan it drove. The plan is

@@ -8,7 +8,7 @@ canon is a CLI and Claude Code plugin that stops your AI conventions drifting ap
 
 ![The canon catalog, listing skills, governance rules, and standards with the count each ships, the workflow skills named, and a sample of the rule and standard names](assets/hero.png)
 
-The counts above are read from the catalogs when the image is built, so they're what the repo actually ships today.
+The counts above are read from the catalogs when the image is built, so they're what the repo actually ships today. See it live at [canon.erclx.dev](https://canon.erclx.dev).
 
 ## It runs on itself
 
