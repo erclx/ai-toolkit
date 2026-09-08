@@ -1,0 +1,100 @@
+name: Deploy
+# canon-no-seed: a stack-specific deploy workflow with no root counterpart by design, parameterized per project on sync rather than mirrored from one.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Fill in this project's own build inputs. A single glob covering the
+      # source tree is enough for most projects; widen it to cover every
+      # path the build reads when it draws on content living elsewhere.
+      - 'src/**'
+  workflow_dispatch:
+
+# Fill in a concurrency group name unique to this project. A second push
+# while a deploy is in flight publishes the newer commit rather than racing
+# it, and the running job is left to finish so a half-uploaded site is never
+# what a reader lands on.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 📦 Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
+  deploy:
+    name: 🚀 Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Cloudflare secrets
+        id: secrets-check
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip notice
+        if: steps.secrets-check.outputs.skip == 'true'
+        run: echo "::notice::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID is not set, skipping deploy. Run the deploy-cloudflare skill to finish setup."
+
+      # This job builds nothing and still needs a toolchain. The checkout
+      # below brings bun.lock, wrangler-action reads it, picks bun on the
+      # strength of it, and installs wrangler with that, so a deploy with no
+      # bun on PATH fails before it reaches Cloudflare. Dropping these steps
+      # as dead weight breaks the deploy on every push.
+      - name: Checkout
+        if: steps.secrets-check.outputs.skip == 'false'
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        if: steps.secrets-check.outputs.skip == 'false'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Download artifact
+        if: steps.secrets-check.outputs.skip == 'false'
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish
+        if: steps.secrets-check.outputs.skip == 'false'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Fill in this project's Pages project name, set when the
+          # deploy-cloudflare skill runs wrangler pages project create.
+          command: pages deploy dist --project-name=REPLACE_WITH_PROJECT_NAME --branch=${{ github.ref_name }}

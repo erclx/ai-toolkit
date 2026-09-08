@@ -62,6 +62,10 @@ Run `canon tooling sync <stack> <target> --check` for the list resolved against 
 - `commitlint.config.js`
 - `scripts/verify.sh`
 
+### cloudflare
+
+- `.github/workflows/deploy.yml`
+
 ### nextjs
 
 - `eslint.config.js`
