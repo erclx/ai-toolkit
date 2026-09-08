@@ -3,7 +3,16 @@ import { chmod, readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import type { Command } from 'commander'
+import { execa } from 'execa'
+import { singleLine } from '@/commands/upgrade'
+import { gitEnv } from '@/git-env'
 import { claudeChain, pendingEntries, planGitignore } from '@/claude/gitignore'
+import {
+  matchInstall,
+  type PluginInstall,
+  readPluginName,
+  updatedMessage,
+} from '@/claude/plugin-update'
 import {
   applySeeds,
   countByScope,
@@ -90,6 +99,37 @@ interface SkillsDriftOptions {
   readonly json?: boolean
 }
 
+interface PluginUpdateOptions {
+  readonly json?: boolean
+}
+
+/**
+ * `no-claude` and `no-plugin` name permanent conditions on a machine that
+ * never carries the marketplace plugin at all, matching the `gh-missing` and
+ * `no-repository` reasons `.husky/post-merge`'s other two steps already stay
+ * quiet on forever rather than nagging a project that will never fix them.
+ * Every other reason is a real defect and prints.
+ */
+type PluginUpdateReason =
+  | 'no-claude'
+  | 'no-manifest'
+  | 'no-name'
+  | 'list-failed'
+  | 'no-plugin'
+  | 'ambiguous'
+  | 'update-failed'
+  | 'after-list-failed'
+
+interface PluginUpdateRecord {
+  readonly root: string
+  readonly id?: string
+  readonly before?: string
+  readonly after?: string
+  readonly state: 'updated' | 'current' | 'refused'
+  readonly reason?: PluginUpdateReason
+  readonly message: string
+}
+
 interface SkillsReachOptions {
   readonly json?: boolean
 }
@@ -111,11 +151,24 @@ const SEEDED_FILES: readonly string[] = [
 const SEEDED_DIRS: readonly string[] = ['memory', 'tasks', 'wireframes']
 const USER_DIR = join('tooling', 'claude', 'user')
 const STATUSLINE = 'statusline-command.sh'
+const PLUGIN_MANIFEST = join('claude', '.claude-plugin', 'plugin.json')
+
+/** A local cache read, not a network round trip, matching reclaim.ts's own bound for `claude agents --json`. */
+const PLUGIN_LIST_TIMEOUT_MS = 10_000
+
+/**
+ * `claude plugin update` fetches a marketplace archive over the network, so a
+ * stalled fetch should not hang the caller, which is a git hook on the
+ * ordinary path.
+ */
+const PLUGIN_UPDATE_TIMEOUT_MS = 60_000
 
 export function register(program: Command): void {
   const claude = program
     .command('claude')
-    .description('Claude workflow (init, seeds, sync, setup, routing)')
+    .description(
+      'Claude workflow (init, seeds, sync, setup, routing, plugin-update)',
+    )
     .helpOption('-h, --help', 'Show this help message')
     .addHelpText(
       'after',
@@ -225,6 +278,39 @@ export function register(program: Command): void {
     )
     .action((path: string | undefined, opts: RoutingOptions) => {
       process.exitCode = runRouting(path, opts)
+    })
+
+  claude
+    .command('plugin-update')
+    .description(
+      'Update the installed marketplace plugin cache to match this CLI',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Mechanics:',
+        '  Reads the plugin name out of claude/.claude-plugin/plugin.json,',
+        '  matches it against an installed row from `claude plugin list',
+        '  --json` by id prefix (<name>@), then runs `claude plugin update',
+        '  <id> -y`. There is no --json on the update call itself, so the',
+        '  version is read back off `claude plugin list --json` again and',
+        '  compared to what it was before.',
+        '',
+        'Exit codes:',
+        '  0  current already, or the update ran',
+        '  1  refused, with the reason on stderr',
+        '',
+        'Examples:',
+        '  canon claude plugin-update',
+        '  canon claude plugin-update --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: PluginUpdateOptions) => {
+      process.exitCode = await runPluginUpdate(opts)
     })
 
   const skills = claude
@@ -827,6 +913,200 @@ function reportRouting(
           }`,
       )
       .join('\n'),
+  )
+}
+
+/**
+ * Reads the plugin name off the manifest, matches it against an installed row,
+ * runs the update, and reads the version back off the same list rather than
+ * trusting the update call's own report, since `claude plugin update` carries
+ * no `--json` to answer with. `canon upgrade` makes the identical move for the
+ * package managers it drives.
+ */
+async function runPluginUpdate(opts: PluginUpdateOptions): Promise<number> {
+  const mismatch = checkoutMismatchWarning(process.cwd())
+  intro('canon claude plugin-update')
+  if (mismatch !== undefined) logWarn(mismatch)
+
+  const manifestPath = join(PROJECT_ROOT, PLUGIN_MANIFEST)
+  let manifestText: string
+  try {
+    manifestText = await readFile(manifestPath, 'utf8')
+  } catch {
+    return refusePluginUpdate(
+      opts,
+      'no-manifest',
+      `No manifest at ${manifestPath}, so there is no plugin name to update.`,
+    )
+  }
+
+  const name = readPluginName(manifestText)
+  if (name === undefined) {
+    return refusePluginUpdate(
+      opts,
+      'no-name',
+      `No name field in ${manifestPath}, so there is nothing to match against an installed plugin.`,
+    )
+  }
+
+  logStep('Manifest')
+  logInfo(`${name}, from ${manifestPath}`)
+
+  const before = await listPluginInstalls()
+  if (before.kind === 'missing') {
+    return refusePluginUpdate(
+      opts,
+      'no-claude',
+      'claude is not on PATH, so no installed plugin could be read.',
+    )
+  }
+  if (before.kind === 'failed') {
+    return refusePluginUpdate(
+      opts,
+      'list-failed',
+      `\`claude plugin list --json\` failed. ${before.detail}`,
+    )
+  }
+
+  const match = matchInstall(name, before.installs)
+  if (match.kind === 'none') {
+    return refusePluginUpdate(
+      opts,
+      'no-plugin',
+      `No installed plugin carries the id prefix "${name}@". Install it with \`claude plugin install\` first.`,
+    )
+  }
+  if (match.kind === 'many') {
+    return refusePluginUpdate(
+      opts,
+      'ambiguous',
+      `Multiple installed plugins share the name "${name}": ${match.installs
+        .map((install) => install.id)
+        .join(', ')}. Refusing rather than picking one.`,
+    )
+  }
+
+  const { install } = match
+  logStep('Installed')
+  logInfo(`${install.id} ${install.version}`)
+
+  logStep('Updating')
+  const result = await execa('claude', ['plugin', 'update', install.id, '-y'], {
+    reject: false,
+    timeout: PLUGIN_UPDATE_TIMEOUT_MS,
+    env: gitEnv(),
+    extendEnv: false,
+  })
+
+  if (result.exitCode !== 0) {
+    return refusePluginUpdate(
+      opts,
+      'update-failed',
+      `\`claude plugin update ${install.id} -y\` exited ${result.exitCode}. ${(result.stderr || result.stdout).trim()}`,
+      install.id,
+      install.version,
+    )
+  }
+
+  const after = await listPluginInstalls()
+  if (after.kind !== 'ok') {
+    return refusePluginUpdate(
+      opts,
+      'after-list-failed',
+      '`claude plugin update` ran, but `claude plugin list --json` failed to read the version back.',
+      install.id,
+      install.version,
+    )
+  }
+
+  const afterVersion =
+    after.installs.find((row) => row.id === install.id)?.version ??
+    install.version
+  const state = afterVersion === install.version ? 'current' : 'updated'
+
+  logStep('Installed')
+  logInfo(
+    afterVersion === install.version
+      ? `${afterVersion}, unchanged`
+      : `${install.version} to ${afterVersion}`,
+  )
+  outro()
+
+  emitPluginUpdate(opts, {
+    root: PROJECT_ROOT,
+    id: install.id,
+    before: install.version,
+    after: afterVersion,
+    state,
+    message: updatedMessage(install.version, afterVersion),
+  })
+  return 0
+}
+
+type ListInstallsResult =
+  | { readonly kind: 'ok'; readonly installs: readonly PluginInstall[] }
+  | { readonly kind: 'missing' }
+  | { readonly kind: 'failed'; readonly detail: string }
+
+/**
+ * `missing` separates a `claude` binary that is not on PATH from every other
+ * failure, since only that condition is permanent enough for the hook to
+ * silence forever. execa reports it as `ENOENT` on the result rather than by
+ * throwing, because the call runs with `reject: false`.
+ */
+async function listPluginInstalls(): Promise<ListInstallsResult> {
+  const result = await execa('claude', ['plugin', 'list', '--json'], {
+    reject: false,
+    timeout: PLUGIN_LIST_TIMEOUT_MS,
+    env: gitEnv(),
+    extendEnv: false,
+  })
+
+  if (result.code === 'ENOENT') return { kind: 'missing' }
+  if (result.exitCode !== 0) {
+    return { kind: 'failed', detail: (result.stderr || result.stdout).trim() }
+  }
+
+  try {
+    return {
+      kind: 'ok',
+      installs: JSON.parse(result.stdout) as readonly PluginInstall[],
+    }
+  } catch {
+    return {
+      kind: 'failed',
+      detail: '`claude plugin list --json` did not print valid JSON.',
+    }
+  }
+}
+
+function refusePluginUpdate(
+  opts: PluginUpdateOptions,
+  reason: PluginUpdateReason,
+  message: string,
+  id?: string,
+  before?: string,
+): number {
+  outro()
+  frameError(message)
+  emitPluginUpdate(opts, {
+    root: PROJECT_ROOT,
+    ...(id === undefined ? {} : { id }),
+    ...(before === undefined ? {} : { before }),
+    state: 'refused',
+    reason,
+    message,
+  })
+  return 1
+}
+
+function emitPluginUpdate(
+  opts: PluginUpdateOptions,
+  record: PluginUpdateRecord,
+): void {
+  if (opts.json !== true) return
+  process.stdout.write(
+    `${JSON.stringify({ ...record, message: singleLine(record.message) })}\n`,
   )
 }
 

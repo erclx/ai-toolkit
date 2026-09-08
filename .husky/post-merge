@@ -32,6 +32,12 @@
 # The hook also reinstalls the global `canon` binary once it drifts behind
 # what is published, so PATH runs the same contract this repository ships.
 # CANON_SKIP_UPGRADE=1 turns that step off.
+#
+# The hook also updates the marketplace plugin cache once it drifts behind
+# what the binary above just reinstalled, so the skill catalog, the standards
+# corpus, and the snippets move together rather than waiting on an operator
+# to run `claude plugin update` by hand.
+# CANON_SKIP_PLUGIN_UPDATE=1 turns that step off.
 
 root=$(git worktree list --porcelain 2>/dev/null | grep -m 1 '^worktree ' | cut -d' ' -f2-) || root=''
 [ -n "$root" ] || exit 0
@@ -210,6 +216,51 @@ if [ -z "$CANON_SKIP_UPGRADE" ]; then
     message=$(printf '%s' "$upgrade" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
     if [ -n "$message" ]; then
       printf '\n⬆️  Not upgraded: %s\n\n' "$message"
+    fi
+  fi
+fi
+
+# Updates the marketplace plugin cache once it drifts behind the binary the
+# block above just reinstalled, so a dispatched session stops resolving a
+# retired skill body while waiting on an operator to run `claude plugin
+# update` by hand.
+#
+# CANON_SKIP_PLUGIN_UPDATE=1 skips this block, which is the one route to stop
+# it short of editing the hook, which then drifts from the committed copy.
+#
+# Sits last, after the binary reinstall, for the same reason that block sits
+# after the records push: a slow or unreachable marketplace delays neither.
+# Wrapped in an `if` so a failed update still leaves the hook exiting zero,
+# and the `canon` presence check ran already, at the top of this file.
+if [ -z "$CANON_SKIP_PLUGIN_UPDATE" ]; then
+  if plugin_update=$(canon claude plugin-update --json 2>/dev/null); then
+    state=$(printf '%s' "$plugin_update" | sed -n 's/.*"state":"\([^"]*\)".*/\1/p')
+
+    # Current is the ordinary outcome on most merges, matching the silence
+    # the binary reinstall keeps on its own no-op state.
+    if [ "$state" != "current" ]; then
+      message=$(printf '%s' "$plugin_update" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
+      if [ -n "$message" ]; then
+        printf '\n🔌 %s\n\n' "$message"
+      fi
+    fi
+  else
+    # A record on stdout is a refusal reported the same way an update
+    # failure is: with the id and version it was moving from, on this same
+    # `message` field. No record at all is an older global binary carrying
+    # no `plugin-update` subcommand, which stays quiet the way every such
+    # gap here does until a release lands.
+    reason=$(printf '%s' "$plugin_update" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
+
+    # `no-claude` and `no-plugin` are permanent conditions on a project that
+    # never carries the marketplace plugin at all, matching `gh-missing` and
+    # `no-repository` above: a machine that will never fix either stays quiet
+    # on every merge rather than printing a line nobody can act on twice.
+    if [ "$reason" != "no-claude" ] && [ "$reason" != "no-plugin" ]; then
+      message=$(printf '%s' "$plugin_update" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
+      if [ -n "$message" ]; then
+        printf '\n🔌 Plugin not updated: %s\n\n' "$message"
+      fi
     fi
   fi
 fi
