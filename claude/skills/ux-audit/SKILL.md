@@ -18,6 +18,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `.claude/DESIGN.md`: visual intent, tokens, typography, spacing rules
 - `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`, each a flat file or a grouped surface's own `.claude/wireframes/<surface>/index.md` and the siblings it lists: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md`, these carry layout and intent, not implementation detail.
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
+- A committed capture beside the surface's own source, when the project has one. A rendered surface reads differently composed than it reads written, and a capture is the only artifact here that shows the composed result rather than the markup. Absent one, note that this audit reads source only, and keep going. This is a stated fallback, not a stop: a project with no capture yet, or a capture mid-rebuild, still gets a source-only audit rather than losing the skill entirely.
 
 ## Step 2: identify surfaces
 
@@ -33,6 +34,8 @@ For each surface, look for:
 4. **Roughness in daily use**: friction, redundant steps, unclear affordances, ambiguous labels
 
 Use `.claude/DESIGN.md` and the per-surface `.claude/wireframes/<surface>.md` files, each a flat file or a grouped surface's own `.claude/wireframes/<surface>/index.md` and the siblings it lists, as ground truth for intent. For each implementation surface, read the matching wireframe file before flagging drift. Observations only, no implementation suggestions or fixes.
+
+Where Step 1 found a committed capture for this surface, judge composed output (spacing, overlap, contrast, wrapping) against it rather than inferring layout from markup alone, which reports what the surface renders rather than what its source implies. Where none exists, judge from source alone and say so in that surface's findings, since a source-only read cannot see what only a render would show.
 
 ## Step 4: report and persist
 
