@@ -34,6 +34,7 @@ export const nav = {
     { id: 'rules', label: 'Rules' },
     { id: 'install-surface', label: 'Targets' },
     { id: 'board', label: 'Board' },
+    { id: 'design-preview', label: 'Tokens' },
   ],
   toggleLabel: 'Switch between light and dark',
 }
@@ -196,6 +197,17 @@ export const boardLifecycle = {
   ],
   // README.md: "a hand-taken snapshot rather than something the build reads live, and it goes stale the moment the board moves"
   note: 'A hand-taken snapshot rather than something this build reads live, and it goes stale the moment the board moves.',
+}
+
+export const designPreview = {
+  heading: 'The tokens this page renders from',
+  // README.md: "a `DESIGN.md` token format" "and a render command"
+  lede: 'Every color, size, and radius below comes from a `DESIGN.md` token format and a render command, the same one that styles the rest of this page.',
+  // README.md: canon-allow-readme-paraphrase: describes how the embed below
+  // was produced, which no README sentence states since the README names the
+  // format and the command rather than a page wiring them into an iframe.
+  citation:
+    'Rendered from .claude/DESIGN.md by canon design render, embedded live rather than captured.',
 }
 
 export const callToAction = {
