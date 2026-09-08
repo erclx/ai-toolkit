@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.70.0](https://github.com/erclx/canon/compare/v4.69.0...v4.70.0) (2026-09-08)
+
+
+### Features
+
+* **pr:** record what a review pass read, not what GitHub stamped ([#1607](https://github.com/erclx/canon/issues/1607)) ([4522c23](https://github.com/erclx/canon/commit/4522c239a534c217a71bda1bfea95cea6e4bc79b))
+* **skills:** name who may lift a pull request's draft mark ([#1604](https://github.com/erclx/canon/issues/1604)) ([6382633](https://github.com/erclx/canon/commit/6382633052c7b42d19182ccc6cf277f043b25cc1))
+* **tasks:** add a decline verb for decided-against tasks ([#1608](https://github.com/erclx/canon/issues/1608)) ([ee48ccd](https://github.com/erclx/canon/commit/ee48ccd7debc5641bd77ddb324dfd79e7a69f38d))
+* **web:** add a live design token preview section ([#1606](https://github.com/erclx/canon/issues/1606)) ([d30e06b](https://github.com/erclx/canon/commit/d30e06b72c1161ad90880c34e1d73cd8b83ddee1))
+* **web:** add a live teach workspace preview section ([#1610](https://github.com/erclx/canon/issues/1610)) ([0432382](https://github.com/erclx/canon/commit/0432382209e1dd77356bdea6f611eeab3d4713e1))
+
 ## [4.69.0](https://github.com/erclx/canon/compare/v4.68.0...v4.69.0) (2026-09-08)
 
 
