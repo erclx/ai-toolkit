@@ -7,9 +7,9 @@ import { readCatalogCounts } from '../src/lib/counts'
 // in agent-view.astro.
 import fixture from '../src/fixtures/agent-view.json' with { type: 'json' }
 
-test('renders the nine sections', async ({ page }) => {
+test('renders the ten sections', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('section')).toHaveCount(9)
+  await expect(page.locator('section')).toHaveCount(10)
 })
 
 test('no section falls back to a committed raster', async ({ page }) => {
@@ -30,6 +30,18 @@ test('the design token preview iframe loads a non-empty document', async ({
   const frame = page.frameLocator('#design-preview iframe')
   await expect(frame.locator('h1')).toHaveText('Design tokens')
   await expect(frame.locator('table').first()).toBeVisible()
+})
+
+test('the teach workspace preview iframe loads a non-empty lesson', async ({
+  page,
+}) => {
+  await page.goto('/')
+  // The iframe carries loading="lazy", so it stays unloaded until this
+  // section scrolls into view, the way a reader reaches it too.
+  await page.locator('#teach-preview').scrollIntoViewIfNeeded()
+  const frame = page.frameLocator('#teach-preview iframe')
+  await expect(frame.locator('h1')).toHaveText('How a rule reaches you')
+  await expect(frame.locator('.quiz .q')).toHaveCount(4)
 })
 
 test('the rules panel names every domain with its true count', async ({
