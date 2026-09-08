@@ -21,9 +21,6 @@ on:
       - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   e2e:
     name: 🎭 E2E Tests
@@ -68,6 +65,8 @@ jobs:
   capture:
     name: 📸 Landing Page Capture
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -124,7 +123,18 @@ jobs:
           cp web/screenshots/localhost/home/default.png assets/captures/home/light.png
           cp web/screenshots/localhost/home/dark.png assets/captures/home/dark.png
 
+      # HEAD_REF carries github.head_ref through env: rather than into the
+      # script body directly, since that value is attacker-controlled on a
+      # fork pull request and this job holds contents: write.
+      #
+      # The push below cannot loop: GITHUB_TOKEN's push raises no workflow
+      # run, which is the only thing that would otherwise re-trigger this
+      # job on its own commit. Swapping in a personal token to make checks
+      # run on the pushed commit removes that guarantee and reopens the loop
+      # the moment a capture is not byte-identical.
       - name: Commit the baseline if it moved
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -134,4 +144,4 @@ jobs:
             exit 0
           fi
           git commit -m "chore(web): update the landing page capture baseline"
-          git push origin "HEAD:${{ github.head_ref }}"
+          git push origin "HEAD:$HEAD_REF"
