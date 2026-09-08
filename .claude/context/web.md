@@ -7,12 +7,12 @@ description: The canon.erclx.dev landing page, its Astro build, and the CI and l
 
 ## Overview
 
-Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route, nine page sections. This is the toolkit's own public site rather than code shipped to a target project, so the application-code non-goal in `.claude/REQUIREMENTS.md` does not reach it. See `.claude/wireframes/landing-page.md` for layout intent and `.claude/context/tooling.md` for the astro-stack mechanics this domain inherits.
+Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route, ten page sections. This is the toolkit's own public site rather than code shipped to a target project, so the application-code non-goal in `.claude/REQUIREMENTS.md` does not reach it. See `.claude/wireframes/landing-page.md` for layout intent and `.claude/context/tooling.md` for the astro-stack mechanics this domain inherits.
 
 ## Layout
 
 - `web/src/pages/` owns the one route, assembling the section components
-- `web/src/components/` owns the nine page sections
+- `web/src/components/` owns the ten page sections
 - `web/src/content/` owns page copy, each string tied to a `README.md` citation
 - `web/src/fixtures/` owns the committed agent-view session snapshot
 - `web/src/lib/` owns the build-time catalog reader: `catalogs.ts` and `counts.ts` both call the shared CLI spawn in `canon-cli.ts`
@@ -20,7 +20,7 @@ Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route,
 - `web/src/styles/` owns global CSS and the generated design tokens
 - `web/e2e/` owns the Playwright suite
 - `web/public/assets/` owns `hero.png`, symlinked from the repository's own `assets/`
-- `web/public/previews/` owns build-time renders embedded live as `<iframe>` sources, starting with `design-tokens/`
+- `web/public/previews/` owns build-time renders embedded live as `<iframe>` sources: `design-tokens/` and `teach-workspace/`
 
 ## Decisions
 
@@ -41,6 +41,7 @@ Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route,
 - The page speaks in one typeface. A measurement across the built page found the proportional family in exactly one of 216 text elements, and a single element in a family nothing else uses is what read as belonging to another design. The same fault reached the primary button twice first: `.page-display` sat on the hero section and cascaded its family into the subhead and the call to action, leaving the page's two primary buttons in different typefaces. Giving the interface a proportional voice throughout, with mono kept for what is literally code, is a larger decision this one does not take.
 - `--nav-height` is declared in `global.css` only as a fallback. `site-nav.astro` measures the bar it rendered and republishes the value, with a `ResizeObserver` re-measuring when the links wrap out below the small breakpoint, because `scroll-padding-top` derives an anchor's landing from it and a hand-written height was already 8px wrong when first committed. Before that property was declared at all, anchor landing worked by accident: every section carries 96px of top padding, which happened to exceed the bar, so a heading cleared it and a section with less padding would have landed underneath with nothing reporting it.
 - `bun run web:build` runs `web:previews` (`scripts/core/regen-web-previews.ts`) between `web:favicon` and `astro build`, calling `renderDesignDoc` directly the same in-process way `web:favicon` calls into `src/design/render.ts`. It writes `web/public/previews/<name>/{index.html,design.css}`, and a landing page section embeds that output live via `<iframe>` rather than a screenshot, since `internal/rules/claude/593-landing-page.md`'s generated-image rule extends to no raster reaching `<main>` at all. The output under `web/public/previews/` is committed to the repository the same way `favicon.svg` and `tokens.css` are, not gitignored.
+- The `teach-workspace` preview copies only rendered HTML and CSS into `web/public/previews/teach-workspace/`, never a workspace's own `MISSION.md`, `RESOURCES.md`, or `GLOSSARY.md`. Those carry links relative to `.canon/teach/` (a resource entry written as `title=CLAUDE.md`, for instance), which resolve to nothing once copied under `web/public/`, caught by the broken-relative-link check in `canon markdown audit`. `scripts/core/regen-web-previews.ts` filters `.md` paths out of the `cpSync` call rather than hand-picking files, calls `generateNav` from `@/teach/nav` over a scratch copy holding one workspace alone so the rewritten chrome cross-links nothing else, and skips the whole regeneration (leaving the last committed output in place) when `.canon/teach/<slug>` is absent, since that folder is gitignored session scratch per `standards/teach.md` and no CI machine has it.
 
 ## Gotchas
 
