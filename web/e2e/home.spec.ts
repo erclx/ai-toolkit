@@ -7,9 +7,9 @@ import { readCatalogCounts } from '../src/lib/counts'
 // in agent-view.astro.
 import fixture from '../src/fixtures/agent-view.json' with { type: 'json' }
 
-test('renders the eight sections', async ({ page }) => {
+test('renders the nine sections', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('section')).toHaveCount(8)
+  await expect(page.locator('section')).toHaveCount(9)
 })
 
 test('no section falls back to a committed raster', async ({ page }) => {
@@ -18,6 +18,18 @@ test('no section falls back to a committed raster', async ({ page }) => {
   // raster reappearing means a section regressed to a picture of its content,
   // which is soft, carries no links, and cannot reflow.
   await expect(page.locator('main img')).toHaveCount(0)
+})
+
+test('the design token preview iframe loads a non-empty document', async ({
+  page,
+}) => {
+  await page.goto('/')
+  // The iframe carries loading="lazy", so it stays unloaded until this
+  // section scrolls into view, the way a reader reaches it too.
+  await page.locator('#design-preview').scrollIntoViewIfNeeded()
+  const frame = page.frameLocator('#design-preview iframe')
+  await expect(frame.locator('h1')).toHaveText('Design tokens')
+  await expect(frame.locator('table').first()).toBeVisible()
 })
 
 test('the rules panel names every domain with its true count', async ({

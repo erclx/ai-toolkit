@@ -1,6 +1,6 @@
 ---
 title: Landing page
-description: The one public route at canon.erclx.dev, its eight sections, and the behavior each carries
+description: The one public route at canon.erclx.dev, its nine sections, and the behavior each carries
 ---
 
 # Landing page
@@ -9,18 +9,19 @@ The toolkit's only outward-facing surface, served at `canon.erclx.dev` from a si
 
 ## Layout
 
-One column at `max-w-4xl`, centered, with every section on the same 96px vertical rhythm. Eight sections in order, each carrying an `id` so any one of them can be linked to:
+One column at `max-w-4xl`, centered, with every section on the same 96px vertical rhythm. Nine sections in order, each carrying an `id` so any one of them can be linked to:
 
-| Section                | `id`              | What it shows                                                    |
-| ---------------------- | ----------------- | ---------------------------------------------------------------- |
-| Hero                   | `top`             | The reader's problem in the README's own words, and one action   |
-| Agent view             | `agent-view`      | Parallel sessions, three bands standing at once, one row landing |
-| Install                | `install`         | The two commands, selectable                                     |
-| Catalog                | `catalog`         | Live counts, then every rule domain with its true count          |
-| Rule arrival           | `rules`           | A path edited, and the rule that arrives because of it           |
-| What a target receives | `install-surface` | Two catalogs side by side: copied in, and never copied           |
-| Board                  | `board`           | Task rows and what closes them                                   |
-| Call to action         | `start`           | Two links out                                                    |
+| Section                | `id`              | What it shows                                                      |
+| ---------------------- | ----------------- | ------------------------------------------------------------------ |
+| Hero                   | `top`             | The reader's problem in the README's own words, and one action     |
+| Agent view             | `agent-view`      | Parallel sessions, three bands standing at once, one row landing   |
+| Install                | `install`         | The two commands, selectable                                       |
+| Catalog                | `catalog`         | Live counts, then every rule domain with its true count            |
+| Rule arrival           | `rules`           | A path edited, and the rule that arrives because of it             |
+| What a target receives | `install-surface` | Two catalogs side by side: copied in, and never copied             |
+| Board                  | `board`           | Task rows and what closes them                                     |
+| Design token preview   | `design-preview`  | A live embed of `.claude/DESIGN.md` rendered to HTML at build time |
+| Call to action         | `start`           | Two links out                                                      |
 
 ## Behavior
 

@@ -7,12 +7,12 @@ description: The canon.erclx.dev landing page, its Astro build, and the CI and l
 
 ## Overview
 
-Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route, eight page sections. This is the toolkit's own public site rather than code shipped to a target project, so the application-code non-goal in `.claude/REQUIREMENTS.md` does not reach it. See `.claude/wireframes/landing-page.md` for layout intent and `.claude/context/tooling.md` for the astro-stack mechanics this domain inherits.
+Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route, nine page sections. This is the toolkit's own public site rather than code shipped to a target project, so the application-code non-goal in `.claude/REQUIREMENTS.md` does not reach it. See `.claude/wireframes/landing-page.md` for layout intent and `.claude/context/tooling.md` for the astro-stack mechanics this domain inherits.
 
 ## Layout
 
 - `web/src/pages/` owns the one route, assembling the section components
-- `web/src/components/` owns the eight page sections
+- `web/src/components/` owns the nine page sections
 - `web/src/content/` owns page copy, each string tied to a `README.md` citation
 - `web/src/fixtures/` owns the committed agent-view session snapshot
 - `web/src/lib/` owns the build-time catalog reader: `catalogs.ts` and `counts.ts` both call the shared CLI spawn in `canon-cli.ts`
@@ -20,6 +20,7 @@ Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route,
 - `web/src/styles/` owns global CSS and the generated design tokens
 - `web/e2e/` owns the Playwright suite
 - `web/public/assets/` owns `hero.png`, symlinked from the repository's own `assets/`
+- `web/public/previews/` owns build-time renders embedded live as `<iframe>` sources, starting with `design-tokens/`
 
 ## Decisions
 
@@ -39,9 +40,11 @@ Owns `web/`, the Astro app behind the `canon.erclx.dev` landing page: one route,
 - `astro.config.mjs`'s `site` value reads `process.env.ASTRO_SITE || site.origin` from `content/copy.ts`, rather than the reverse. The two disagreed before this: `copy.ts` carries the real deployed origin, which `og:url` and the card image already depend on, while the config's own fallback pointed at a reserved invalid host. Falling back to `site.origin` closes that gap while keeping the variable live for a staging or preview build that wants a different origin, which dropping it outright would have removed.
 - The page speaks in one typeface. A measurement across the built page found the proportional family in exactly one of 216 text elements, and a single element in a family nothing else uses is what read as belonging to another design. The same fault reached the primary button twice first: `.page-display` sat on the hero section and cascaded its family into the subhead and the call to action, leaving the page's two primary buttons in different typefaces. Giving the interface a proportional voice throughout, with mono kept for what is literally code, is a larger decision this one does not take.
 - `--nav-height` is declared in `global.css` only as a fallback. `site-nav.astro` measures the bar it rendered and republishes the value, with a `ResizeObserver` re-measuring when the links wrap out below the small breakpoint, because `scroll-padding-top` derives an anchor's landing from it and a hand-written height was already 8px wrong when first committed. Before that property was declared at all, anchor landing worked by accident: every section carries 96px of top padding, which happened to exceed the bar, so a heading cleared it and a section with less padding would have landed underneath with nothing reporting it.
+- `bun run web:build` runs `web:previews` (`scripts/core/regen-web-previews.ts`) between `web:favicon` and `astro build`, calling `renderDesignDoc` directly the same in-process way `web:favicon` calls into `src/design/render.ts`. It writes `web/public/previews/<name>/{index.html,design.css}`, and a landing page section embeds that output live via `<iframe>` rather than a screenshot, since `internal/rules/claude/593-landing-page.md`'s generated-image rule extends to no raster reaching `<main>` at all. The output under `web/public/previews/` is committed to the repository the same way `favicon.svg` and `tokens.css` are, not gitignored.
 
 ## Gotchas
 
 - `web:tokens` and `web:favicon` invoke `bun src/cli.ts`, never the globally linked `canon`. A global binary resolves to the main checkout whatever worktree runs it, so `web:build` once overwrote a regenerated `web/src/styles/tokens.css` with output from a CLI that lacked the branch's own token changes. The revert was silent and surfaced only when a staged diff was read. `scripts/core/regen-hero.sh` documents the same trap in its own header.
 - A design-token change moves the capture markup and the stamps and leaves the PNGs byte-identical, because the frames render on the dark ground and never set `data-theme`, so an added light role is inert in them. The Hero stage is a drift check over `assets/captures/*.html`, so it fails until the regenerated frames are committed, which is the stage working rather than a defect.
 - `web/` has no typecheck in the automated gate, in three layers. `src/gate/stages.ts`'s `types` stage scopes to `/^src\/|^tsconfig\.json$|^package\.json$/`, so a web-only diff never matches it and the stage reports Skipped, and the root `tsconfig.json` sets `include` to `["src"]` alone, so `check:types` would not read `web/` even if the stage ran. `web/tsconfig.json` extends `astro/tsconfigs/strict`, but only the manual `bun run web:build`, through `astro check`, ever type-checks against it.
+- An `<iframe loading="lazy">` stays unloaded until it nears the viewport, so a Playwright assertion against its `frameLocator` reads the frame as empty on a bare `page.goto('/')`. Scroll the section into view first, the same way the theme-toggle test already scrolls past the hero before it reaches the pill.
