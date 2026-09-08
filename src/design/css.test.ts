@@ -171,6 +171,28 @@ describe('buildDesignCss', () => {
     }
   })
 
+  it('declares every alias a hand-authored lesson diagram consumes, not only what a component reads', () => {
+    // Shaped like the fill/stroke references in a real lesson diagram SVG
+    // (.canon/teach/03-fde-system-design/lessons/0003-deployment-skeleton.html),
+    // none of which any component's own `reads` array names.
+    const diagramFixture = `
+      <rect fill="var(--panel)" stroke="var(--rule)" />
+      <text fill="var(--ink)">label</text>
+      <text fill="var(--ink-soft)">detail</text>
+      <text fill="var(--ink-faint)">footnote</text>
+      <rect fill="var(--accent-bg)" stroke="var(--accent)" />
+    `
+    const requiredNames = [
+      ...diagramFixture.matchAll(/var\((--[\w-]+)\)/g),
+    ].map((match) => match[1])
+    const css = buildDesignCss(undefined, {
+      components: TEACH_STYLESHEET_COMPONENTS,
+    })
+    const undeclared = requiredNames.filter((name) => !css.includes(`${name}:`))
+
+    expect(undeclared).toEqual([])
+  })
+
   it('emits the same color set the record carries', () => {
     const withHex = TOKENS.color.filter(
       (token) => !token.value.startsWith('ANSI'),
