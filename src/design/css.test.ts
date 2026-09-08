@@ -178,6 +178,8 @@ describe('buildDesignCss', () => {
     const diagramFixture = `
       <rect fill="var(--panel)" stroke="var(--rule)" />
       <text fill="var(--ink)">label</text>
+      <text fill="var(--ink-soft)">detail</text>
+      <text fill="var(--ink-faint)">footnote</text>
       <rect fill="var(--accent-bg)" stroke="var(--accent)" />
     `
     const requiredNames = [
