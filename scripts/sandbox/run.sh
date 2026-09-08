@@ -181,6 +181,39 @@ record_run() {
   fi
 }
 
+# The record `record_run` never gets to write. A session that exits non-zero
+# takes the branch that logs and exits before the JSON parse `record_run`'s
+# caller runs, so the reason sat in a shell variable nothing persisted and
+# recovering it meant re-invoking the session by hand against the same
+# already-provisioned tree. `$out` is stamped as text rather than as a parsed
+# envelope, since a dying session's stdout can be partial or not JSON at all,
+# which is exactly why this run has no verdict to attach it to.
+record_dead_run() {
+  local target="$1"
+  local scenario="$2"
+  local exit_code="$3"
+  local raw_output="$4"
+
+  local runs_dir record stamp
+  runs_dir="$PROJECT_ROOT/.canon/tmp/sandbox-runs"
+  stamp="$(date +%Y%m%dT%H%M%S)"
+  record="$runs_dir/$(printf '%s' "${target}${scenario:+-$scenario}" | tr ':' '-')-$stamp.json"
+
+  if ! mkdir -p "$runs_dir" 2>/dev/null; then
+    log_warn "Could not create $runs_dir. The dead run was not recorded."
+    return 0
+  fi
+
+  if jq -n --argjson code "$exit_code" --arg raw "$raw_output" \
+    '{is_error: true, exit_code: $code, raw_output: $raw}' \
+    >"$record" 2>/dev/null; then
+    log_info "Dead run recorded at ${record#"$PROJECT_ROOT"/}"
+  else
+    rm -f "$record"
+    log_warn "Could not record the dead run at $record."
+  fi
+}
+
 # The one place that decides whether a group is safe to signal, so the ordinary
 # path and the trap below cannot disagree about it. Sets `reap_state` for the
 # merged record and reports on stderr, and runs at most once per run.
@@ -325,10 +358,11 @@ main() {
   # its own is already in the before manifest rather than reported as a dispatch
   # this run made. `.claude/context/sandbox/overview.md` carries why such a
   # scenario writes to the real registry at all.
-  local sessions_before sessions_after session_records
+  local sessions_before sessions_after session_records session_concurrent
   sessions_before="$(mktemp)"
   sessions_after="$(mktemp)"
   session_records="$(mktemp)"
+  session_concurrent="$(mktemp)"
   snapshot_sessions "$sessions_before"
 
   # The harness calls the real binary by its resolved path and puts the shim on
@@ -387,6 +421,7 @@ main() {
   # and the shim both go out through the trap rather than being skipped here.
   if [ "$session_code" -ne 0 ]; then
     log_warn "The session exited $session_code before a verdict could be taken."
+    record_dead_run "$target" "$scenario" "$session_code" "$out"
     exit "$session_code"
   fi
 
@@ -426,6 +461,11 @@ main() {
     [ -n "$record" ] || continue
     describe_session "$record" >>"$session_records"
   done < <(sessions_between "$sessions_before" "$sessions_after")
+  : >"$session_concurrent"
+  while IFS= read -r record; do
+    [ -n "$record" ] || continue
+    describe_session "$record" >>"$session_concurrent"
+  done < <(sessions_concurrent "$sessions_before" "$sessions_after")
   rm -f "$sessions_before" "$sessions_after"
 
   # The verdict decides the outcome. The envelope can only fail a run the
@@ -436,6 +476,7 @@ main() {
   local verdict_code=0 verdict_json
   verdict_json="$(bun "$PROJECT_ROOT/src/cli.ts" sandbox check "$target" "$scenario" \
     --envelope "$envelope" --writes "$writes" --escapes "$escapes" \
+    --concurrent-sessions "$session_concurrent" \
     "${watched_flag[@]}" --json)" || verdict_code=$?
 
   # After the verdict, which is the last thing that reads what the run left
@@ -473,14 +514,27 @@ main() {
     while IFS= read -r path; do
       [ -n "$path" ] && log_rem "$path"
     done <"$escapes"
+    if [ -s "$session_concurrent" ]; then
+      log_warn "A session was live throughout the run and may account for these:"
+      while IFS= read -r record; do
+        [ -n "$record" ] && log_rem "$record"
+      done <"$session_concurrent"
+    fi
     log_warn "No assertion covers these. Check them against what else was running."
   fi
 
-  # One field rather than a second key beside it, so a reader gets the three
+  # One field rather than a second key beside it, so a reader gets the four
   # facts together: whether the registry was there to watch, which records
-  # appeared while the run was in flight, and what the reap found. `watched`
-  # false means the registry was absent, which makes an empty `new` say nothing
-  # at all rather than say the run dispatched nothing.
+  # appeared while the run was in flight, which were already running throughout
+  # it, and what the reap found. `watched` false means the registry was absent,
+  # which makes an empty `new` say nothing at all rather than say the run
+  # dispatched nothing.
+  #
+  # `concurrent` is a witness rather than a verdict. A record present before and
+  # after the run rules that session out as this run's own dispatch and rules it
+  # in as a candidate explanation for a file `escapes` names with no attribution
+  # of its own, never a claim that it, rather than something else, made the
+  # write.
   #
   # `reap` carries `clear` for a group that was already empty, `reaped-term` or
   # `reaped-kill` for one this run signalled, `survived` for one that outlived
@@ -495,8 +549,9 @@ main() {
   sessions_json="$(jq -n \
     --argjson watched "$sessions_watched_json" \
     --argjson new "$(jq -R -s 'split("\n") | map(select(length > 0))' "$session_records")" \
+    --argjson concurrent "$(jq -R -s 'split("\n") | map(select(length > 0))' "$session_concurrent")" \
     --arg reap "$reap_state" \
-    '{watched: $watched, new: $new, reap: $reap}')"
+    '{watched: $watched, new: $new, concurrent: $concurrent, reap: $reap}')"
 
   if [ -s "$session_records" ]; then
     log_warn "A session record appeared while this run was in flight:"
@@ -520,7 +575,8 @@ main() {
   fi
 
   record_run "$target" "$scenario" "$merged" "$writes"
-  rm -f "$before" "$after" "$envelope" "$writes" "$escapes" "$session_records"
+  rm -f "$before" "$after" "$envelope" "$writes" "$escapes" "$session_records" \
+    "$session_concurrent"
 
   trap - EXIT
   close_timeline

@@ -25,14 +25,15 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 canon sandbox check claude:docs drift --json
 ```
 
-| Flag                | Effect                                                                      |
-| ------------------- | --------------------------------------------------------------------------- |
-| `--envelope <file>` | Read `is_error`, `num_turns`, denials, and the reply text                   |
-| `--writes <file>`   | Newline-delimited paths the session wrote, for write scope                  |
-| `--escapes <file>`  | Newline-delimited paths written to a watched toolkit root, for escape scope |
-| `--escapes-watched` | At least one watched root held a target this run                            |
-| `--json`            | Emit the verdict record on stdout                                           |
-| `--strict`          | Exit 1 on `unchecked` instead of 0                                          |
+| Flag                           | Effect                                                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `--envelope <file>`            | Read `is_error`, `num_turns`, denials, and the reply text                                                         |
+| `--writes <file>`              | Newline-delimited paths the session wrote, for write scope                                                        |
+| `--escapes <file>`             | Newline-delimited paths written to a watched toolkit root, for escape scope                                       |
+| `--escapes-watched`            | At least one watched root held a target this run                                                                  |
+| `--concurrent-sessions <file>` | Newline-delimited sessions live in the registry both before and after this run, a witness for an unbounded escape |
+| `--json`                       | Emit the verdict record on stdout                                                                                 |
+| `--strict`                     | Exit 1 on `unchecked` instead of 0                                                                                |
 
 The verdict `state` is `pass`, `fail`, or `unchecked`. An arm with no `expect.toml` is `unchecked` and exits 0, so the harness stays usable while expectations roll out. A declaration that exists but asserts nothing is a failure, since an expectation file that asserts nothing passes every run.
 
@@ -70,4 +71,6 @@ A skill pairs to a scenario by filename, `<category>-<command>` first and bare `
 
 `scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints. It also writes that merged record to `.canon/tmp/sandbox-runs/<target>-<arm>-<timestamp>.json` with a `writes` array appended, and logs the path on stderr. Both fields are what a later re-score needs, since `--envelope` and `--writes` read files the run deletes on exit.
 
-Two more fields ride alongside the verdict rather than inside it. `escapes` lists what the run wrote under a watched toolkit root, which the verdict cannot assert over because those files sit outside the sandbox tree. `sessions` reports the nested-dispatch bound, carrying `watched` for whether the client's session registry was there to read, `new` for the records that appeared while the run was in flight, and `reap` for what the run found in the session's process group afterwards. Neither field fails a run on its own.
+Two more fields ride alongside the verdict rather than inside it. `escapes` lists what the run wrote under a watched toolkit root, which the verdict cannot assert over because those files sit outside the sandbox tree. `sessions` reports the nested-dispatch bound, carrying `watched` for whether the client's session registry was there to read, `new` for the records that appeared while the run was in flight, `concurrent` for the records present both before and after, and `reap` for what the run found in the session's process group afterwards. Neither field fails a run on its own.
+
+`run.sh` passes `concurrent` through `--concurrent-sessions` to `sandbox check`, and `checkEscapeScope` appends a witness count to an `unbounded escape:` message rather than lets it soften the verdict.

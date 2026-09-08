@@ -78,6 +78,7 @@ interface CheckOptions {
   readonly writes?: string
   readonly escapes?: string
   readonly escapesWatched?: boolean
+  readonly concurrentSessions?: string
   readonly json?: boolean
   readonly strict?: boolean
 }
@@ -376,6 +377,7 @@ function runCheck(
         options.escapes === undefined
           ? undefined
           : options.escapesWatched === true,
+      concurrentSessions: readPathList(options.concurrentSessions),
       envelope: readEnvelope(options.envelope),
     },
   )
@@ -426,6 +428,10 @@ export function register(program: Command): void {
     .option(
       '--escapes-watched',
       'At least one watched root held a target this run, so a zero-escape file is a clean watch rather than one with nothing to watch',
+    )
+    .option(
+      '--concurrent-sessions <file>',
+      'Newline-delimited sessions live in the registry both before and after this run, a witness for an unbounded escape',
     )
     .option('--json', 'Emit the verdict as JSON on stdout')
     .option('--strict', 'Exit non-zero when the arm declares no expectation')

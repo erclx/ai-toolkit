@@ -162,6 +162,14 @@ sessions_between() {
   comm -13 "$1" "$2"
 }
 
+# The side `sessions_between` drops. A record present on both sides is a session
+# that was already running before this run started and still was after, which
+# rules it out as this run's own dispatch and rules it in as a witness able to
+# explain a write the escape watch attributes to nobody.
+sessions_concurrent() {
+  comm -12 "$1" "$2"
+}
+
 # Turns a record name into a line a person can act on. The file can be gone by
 # the time this reads it, since a session that started and exited inside the run
 # takes its record with it, so an unreadable record still reports its name rather
