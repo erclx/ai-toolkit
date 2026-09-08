@@ -20,6 +20,8 @@ Read the calling body's `## The channel` section for the message owed and the la
 3. Carry the message body the calling role's bullet already names, verbatim. This skill composes and never drafts, so the pull request announcement, the address-review announcement, or the blocked question is exactly the text that bullet states, with its own facts filled in.
 4. Open the composed text with a header naming the sender, the addressee, and what the message is. Close the turn with nothing after it, so the block above is the whole of what an operator copies.
 
+Where the installed CLI answers `--self` with an unknown option, that flag is newer than the release this session holds, so step 1 meets no refusal with a reason to report. Name the sender from what the environment states instead, and say the roster did not answer, so the reader knows the name was not confirmed against it.
+
 ## Header
 
 ```plaintext

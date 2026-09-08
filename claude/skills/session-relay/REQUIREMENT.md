@@ -18,7 +18,7 @@ Neither attempt named who the relay is from. A message an operator relays by han
 ## Must
 
 - Fire from inside `role-worker` or `role-planner`'s own `## The channel` section, at the point that section finds no message-sending tool
-- Read the sender's own name off `canon sessions list --self --json` before composing anything
+- Read the sender's own name off `canon sessions list --self --json` before composing anything, and degrade to naming itself from the environment when the installed CLI answers `--self` with an unknown option rather than a refusal carrying a reason
 - Resolve the addressee by running the calling role's own ladder rather than a second one
 - Carry the message body the calling role's bullet already names, verbatim
 - Open the composed text with a header naming the sender, the addressee, and what the message is
