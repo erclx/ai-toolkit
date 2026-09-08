@@ -127,11 +127,16 @@ jobs:
       # script body directly, since that value is attacker-controlled on a
       # fork pull request and this job holds contents: write.
       #
-      # The push below cannot loop: GITHUB_TOKEN's push raises no workflow
-      # run, which is the only thing that would otherwise re-trigger this
-      # job on its own commit. Swapping in a personal token to make checks
-      # run on the pushed commit removes that guarantee and reopens the loop
-      # the moment a capture is not byte-identical.
+      # A GITHUB_TOKEN push does raise a new run against its own commit, held
+      # needing approval rather than starting on its own, and approving one
+      # to get a check green un-gates it the same as any other run. What
+      # actually stops the loop is that the second capture matches the
+      # first: git diff --cached --quiet exits zero and nothing is
+      # committed, so the second run's push step never fires at all.
+      # Swapping in a personal token here does not reopen that guard, but it
+      # does remove the approval gate, so an unapproved run and an
+      # unattended loop both become possible together the moment a capture
+      # stops being byte-identical.
       #
       # HUSKY=0 skips this checkout's own git hooks for the commit and the
       # push, since bun install already ran the prepare script that wires
