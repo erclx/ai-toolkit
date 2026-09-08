@@ -508,6 +508,75 @@ describe('checkExpectation on escape scope', () => {
     })
   })
 
+  it('should append a witness count to an unbounded escape when a session was concurrent', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: ['/main/.claude/plans/feature-x.md'],
+      concurrentSessions: ['live-session: unnamed in /somewhere'],
+    })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.results).toContainEqual({
+      ok: false,
+      message:
+        'unbounded escape: /main/.claude/plans/feature-x.md (1 session live throughout the run)',
+    })
+  })
+
+  it('should pluralize the witness count for more than one concurrent session', () => {
+    const verdict = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: ['/main/.claude/plans/feature-x.md'],
+      concurrentSessions: [
+        'a-session: unnamed in /somewhere',
+        'b-session: unnamed in /elsewhere',
+      ],
+    })
+
+    expect(verdict.results).toContainEqual({
+      ok: false,
+      message:
+        'unbounded escape: /main/.claude/plans/feature-x.md (2 sessions live throughout the run)',
+    })
+  })
+
+  it('should not soften a declared escape into unbounded, or vice versa, when a witness is present', () => {
+    const verdict = checkExpectation(
+      scopedExpectation(['/main/.claude/tasks/**']),
+      {
+        sandboxDir: sandbox,
+        escapes: ['/main/.claude/tasks/session-worker.md'],
+        concurrentSessions: ['live-session: unnamed in /somewhere'],
+      },
+    )
+
+    expect(verdict.state).toBe('pass')
+    expect(verdict.results).toContainEqual({
+      ok: true,
+      message: 'declared escape: /main/.claude/tasks/session-worker.md',
+    })
+  })
+
+  it('should keep ok, asserted, failed, and unchecked unchanged whether or not a witness is present', () => {
+    const withoutWitness = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: ['/main/.claude/plans/feature-x.md'],
+    })
+    const withWitness = checkExpectation(scopedExpectation([]), {
+      sandboxDir: sandbox,
+      escapes: ['/main/.claude/plans/feature-x.md'],
+      concurrentSessions: ['live-session: unnamed in /somewhere'],
+    })
+
+    expect(withWitness.state).toBe(withoutWitness.state)
+    expect(withWitness.asserted).toBe(withoutWitness.asserted)
+    expect(withWitness.failed).toBe(withoutWitness.failed)
+    expect(withWitness.unchecked).toBe(withoutWitness.unchecked)
+    expect(withWitness.results.map((r) => r.ok)).toEqual(
+      withoutWitness.results.map((r) => r.ok),
+    )
+  })
+
   it('should pass an escape matching a declared glob', () => {
     const verdict = checkExpectation(
       scopedExpectation(['/main/.claude/tasks/**']),

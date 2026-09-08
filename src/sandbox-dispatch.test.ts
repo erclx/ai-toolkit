@@ -254,6 +254,67 @@ describe('snapshot_sessions', () => {
   })
 })
 
+describe('sessions_concurrent', () => {
+  it('should name a record present both before and after the run', () => {
+    const env = sessionsEnv()
+    writeRecord('live.json', { cwd: '/somewhere', name: 'already running' })
+
+    const run = sh(
+      `snapshot_sessions before.txt
+       snapshot_sessions after.txt
+       sessions_concurrent before.txt after.txt`,
+      env,
+    )
+
+    expect(run.stdout).toBe('live.json')
+  })
+
+  it('should ignore a record that appeared during the run', () => {
+    const env = sessionsEnv()
+
+    const run = sh(
+      `snapshot_sessions before.txt
+       echo '{"name":"stray","cwd":"/sandbox"}' > "$CLAUDE_CONFIG_DIR/sessions/stray.json"
+       snapshot_sessions after.txt
+       sessions_concurrent before.txt after.txt
+       echo done`,
+      env,
+    )
+
+    expect(run.stdout).toBe('done')
+  })
+
+  it('should ignore a record that ended during the run', () => {
+    const env = sessionsEnv()
+    writeRecord('gone.json', { cwd: '/somewhere', name: 'ending' })
+
+    const run = sh(
+      `snapshot_sessions before.txt
+       rm "$CLAUDE_CONFIG_DIR/sessions/gone.json"
+       snapshot_sessions after.txt
+       sessions_concurrent before.txt after.txt
+       echo done`,
+      env,
+    )
+
+    expect(run.stdout).toBe('done')
+  })
+
+  it('should report nothing when no session survived on both sides', () => {
+    const env = sessionsEnv()
+
+    const run = sh(
+      `snapshot_sessions before.txt
+       snapshot_sessions after.txt
+       sessions_concurrent before.txt after.txt
+       echo done`,
+      env,
+    )
+
+    expect(run.stdout).toBe('done')
+  })
+})
+
 describe('describe_session', () => {
   it('should read the name and the working directory off the record', () => {
     const env = sessionsEnv()

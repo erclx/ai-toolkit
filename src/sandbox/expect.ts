@@ -78,6 +78,14 @@ export interface CheckInput {
    * nothing to watch, both of which produce the same empty `escapes` list.
    */
   readonly escapesWatched?: boolean
+  /**
+   * Names of sessions the client's own registry carried both before and after
+   * the run, so present rather than dispatched by it. Undefined when the
+   * caller supplied none, which is not the same as a run that had no witness:
+   * the registry carries no contract, so a client that stops writing a record
+   * per session makes this list empty regardless of who else was live.
+   */
+  readonly concurrentSessions?: readonly string[]
   readonly envelope?: RunEnvelope
 }
 
@@ -386,11 +394,19 @@ function checkWriteScope(
  * empty `escapes` list. `watched` is what tells them apart: a run that had
  * nothing to watch reports unmeasured rather than passing on a diff it never
  * had the target to take.
+ *
+ * A witnessed concurrent session never softens the verdict. `concurrentSessions`
+ * is evidence a reader can act on without a second lookup, appended to the
+ * message on an unbounded escape, never a reason to pass or skip one: a session
+ * merely alive throughout the run proves someone else was busy, not that a
+ * given file is theirs, and a real dispatch escape reads identically to an
+ * innocent sibling's write either way.
  */
 function checkEscapeScope(
   expectation: Expectation,
   escapes: readonly string[] | undefined,
   watched: boolean | undefined,
+  concurrentSessions: readonly string[] | undefined,
 ): KindOutcome {
   if (expectation.escapeScope === undefined) return { results: [], skipped: [] }
 
@@ -416,12 +432,20 @@ function checkEscapeScope(
   }
 
   const globs = expectation.escapeScope.map((glob) => new Bun.Glob(glob))
+  const witnessCount = concurrentSessions?.length ?? 0
+  const witnessSuffix =
+    witnessCount > 0
+      ? ` (${witnessCount} session${witnessCount === 1 ? '' : 's'} live throughout the run)`
+      : ''
 
   return {
     results: escapes.map((path) =>
       globs.some((glob) => glob.match(path))
         ? { ok: true, message: `declared escape: ${path}` }
-        : { ok: false, message: `unbounded escape: ${path}` },
+        : {
+            ok: false,
+            message: `unbounded escape: ${path}${witnessSuffix}`,
+          },
     ),
     skipped: [],
   }
@@ -514,6 +538,7 @@ export function checkExpectation(
     expectation,
     input.escapes,
     input.escapesWatched,
+    input.concurrentSessions,
   )
   const reply = checkReply(expectation, input.envelope)
   const envelope = checkEnvelope(expectation, input.envelope)
