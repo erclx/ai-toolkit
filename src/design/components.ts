@@ -998,6 +998,18 @@ h2 .count {
   line-height: 1.55;
 }
 
+.gloss-group {
+  margin: 1.1rem 0 0.4rem;
+  font-family: var(--teach-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.gloss-group:first-child { margin-top: 0; }
+
 .gterm b { font-weight: 700; }
 /* The markdown source separates a term from its definition with a colon,
    and the house standard bans an em dash outright, so the view mirrors

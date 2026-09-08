@@ -109,6 +109,17 @@ const GLOSSARY_FILTER_SCRIPT = `<script>
   var input = document.getElementById("gfilter");
   var list = document.getElementById("gloss");
   if (!input || !list) return;
+  function updateGroups() {
+    list.querySelectorAll(".gloss-group").forEach(function (heading) {
+      var el = heading.nextElementSibling;
+      var any = false;
+      while (el && !el.classList.contains("gloss-group")) {
+        if (el.style.display !== "none") any = true;
+        el = el.nextElementSibling;
+      }
+      heading.style.display = any ? "" : "none";
+    });
+  }
   input.addEventListener("input", function () {
     var q = input.value.toLowerCase();
     var n = 0;
@@ -118,6 +129,7 @@ const GLOSSARY_FILTER_SCRIPT = `<script>
       if (match) n++;
     });
     list.classList.toggle("none", n === 0);
+    updateGroups();
   });
   var clear = list.querySelector(".clear");
   if (clear) {
@@ -457,8 +469,90 @@ function renderGlossaryEntry(entry: string): string {
   return `<div class="gterm"><b>${escapeHtml(term)}</b><span>${escapeHtml(definition)}</span></div>`
 }
 
-function renderGlossarySection(entries: readonly string[]): string {
-  const rendered = entries.map(renderGlossaryEntry).join('')
+const FIRST_SEEN_PATTERN = / First seen in (.+)\.$/
+
+/**
+ * The lesson or reference page an entry's own "First seen in" sentence
+ * names, absent when the entry predates that citation convention.
+ */
+function firstSeenFile(entry: string): string | undefined {
+  return FIRST_SEEN_PATTERN.exec(entry)?.[1]
+}
+
+/**
+ * `firstSeenFile` names a page free-form, per the `--first-seen` flag it
+ * comes from, so it may carry a directory prefix a lesson's own `file` does
+ * not. Comparing basenames is what keeps `lessons/0001-x.html` and
+ * `0001-x.html` resolving to the same lesson without a suffix match risking
+ * a false hit across two differently-prefixed filenames.
+ */
+function matchingLesson(
+  file: string,
+  metas: readonly LessonMeta[],
+): LessonMeta | undefined {
+  const basename = file.split('/').pop()
+  return metas.find((meta) => meta.file === basename)
+}
+
+interface GlossaryGroup {
+  readonly heading: string
+  readonly entries: readonly string[]
+}
+
+const OTHER_TERMS_HEADING = 'Other terms'
+
+/**
+ * Groups already-alphabetical glossary entries by the lesson their own
+ * "First seen in" sentence names, in lesson order. An entry naming a
+ * reference page instead, or carrying no citation at all, cannot be
+ * attributed to a lesson and trails in its own group, keeping the
+ * alphabetical order the source entries already carry.
+ */
+function groupGlossaryEntries(
+  entries: readonly string[],
+  metas: readonly LessonMeta[],
+): readonly GlossaryGroup[] {
+  const byLesson = new Map<string, string[]>()
+  const other: string[] = []
+
+  for (const entry of entries) {
+    const file = firstSeenFile(entry)
+    const lesson = file ? matchingLesson(file, metas) : undefined
+
+    if (lesson) {
+      const list = byLesson.get(lesson.file) ?? []
+      list.push(entry)
+      byLesson.set(lesson.file, list)
+    } else {
+      other.push(entry)
+    }
+  }
+
+  const groups: GlossaryGroup[] = []
+  for (const meta of metas) {
+    const list = byLesson.get(meta.file)
+    if (list) groups.push({ heading: meta.title, entries: list })
+  }
+  if (other.length > 0) {
+    groups.push({ heading: OTHER_TERMS_HEADING, entries: other })
+  }
+
+  return groups
+}
+
+function renderGlossaryGroup(group: GlossaryGroup): string {
+  const entries = group.entries.map(renderGlossaryEntry).join('')
+
+  return `<h3 class="gloss-group">${escapeHtml(group.heading)}</h3>${entries}`
+}
+
+function renderGlossarySection(
+  entries: readonly string[],
+  metas: readonly LessonMeta[],
+): string {
+  const rendered = groupGlossaryEntries(entries, metas)
+    .map(renderGlossaryGroup)
+    .join('')
 
   return `<h2>Glossary <span class="count">${entries.length}</span></h2>
 <input class="filter" type="search" id="gfilter" aria-label="Filter glossary terms" aria-controls="gloss" placeholder="term">
@@ -610,7 +704,7 @@ async function renderContentsPage(
     referenceRows
       ? `<h2>Reference pages</h2>\n<ul class="toc">${referenceRows}</ul>`
       : '',
-    renderGlossarySection(detail.glossary),
+    renderGlossarySection(detail.glossary, metas),
   ]
     .filter((section) => section !== '')
     .join('\n\n')
