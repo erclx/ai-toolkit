@@ -465,7 +465,7 @@ The `git-stage` against `git-commit` overlap is the second half of that answer a
 
 #### The most-called skill in the catalog has no sandbox arm
 
-Eight of the nine carry one, at `scripts/sandbox/git/` for the five git skills, `scripts/sandbox/claude/docs.sh` and `memory-review.sh` for two more, and `scripts/sandbox/docs/sync.sh` for `docs-sync`. `memory-capture` carries none, and it is the second most-called member of the batch at 550 and the opening step of three separate chains.
+Eight of the nine carry one, at `scripts/sandbox/git/` for the five git skills, `scripts/sandbox/claude/docs-fold.sh` and `memory-review.sh` for two more, and `scripts/sandbox/docs/sync.sh` for `docs-sync`. `memory-capture` carries none, and it is the second most-called member of the batch at 550 and the opening step of three separate chains.
 
 Nothing about that changes its verdict, since question 3 is answered many times over by the chain reach alone. It is worth recording because the coverage argument runs the other way from the usual one here. Batches one and four cited a sandbox arm as what rescues a skill the census scored at zero. This is a skill the census scores highest that no arm exercises, so the two instruments miss on opposite sides and neither is a substitute for the other.
 

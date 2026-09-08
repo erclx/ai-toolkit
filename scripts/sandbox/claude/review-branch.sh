@@ -141,7 +141,7 @@ EOF
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
   log_info "Action:  /canon:review-branch"
-  log_info "Expect:  declared in fixtures/claude/review/expect.toml"
-  log_info "         Check it with: canon sandbox check claude:review"
+  log_info "Expect:  declared in fixtures/claude/review-branch/expect.toml"
+  log_info "         Check it with: canon sandbox check claude:review-branch"
   log_info "         One content entry per half. Three claims need a reader."
 }

@@ -148,7 +148,7 @@ EOF
     log_info "         package.json present and node_modules missing, so it names bun install"
     log_info "         pyproject.toml present and .venv missing, so it names the missing virtual environment"
     log_info "         no scripts/worktree-port.sh here, so the port line names the stack default"
-    log_info "Headless: scripts/sandbox/run.sh claude:worktree \"/canon:session-worktree\" dual-root"
+    log_info "Headless: scripts/sandbox/run.sh claude:session-worktree \"/canon:session-worktree\" dual-root"
     ;;
   "port-offset")
     cat <<'EOF' >.canon/plans/feature-corge.md
@@ -181,7 +181,7 @@ EOF
     log_info "Branch: corge"
     log_info "Plan:   .canon/plans/feature-corge.md"
     log_info "Action:  /canon:session-worktree"
-    log_info "Expect:  declared in fixtures/claude/worktree/port-offset/expect.toml"
+    log_info "Expect:  declared in fixtures/claude/session-worktree/port-offset/expect.toml"
     ;;
   "submodule" | "submodule-root")
     cat <<'EOF' >.canon/plans/feature-grault.md
@@ -224,7 +224,7 @@ EOF
       log_info "Expect:  both rev-parse reads return one path, so the linked-worktree guard passes"
       log_info "         the superproject read resolves, so the skill stops and names this root"
       log_info "         no worktree is created and no .claude/ is written under vendor"
-      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"cd vendor, then /canon:session-worktree\" submodule"
+      log_info "Headless: scripts/sandbox/run.sh claude:session-worktree \"cd vendor, then /canon:session-worktree\" submodule"
     else
       log_step "Scenario ready: submodule control (Guards)"
       log_info "Branch: grault"
@@ -232,7 +232,7 @@ EOF
       log_info "Action:  /canon:session-worktree from this root"
       log_info "Expect:  the superproject read is empty here, so the guard stays silent"
       log_info "         entry derives grault from the plan and creates the worktree"
-      log_info "Headless: scripts/sandbox/run.sh claude:worktree \"/canon:session-worktree\" submodule-root"
+      log_info "Headless: scripts/sandbox/run.sh claude:session-worktree \"/canon:session-worktree\" submodule-root"
     fi
     ;;
   *)
