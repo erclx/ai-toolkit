@@ -28,7 +28,9 @@ Without this skill, a session facing a decision nobody can settle from a diff:
 - Render before reporting on any arm, and report a missing browser binary as a refusal naming the repair rather than describing an arm nobody has seen.
 - Take the pick through the structured question surface, with the recommendation ranked first and marked, and every option carrying its cost.
 - Keep every write inside the run's scratch folder until the pick is final.
-- Apply the winning arm and delete the losing ones in the same change.
+- Apply the winning arm in one change.
+- Capture every arm from the final round as an image before deleting the run's scratch folder, rather than discarding the losing arms with it.
+- Resolve the archival capture's destination against the main worktree root, never against a linked worktree the run happens to be building in.
 - Serve the candidates live where the decision is one the operator has to drive, since a still cannot answer how a gesture feels or how a pace reads.
 
 ## Must not
