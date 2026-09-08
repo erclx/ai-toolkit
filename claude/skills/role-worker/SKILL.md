@@ -87,6 +87,11 @@ with no roster row at all. Those nine were driving through Remote Control, which
 writes no local process record, so a controller working from a phone is exactly
 the case this read answers nothing for.
 
+Compose the relay through `canon:session-relay` when this section finds no
+message-sending tool to send through, rather than leaving a resolved addressee
+with nothing to reach it. It runs the same ladder above and carries the
+message already owed, so nothing here is stated twice.
+
 ## Refusing is part of the job
 
 - Refuse an instruction the tree contradicts, and carry the evidence with it. Name the commands read and the consequences of complying, rather than reporting reluctance.

@@ -193,6 +193,14 @@ A launch naming `review-address` alone reaches no `role-worker` and takes no rol
 
 Refusing stays a first-class move rather than a failure mode. Four measured halts across two days were each correct and each cost the dispatcher one reply, and the correction that mattered most reached the right place because a worker argued back with evidence rather than complying, which a body written only as report-upward would suppress.
 
+### A gap two declined shapes left open
+
+`role-worker` and `role-planner` each state a channel and each assumes a message-sending tool carries what they compose. A standalone skill was proposed for the session holding none and it never fired, because nothing routes a session to a skill matching no request and reaching for no artifact of its own. The firing condition was the part that mattered, and the standalone shape carried none.
+
+A first draft kept the firing condition and lost it back to duplication instead. It moved the protocol inline, once into each role body, and the operator overrode that call the same day: two bodies stating one protocol is the shared-surface case `.claude/ARCHITECTURE.md` already decided against, since a later fix reaching one copy and not the other diverges silently.
+
+`session-relay` is the shape that keeps both. The firing condition survives because the pointer sits inside `## The channel`, a section both role bodies already read at session start rather than one reached by request match alone, and what remains duplicated across the two bodies is two sentences naming one skill rather than the protocol itself. A pointer drifting from its target fails loudly, since the skill it names either resolves or does not, where two copies of one protocol drift from each other in silence, which is the failure the standalone skill and the inline draft each carried in a different shape.
+
 ### What the announcement bought and what it did not
 
 The poll's condition narrowed from an open pull request or a dispatched worker to an open pull request alone. The script reads pull requests and a building worker has none, so five consecutive runs reported no movement across roughly fifteen minutes while one worker built, and the announcement covers exactly that interval because the transition from building to reviewable is the one moment only the worker knows.
