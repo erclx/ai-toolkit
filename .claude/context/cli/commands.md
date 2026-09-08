@@ -114,6 +114,12 @@ Every `canon` verb is registered in commander and either handled in TypeScript o
 
 Asking git for the ignored half, with `--others --ignored`, was the alternative. It returns the backup history under `.canon/.records.git` along with everything else, which `runRecords` already measured for this tree at 9,744 files and 83M, so the listing pays to enumerate an object store before anything filters it back out. The walk skips that directory by name and never opens it. Measured at `d60b3117` on 2026-09-01.
 
+## A verb reading both records and a git range takes two roots
+
+`mainWorktreeRoot()` is the right root for a records read and the wrong one for a git range, and a verb doing both has to hold them apart. The plans folder, the board, and the memory pen are shared scratch at the main worktree root, while a dispatched branch's own commits live in a linked worktree, so one root answers both questions only in the main checkout. `canon tasks plan-reach` carries the split as `ReachOptions.repo`, defaulting to the records root and set by `runReach` to `process.cwd()`, which is the worktree the caller stands in. A single root there measures a checkout sitting on the trunk: the range closes on itself and every branch reports having written nothing, which is a clean answer rather than a failure and so reaches a reader as a result.
+
+`canon gov test-order` has the same shape and answers it in prose instead, with `auto-ship` Step 4 telling the session which directory to run it from. A parameter is the stronger form, since an instruction is only as good as the body holding it, but the two are not equivalent surfaces: that verb takes its root from where it was invoked and has no records read to part company with.
+
 ## An argument added for testability widens the guards
 
 Turning a hardcoded path into an argument for testability widens the input domain, so the guards need re-auditing against what the argument now admits. Giving `canon claude setup` a `[dest]` argument let the settings merge be covered without pointing a test at a real home directory. The bash hardcoded `$HOME/.claude` and needed no target guard, while the argument made `canon claude setup .claude` from the toolkit root rewrite the tracked `.claude/settings.json`. The guard had to be added by exact path rather than by prefix, since the sandbox scenario legitimately writes under the repo.

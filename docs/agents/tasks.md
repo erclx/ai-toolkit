@@ -186,6 +186,39 @@ Both sides of a dispatch call it. The orchestrator's collision check derives its
 canon tasks plan-branch dispatch-answer-gate --json | jq -r '.branch'
 ```
 
+## Plan reach
+
+`canon tasks plan-reach <plan>` reads a branch back against what was written down about it. It reports and never writes, and it names the plan the same two ways `canon tasks plan-branch` does.
+
+```bash
+canon tasks plan-reach dispatch-answer-gate
+canon tasks plan-reach dispatch-answer-gate --base origin/main --json
+```
+
+| Option          | Effect                                         |
+| --------------- | ---------------------------------------------- |
+| `--base <ref>`  | Far side of the range, defaulting to the trunk |
+| `--json`        | Emit a machine-readable record on stdout       |
+| `--root <path>` | Board root, defaulting to the main worktree    |
+
+The record carries `claimed`, `undeclared`, `declared`, `base`, `changed`, `plans`, `rows`, and `board`. Exit codes: `0` read with nothing claimed, `1` refused with `no-plan`, `archived`, `bad-input`, `no-base`, or `no-diff`, `2` read with a claim standing. Branch on the record rather than on the exit code, which a shell function wrapping `canon` can flatten to zero.
+
+`claimed` leads because it is the short list and the one worth acting on. It carries one entry per path, each holding a `holders` list, so a track carrying both a live plan and a `## Run now` row reads as one holder rather than two. A holder names itself, its `source` of `plan` or `row`, and the `declaration` it matched on, so a folder claim reports which folder rather than leaving the reader to find it. A plan holder also carries `rowed`, whether that plan has a row in `## Run now` at all: a plan with no row is the shape a plan nobody archived takes, and equally the shape of one whose task has yet to be dispatched, so it narrows the reader's search rather than answering it. `undeclared` is every changed path this plan never named, which runs long on an ordinary branch: over the wave this verb was filed against, it ran 22 of 26 paths on one pull request and 18 of 25 on another. Those are the ship chain's own writes rather than scope creep, since the sync skills reach a context entry and the public docs, and the check stages regenerate what they assert.
+
+A declaration is a backticked span standing as an entry's subject, ahead of the colon opening its reason. Reading every span was the alternative and it reports pairs that were never going to collide, since a reason routinely cites a file the entry is not about: measured over the same wave, the subject rule reports 6 crossing pairs against 14 for every span. Both sides of a rename declare, since both sit ahead of the colon.
+
+The range is read at the current directory and the plans and board at the board root, so a linked worktree reads its own branch against the shared records. Reading both at one root was the alternative and it measures a main checkout sitting on the trunk, where the range closes on itself and every branch reports a reach of nothing.
+
+It reads only what is written down, so it inherits the dispatch runbook's blindness: a hand-launched track carries no row and a track with no plan carries no declaration. The `plans`, `rows`, and `board` fields say how much there was to compare against, so a clear reading over an empty corpus does not read as a proof. A missing board reports `board: false` and zero rows rather than refusing, since a project with plans and no board still has a branch worth reading.
+
+A claim is only as current as the folder it was read from, and the live folder holds a plan whose work already shipped until something archives it. `canon tasks archive` moves a plan on merge, so a plan stranded by a run that never reached the archive keeps claiming its files against every branch afterwards. Check whether the holder is actually in flight before treating a claim as a collision: the first run of this verb on its own branch reported five paths held by a plan whose verb had already merged, and the whole reading came of a file nobody archived. `canon tasks validate` is what reports the stranded plan itself.
+
+`canon:git-ship` runs it at step 5, after `git add -A` and before the commit grouping. That is the first point the branch is whole and the last before a pull request exists to carry the answer.
+
+```bash
+canon tasks plan-reach dispatch-answer-gate --json | jq -r '.claimed[] | "\(.path) held by \([.holders[].name] | join(", "))"'
+```
+
 ## Plan link
 
 `canon tasks plan-link <task> <plan>` writes or corrects a task's `Plan:` line, as `Plan: [<label>](<target>)` right after the H1. `plan-feature` calls it right after a plan file lands, when Step 1 resolved an existing task for the feature, so the line is a mechanical write rather than hand-edited markdown.
