@@ -17,11 +17,16 @@ const SCRIPT = join(
 
 const HEAD = '1111111111111111111111111111111111111111'
 
+// The commit a raced pass read, which the head moved off before that pass was
+// posted. Only the marker names it, so a run that reads the submission stamp
+// instead never sees this value at all.
+const READ_HEAD = '2222222222222222222222222222222222222222'
+
 // The three stamps replay the observed sequence: a pass lands, the worker
 // answers it, and the reviewing session closes out seconds later. Fixed values
-// keep the age `JQ_LAST_REVIEW_STATE` derives far past `STALE_AFTER`, so a case
-// reaching the STALLED branch would report rather than fall silent, and no case
-// here can pass by drifting under the threshold.
+// keep the age the script derives far past `STALE_AFTER`, so a case reaching
+// the STALLED branch would report rather than fall silent, and no case here can
+// pass by drifting under the threshold.
 const FIRST_PASS = '2026-08-20T02:00:00Z'
 const RESPONSE_AT = '2026-08-20T02:02:16Z'
 const CLOSE_OUT = '2026-08-20T02:03:52Z'
@@ -67,7 +72,17 @@ interface Comment {
 // Writing the payload to disk rather than baking it into the stub is what lets
 // one run rewrite the thread and the next read the new shape against the
 // baseline the first one left.
-const writeThread = (reviews: Review[], comments: Comment[]): void => {
+//
+// The scope record is written from the same reviews, in the shape
+// `canon pr review-state` returns for a thread carrying no marker. That is what
+// keeps every case below reading the same values the script derived before the
+// verb existed, so a case here fails on the behavior it names rather than on
+// the read having moved.
+const writeThread = (
+  reviews: Review[],
+  comments: Comment[],
+  head = HEAD,
+): void => {
   writeFileSync(
     join(root, 'fixtures', 'pr-7.json'),
     JSON.stringify({
@@ -75,14 +90,32 @@ const writeThread = (reviews: Review[], comments: Comment[]): void => {
         body: `${comment.heading}\n\nbody`,
         createdAt: comment.createdAt,
       })),
-      headRefOid: HEAD,
+      headRefOid: head,
       reviews: reviews.map((review) => ({
         body: `${review.heading}\n\nbody`,
-        commit: { oid: HEAD },
+        commit: { oid: head },
         submittedAt: review.submittedAt,
       })),
     }),
   )
+
+  const last = reviews.at(-1)
+  writeScope(
+    last === undefined
+      ? { source: 'none', state: 'none' }
+      : {
+          commit: head,
+          heading: last.heading,
+          source: 'fallback',
+          state: last.heading === '## Review' ? 'open' : 'closed',
+          submittedAt: last.submittedAt,
+        },
+  )
+}
+
+/** Overrides what the verb answers, which is how a marker reaches the script. */
+const writeScope = (record: Record<string, string>): void => {
+  writeFileSync(join(root, 'fixtures', 'scope-7.json'), JSON.stringify(record))
 }
 
 interface PollResult {
@@ -131,6 +164,22 @@ beforeEach(() => {
     ].join('\n'),
   )
   chmodSync(stub, 0o755)
+
+  // `pr review-state` answers from the fixture the thread was written with, and
+  // every other verb refuses. `pr head` refusing is what the fixture already
+  // produced without a stub, since it has no remote for `git ls-remote` to
+  // reach, so the head still falls back to the object's own field.
+  const canon = join(root, 'bin', 'canon')
+  writeFileSync(
+    canon,
+    [
+      '#!/usr/bin/env bash',
+      `if [ "$1 $2" = "pr review-state" ]; then cat "${join(root, 'fixtures')}/scope-$3.json"; exit 0; fi`,
+      'exit 1',
+      '',
+    ].join('\n'),
+  )
+  chmodSync(canon, 0o755)
 })
 
 afterEach(() => {
@@ -225,6 +274,50 @@ describe('poll', () => {
       ],
     )
     expect(poll().stdout).toBe('No movement.')
+  })
+
+  // The two cases below are one thread read two ways. A push landing between a
+  // pass's read and its post leaves GitHub's stamp on the new head, so the first
+  // case reports a commit nobody reviewed as already covered. The marker names
+  // what the pass read, which is what makes the second case report it.
+  it('should report a head the stamp claims is covered as seen', () => {
+    writeThread(
+      [{ heading: '## Review', submittedAt: FIRST_PASS }],
+      [],
+      READ_HEAD,
+    )
+    expect(poll().stdout).toContain('SEEN')
+
+    // The push. `writeThread` moves the stamp onto the new head with it, which
+    // is what GitHub does to a review submitted after a push it never read.
+    writeThread([{ heading: '## Review', submittedAt: FIRST_PASS }], [], HEAD)
+
+    expect(poll().stdout).toContain(
+      'SEEN      #7 -> 1111111, already covered by the last pass',
+    )
+  })
+
+  it('should report a head the marker leaves uncovered as moved', () => {
+    writeThread(
+      [{ heading: '## Review', submittedAt: FIRST_PASS }],
+      [],
+      READ_HEAD,
+    )
+    expect(poll().stdout).toContain('SEEN')
+
+    // The push. The stamp follows the head and the marker does not, so only the
+    // marker still names the commit that pass actually read.
+    writeThread([{ heading: '## Review', submittedAt: FIRST_PASS }], [], HEAD)
+    writeScope({
+      commit: READ_HEAD,
+      heading: '## Review',
+      readAt: FIRST_PASS,
+      source: 'marker',
+      state: 'open',
+      submittedAt: FIRST_PASS,
+    })
+
+    expect(poll().stdout).toContain('MOVED     #7')
   })
 
   it('should route a post-review-findings comment the same as a review response', () => {

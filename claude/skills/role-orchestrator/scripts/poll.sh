@@ -45,12 +45,10 @@ BASE_BRANCH="${BASE_REF#origin/}"
 # `## Review response` because neither answers a comment already on the thread,
 # which is why both were kept outside the `## Review` family rather than folded
 # into it.
-JQ_LAST_REVIEWED_HEAD='
-  [ .reviews[]
-    | select((.body // "") | split("\n")[0] | rtrimstr("\r")
-             | . == "## Review" or . == "## Review closed")
-  ] | last | .commit.oid // empty
-'
+#
+# The review family reaches this file through `canon pr review-state` rather
+# than through a filter of its own, so the two headings are pinned here only in
+# the fallback that answers for a target whose CLI predates that verb.
 # The count alone answers whether a reply is new to this script, which is not
 # the same question as whether it is newer than the pass it answers. The stamp
 # of the newest reply comes out of the same selection so the recency test costs
@@ -90,38 +88,72 @@ JQ_UNMATCHED_STATE='
     + (($unclassified | last) // "none")
 '
 
-# `review-pr` states the threshold and posts `## Review` exactly when a
-# pass carries a finding, so the heading of the last review is what says whether
-# any work is owed on it. Taking it as well as the commit is what separates a
-# thread waiting on a worker from one nothing is owed on. A project editing the
-# two filters above for its own headings edits this one with them.
+# Four fields describe the last review pass: the commit it covered, whether it
+# left anything owed, how long it has sat, and the instant it read. All four come
+# out of `canon pr review-state`, which is the one place the read-time marker
+# `review-pr` writes into its own body is parsed. Reading `commit.oid` and
+# `submittedAt` off the thread here instead is what this replaces: GitHub stamps
+# both when a review is submitted, so a push landing between a pass's read and
+# its post moves them onto a commit that pass never opened, and `SEEN` below then
+# reports it covered. That is the failure that loses work silently, measured on
+# a pull request in this toolkit on 2026-09-07.
 #
-# The age of that review comes out of the same selection, because the heading
-# alone cannot separate the two. Under the rule above an open heading means a
-# dispatch was owed and made, so the ordinary healthy thread is a worker still
-# working and every one of them would be reported minutes after the pass posted.
-# jq computes the elapsed seconds itself, since `date -d` is GNU-only and this
-# script runs wherever the plugin is installed. A review carrying no stamp reads
-# as age zero and classifies nothing, which is the same answer the carry-forward
-# path gives a pull request this run could not read.
+# `review-pr` posts `## Review` exactly when a dispatch is owed, per the
+# threshold that skill states, so the heading is what separates a thread waiting
+# on a worker from one nothing is owed on. A project editing the two comment
+# filters above for its own headings has nothing to edit here, since the verb
+# owns the review family now.
 #
-# The stamp itself is emitted as a third field beside the age it was derived
-# from, because the reply test below compares against the instant rather than
-# against the elapsed seconds. A missing stamp reads as zero there too, where it
-# sends a reply to be reported rather than suppressed. The two readers therefore
-# fail in opposite directions on the same absent field, since zero silences the
-# age test above and zero is the value the reply test reports on.
-JQ_LAST_REVIEW_STATE='
+# The age is derived from `submittedAt` alone and the pass instant from
+# `readAt // submittedAt`, which is deliberate rather than an oversight. The age
+# measures how long a posted comment has waited on a human, a question about the
+# submission, and the pass instant bounds what that pass had read, a question
+# about the read. jq computes the elapsed seconds itself, since `date -d` is
+# GNU-only and this script runs wherever the plugin is installed. A review
+# carrying no stamp reads as age zero and classifies nothing, which is the same
+# answer the carry-forward path gives a pull request this run could not read, and
+# reads as pass instant zero, where it sends a reply to be reported rather than
+# suppressed. The two readers fail in opposite directions on the same absent
+# field on purpose.
+#
+# `source` is the field this branches on rather than the exit status, since an
+# operator shell profile can wrap canon in a function that flattens every
+# refusal to zero. A refusal record carries `reason` and no `source`, and it
+# yields nothing here, which is what sends the read to the fallback below. A
+# record read as a bare answer instead would report every refusal as a pull
+# request nobody has reviewed.
+JQ_SCOPE_FROM_VERB='
+  if (.source // "") == "" then empty else
+  (.commit // "none") as $prior
+  | (.state // "none") as $heading
+  | (if .submittedAt == null then 0
+     else (.submittedAt | fromdateiso8601 | floor) end) as $at
+  | (if .readAt == null then $at
+     else (.readAt | fromdateiso8601 | floor) end) as $read
+  | $prior + " " + $heading
+    + " " + (if $at == 0 then "0" else (((now | floor) - $at) | tostring) end)
+    + " " + ($read | tostring)
+  end
+'
+# The fallback for a target whose CLI predates the verb, mirroring the `canon pr
+# head` fallback below. It reads the submission stamps and therefore carries the
+# defect the verb closes, which is the behavior this poll already had. It does
+# not parse the marker: a second reader of that format here is the drift the
+# verb exists to prevent, and one that lags the format silently reports a
+# reviewed commit as unreviewed.
+JQ_SCOPE_FALLBACK='
   [ .reviews[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")
              | . == "## Review" or . == "## Review closed")
   ] | last
-  | if . == null then "none 0 0"
+  | if . == null then "none none 0 0"
     else (if .submittedAt == null then 0
           else (.submittedAt | fromdateiso8601 | floor)
           end) as $at
-      | ((.body | split("\n")[0] | rtrimstr("\r")
-          | if . == "## Review" then "open" else "closed" end)
+      | ((.commit.oid // "none")
+         + " "
+         + (.body | split("\n")[0] | rtrimstr("\r")
+            | if . == "## Review" then "open" else "closed" end)
          + " "
          + (if $at == 0 then "0" else (((now | floor) - $at) | tostring) end)
          + " "
@@ -164,7 +196,7 @@ carry_forward() {
 }
 
 snapshot() {
-  local numbers n payload head prior resp merges review_state
+  local numbers n payload head prior resp merges scope review_scope review_state
   git fetch -q origin "$BASE_BRANCH" 2>/dev/null || true
 
   # A failed list reaches the caller as no open pull requests, and that reports
@@ -211,16 +243,29 @@ snapshot() {
       continue
     fi
 
-    prior=$(jq -r "$JQ_LAST_REVIEWED_HEAD" <<<"$payload")
     # Split here rather than carried whole, because the count keeps the fourth
     # column every baseline written so far already reads, and the stamp goes to
     # the end of the line beside the pass stamp it is compared against.
     reply_state=$(jq -r "$JQ_REPLY_STATE" <<<"$payload")
     resp=${reply_state%% *}
     reply_at=${reply_state##* }
-    # Three space-separated fields, so the line below carries them as its own
-    # sixth, seventh, and eighth rather than needing a split.
-    review_state=$(jq -r "$JQ_LAST_REVIEW_STATE" <<<"$payload")
+
+    # The marker `review-pr` writes is the authority for what a pass covered,
+    # and the verb is the only reader of it. The trailing assignment is
+    # load-bearing under `set -e` and `set -o pipefail`: every refusal exits 1,
+    # and a refusal here is ordinary rather than exceptional, so an unguarded
+    # pipeline would end the whole poll on the first pull request it could not
+    # answer for.
+    scope=$(canon pr review-state "$n" --json 2>/dev/null) || scope=""
+    review_scope=$(jq -r "$JQ_SCOPE_FROM_VERB" <<<"$scope" 2>/dev/null) || review_scope=""
+    if [ -z "$review_scope" ]; then
+      review_scope=$(jq -r "$JQ_SCOPE_FALLBACK" <<<"$payload")
+    fi
+    # Four space-separated fields. The commit leads, so the line below carries
+    # it as its own third the way every baseline already reads, and the other
+    # three ride on as the sixth, seventh, and eighth.
+    prior=${review_scope%% *}
+    review_state=${review_scope#* }
     # Split the same way as the reply state, carried as the line's tenth and
     # eleventh fields.
     unmatched_state=$(jq -r "$JQ_UNMATCHED_STATE" <<<"$payload")
