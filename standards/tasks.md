@@ -31,6 +31,8 @@ Does not govern:
 ├── priority.md           ← hand-maintained execution order
 ├── backlog.md            ← unordered, what is not being scheduled
 ├── session-<slug>.md     ← optional, what a compaction is about to destroy
+├── archive/              ← shipped tasks, moved by canon tasks archive
+├── declined/             ← decided-against tasks, moved by canon tasks decline
 ├── v09.0-sync-paths.md      # canon-allow-reference: illustrates the vXX.Y-slug filename this section defines
 └── v13.0-toolkit-drift.md   # canon-allow-reference: illustrates the vXX.Y-slug filename this section defines
 ```
@@ -207,7 +209,7 @@ Every task names where it came from, through a `Plan:`, `Groundwork:`, `Intake:`
 
 A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track, an intake folder, or an open issue that no task points at is work already decided and on its way to being forgotten.
 
-An intake folder answers that direction at folder scope rather than item scope, since one dump dispositions many items and most close without ever becoming a task. What names a folder is every item answered and no task citing it, on the board or in the archive. That is a dump nobody acted on. Counting the archive beside the board is what separates it from one already promoted and shipped, and a check reading the board alone calls every finished folder abandoned.
+An intake folder answers that direction at folder scope rather than item scope, since one dump dispositions many items and most close without ever becoming a task. What names a folder is every item answered and no task citing it, on the board or in the archive. That is a dump nobody acted on. Counting the archive and declined folder beside the board is what separates it from one already promoted and settled, and a check reading the board alone calls every finished folder abandoned.
 
 `Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.canon/tasks/`, which makes it `../plans/`, `../groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
 
@@ -258,3 +260,15 @@ Archiving a task archives its plan alongside it, when the closing task is that p
 One act rather than two is what makes the pair safe. The merge is the event that settles a plan, and a `post-merge` hook reaching the archive with nobody watching cannot act on a warning, so a second call after it would be a second failure point leaving the task archived and the plan live.
 
 A task with an open outcome stays on the board, and so does its plan. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. Cutting means striking the outcome's body: `- ~~<outcome>~~ <why>`. `archiveTask` reads a struck body as cut whatever its checkbox holds, so a task carrying only cut outcomes still archives and a mixed task carries both counts on its success record.
+
+## Declining
+
+A task decided against moves to `.canon/tasks/declined/` rather than `.canon/tasks/archive/`. The two folders answer different questions: archive means the work shipped, declined means somebody decided against doing it. Neither reading fits a task that is merely unscheduled, which stays on `backlog.md` rather than moving anywhere, since nobody has decided against it and it may still rise when the board has room.
+
+`canon tasks decline` carries no outcome-state gate. A task can be decided against at any outcome state, open outcomes included, which is what separates its refusal set from archive's: the two never share one, since a shared gate would let one archive a task that cannot yet ship or decline one that already has.
+
+The decision is recorded on the task itself with a `Declined:` line, in the `Plan:`/`Pull request:` family: `Declined: <reason>, <who> on <YYYY-MM-DD>`. It anchors the same way `Pull request:` does, after the last origin line the task carries. The line is free prose after the colon, since it names no file to link.
+
+Declining a task moves its plan alongside it the same way archiving does, when the declining task is that plan's last live citation. A plan several tasks share stays where it is, and a declined task's plan lands in `.canon/plans/archive/` indistinguishable from a shipped one by folder alone. The task file under `.canon/tasks/declined/` is what records which it was.
+
+The move clears whichever of `priority.md` or `backlog.md` holds the task's row, since a decided-against task most often comes off the backlog before anyone plans it, but a row already promoted to the ordering file is cleared the same way archive clears it.

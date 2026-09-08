@@ -1,6 +1,11 @@
 import { existsSync } from 'node:fs'
 import { relative } from 'node:path'
-import { archiveDir, listTaskStems, tasksDir } from '@/tasks/archive'
+import {
+  archiveDir,
+  declinedDir,
+  listTaskStems,
+  tasksDir,
+} from '@/tasks/archive'
 
 /** Every label in the corpus today stops here before rolling to the next major. */
 const MINOR_ROLLOVER = 9
@@ -68,9 +73,10 @@ function next(label: Label): Label {
 
 /**
  * Reports the next unused phase label, read off the true maximum across
- * `.canon/tasks/` and its `archive/` sibling together. A scan confined to the
- * live board is blind to every label the archive already spent, which is what
- * let two sessions hand out the same label within minutes of each other.
+ * `.canon/tasks/` and its `archive/` and `declined/` siblings together. A scan
+ * confined to the live board is blind to every label a settled folder already
+ * spent, which is what let two sessions hand out the same label within
+ * minutes of each other.
  *
  * It reports and never writes. Two sessions calling it in the same second can
  * still take the same answer, since the board is gitignored files rather than
@@ -90,8 +96,10 @@ export async function nextLabel(root: string): Promise<LabelOutcome> {
     }
   }
 
-  const archive = archiveDir(root)
-  const dirs = existsSync(archive) ? [dir, archive] : [dir]
+  const settled = [archiveDir(root), declinedDir(root)].filter((candidate) =>
+    existsSync(candidate),
+  )
+  const dirs = [dir, ...settled]
   const stems = (await Promise.all(dirs.map((d) => listTaskStems(d)))).flat()
 
   const highest = stems

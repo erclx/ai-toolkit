@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { recordDir } from '@/record-root'
-import { archiveDir, tasksDir } from '@/tasks/archive'
+import { archiveDir, declinedDir, tasksDir } from '@/tasks/archive'
 import {
   backlogPath,
   type Finding,
@@ -88,6 +88,12 @@ async function seedArchivedTask(stem: string): Promise<void> {
   const archive = archiveDir(ROOT)
   mkdirSync(archive, { recursive: true })
   await writeFile(join(archive, `${stem}.md`), `# ${stem}\n`)
+}
+
+async function seedDeclinedTask(stem: string): Promise<void> {
+  const declined = declinedDir(ROOT)
+  mkdirSync(declined, { recursive: true })
+  await writeFile(join(declined, `${stem}.md`), `# ${stem}\n`)
 }
 
 function needsPlanTable(rows: readonly string[]): string {
@@ -541,6 +547,26 @@ describe('validateBoard', () => {
     })
   })
 
+  it('should count the declined folder, mirroring backlog and tasks', async () => {
+    await seedTask('v1.0-first')
+    await seedDeclinedTask('v9.0-declined')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+
+    expect(await validateBoard(ROOT)).toMatchObject({
+      declined: 1,
+      findings: [],
+    })
+  })
+
+  it('should tolerate an absent declined folder', async () => {
+    await seedTask('v1.0-first')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+
+    expect(await validateBoard(ROOT)).toMatchObject({ declined: 0 })
+  })
+
   it('should report a task sitting on the board and the backlog both', async () => {
     await seedTask('v1.0-first')
     await seedPlan('v1.0-first')
@@ -801,6 +827,30 @@ describe('validateBoard', () => {
       {
         kind: 'blocker-settled',
         message: 'waits on v3.0-gone, which is archived.',
+      },
+    ])
+  })
+
+  it('should report a parked row whose cited task was declined', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedDeclinedTask('v3.0-declined')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [v3.0-declined](v3.0-declined.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      {
+        kind: 'blocker-declined',
+        message: 'waits on v3.0-declined, which was declined.',
       },
     ])
   })
