@@ -1008,7 +1008,7 @@ h2 .count {
   letter-spacing: 0.02em;
 }
 
-.gloss-group:first-child { margin-top: 0; }
+.gloss-group:first-of-type { margin-top: 0; }
 
 .gterm b { font-weight: 700; }
 /* The markdown source separates a term from its definition with a colon,
