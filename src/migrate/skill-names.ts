@@ -24,6 +24,16 @@ import { defineRenameRules, type RenameRules } from '@/migrate/rename'
  * Every name takes two words. Ten of these would have landed as a bare single
  * word under a plain strip, and a bare word such as `review` or `docs` is a
  * substring of ordinary prose with no token left for a later sweep to find.
+ *
+ * No bare single-word name may ever join this map, whatever prefix it would
+ * otherwise take. `wholeToken: true` below matches a standalone word rather
+ * than a namespaced compound, so a one-word key rewrites every unrelated use
+ * of that word too. `identity` proved it: a dry run against a fifth row
+ * reading `'identity': 'draft-identity'` reported 112 occurrences across 43
+ * files, most of them a variable, field, or type name spelling the bare word
+ * rather than the skill, including `readonly identity: SelfIdentity` at
+ * `src/sessions/resolve.ts:255`, which the rewrite would have turned into
+ * invalid TypeScript. The row was never added.
  */
 export const SKILL_NAME_MAP: Readonly<Record<string, string>> = {
   'claude-address-review': 'review-address',

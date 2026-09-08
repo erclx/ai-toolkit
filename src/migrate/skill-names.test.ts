@@ -36,6 +36,14 @@ describe('SKILL_NAME_MAP', () => {
 
     expect(new Set(names).size).toBe(names.length)
   })
+
+  it('should carry no single-word key, which wholeToken would rewrite everywhere it appears as an ordinary word', () => {
+    const single = Object.keys(SKILL_NAME_MAP).filter(
+      (name) => !name.includes('-'),
+    )
+
+    expect(single).toEqual([])
+  })
 })
 
 describe('SKILL_NAME_RULES ordering', () => {

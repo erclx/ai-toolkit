@@ -10,7 +10,7 @@ use_config() {
 stage_setup() {
   cat <<'EOF' >package.json
 {
-  "name": "sandbox-identity",
+  "name": "sandbox-draft-identity",
   "version": "1.0.0",
   "private": true,
   "type": "module"
@@ -80,7 +80,7 @@ EOF
   log_info "  Personality: quiet, disciplined, warm paper tones, single accent, no motion"
   log_info "  Color: warm paper ground, dark ink, a rust accent for the active state"
   log_info "  No public/, static/, index.html, or manifest.json anywhere in the tree"
-  log_info "Action: /canon:identity draft a logo mark and social card, and take arm 1 when you put the pick to me"
+  log_info "Action: /canon:draft-identity draft a logo mark and social card, and take arm 1 when you put the pick to me"
   log_info "        The pick is pre-supplied in the prompt, the same shape draft-and-pick's own sandbox arm"
   log_info "        uses, since a headless run has nobody to answer the question and would stall on it otherwise."
   log_info "Expect: the default icon size sequence announced (16x16, 32x32, 48x48, 180x180, 192x192, 512x512),"

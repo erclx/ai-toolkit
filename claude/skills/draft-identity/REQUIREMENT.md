@@ -1,9 +1,9 @@
 ---
-name: identity
+name: draft-identity
 description: Why the mark and the card are one pick rather than two, and where the size sequence and the write folder come from before either is drafted
 ---
 
-# Identity requirement
+# Draft identity requirement
 
 ## Gap
 

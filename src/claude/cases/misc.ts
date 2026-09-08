@@ -15,7 +15,7 @@ export const MISC_CASES: readonly SkillCase[] = [
   {
     prompt:
       'This project has no logo yet. Draft one and give me a social card to go with it.',
-    expect: 'identity',
+    expect: 'draft-identity',
   },
   {
     prompt: 'Fire up the dev server the way this project documents it.',
