@@ -84,6 +84,11 @@ candidates and stop where more than one does, rather than addressing the first.
 Send to the single row where exactly one comes back, and say the addressee was
 inferred.
 
+Compose the relay through `canon:session-relay` when this section finds no
+message-sending tool to send through, rather than leaving a resolved addressee
+with nothing to reach it. It runs the same ladder above and carries the
+message already owed, so nothing here is stated twice.
+
 ## Refusing is part of the job
 
 - Refuse an instruction the tree contradicts, and carry the evidence with it. Name the commands read and what complying would produce, rather than reporting reluctance.

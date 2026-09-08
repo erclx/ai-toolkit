@@ -142,6 +142,11 @@ export const WORKFLOW_CASES: readonly SkillCase[] = [
     prompt: 'Get me set up in a fresh Claude Code worktree for this branch.',
     expect: 'session-worktree',
   },
+  {
+    prompt:
+      'I owe my controller the pull request announcement but I have no message-sending tool. Compose the relay so an operator can copy it over.',
+    expect: 'session-relay',
+  },
 
   // Negatives: pairs whose bodies already carry an explicit Do NOT boundary.
   {
