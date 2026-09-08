@@ -58,6 +58,14 @@ A glossary failing these is non-conforming even when it satisfies every shape ru
 - Name each category so a reader picks it from the term alone. A category a reader cannot predict makes the grouping a second thing to search.
 - State a departure from any rule above in the file itself, naming what it departs from and why. A glossary serving no single body of material is the case that produces one, since a term drawn from everywhere has no first appearance to name.
 
+## Rendered grouping
+
+Applies to a rendered glossary page, never to the source file above, which stays the flat alphabetical list the `## Grouping` rules above govern.
+
+- Group a rendered glossary by the lesson its own "First seen in" citation names, ordered by lesson order, under a sub-heading naming the lesson's title rather than its filename.
+- Trail with an "Other terms" group holding any entry the citation cannot attribute to a lesson, whether it names a reference page instead or carries no citation at all. Keep it in the alphabetical order the source file already carries.
+- Keep the workspace-wide term filter matching against every group, and drop a group's own heading once filtering leaves nothing under it.
+
 ## Template
 
 ```markdown

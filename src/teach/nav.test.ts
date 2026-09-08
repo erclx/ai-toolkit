@@ -82,6 +82,14 @@ async function seedLesson(
   return path
 }
 
+async function seedGlossary(
+  slug: string,
+  entries: readonly string[],
+): Promise<void> {
+  const path = join(workspaceDir(slug), 'GLOSSARY.md')
+  await writeFile(path, `${entries.map((entry) => `- ${entry}`).join('\n')}\n`)
+}
+
 beforeEach(() => {
   ROOT = mkdtempSync(join(tmpdir(), 'canon-teach-nav-'))
 })
@@ -515,5 +523,115 @@ describe('generateNav', () => {
     expect(second).toContain('<span class="end">')
     expect(second).toContain('href="0001-anchors.html"')
     expect(second).toContain('Anchors')
+  })
+
+  it('should group glossary entries by lesson, in lesson order, under the lesson title', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+    )
+    await seedLesson(
+      '01-regular-expressions',
+      '0002-groups.html',
+      'Capture groups',
+      'A parenthesised part of a pattern whose match is kept.',
+    )
+    await seedGlossary('01-regular-expressions', [
+      '**anchor**: Marks a fixed position in the subject. First seen in 0001-anchors.html.',
+      '**backreference**: Refers to an earlier capture group. First seen in 0002-groups.html.',
+      '**capture group**: A parenthesised part of a pattern whose match is kept. First seen in 0002-groups.html.',
+    ])
+
+    await generateNav(ROOT)
+
+    const contents = await readFile(
+      join(workspaceDir('01-regular-expressions'), 'index.html'),
+      'utf8',
+    )
+
+    const anchorsHeading = contents.indexOf(
+      '<h3 class="gloss-group">Anchors</h3>',
+    )
+    const groupsHeading = contents.indexOf(
+      '<h3 class="gloss-group">Capture groups</h3>',
+    )
+    const anchorTerm = contents.indexOf('<b>anchor</b>')
+    const backreferenceTerm = contents.indexOf('<b>backreference</b>')
+    const captureGroupTerm = contents.indexOf('<b>capture group</b>')
+
+    expect(anchorsHeading).toBeGreaterThan(-1)
+    expect(groupsHeading).toBeGreaterThan(anchorsHeading)
+    expect(anchorTerm).toBeGreaterThan(anchorsHeading)
+    expect(anchorTerm).toBeLessThan(groupsHeading)
+    expect(backreferenceTerm).toBeGreaterThan(groupsHeading)
+    expect(captureGroupTerm).toBeGreaterThan(groupsHeading)
+  })
+
+  it('should collect an entry with no First seen citation under a trailing Other terms group', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+    )
+    await seedGlossary('01-regular-expressions', [
+      '**anchor**: Marks a fixed position in the subject. First seen in 0001-anchors.html.',
+      '**delimiter**: The character marking a pattern boundary.',
+    ])
+
+    await generateNav(ROOT)
+
+    const contents = await readFile(
+      join(workspaceDir('01-regular-expressions'), 'index.html'),
+      'utf8',
+    )
+
+    const anchorsHeading = contents.indexOf(
+      '<h3 class="gloss-group">Anchors</h3>',
+    )
+    const otherHeading = contents.indexOf(
+      '<h3 class="gloss-group">Other terms</h3>',
+    )
+    const delimiterTerm = contents.indexOf('<b>delimiter</b>')
+
+    expect(otherHeading).toBeGreaterThan(anchorsHeading)
+    expect(delimiterTerm).toBeGreaterThan(otherHeading)
+  })
+
+  it('should render every term as a flat .gterm sibling so the workspace-wide filter still matches across every group', async () => {
+    await openWorkspace(ROOT, REQUEST)
+    await seedLesson(
+      '01-regular-expressions',
+      '0001-anchors.html',
+      'Anchors',
+      'Where a pattern starts and ends.',
+    )
+    await seedLesson(
+      '01-regular-expressions',
+      '0002-groups.html',
+      'Capture groups',
+      'A parenthesised part of a pattern whose match is kept.',
+    )
+    const entries = [
+      '**anchor**: Marks a fixed position in the subject. First seen in 0001-anchors.html.',
+      '**capture group**: A parenthesised part of a pattern whose match is kept. First seen in 0002-groups.html.',
+      '**delimiter**: The character marking a pattern boundary.',
+    ]
+    await seedGlossary('01-regular-expressions', entries)
+
+    await generateNav(ROOT)
+
+    const contents = await readFile(
+      join(workspaceDir('01-regular-expressions'), 'index.html'),
+      'utf8',
+    )
+
+    expect(contents.match(/class="gterm"/g)).toHaveLength(entries.length)
+    expect(contents).toContain('list.querySelectorAll(".gterm")')
+    expect(contents).toContain('updateGroups()')
   })
 })
